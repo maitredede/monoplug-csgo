@@ -22,8 +22,8 @@
 #define MONOPLUG_CALLBACK_SHUTDOWN "MonoPlug.ClsMain:_Shutdown()"
 #define MONOPLUG_CALLBACK_HANDLEMESSAGE "MonoPlug.ClsMain:_HandleMessages()"
 
-#define MONOPLUG_CALLBACK_REGISTERCONCOMMAND "MonoPlug.ClsMain:Mono_RegisterConCommand (string,string,MonoPlug.ConCommandDelegate)"
-#define MONOPLUG_CALLBACK_UNREGISTERCONCOMMAND "MonoPlug.ClsMain:Mono_UnregisterConCommand (string)"
+#define MONOPLUG_CALLBACK_REGISTERCONCOMMAND "MonoPlug.ClsMain:Mono_RegisterConCommand(string,string,MonoPlug.ConCommandDelegate)"
+#define MONOPLUG_CALLBACK_UNREGISTERCONCOMMAND "MonoPlug.ClsMain:Mono_UnregisterConCommand(string)"
 
 #define MONOPLUG_CLSMAIN_EVT_LEVELINIT "MonoPlug.ClsMain:EVT_LevelInit(string,string,string,string,bool,bool)"
 #define MONOPLUG_CLSMAIN_EVT_LEVELSHUTDOWN "MonoPlug.ClsMain:EVT_LevelShutdown()"
