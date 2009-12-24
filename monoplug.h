@@ -72,6 +72,8 @@ static void Mono_Msg(MonoString* msg)
 
 static bool Mono_RegisterConCommand(MonoString* name, MonoString* description, MonoObject* code)
 {
+	META_CONPRINTF("Entering Mono_RegisterConCommand : %s: %s\n", mono_string_to_utf8(name), mono_string_to_utf8(description));
+
 	MonoConCommand* com = new MonoConCommand(mono_string_to_utf8(name), mono_string_to_utf8(description), code);
 	//TODO : add MonoConCommand to native list for handle tracking
 	g_MonoPlugPlugin.m_conCommands->AddToTail(com);
