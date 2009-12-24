@@ -126,7 +126,7 @@ static void Mono_UnregisterConCommand(MonoString* name)
 		META_CONPRINTF("Mono_UnregisterConCommand : Command unregistered -> Removing from list");
 
 		//TODO : Remove from list
-		g_MonoPlugPlugin.m_conCommands->Remove(pos);
+		g_MonoPlugPlugin.m_conCommands->FindAndRemove(com);
 		
 		META_CONPRINTF("Mono_UnregisterConCommand : Command removed -> delete");
 
