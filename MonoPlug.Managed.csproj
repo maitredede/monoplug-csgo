@@ -37,6 +37,7 @@
     <Compile Include="ClsMain - clr_plugin_refresh.cs" />
     <Compile Include="ClsMain - clr_test.cs" />
     <Compile Include="ClsMain.cs" />
+    <Compile Include="ConCommandAttribute.cs" />
     <Compile Include="FCVAR.cs" />
     <Compile Include="MessageType.cs" />
     <Compile Include="MessageEntry.cs" />
