@@ -1,0 +1,5 @@
+"Metamod Plugin"
+{
+	"alias"		"monoplug"
+	"file"		"addons/monoplug"
+}
