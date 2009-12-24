@@ -22,8 +22,8 @@
 #define MONOPLUG_NATMAN_SHUTDOWN "MonoPlug.ClsMain:_Shutdown()"
 #define MONOPLUG_NATMAN_HANDLEMESSAGE "MonoPlug.ClsMain:_HandleMessages()"
 
-#define MONOPLUG_CALLBACK_REGISTERCONCOMMAND "MonoPlug.ClsMain:Mono_RegisterConCommand(string,string,MonoPlug.ConCommandDelegate)"
-#define MONOPLUG_CALLBACK_UNREGISTERCONCOMMAND "MonoPlug.ClsMain:Mono_UnregisterConCommand(string)"
+#define MONOPLUG_CALLBACK_REGISTERCONCOMMAND "MonoPlug.ClsMain::Mono_RegisterConCommand(string,string,MonoPlug.ConCommandDelegate)"
+#define MONOPLUG_CALLBACK_UNREGISTERCONCOMMAND "MonoPlug.ClsMain::Mono_UnregisterConCommand(string)"
 
 #define MONOPLUG_CLSMAIN_EVT_LEVELINIT "MonoPlug.ClsMain:EVT_LevelInit(string,string,string,string,bool,bool)"
 #define MONOPLUG_CLSMAIN_EVT_LEVELSHUTDOWN "MonoPlug.ClsMain:EVT_LevelShutdown()"
@@ -78,7 +78,7 @@ extern MonoMethod* g_EVT_LevelShutdown;
 #define MONO_DELEGATE_CALL(delegateObject, args) \
 {\
 	MonoMethod* dlgMethod = mono_get_delegate_invoke(mono_object_get_class((MonoObject*)delegateObject)); \
-	MONO_CALL_ARGS(NULL, dlgMethod, args); \
+	MONO_CALL_ARGS(delegateObject, dlgMethod, args); \
 };
 
 #define MONO_CALL(target, methodHandle) MONO_CALL_ARGS(target, methodHandle, NULL)
