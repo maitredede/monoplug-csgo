@@ -268,7 +268,7 @@ const char *CMonoPlug::GetURL()
 MonoConCommand::MonoConCommand(char* name, char* description, CCode* code)
 : ConCommand(name, (FnCommandCallback_t)NULL, description)
 {
-	META_CONPRINT("Entering : MonoConCommand::MonoConCommand\n");
+	//META_CONPRINT("Entering : MonoConCommand::MonoConCommand\n");
 	this->m_code = code;
 }
 

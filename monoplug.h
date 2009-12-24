@@ -87,6 +87,7 @@ static void Mono_RegisterConCommand(MonoString* name, MonoString* description, C
 
 static void Mono_UnregisterConCommand(MonoString* name)
 {
+	META_CONPRINTF("Entering Mono_UnregisterConCommand : %s\n", mono_string_to_utf8(name));
 	MonoConCommand* com = NULL;
 	const char* s_name = mono_string_to_utf8(name);
 	int pos = -1;
@@ -105,19 +106,26 @@ static void Mono_UnregisterConCommand(MonoString* name)
 	
 	if(com)
 	{
+		META_CONPRINTF("Mono_UnregisterConCommand : Command found -> Unregister");
 		//TODO : unregister MonoConCommand to engine
 		g_SMAPI->UnregisterConCommandBase(g_PLAPI, com);
 	
+		META_CONPRINTF("Mono_UnregisterConCommand : Command unregistered -> Removing from list");
+
 		//TODO : Remove from list
 		g_MonoPlugPlugin.m_conCommands->Remove(pos);
 		
+		META_CONPRINTF("Mono_UnregisterConCommand : Command removed -> delete");
+
 		//TODO : delete handle
 		delete com;
 
+		META_CONPRINTF("Mono_UnregisterConCommand : Command delete -> OK");
 		//return true;
 	}
 	else
 	{
+		META_CONPRINTF("Mono_UnregisterConCommand : Command NOT found");
 		//return false;
 	}
 };
