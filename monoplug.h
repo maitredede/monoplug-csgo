@@ -90,7 +90,6 @@ static void Mono_UnregisterConCommand(MonoString* name)
 	META_CONPRINTF("Entering Mono_UnregisterConCommand : %s\n", mono_string_to_utf8(name));
 	MonoConCommand* com = NULL;
 	const char* s_name = mono_string_to_utf8(name);
-	int pos = -1;
 
 	//TODO : get MonoConCommand handle in list
 	if(!g_MonoPlugPlugin.m_conCommands)
@@ -100,24 +99,24 @@ static void Mono_UnregisterConCommand(MonoString* name)
 	}
 	META_CONPRINTF("g_MonoPlugPlugin.m_conCommands->Count() = %d\n", g_MonoPlugPlugin.m_conCommands->Count());
 
+	META_CONPRINTF("item count : %d\n", g_MonoPlugPlugin.m_conCommands->Count());
 	for(int i = 0; i < 	g_MonoPlugPlugin.m_conCommands->Count(); i++)
 	{
-		META_CONPRINTF("item[%d]\n", g_MonoPlugPlugin.m_conCommands->Count());
 		MonoConCommand* item = 	g_MonoPlugPlugin.m_conCommands->Element(i);
 		if(!item)
 		{
 			META_CONPRINT("item IS NULL\n");
 			return;
 		}
-		META_CONPRINTF("item[%d] item->GetName=%s\n", item->GetName());
-		if(strcmp(item->GetName(), s_name) == 0)
+		META_CONPRINTF("item[%d] item->GetName() => %s ; s_name = %s\n", i, item->GetName(), s_name);
+		if(Q_strcmp(item->GetName(), s_name) == 0)
 		{
-			pos = i;
+			META_CONPRINTF("item[%d] Found\n", i);
 			com = item;
 			break;
 		}
 	}
-	
+
 	if(com)
 	{
 		META_CONPRINTF("Mono_UnregisterConCommand : Command found -> Unregister");
