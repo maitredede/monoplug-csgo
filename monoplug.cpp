@@ -102,20 +102,11 @@ bool CMonoPlug::Load(PluginId id, ISmmAPI *ismm, char *error, size_t maxlen, boo
 			META_CONPRINTF("%s\n", error);
 			return false;
 		}
-		MonoClass* cls_delegate = mono_class_from_name(g_Image, MONOPLUG_NAMESPACE, "ConCommandDelegate");
-		if(cls_delegate)
-		{
-			META_CONPRINT("Found delegate class.\n");
-		}
-		else
-		{
-			META_CONPRINT("Found delegate class.\n");
-		}
 
 		//Add internal calls from managed to native
-		mono_add_internal_call (MONOPLUG_CALLBACK_MSG, (void*)Mono_Msg);
-		mono_add_internal_call (MONOPLUG_CALLBACK_REGISTERCONCOMMAND, (void*)Mono_RegisterConCommand);
-		mono_add_internal_call (MONOPLUG_CALLBACK_UNREGISTERCONCOMMAND, (void*)Mono_UnregisterConCommand);
+		mono_add_internal_call (MONOPLUG_CALLBACK_MSG, (gconstpointer)Mono_Msg);
+		mono_add_internal_call (MONOPLUG_CALLBACK_REGISTERCONCOMMAND, (gconstpointer)Mono_RegisterConCommand);
+		mono_add_internal_call (MONOPLUG_CALLBACK_UNREGISTERCONCOMMAND, (gconstpointer)Mono_UnregisterConCommand);
 
 		//Get callbacks from native to managed
 		ATTACH(MONOPLUG_NATMAN_INIT, g_Init, g_Image);

@@ -71,7 +71,7 @@ private:
 
 extern CMonoPlug g_MonoPlugPlugin;
 
-static bool Mono_RegisterConCommand(MonoString* name, MonoString* description, CCode* code)
+static void Mono_RegisterConCommand(MonoString* name, MonoString* description, CCode* code)
 {
 	META_CONPRINTF("Entering Mono_RegisterConCommand : %s: %s\n", mono_string_to_utf8(name), mono_string_to_utf8(description));
 
@@ -82,10 +82,10 @@ static bool Mono_RegisterConCommand(MonoString* name, MonoString* description, C
 	//TODO : register MonoConCommand to engine
 	g_SMAPI->RegisterConCommandBase(g_PLAPI, com);
 
-	return true;
+	//return true;
 };
 
-static bool Mono_UnregisterConCommand(MonoString* name)
+static void Mono_UnregisterConCommand(MonoString* name)
 {
 	MonoConCommand* com = NULL;
 	const char* s_name = mono_string_to_utf8(name);
@@ -114,11 +114,11 @@ static bool Mono_UnregisterConCommand(MonoString* name)
 		//TODO : delete handle
 		delete com;
 
-		return true;
+		//return true;
 	}
 	else
 	{
-		return false;
+		//return false;
 	}
 };
 
