@@ -121,26 +121,26 @@ static void Mono_UnregisterConCommand(MonoString* name)
 
 	if(com)
 	{
-		META_CONPRINTF("Mono_UnregisterConCommand : Command found -> Unregister");
+		META_CONPRINTF("Mono_UnregisterConCommand : Command found -> Unregister\n");
 		//TODO : unregister MonoConCommand to engine
 		g_SMAPI->UnregisterConCommandBase(g_PLAPI, com);
 	
-		META_CONPRINTF("Mono_UnregisterConCommand : Command unregistered -> Removing from list");
+		META_CONPRINTF("Mono_UnregisterConCommand : Command unregistered -> Removing from list\n");
 
 		//TODO : Remove from list
 		g_MonoPlugPlugin.m_conCommands->FindAndRemove(com);
 		
-		META_CONPRINTF("Mono_UnregisterConCommand : Command removed -> delete");
+		META_CONPRINTF("Mono_UnregisterConCommand : Command removed -> delete\n");
 
 		//TODO : delete handle
 		delete com;
 
-		META_CONPRINTF("Mono_UnregisterConCommand : Command delete -> OK");
+		META_CONPRINTF("Mono_UnregisterConCommand : Command delete -> OK\n");
 		//return true;
 	}
 	else
 	{
-		META_CONPRINTF("Mono_UnregisterConCommand : Command NOT found");
+		META_CONPRINTF("Mono_UnregisterConCommand : Command NOT found\n");
 		//return false;
 	}
 };
