@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>8.0.50727</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{C23214FA-5828-4DF6-BB05-CDD2CAE86BFC}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AssemblyName>MonoPlug.Managed</AssemblyName>
+    <RootNamespace>MonoPlug</RootNamespace>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug</OutputPath>
+    <DefineConstants>DEBUG</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>none</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Release</OutputPath>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+  <ItemGroup>
+    <Compile Include="ClsMain.cs" />
+    <Compile Include="MessageType.cs" />
+    <Compile Include="MessageEntry.cs" />
+    <Compile Include="PluginDefinition.cs" />
+    <Compile Include="ClsPluginBase.cs" />
+    <Compile Include="ClsMain - Native.cs" />
+    <Compile Include="ClsMain - Callback.cs" />
+    <Compile Include="ClsMain - Builtin Events.cs" />
+    <Compile Include="ClsMain - ConCommands.cs" />
+    <Compile Include="ConCommandDelegate.cs" />
+  </ItemGroup>
+</Project>
