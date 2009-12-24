@@ -42,5 +42,36 @@ namespace MonoPlug
 				}
 			}
 		}
+		
+		internal bool UnregisterCommand(ClsPluginBase plugin, string name)
+		{
+			lock(this._commands)
+			{
+				if(this._commands.ContainsKey(name))
+				{
+					ConCommandEntry entry = this._commands[name];
+					if(entry.Plugin == plugin)
+					{
+						if(Mono_UnregisterConCommand(name))
+						{
+							this._commands.Remove(name);
+							return true;
+						}
+						else
+						{
+							return false;
+						}
+					}
+					else
+					{
+						return false;
+					}
+				}
+				else
+				{
+					return false;
+				}
+			}
+		}
 	}
 }

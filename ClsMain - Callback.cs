@@ -13,11 +13,18 @@ namespace MonoPlug
 			//Create lists
 			this._lstMsg = new List<MessageEntry>();
 			this._plugins = new Dictionary<AppDomain, ClsPluginBase>();
+			this._commands=new Dictionary<string, ConCommandEntry>();
 
 			//Refresh plugin cache
 			this._RefreshList();
 			
 			Mono_Msg("M: Called ClsMain::_Init()\n");
+			this.RegisterCommand(null, "clr_test", "Test clr", this.clr_test);
+		}
+			                     
+		private void clr_test(string args)
+		{
+			Mono_Msg(string.Format("CLRTEST args={0}\n", args));
 		}
 				
 		/// <summary>
