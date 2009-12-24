@@ -121,6 +121,11 @@ static void Mono_UnregisterConCommand(MonoString* name)
 
 	if(NULL == com)
 	{
+		META_CONPRINTF("Mono_UnregisterConCommand : Command NOT found\n");
+		//return false;
+	}
+	else
+	{
 		META_CONPRINTF("Mono_UnregisterConCommand : Command found -> Unregister\n");
 		//TODO : unregister MonoConCommand to engine
 		g_SMAPI->UnregisterConCommandBase(g_PLAPI, com);
@@ -137,11 +142,6 @@ static void Mono_UnregisterConCommand(MonoString* name)
 
 		META_CONPRINTF("Mono_UnregisterConCommand : Command delete -> OK\n");
 		//return true;
-	}
-	else
-	{
-		META_CONPRINTF("Mono_UnregisterConCommand : Command NOT found\n");
-		//return false;
 	}
 };
 
