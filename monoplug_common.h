@@ -74,6 +74,16 @@ extern MonoMethod* g_EVT_LevelShutdown;
 	} \
 };
 
+#define MONO_DELEGATE_CALL(delegateObject, args) \
+{\
+	MonoObject* exception = NULL; \
+	mono_runtime_delegate_invoke(delegateObject, args, &exception); \
+	if(exception) \
+	{ \
+		mono_print_unhandled_exception(exception); \
+	} \
+};
+
 #define MONO_CALL(target, methodHandle) MONO_CALL_ARGS(target, methodHandle, NULL)
 
 #define MONO_STRING(domain, str) ((str == NULL) ? NULL : mono_string_new(domain, str))

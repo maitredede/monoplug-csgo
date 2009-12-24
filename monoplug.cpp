@@ -118,6 +118,19 @@ bool CMonoPlug::Load(PluginId id, ISmmAPI *ismm, char *error, size_t maxlen, boo
 		ATTACH(MONOPLUG_CLSMAIN_EVT_LEVELSHUTDOWN, g_EVT_LevelShutdown, g_Image);
 	}
 	
+#ifdef _DEBUG
+	//TODO : enumerate ClsMain methods signature to debug purposes
+	META_CONPRINTF("M:DEBUG\n");
+	void* iter = NULL;
+	MonoMethod* m = NULL;
+	while ((m = mono_class_get_methods (g_Class, &iter)))
+	{
+		META_CONPRINTF("%s\n", mono_method_full_name(m, true));
+	}
+#else
+	META_CONPRINTF("M:RELEASE\n");
+#endif
+
 	this->m_conCommands = new CUtlVector<MonoConCommand*>();
 	
 	//Create object instance
@@ -163,7 +176,7 @@ bool CMonoPlug::Unload(char *error, size_t maxlen)
 	//DO NOT CALL : leaked -> generate a segfault and Mono suggest only OneTime init
 	//mono_jit_cleanup(this->m_ClrDomain);
 	
-	delete this->m_conCommands;
+	//delete this->m_conCommands;
 	
 	//return true;
 }
@@ -261,34 +274,37 @@ MonoConCommand::MonoConCommand(char* name, char* description, MonoObject* code)
 void MonoConCommand::Dispatch(const CCommand &command)
 {
 	META_CONPRINT("Entering : MonoConCommand::mono_callback\n");
-	MonoClass* dlgClass = mono_class_from_name(g_Image, MONOPLUG_NAMESPACE, "ConCommandDelegate");
-	if(dlgClass)
-	{
-		MonoMethodDesc* desc = mono_method_desc_new("MonoPlug.ConCommandDelegate:Invoke(string)", true);
-		if(desc)
-		{
-			MonoMethod* dlgInvoke = mono_method_desc_search_in_image(desc, g_Image);
-			if(dlgInvoke)
-			{
-				void* args[1];
-				args[0] = MONO_STRING(g_Domain, command.ArgS());
-				META_CONPRINTF("Calling delegate of command %s\n", this->GetName());
-				MONO_CALL_ARGS(this->m_code, dlgInvoke, args);
-				META_CONPRINTF("Called delegate of command %s\n", this->GetName());
-			}
-			else
-			{
-				META_CONPRINTF("Can't get ConCommandDelegate:Invoke(string) method handle\n");
-			}
-			mono_method_desc_free(desc);
-		}
-		else
-		{
-			META_CONPRINTF("Can't get ConCommandDelegate:Invoke(string) method description\n");
-		}
-	}
-	else
-	{
-		META_CONPRINT("Can't get ConCommandDelegate class\n");
-	}
+
+	void* args[1];
+	args[0] = MONO_STRING(g_Domain, command.ArgS());
+	META_CONPRINTF("Calling delegate of command %s\n", this->GetName());
+	MONO_DELEGATE_CALL(this->m_code, args);
+	META_CONPRINTF("Called delegate of command %s\n", this->GetName());
+	//MonoClass* dlgClass = mono_class_from_name(g_Image, MONOPLUG_NAMESPACE, "ConCommandDelegate");
+	//if(dlgClass)
+	//{
+
+		//mono_runtime_delegate_invoke(this->code, args, 
+		//MonoMethodDesc* desc = mono_method_desc_new("MonoPlug.ConCommandDelegate:Invoke(string)", true);
+		//if(desc)
+		//{
+		//	MonoMethod* dlgInvoke = mono_method_desc_search_in_image(desc, g_Image);
+		//	if(dlgInvoke)
+		//	{
+		//	}
+		//	else
+		//	{
+		//		META_CONPRINTF("Can't get ConCommandDelegate:Invoke(string) method handle\n");
+		//	}
+		//	mono_method_desc_free(desc);
+		//}
+		//else
+		//{
+		//	META_CONPRINTF("Can't get ConCommandDelegate:Invoke(string) method description\n");
+		//}
+	//}
+	//else
+	//{
+	//	META_CONPRINT("Can't get ConCommandDelegate class\n");
+	//}
 }

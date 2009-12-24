@@ -2,7 +2,6 @@
 #define _MONOPLUG_H
 
 #include "monoplug_common.h"
-//#include "monoplug_concommand.h"
 
 class CMonoPlug: public ISmmPlugin
 {
