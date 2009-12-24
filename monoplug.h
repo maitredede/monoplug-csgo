@@ -55,10 +55,10 @@ public:
 class MonoConCommand : public ConCommand
 {
 public:
-	MonoConCommand(char* name, char* description, MonoObject* code);
+	MonoConCommand(char* name, char* description, MonoDelegate* code);
 private:
 	void Dispatch( const CCommand &command );
-	MonoObject* m_code;
+	MonoDelegate* m_code;
 };
 
 extern CMonoPlug g_MonoPlugPlugin;
@@ -70,7 +70,7 @@ static void Mono_Msg(MonoString* msg)
 	META_CONPRINT(mono_string_to_utf8(msg));
 };
 
-static bool Mono_RegisterConCommand(MonoString* name, MonoString* description, MonoObject* code)
+static bool Mono_RegisterConCommand(MonoString* name, MonoString* description, MonoDelegate* code)
 {
 	META_CONPRINTF("Entering Mono_RegisterConCommand : %s: %s\n", mono_string_to_utf8(name), mono_string_to_utf8(description));
 

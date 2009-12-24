@@ -265,7 +265,7 @@ const char *CMonoPlug::GetURL()
 	return "http://www.sourcemm.net/";
 }
 
-MonoConCommand::MonoConCommand(char* name, char* description, MonoObject* code)
+MonoConCommand::MonoConCommand(char* name, char* description, MonoDelegate* code)
 : ConCommand(name, (FnCommandCallback_t)NULL, description)
 {
 	META_CONPRINT("Entering : MonoConCommand::MonoConCommand\n");

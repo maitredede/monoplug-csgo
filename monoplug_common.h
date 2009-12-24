@@ -74,14 +74,11 @@ extern MonoMethod* g_EVT_LevelShutdown;
 	} \
 };
 
+//Code from : http://www.mail-archive.com/mono-list@lists.ximian.com/msg26230.html
 #define MONO_DELEGATE_CALL(delegateObject, args) \
 {\
-	MonoObject* exception = NULL; \
-	mono_runtime_delegate_invoke(delegateObject, args, &exception); \
-	if(exception) \
-	{ \
-		mono_print_unhandled_exception(exception); \
-	} \
+	MonoMethod* dlgMethod = mono_get_delegate_invoke(mono_object_get_class((MonoObject*)delegateObject)); \
+	MONO_CALL_ARGS(NULL, dlgMethod, args); \
 };
 
 #define MONO_CALL(target, methodHandle) MONO_CALL_ARGS(target, methodHandle, NULL)
