@@ -113,7 +113,7 @@ static void Mono_UnregisterConCommand(MonoString* name)
 		{
 			META_CONPRINTF("item[%d] Found\n", i);
 			com = item;
-			break;
+			//break;
 		}
 	}
 
