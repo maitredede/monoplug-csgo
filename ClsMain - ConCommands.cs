@@ -31,15 +31,16 @@ namespace MonoPlug
 				entry.Description=description;
 				entry.Code=code;
 				
-				if(Mono_RegisterConCommand(name,description, code))
-				{
-					this._commands.Add(name, entry);
-					return true;
-				}
-				else
-				{
-					return false;
-				}
+				Mono_RegisterConCommand(name,description, code);
+				this._commands.Add(name, entry);
+				return true;
+//				if()
+//				{
+//				}
+//				else
+//				{
+//					return false;
+//				}
 			}
 		}
 		
@@ -52,15 +53,16 @@ namespace MonoPlug
 					ConCommandEntry entry = this._commands[name];
 					if(entry.Plugin == plugin)
 					{
-						if(Mono_UnregisterConCommand(name))
-						{
-							this._commands.Remove(name);
-							return true;
-						}
-						else
-						{
-							return false;
-						}
+						Mono_UnregisterConCommand(name);
+						this._commands.Remove(name);
+						return true;
+//						if()
+//						{
+//						}
+//						else
+//						{
+//							return false;
+//						}
 					}
 					else
 					{
