@@ -102,6 +102,15 @@ bool CMonoPlug::Load(PluginId id, ISmmAPI *ismm, char *error, size_t maxlen, boo
 			META_CONPRINTF("%s\n", error);
 			return false;
 		}
+		MonoClass* cls_delegate = mono_class_from_name(g_Image, MONOPLUG_NAMESPACE, "ConCommandDelegate");
+		if(cls_delegate)
+		{
+			META_CONPRINT("Found delegate class.\n");
+		}
+		else
+		{
+			META_CONPRINT("Found delegate class.\n");
+		}
 
 		//Add internal calls from managed to native
 		mono_add_internal_call (MONOPLUG_CALLBACK_MSG, (void*)Mono_Msg);
@@ -109,9 +118,9 @@ bool CMonoPlug::Load(PluginId id, ISmmAPI *ismm, char *error, size_t maxlen, boo
 		mono_add_internal_call (MONOPLUG_CALLBACK_UNREGISTERCONCOMMAND, (void*)Mono_UnregisterConCommand);
 
 		//Get callbacks from native to managed
-		ATTACH(MONOPLUG_CALLBACK_INIT, g_Init, g_Image);
-		ATTACH(MONOPLUG_CALLBACK_SHUTDOWN, g_Shutdown, g_Image);
-		ATTACH(MONOPLUG_CALLBACK_HANDLEMESSAGE, g_HandleMessage, g_Image);
+		ATTACH(MONOPLUG_NATMAN_INIT, g_Init, g_Image);
+		ATTACH(MONOPLUG_NATMAN_SHUTDOWN, g_Shutdown, g_Image);
+		ATTACH(MONOPLUG_NATMAN_HANDLEMESSAGE, g_HandleMessage, g_Image);
 		
 		//Events
 		ATTACH(MONOPLUG_CLSMAIN_EVT_LEVELINIT, g_EVT_LevelInit, g_Image);
@@ -265,12 +274,13 @@ const char *CMonoPlug::GetURL()
 	return "http://www.sourcemm.net/";
 }
 
-MonoConCommand::MonoConCommand(char* name, char* description, MonoDelegate* code)
+MonoConCommand::MonoConCommand(char* name, char* description, CCode* code)
 : ConCommand(name, (FnCommandCallback_t)NULL, description)
 {
 	META_CONPRINT("Entering : MonoConCommand::MonoConCommand\n");
 	this->m_code = code;
 }
+
 void MonoConCommand::Dispatch(const CCommand &command)
 {
 	META_CONPRINT("Entering : MonoConCommand::mono_callback\n");

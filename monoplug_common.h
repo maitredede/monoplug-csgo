@@ -18,11 +18,11 @@
 #define MONOPLUG_FULLCLASSNAME "MonoPlug.ClsMain"
 #define MONOPLUG_CALLBACK_MSG "MonoPlug.ClsMain::Mono_Msg"
 
-#define MONOPLUG_CALLBACK_INIT "MonoPlug.ClsMain:_Init()"
-#define MONOPLUG_CALLBACK_SHUTDOWN "MonoPlug.ClsMain:_Shutdown()"
-#define MONOPLUG_CALLBACK_HANDLEMESSAGE "MonoPlug.ClsMain:_HandleMessages()"
+#define MONOPLUG_NATMAN_INIT "MonoPlug.ClsMain:_Init()"
+#define MONOPLUG_NATMAN_SHUTDOWN "MonoPlug.ClsMain:_Shutdown()"
+#define MONOPLUG_NATMAN_HANDLEMESSAGE "MonoPlug.ClsMain:_HandleMessages()"
 
-#define MONOPLUG_CALLBACK_REGISTERCONCOMMAND "MonoPlug.ClsMain:Mono_RegisterConCommand(string,string,System.Delegate)"
+#define MONOPLUG_CALLBACK_REGISTERCONCOMMAND "MonoPlug.ClsMain:Mono_RegisterConCommand(string,string,MonoPlug.ConCommandDelegate)"
 #define MONOPLUG_CALLBACK_UNREGISTERCONCOMMAND "MonoPlug.ClsMain:Mono_UnregisterConCommand(string)"
 
 #define MONOPLUG_CLSMAIN_EVT_LEVELINIT "MonoPlug.ClsMain:EVT_LevelInit(string,string,string,string,bool,bool)"
