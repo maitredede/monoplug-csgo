@@ -119,7 +119,7 @@ static void Mono_UnregisterConCommand(MonoString* name)
 
 	META_CONPRINTF("com=[%d]\n", com);
 
-	if(com)
+	if(NULL == com)
 	{
 		META_CONPRINTF("Mono_UnregisterConCommand : Command found -> Unregister\n");
 		//TODO : unregister MonoConCommand to engine
