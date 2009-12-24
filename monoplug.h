@@ -93,9 +93,23 @@ static void Mono_UnregisterConCommand(MonoString* name)
 	int pos = -1;
 
 	//TODO : get MonoConCommand handle in list
+	if(!g_MonoPlugPlugin.m_conCommands)
+	{
+		META_CONPRINT("g_MonoPlugin.m_ConCommands IS NULL\n");
+		return;
+	}
+	META_CONPRINTF("g_MonoPlugPlugin.m_conCommands->Count() = %d\n", g_MonoPlugPlugin.m_conCommands->Count());
+
 	for(int i = 0; i < 	g_MonoPlugPlugin.m_conCommands->Count(); i++)
 	{
+		META_CONPRINTF("item[%d]\n", g_MonoPlugPlugin.m_conCommands->Count());
 		MonoConCommand* item = 	g_MonoPlugPlugin.m_conCommands->Element(i);
+		if(!item)
+		{
+			META_CONPRINT("item IS NULL\n");
+			return;
+		}
+		META_CONPRINTF("item[%d] item->GetName=%s\n", item->GetName());
 		if(strcmp(item->GetName(), s_name) == 0)
 		{
 			pos = i;
