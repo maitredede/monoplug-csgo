@@ -3,7 +3,7 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProductVersion>8.0.50727</ProductVersion>
+    <ProductVersion>9.0.30729</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>{C23214FA-5828-4DF6-BB05-CDD2CAE86BFC}</ProjectGuid>
     <OutputType>Library</OutputType>
@@ -33,7 +33,11 @@
   </PropertyGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>
+    <Compile Include="ClsMain - clr_plugin_list.cs" />
+    <Compile Include="ClsMain - clr_plugin_refresh.cs" />
+    <Compile Include="ClsMain - clr_test.cs" />
     <Compile Include="ClsMain.cs" />
+    <Compile Include="FCVAR.cs" />
     <Compile Include="MessageType.cs" />
     <Compile Include="MessageEntry.cs" />
     <Compile Include="PluginDefinition.cs" />
@@ -43,5 +47,10 @@
     <Compile Include="ClsMain - Builtin Events.cs" />
     <Compile Include="ClsMain - ConCommands.cs" />
     <Compile Include="ConCommandDelegate.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Xml" />
   </ItemGroup>
 </Project>

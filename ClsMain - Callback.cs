@@ -15,17 +15,14 @@ namespace MonoPlug
             this._plugins = new Dictionary<AppDomain, ClsPluginBase>();
             this._commands = new Dictionary<string, ConCommandEntry>();
 
-            //Refresh plugin cache
-            this._RefreshList();
-
             Mono_Msg("M: Called ClsMain::_Init()\n");
-            this.RegisterCommand(null, "clr_test", "Test clr", this.clr_test);
-        }
 
-        private void clr_test(string args)
-        {
-            Mono_Msg(string.Format("CLRTEST args={0}\n", args));
-            this.UnregisterCommand(null, "clr_test");
+            //Refresh plugin cache
+            this.clr_plugin_refresh(string.Empty);
+
+            this.RegisterCommand(null, "clr_test", "Test clr", this.clr_test, FCVAR.FCVAR_GAMEDLL);
+            this.RegisterCommand(null, "clr_plugin_list", "List available plugins", this.clr_plugin_list, FCVAR.FCVAR_GAMEDLL);
+            this.RegisterCommand(null, "clr_plugin_refresh", "Refresh plugin list", this.clr_plugin_refresh, FCVAR.FCVAR_GAMEDLL);
         }
 
         /// <summary>

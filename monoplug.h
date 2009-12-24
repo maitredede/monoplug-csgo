@@ -63,7 +63,7 @@ typedef MonoDelegate CCode;
 class MonoConCommand : public ConCommand
 {
 public:
-	MonoConCommand(char* name, char* description, CCode* code);
+	MonoConCommand(char* name, char* description, CCode* code, int flags);
 private:
 	void Dispatch( const CCommand &command );
 	CCode* m_code;
@@ -71,18 +71,18 @@ private:
 
 extern CMonoPlug g_MonoPlugPlugin;
 
-static void Mono_RegisterConCommand(MonoString* name, MonoString* description, CCode* code)
+static bool Mono_RegisterConCommand(MonoString* name, MonoString* description, CCode* code, int flags)
 {
 	META_CONPRINTF("Entering Mono_RegisterConCommand : %s: %s\n", mono_string_to_utf8(name), mono_string_to_utf8(description));
 
-	MonoConCommand* com = new MonoConCommand(mono_string_to_utf8(name), mono_string_to_utf8(description), code);
+	MonoConCommand* com = new MonoConCommand(mono_string_to_utf8(name), mono_string_to_utf8(description), code, flags);
 	//TODO : add MonoConCommand to native list for handle tracking
 	g_MonoPlugPlugin.m_conCommands->AddToTail(com);
 		
 	//TODO : register MonoConCommand to engine
 	g_SMAPI->RegisterConCommandBase(g_PLAPI, com);
 
-	//return true;
+	return true;
 };
 
 static void Mono_UnregisterConCommand(MonoString* name)

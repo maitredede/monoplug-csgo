@@ -9,6 +9,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		mono.def = mono.def
 		mono.exp = mono.exp
 		mono.lib = mono.lib
+		MonoPlug.Native.cproj = MonoPlug.Native.cproj
 		monoplug.vdf = monoplug.vdf
 		sample_mm.cpp = sample_mm.cpp
 		sample_mm.h = sample_mm.h
