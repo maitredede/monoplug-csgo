@@ -36,15 +36,16 @@ namespace MonoPlug
                 entry.Description = description;
                 entry.Code = code;
 
-                if (Mono_RegisterConCommand(name, description, code, (int)flags))
+                Mono_RegisterConCommand(name, description, code, (int)flags);
+                if (true)
                 {
                     this._commands.Add(name, entry);
                     return true;
                 }
-                else
-                {
-                    return false;
-                }
+                //else
+                //{
+                //    return false;
+                //}
             }
         }
 

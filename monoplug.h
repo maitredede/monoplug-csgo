@@ -71,7 +71,7 @@ private:
 
 extern CMonoPlug g_MonoPlugPlugin;
 
-static bool Mono_RegisterConCommand(MonoString* name, MonoString* description, CCode* code, int flags)
+static void Mono_RegisterConCommand(MonoString* name, MonoString* description, CCode* code, int flags)
 {
 	META_CONPRINTF("Entering Mono_RegisterConCommand : %s: %s\n", mono_string_to_utf8(name), mono_string_to_utf8(description));
 
@@ -82,7 +82,7 @@ static bool Mono_RegisterConCommand(MonoString* name, MonoString* description, C
 	//TODO : register MonoConCommand to engine
 	g_SMAPI->RegisterConCommandBase(g_PLAPI, com);
 
-	return true;
+	//return true;
 };
 
 static void Mono_UnregisterConCommand(MonoString* name)
