@@ -22,6 +22,7 @@ namespace MonoPlug
                 //Register native var
                 UInt64 nativeId = Mono_RegisterConVarString(name, description, (int)flags, defaultValue);
 
+                Mono_Msg(string.Format("M: RegisterConVarString '{0}' NativeId is {1}\n", name, nativeId));
                 if (nativeId > 0)
                 {
                     ConVarEntry entry = new ConVarEntry();
