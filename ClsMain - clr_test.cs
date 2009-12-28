@@ -27,6 +27,7 @@ namespace MonoPlug
         private void _clr_vartest_changed(object sender, EventArgs e)
         {
             Mono_Msg(string.Format("M: VARTEST Value changed : {0}\n", this._clr_vartest.Value));
+			DumpThreadId();
         }
 #endif
     }
