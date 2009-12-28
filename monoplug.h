@@ -215,7 +215,10 @@ static void ConVarStringChangeCallback(IConVar *var, const char *pOldValue, floa
 #endif
 
 	MonoConVarString* strVar = (MonoConVarString*)var;
-	MONO_CALL(g_MonoPlugPlugin.m_ClsMain, g_MonoPlugPlugin.g_EVT_ConVarStringValueChanged);
+	gpointer args[1];
+	uint64 val = strVar->NativeId(); 
+	args[0] = &(val);
+	MONO_CALL_ARGS(g_MonoPlugPlugin.m_ClsMain, g_MonoPlugPlugin.g_EVT_ConVarStringValueChanged, args);
 }
 
 #endif //_MONOPLUG_H
