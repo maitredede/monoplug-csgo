@@ -1,20 +1,80 @@
 #ifndef _MONOPLUG_H
 #define _MONOPLUG_H
 
-#include "monoplug_common.h"
-#include "monoconcommand.h"
-#include "BaseAccessor.h"
+#include <stdio.h>
 
-static void Mono_Msg(MonoString* msg)
+//Mono
+#include <glib-2.0/glib.h>
+#include <mono/jit/jit.h>
+#include <mono/metadata/mono-config.h>
+#include <mono/metadata/assembly.h>
+#include <mono/metadata/debug-helpers.h>
+
+//SampleMM
+#include <ISmmPlugin.h>
+#include <igameevents.h>
+#include <iplayerinfo.h>
+#include <sh_vector.h>
+#include "engine_wrappers.h"
+#include <filesystem.h>
+
+#define MONOPLUG_DLLFILE "%s/addons/MonoPlug.Managed.dll"
+#define MONOPLUG_NAMESPACE "MonoPlug"
+#define MONOPLUG_CLASSNAME "ClsMain"
+#define MONOPLUG_FULLCLASSNAME "MonoPlug.ClsMain"
+
+#define MONOPLUG_CALLBACK_MSG "MonoPlug.ClsMain::Mono_Msg"
+
+#define MONOPLUG_NATMAN_INIT "MonoPlug.ClsMain:_Init()"
+#define MONOPLUG_NATMAN_SHUTDOWN "MonoPlug.ClsMain:_Shutdown()"
+#define MONOPLUG_NATMAN_HANDLEMESSAGE "MonoPlug.ClsMain:_HandleMessages()"
+
+#define MONOPLUG_CALLBACK_REGISTERCONCOMMAND "MonoPlug.ClsMain::Mono_RegisterConCommand(string,string,MonoPlug.ConCommandDelegate,int)"
+#define MONOPLUG_CALLBACK_UNREGISTERCONCOMMAND "MonoPlug.ClsMain::Mono_UnregisterConCommand(string)"
+
+#define MONOPLUG_CALLBACK_REGISTERCONVARSTRING "MonoPlug.ClsMain::Mono_RegisterConVarString(string,string,int,string)"
+#define MONOPLUG_CALLBACK_UNREGISTERCONVARSTRING "MonoPlug.ClsMain::Mono_UnregisterConVarString(ulong)"
+#define MONOPLUG_CALLBACK_CONVARSTRING_GETVALUE "MonoPlug.ClsMain::Mono_GetConVarStringValue(ulong)"
+#define MONOPLUG_CALLBACK_CONVARSTRING_SETVALUE "MonoPlug.ClsMain::Mono_SetConVarStringValue(ulong,string)"
+#define MONOPLUG_NATMAN_CONVARSTRING_VALUECHANGED "MonoPlug.ClsMain:_ConVarStringChanged(ulong)"
+
+#define MONOPLUG_CLSMAIN_EVT_LEVELINIT "MonoPlug.ClsMain:EVT_LevelInit(string,string,string,string,bool,bool)"
+#define MONOPLUG_CLSMAIN_EVT_LEVELSHUTDOWN "MonoPlug.ClsMain:EVT_LevelShutdown()"
+
+#if defined WIN32 && !defined snprintf
+#define snprintf _snprintf
+#endif
+
+
+PLUGIN_GLOBALVARS();
+
+class MonoConCommand : public ConCommand
 {
-	META_CONPRINT(mono_string_to_utf8(msg));
+public:
+	MonoConCommand(char* name, char* description, MonoDelegate* code, int flags);
+private:
+	void Dispatch( const CCommand &command );
+	MonoDelegate* m_code;
 };
 
-class CMonoPlug: public ISmmPlugin
+class uint64Container
+{
+private:
+	uint64 m_value;
+public: 
+	void SetValue(uint64 value){ this->m_value = value; } ;
+	uint64 Value() { return this->m_value; } ;
+	uint64Container(uint64 value) { this->SetValue(value); } ;
+
+};
+
+class CMonoPlug: public ISmmPlugin, public IMetamodListener
 {
 public:
 	bool Load(PluginId id, ISmmAPI *ismm, char *error, size_t maxlen, bool late);
 	bool Unload(char *error, size_t maxlen);
+public: //IMetamodListener stuff
+	void OnVSPListening(IServerPluginCallbacks *iface);
 public:
 	const char *GetAuthor();
 	const char *GetName();
@@ -39,7 +99,6 @@ private:
 	MonoMethod* m_PluginLoad;
 public:
 	MonoObject* m_ClsMain;
-	MonoMethod* m_EVT_ConVarStringValueChanged;
 
 	CUtlVector<MonoConCommand*>* m_conCommands;
 
@@ -48,128 +107,55 @@ public:
 	CUtlVector<uint64Container*>* m_convarStringId;
 };
 
-static void ConVarStringChangeCallback(IConVar *var, const char *pOldValue, float flOldValue)
-{
-	ConVar* v = (ConVar*)var;
-	int i = g_MonoPlugPlugin.m_convarStringPtr->Find(v);
-	if(i>=0)
-	{
-		uint64Container* value = g_MonoPlugPlugin.m_convarStringId->Element(i);
 
-		gpointer args[1];
-		uint64 val = value->Value();
-		args[0] = &val;
-		MONO_CALL_ARGS(g_MonoPlugPlugin.m_ClsMain, g_MonoPlugPlugin.m_EVT_ConVarStringValueChanged, args);
-	}
+static void Mono_Msg(MonoString* msg)
+{
+	META_CONPRINT(mono_string_to_utf8(msg));
 };
 
 
-static bool Mono_RegisterConCommand(MonoString* name, MonoString* description, MonoDelegate* code, int flags)
-{
-	MonoConCommand* com = new MonoConCommand(mono_string_to_utf8(name), mono_string_to_utf8(description), code, flags);
-	if(g_SMAPI->RegisterConCommandBase(g_PLAPI, com))
-	{
-		g_MonoPlugPlugin.m_conCommands->AddToTail(com);
-		return true;
-	}
-	else
-	{
-		delete com;
-		return false;
-	}
+extern CMonoPlug g_MonoPlugPlugin;
+extern MonoDomain* g_Domain;
+extern MonoMethod* g_EVT_ConVarStringValueChanged;
+
+PLUGIN_GLOBALVARS();
+
+#define ATTACH(managedName, methodHandle, asmImage) \
+{\
+	MonoMethodDesc* desc = mono_method_desc_new(managedName, true); \
+        if(!desc) \
+        { \
+                Warning("Can't describe method %s\n", managedName); \
+                 return false; \
+         } \
+         methodHandle = mono_method_desc_search_in_image(desc, asmImage); \
+         mono_method_desc_free(desc); \
+         if(!methodHandle) \
+         { \
+                 Warning("Can't attach method %s\n", managedName); \
+                 return false; \
+         } \
 };
-
-static bool Mono_UnregisterConCommand(MonoString* name)
-{
-	const char* s_name = mono_string_to_utf8(name);
-
-	for(int i = 0; i < 	g_MonoPlugPlugin.m_conCommands->Count(); i++)
-	{
-		MonoConCommand* item = 	g_MonoPlugPlugin.m_conCommands->Element(i);
-
-		if(Q_strcmp(item->GetName(), s_name) == 0)
-		{
-			g_SMAPI->UnregisterConCommandBase(g_PLAPI, item);
-			g_MonoPlugPlugin.m_conCommands->Remove(i);
-			delete item;
-			return true;
-		}
-	}
-
-	META_CONPRINTF("Mono_UnregisterConCommand : Command NOT found\n");
-	return false;
+ 
+#define MONO_CALL_ARGS(target, methodHandle, args) \
+{\
+         MonoObject* exception = NULL; \
+         mono_runtime_invoke(methodHandle, target, args, &exception); \
+         if(exception) \
+         { \
+                 mono_print_unhandled_exception(exception); \
+         } \
 };
-
-static uint64 Mono_RegisterConVarString(MonoString* name, MonoString* description, int flags, MonoString* defaultValue)
-{
-	uint64 nativeID = ++g_MonoPlugPlugin.m_convarStringIdValue;
-	ConVar* var = new ConVar(mono_string_to_utf8(name), mono_string_to_utf8(defaultValue), flags, mono_string_to_utf8(description), (FnChangeCallback_t)ConVarStringChangeCallback);
-	if(g_SMAPI->RegisterConCommandBase(g_PLAPI, var))
-	{
-		g_MonoPlugPlugin.m_convarStringId->AddToTail(new uint64Container(nativeID));
-		g_MonoPlugPlugin.m_convarStringPtr->AddToTail(var);
-		return nativeID;
-	}
-	else
-	{
-		META_CONPRINTF("Mono_RegisterConVarString var '%s' NOT registered\n", mono_string_to_utf8(name));
-		return 0;
-	}
-};
-
-static void Mono_UnregisterConVarString(uint64 nativeID)
-{
-	for(int i=0;i<g_MonoPlugPlugin.m_convarStringId->Count(); i++)
-	{
-		uint64Container* cont = g_MonoPlugPlugin.m_convarStringId->Element(i);
-		if(cont->Value() == nativeID)
-		{
-			ConVar* var = g_MonoPlugPlugin.m_convarStringPtr->Element(i);
-			g_SMAPI->UnregisterConCommandBase(g_PLAPI, var);
-			g_MonoPlugPlugin.m_convarStringId->Remove(i);
-			g_MonoPlugPlugin.m_convarStringPtr->Remove(i);
-			delete var;
-			break;
-		}
-	}
-
-};
-
-static MonoString* Mono_GetConVarStringValue(uint64 nativeID)
-{
-#ifdef _DEBUG
-	META_CONPRINTF("Entering Mono_GetConVarStringValue : %l\n", nativeID);
-#endif
-	for(int i=0;i<g_MonoPlugPlugin.m_convarStringId->Count(); i++)
-	{
-		uint64Container* cont = g_MonoPlugPlugin.m_convarStringId->Element(i);
-		if(cont->Value() == nativeID)
-		{
-			ConVar* var = g_MonoPlugPlugin.m_convarStringPtr->Element(i);
-
-			return MONO_STRING(g_Domain, var->GetString());
-		}
-	}
-	return NULL;
-};
-
-static void Mono_SetConVarStringValue(uint64 nativeID, MonoString* value)
-{
-#ifdef _DEBUG
-	META_CONPRINT("Entering Mono_SetConVarStringValue\n");
-#endif
-
-	for(int i=0;i<g_MonoPlugPlugin.m_convarStringId->Count(); i++)
-	{
-		uint64Container* cont = g_MonoPlugPlugin.m_convarStringId->Element(i);
-		if(cont->Value() == nativeID)
-		{
-			ConVar* var = g_MonoPlugPlugin.m_convarStringPtr->Element(i);
-
-			var->SetValue(mono_string_to_utf8(value));
-			break;
-		}
-	}
-};
+ 
+ //Code from : http://www.mail-archive.com/mono-list@lists.ximian.com/msg26230.html
+ #define MONO_DELEGATE_CALL(delegateObject, args) \
+ {\
+         MonoMethod* dlgMethod = mono_get_delegate_invoke(mono_object_get_class((MonoObject*)delegateObject)); \
+         MONO_CALL_ARGS(delegateObject, dlgMethod, args); \
+ };
+ 
+ #define MONO_CALL(target, methodHandle) MONO_CALL_ARGS(target, methodHandle, NULL)
+ 
+ #define MONO_STRING(domain, str) ((str == NULL) ? NULL : mono_string_new(domain, str))
 
 #endif //_MONOPLUG_H

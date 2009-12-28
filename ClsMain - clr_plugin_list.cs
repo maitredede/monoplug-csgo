@@ -8,6 +8,8 @@ namespace MonoPlug
     {
         private void clr_plugin_list(string args)
         {
+            if (this._pluginCache == null)
+                this._pluginCache = new PluginDefinition[] { };
             Mono_Msg(string.Format("Found {0} plugins\n", this._pluginCache.Length));
             foreach (PluginDefinition desc in this._pluginCache)
             {

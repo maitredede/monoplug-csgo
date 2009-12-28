@@ -1,18 +1,22 @@
-#include <stdio.h>
 #include "monoplug.h"
 
+SH_DECL_HOOK6(IServerGameDLL, LevelInit, SH_NOATTRIB, 0, bool, char const *, char const *, char const *, char const *, bool, bool);
 SH_DECL_HOOK3_void(IServerGameDLL, ServerActivate, SH_NOATTRIB, 0, edict_t *, int, int);
 SH_DECL_HOOK1_void(IServerGameDLL, GameFrame, SH_NOATTRIB, 0, bool);
-
-SH_DECL_HOOK6(IServerGameDLL, LevelInit, SH_NOATTRIB, 0, bool, char const *, char const *, char const *, char const *, bool, bool);
 SH_DECL_HOOK0_void(IServerGameDLL, LevelShutdown, SH_NOATTRIB, 0);
 
 CMonoPlug g_MonoPlugPlugin;
 
 IServerGameDLL *server = NULL;
+IServerGameClients *gameclients = NULL;
 IVEngineServer *engine = NULL;
-IFileSystem *filesystem = NULL;
+IServerPluginHelpers *helpers = NULL;
+IGameEventManager2 *gameevents = NULL;
+IServerPluginCallbacks *vsp_callbacks = NULL;
+IPlayerInfoManager *playerinfomanager = NULL;
+
 ICvar *icvar = NULL;
+IFileSystem* filesystem = NULL;
 CGlobalVars *gpGlobals = NULL;
 
 MonoDomain* g_Domain = NULL;
@@ -26,42 +30,170 @@ MonoMethod* g_HandleMessage = NULL;
 
 MonoMethod* g_EVT_LevelInit = NULL;
 MonoMethod* g_EVT_LevelShutdown = NULL;
+MonoMethod* g_EVT_ConVarStringValueChanged = NULL;
 
-BaseAccessor s_BaseAccessor;
+
+/** 
+ * Something like this is needed to register cvars/CON_COMMANDs.
+ */
+class BaseAccessor : public IConCommandBaseAccessor
+{
+public:
+	bool RegisterConCommandBase(ConCommandBase *pCommandBase)
+	{
+		/* Always call META_REGCVAR instead of going through the engine. */
+		return META_REGCVAR(pCommandBase);
+	}
+} s_BaseAccessor;
 
 PLUGIN_EXPOSE(CMonoPlug, g_MonoPlugPlugin);
 
-//---------------------------------------------------------------------------------
-// Purpose: constructor/destructor
-//---------------------------------------------------------------------------------
-//CMonoPlug::CMonoPlug()
-//{
-//	this->m_ClrDomain = NULL;
-//	this->m_Assembly = NULL;
-//	this->m_Image = NULL;
-//	this->m_Class = NULL;
-//	this->m_ClsMain = NULL;
-//
-//
-//	this->m_HandleMessage = NULL;
-//}
+static void ConVarStringChangeCallback(IConVar *var, const char *pOldValue, float flOldValue)
+{
+	ConVar* v = (ConVar*)var;
+	int i = g_MonoPlugPlugin.m_convarStringPtr->Find(v);
+	if(i>=0)
+	{
+		uint64Container* value = g_MonoPlugPlugin.m_convarStringId->Element(i);
 
-#ifdef _WIN32
-#include <windows.h>
-#include <stdio.h>
+		gpointer args[1];
+		uint64 val = value->Value();
+		args[0] = &val;
+		MONO_CALL_ARGS(g_MonoPlugPlugin.m_ClsMain, g_EVT_ConVarStringValueChanged, args);
+	}
+};
+
+
+static bool Mono_RegisterConCommand(MonoString* name, MonoString* description, MonoDelegate* code, int flags)
+{
+	MonoConCommand* com = new MonoConCommand(mono_string_to_utf8(name), mono_string_to_utf8(description), code, flags);
+	g_pCVar->RegisterConCommand(com);
+	//{
+		g_MonoPlugPlugin.m_conCommands->AddToTail(com);
+		return true;
+	//}
+	//else
+	//{
+	//	delete com;
+	//	return false;
+	//}
+};
+
+static bool Mono_UnregisterConCommand(MonoString* name)
+{
+	const char* s_name = mono_string_to_utf8(name);
+
+	for(int i = 0; i < 	g_MonoPlugPlugin.m_conCommands->Count(); i++)
+	{
+		MonoConCommand* item = 	g_MonoPlugPlugin.m_conCommands->Element(i);
+
+		if(Q_strcmp(item->GetName(), s_name) == 0)
+		{
+			g_pCVar->UnregisterConCommand(item);
+			g_MonoPlugPlugin.m_conCommands->Remove(i);
+			delete item;
+			return true;
+		}
+	}
+
+	META_CONPRINTF("Mono_UnregisterConCommand : Command NOT found\n");
+	return false;
+};
+
+static uint64 Mono_RegisterConVarString(MonoString* name, MonoString* description, int flags, MonoString* defaultValue)
+{
+	uint64 nativeID = ++g_MonoPlugPlugin.m_convarStringIdValue;
+	ConVar* var = new ConVar(
+		mono_string_to_utf8(name),
+		mono_string_to_utf8(defaultValue),
+		flags,
+		mono_string_to_utf8(description)
+		, (FnChangeCallback_t)ConVarStringChangeCallback
+		);
+	g_pCVar->RegisterConCommand(var);
+	g_MonoPlugPlugin.m_convarStringId->AddToTail(new uint64Container(nativeID));
+	g_MonoPlugPlugin.m_convarStringPtr->AddToTail(var);
+	return nativeID;
+};
+
+static void Mono_UnregisterConVarString(uint64 nativeID)
+{
+	for(int i=0;i<g_MonoPlugPlugin.m_convarStringId->Count(); i++)
+	{
+		uint64Container* cont = g_MonoPlugPlugin.m_convarStringId->Element(i);
+		if(cont->Value() == nativeID)
+		{
+			ConVar* var = g_MonoPlugPlugin.m_convarStringPtr->Element(i);
+			g_pCVar->UnregisterConCommand(var);
+			g_MonoPlugPlugin.m_convarStringId->Remove(i);
+			g_MonoPlugPlugin.m_convarStringPtr->Remove(i);
+			delete var;
+			break;
+		}
+	}
+
+};
+
+static MonoString* Mono_GetConVarStringValue(uint64 nativeID)
+{
+#ifdef _DEBUG
+	META_CONPRINTF("Entering Mono_GetConVarStringValue : %l\n", nativeID);
 #endif
+	for(int i=0;i<g_MonoPlugPlugin.m_convarStringId->Count(); i++)
+	{
+		uint64Container* cont = g_MonoPlugPlugin.m_convarStringId->Element(i);
+		if(cont->Value() == nativeID)
+		{
+			ConVar* var = g_MonoPlugPlugin.m_convarStringPtr->Element(i);
+
+			return MONO_STRING(g_Domain, var->GetString());
+		}
+	}
+	//return MONO_STRING(g_Domain, "TEST");
+	return NULL;
+};
+
+static void Mono_SetConVarStringValue(uint64 nativeID, MonoString* value)
+{
+#ifdef _DEBUG
+	META_CONPRINT("Entering Mono_SetConVarStringValue\n");
+#endif
+
+	for(int i=0;i<g_MonoPlugPlugin.m_convarStringId->Count(); i++)
+	{
+		uint64Container* cont = g_MonoPlugPlugin.m_convarStringId->Element(i);
+		if(cont->Value() == nativeID)
+		{
+			ConVar* var = g_MonoPlugPlugin.m_convarStringPtr->Element(i);
+			var->SetValue(mono_string_to_utf8(value));
+			break;
+		}
+	}
+};
+
 
 bool CMonoPlug::Load(PluginId id, ISmmAPI *ismm, char *error, size_t maxlen, bool late)
 {
-	//META_LOG(g_PLAPI, "Init Plugin.");
-	
 	PLUGIN_SAVEVARS();
 
-	GET_V_IFACE_ANY(GetServerFactory, server, IServerGameDLL, INTERFACEVERSION_SERVERGAMEDLL);
-	GET_V_IFACE_ANY(GetEngineFactory, filesystem, IFileSystem, FILESYSTEM_INTERFACE_VERSION);
 	GET_V_IFACE_CURRENT(GetEngineFactory, engine, IVEngineServer, INTERFACEVERSION_VENGINESERVER);
+	GET_V_IFACE_CURRENT(GetEngineFactory, gameevents, IGameEventManager2, INTERFACEVERSION_GAMEEVENTSMANAGER2);
+	GET_V_IFACE_CURRENT(GetEngineFactory, helpers, IServerPluginHelpers, INTERFACEVERSION_ISERVERPLUGINHELPERS);
+	GET_V_IFACE_CURRENT(GetEngineFactory, icvar, ICvar, CVAR_INTERFACE_VERSION);
+	GET_V_IFACE_ANY(GetServerFactory, server, IServerGameDLL, INTERFACEVERSION_SERVERGAMEDLL);
+	GET_V_IFACE_ANY(GetServerFactory, gameclients, IServerGameClients, INTERFACEVERSION_SERVERGAMECLIENTS);
+	GET_V_IFACE_ANY(GetServerFactory, playerinfomanager, IPlayerInfoManager, INTERFACEVERSION_PLAYERINFOMANAGER);
+
+	GET_V_IFACE_CURRENT(GetEngineFactory, filesystem, IFileSystem, FILESYSTEM_INTERFACE_VERSION);
 
 	gpGlobals = ismm->GetCGlobals();
+
+	/* Load the VSP listener.  This is usually needed for IServerPluginHelpers. */
+	if ((vsp_callbacks = ismm->GetVSPInfo(NULL)) == NULL)
+	{
+		ismm->AddListener(this, this);
+		ismm->EnableVSPListener();
+	}
 
 	//Get game dir
 	char* dir = new char[MAX_PATH];
@@ -150,7 +282,6 @@ bool CMonoPlug::Load(PluginId id, ISmmAPI *ismm, char *error, size_t maxlen, boo
 		mono_add_internal_call (MONOPLUG_CALLBACK_UNREGISTERCONVARSTRING, (gconstpointer)Mono_UnregisterConVarString);
 
 		mono_add_internal_call (MONOPLUG_CALLBACK_CONVARSTRING_GETVALUE, (gconstpointer)Mono_GetConVarStringValue);
-
 		mono_add_internal_call (MONOPLUG_CALLBACK_CONVARSTRING_SETVALUE, (gconstpointer)Mono_SetConVarStringValue);
 
 		//Get callbacks from native to managed
@@ -161,7 +292,7 @@ bool CMonoPlug::Load(PluginId id, ISmmAPI *ismm, char *error, size_t maxlen, boo
 		//Events
 		ATTACH(MONOPLUG_CLSMAIN_EVT_LEVELINIT, g_EVT_LevelInit, g_Image);
 		ATTACH(MONOPLUG_CLSMAIN_EVT_LEVELSHUTDOWN, g_EVT_LevelShutdown, g_Image);
-
+		ATTACH(MONOPLUG_NATMAN_CONVARSTRING_VALUECHANGED, g_EVT_ConVarStringValueChanged, g_Image);
 	}
 	
 	//ConCommandBase init code
@@ -172,7 +303,6 @@ bool CMonoPlug::Load(PluginId id, ISmmAPI *ismm, char *error, size_t maxlen, boo
 	this->m_convarStringPtr = new CUtlVector<ConVar*>();
 	this->m_convarStringIdValue = 0;
 	
-	ATTACH(MONOPLUG_NATMAN_CONVARSTRING_VALUECHANGED, m_EVT_ConVarStringValueChanged, g_Image);
 	
 	//Create object instance
 	this->m_ClsMain = mono_object_new(g_Domain, g_Class);
@@ -181,10 +311,9 @@ bool CMonoPlug::Load(PluginId id, ISmmAPI *ismm, char *error, size_t maxlen, boo
 	MONO_CALL(this->m_ClsMain, g_Init);
 
 	//Final hooks	
+	SH_ADD_HOOK_MEMFUNC(IServerGameDLL, LevelInit, server, this, &CMonoPlug::Hook_LevelInit, true);
 	SH_ADD_HOOK_MEMFUNC(IServerGameDLL, ServerActivate, server, this, &CMonoPlug::Hook_ServerActivate, true);
 	SH_ADD_HOOK_MEMFUNC(IServerGameDLL, GameFrame, server, this, &CMonoPlug::Hook_GameFrame, true);
-
-	SH_ADD_HOOK_MEMFUNC(IServerGameDLL, LevelInit, server, this, &CMonoPlug::Hook_LevelInit, true);
 	SH_ADD_HOOK_MEMFUNC(IServerGameDLL, LevelShutdown, server, this, &CMonoPlug::Hook_LevelShutdown, false);
 
 	ENGINE_CALL(LogPrint)("All hooks started!\n");
@@ -221,6 +350,11 @@ bool CMonoPlug::Unload(char *error, size_t maxlen)
 	//return true;
 }
 
+void CMonoPlug::OnVSPListening(IServerPluginCallbacks *iface)
+{
+	vsp_callbacks = iface;
+}
+
 void CMonoPlug::Hook_ServerActivate(edict_t *pEdictList, int edictCount, int clientMax)
 {
 	META_LOG(g_PLAPI, "ServerActivate() called: edictCount = %d, clientMax = %d", edictCount, clientMax);
@@ -234,7 +368,7 @@ void CMonoPlug::Hook_GameFrame(bool simulating)
 	 * true  | game is ticking
 	 * false | game is not ticking
 	 */
-	 MONO_CALL(this->m_ClsMain, g_HandleMessage);
+	 //MONO_CALL(this->m_ClsMain, g_HandleMessage);
 }
 
 bool CMonoPlug::Hook_LevelInit(const char *pMapName,
@@ -305,9 +439,16 @@ const char *CMonoPlug::GetURL()
 	return "http://www.sourcemm.net/";
 }
 
-bool BaseAccessor::RegisterConCommandBase(ConCommandBase *pCommandBase)
+
+MonoConCommand::MonoConCommand(char* name, char* description, MonoDelegate* code, int flags)
+: ConCommand(name, (FnCommandCallback_t)NULL, description, flags, (FnCommandCompletionCallback)NULL)
 {
-	/* Always call META_REGCVAR instead of going through the engine. */
-	return META_REGCVAR(pCommandBase);
+	this->m_code = code;
 };
 
+void MonoConCommand::Dispatch(const CCommand &command)
+{
+	void* args[1];
+	args[0] = MONO_STRING(g_Domain, command.ArgS());
+	MONO_DELEGATE_CALL(this->m_code, args);
+};
