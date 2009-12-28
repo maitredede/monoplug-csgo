@@ -3,7 +3,6 @@
 
 #include "monoplug_common.h"
 #include "monoconcommand.h"
-#include "monoconvarstring.h"
 
 class CMonoPlug: public ISmmPlugin
 {
