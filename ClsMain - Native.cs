@@ -15,6 +15,12 @@ namespace MonoPlug
         private static extern bool Mono_UnregisterConCommand(string name);
 
         [MethodImpl(MethodImplOptions.InternalCall)]
-        private static extern bool Mono_RegisterConVarString(string name, string description, string defaultValue, ConVarStringGetDelegate getFunction, ConVarStringSetDelegate setFunction, int flags);
+        private static extern UInt64 Mono_RegisterConVarString(string name, string description, int flags, string defaultValue);
+
+
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        internal static extern string Mono_GetConVarStringValue(UInt64 nativeId);
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        internal static extern void Mono_SetConVarStringValue(UInt64 nativeId, string value);
     }
 }

@@ -24,7 +24,11 @@
 
 #define MONOPLUG_CALLBACK_REGISTERCONCOMMAND "MonoPlug.ClsMain::Mono_RegisterConCommand(string,string,MonoPlug.ConCommandDelegate,int)"
 #define MONOPLUG_CALLBACK_UNREGISTERCONCOMMAND "MonoPlug.ClsMain::Mono_UnregisterConCommand(string)"
-#define MONOPLUG_CALLBACK_REGISTERCONVARSTRING "MonoPlug.ClsMain::Mono_RegisterConVarString(string,string,string,MonoPlug.ConVarStringGetDelegate,MonoPlug.ConVarStringSetDelegate,int)"
+
+#define MONOPLUG_CALLBACK_REGISTERCONVARSTRING "MonoPlug.ClsMain::Mono_RegisterConVarString(string,string,int,string)"
+#define MONOPLUG_CALLBACK_CONVARSTRING_GETVALUE "MonoPlug.ClsMain::Mono_GetConVarStringValue(int)"
+#define MONOPLUG_CALLBACK_CONVARSTRING_SETVALUE "MonoPlug.ClsMain::Mono_SetConVarStringValue(int,string)"
+#define MONOPLUG_NATMAN_CONVARSTRING_VALUECHANGED "MonoPlug.ClsMain:_ConVarStringChanged(System.UInt64)"
 
 #define MONOPLUG_CLSMAIN_EVT_LEVELINIT "MonoPlug.ClsMain:EVT_LevelInit(string,string,string,string,bool,bool)"
 #define MONOPLUG_CLSMAIN_EVT_LEVELSHUTDOWN "MonoPlug.ClsMain:EVT_LevelShutdown()"
@@ -35,6 +39,14 @@
 
 PLUGIN_GLOBALVARS();
 
+// Class definitions
+class CMonoPlug;
+class MonoConCommand;
+class MonoConVarString;
+class BaseAccessor;
+
+// EXTERN VARS
+//extern BaseAccessor s_BaseAccessor;
 extern MonoDomain* g_Domain;
 
 extern MonoAssembly* g_Assembly;
@@ -47,6 +59,8 @@ extern MonoMethod* g_HandleMessage;
 
 extern MonoMethod* g_EVT_LevelInit;
 extern MonoMethod* g_EVT_LevelShutdown;
+
+extern CMonoPlug g_MonoPlugPlugin;
 
 #define ATTACH(managedName, methodHandle, asmImage) \
 {\
@@ -85,9 +99,5 @@ extern MonoMethod* g_EVT_LevelShutdown;
 #define MONO_CALL(target, methodHandle) MONO_CALL_ARGS(target, methodHandle, NULL)
 
 #define MONO_STRING(domain, str) ((str == NULL) ? NULL : mono_string_new(domain, str))
-
-class MonoConCommand;
-class CMonoPlug;
-class MonoConVarString;
 
 #endif //_MONOPLUG_COMMON_H_

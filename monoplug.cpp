@@ -27,6 +27,8 @@ MonoMethod* g_HandleMessage = NULL;
 MonoMethod* g_EVT_LevelInit = NULL;
 MonoMethod* g_EVT_LevelShutdown = NULL;
 
+BaseAccessor s_BaseAccessor;
+
 PLUGIN_EXPOSE(CMonoPlug, g_MonoPlugPlugin);
 
 //---------------------------------------------------------------------------------
@@ -108,6 +110,8 @@ bool CMonoPlug::Load(PluginId id, ISmmAPI *ismm, char *error, size_t maxlen, boo
 		mono_add_internal_call (MONOPLUG_CALLBACK_REGISTERCONCOMMAND, (gconstpointer)Mono_RegisterConCommand);
 		mono_add_internal_call (MONOPLUG_CALLBACK_UNREGISTERCONCOMMAND, (gconstpointer)Mono_UnregisterConCommand);
 		mono_add_internal_call (MONOPLUG_CALLBACK_REGISTERCONVARSTRING, (gconstpointer)Mono_RegisterConVarString);
+		mono_add_internal_call (MONOPLUG_CALLBACK_CONVARSTRING_GETVALUE, (gconstpointer)Mono_GetConVarStringValue);
+		mono_add_internal_call (MONOPLUG_CALLBACK_REGISTERCONVARSTRING, (gconstpointer)Mono_SetConVarStringValue);
 
 		//Get callbacks from native to managed
 		ATTACH(MONOPLUG_NATMAN_INIT, g_Init, g_Image);
@@ -117,6 +121,9 @@ bool CMonoPlug::Load(PluginId id, ISmmAPI *ismm, char *error, size_t maxlen, boo
 		//Events
 		ATTACH(MONOPLUG_CLSMAIN_EVT_LEVELINIT, g_EVT_LevelInit, g_Image);
 		ATTACH(MONOPLUG_CLSMAIN_EVT_LEVELSHUTDOWN, g_EVT_LevelShutdown, g_Image);
+
+		//Convars
+		ATTACH(MONOPLUG_NATMAN_CONVARSTRING_VALUECHANGED, g_EVT_ConVarStringValueChanged, g_Image);
 	}
 	
 #ifdef _DEBUG
@@ -132,8 +139,11 @@ bool CMonoPlug::Load(PluginId id, ISmmAPI *ismm, char *error, size_t maxlen, boo
 	META_CONPRINTF("M:RELEASE\n");
 #endif
 
+	//ConCommandBase init code
 	this->m_conCommands = new CUtlVector<MonoConCommand*>();
+
 	this->m_conVarString = new CUtlVector<MonoConVarString*>();
+	this->m_conVarStringId = 0;
 	
 	//Create object instance
 	this->m_ClsMain = mono_object_new(g_Domain, g_Class);
@@ -266,55 +276,14 @@ const char *CMonoPlug::GetURL()
 	return "http://www.sourcemm.net/";
 }
 
-MonoConCommand::MonoConCommand(char* name, char* description, CCode* code, int flags)
-: ConCommand(name, (FnCommandCallback_t)NULL, description, flags)
+bool BaseAccessor::RegisterConCommandBase(ConCommandBase *pCommandBase)
 {
-	//META_CONPRINT("Entering : MonoConCommand::MonoConCommand\n");
-	this->m_code = code;
-}
+	/* Always call META_REGCVAR instead of going through the engine. */
+	return META_REGCVAR(pCommandBase);
+};
 
-void MonoConCommand::Dispatch(const CCommand &command)
+MonoConVarString::MonoConVarString(uint64 nativeId, char* name, char* description, int flags, char* defaultValue)
+: ConVar(name, defaultValue, flags, description, (FnChangeCallback_t)ConVarStringChangeCallback)
 {
-	META_CONPRINT("Entering : MonoConCommand::mono_callback\n");
-
-	void* args[1];
-	args[0] = MONO_STRING(g_Domain, command.ArgS());
-	META_CONPRINTF("Calling delegate of command %s\n", this->GetName());
-	MONO_DELEGATE_CALL(this->m_code, args);
-	META_CONPRINTF("Called delegate of command %s\n", this->GetName());
-	//MonoClass* dlgClass = mono_class_from_name(g_Image, MONOPLUG_NAMESPACE, "ConCommandDelegate");
-	//if(dlgClass)
-	//{
-
-		//mono_runtime_delegate_invoke(this->code, args, 
-		//MonoMethodDesc* desc = mono_method_desc_new("MonoPlug.ConCommandDelegate:Invoke(string)", true);
-		//if(desc)
-		//{
-		//	MonoMethod* dlgInvoke = mono_method_desc_search_in_image(desc, g_Image);
-		//	if(dlgInvoke)
-		//	{
-		//	}
-		//	else
-		//	{
-		//		META_CONPRINTF("Can't get ConCommandDelegate:Invoke(string) method handle\n");
-		//	}
-		//	mono_method_desc_free(desc);
-		//}
-		//else
-		//{
-		//	META_CONPRINTF("Can't get ConCommandDelegate:Invoke(string) method description\n");
-		//}
-	//}
-	//else
-	//{
-	//	META_CONPRINT("Can't get ConCommandDelegate class\n");
-	//}
+	this->m_nativeId = nativeId;
 }
-
-MonoConVarString::MonoConVarString(char* name, char* description, int flags, MonoMethod* varGet, MonoMethod* varSet, char* defaultValue)
-: ConVar(name, defaultValue, flags, description)
-{
-	this->m_get = varGet;
-	this->m_set = varSet;
-}
-

@@ -974,6 +974,10 @@
 			UniqueIdentifier="{4FC737F1-C7A5-4376-A066-2A32D752A2FF}"
 			>
 			<File
+				RelativePath=".\monoconcommand.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\monoplug.cpp"
 				>
 			</File>
@@ -985,6 +989,10 @@
 			>
 			<File
 				RelativePath=".\engine_wrappers.h"
+				>
+			</File>
+			<File
+				RelativePath=".\monoconcommand.h"
 				>
 			</File>
 			<File

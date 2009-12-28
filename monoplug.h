@@ -2,6 +2,8 @@
 #define _MONOPLUG_H
 
 #include "monoplug_common.h"
+#include "monoconcommand.h"
+#include "monoconvarstring.h"
 
 class CMonoPlug: public ISmmPlugin
 {
@@ -31,53 +33,43 @@ public: //Hooks
 		bool background);
 	void Hook_LevelShutdown(void);
 private:
-	MonoObject *m_ClsMain;
-
 	MonoMethod* m_ListPlugins;
 	MonoMethod* m_PluginLoad;
 public:
+	MonoObject* m_ClsMain;
+	MonoMethod* g_EVT_ConVarStringValueChanged;
+
 	CUtlVector<MonoConCommand*>* m_conCommands;
+
+	uint64 m_conVarStringId;
 	CUtlVector<MonoConVarString*>* m_conVarString;
 };
 
-/** 
- * Something like this is needed to register cvars/CON_COMMANDs.
- */
 class BaseAccessor : public IConCommandBaseAccessor
 {
 public:
-	bool RegisterConCommandBase(ConCommandBase *pCommandBase)
-	{
-		/* Always call META_REGCVAR instead of going through the engine. */
-		return META_REGCVAR(pCommandBase);
-	}
-} s_BaseAccessor;
+	bool RegisterConCommandBase(ConCommandBase *pCommandBase);
+	//{
+	//	/* Always call META_REGCVAR instead of going through the engine. */
+	//	return META_REGCVAR(pCommandBase);
+	//}
+};
+
+class MonoConVarString : public ConVar
+{
+public:
+	MonoConVarString(uint64 nativeId, char* name, char* description, int flags, char* defaultValue);
+public: //properties
+	uint64 NativeId() { return this->m_nativeId; };
+private:
+	uint64 m_nativeId;
+};
 
 //Native callbacks from Managed
 static void Mono_Msg(MonoString* msg)
 {
 	META_CONPRINT(mono_string_to_utf8(msg));
 };
-
-class MonoConCommand : public ConCommand
-{
-public:
-	MonoConCommand(char* name, char* description, int flags, MonoDelegate* code);
-private:
-	void Dispatch( const CCommand &command );
-	MonoDelegate* m_code;
-};
-
-class MonoConVarString : public ConVar
-{
-public:
-	MonoConVarString(char* name, char* description, int flags, MonoMethod* varGet, MonoMethod* varSet, char* defaultValue);
-private:
-	MonoMethod* m_get;
-	MonoMethod* m_set;
-};
-
-extern CMonoPlug g_MonoPlugPlugin;
 
 static bool Mono_RegisterConCommand(MonoString* name, MonoString* description, MonoDelegate* code, int flags)
 {
@@ -92,15 +84,6 @@ static bool Mono_RegisterConCommand(MonoString* name, MonoString* description, M
 
 	return true;
 };
-
-static bool Mono_RegisterConVarString(MonoString* name, MonoString* description, MonoString* defaultValue, MonoDelegate* getFunction, MonoDelegate* setFunction, int flags)
-{
-	META_CONPRINTF("Entering Mono_RegisterConVarString : %s: %s\n", mono_string_to_utf8(name), mono_string_to_utf8(description));
-	MonoConVarString* var = new MonoConVarString(mono_string_to_utf8(name), mono_string_to_utf8(description), flags, getFunction, setFunction, mono_string_to_utf8(defaultValue));
-	g_MonoPlugPlugin.m_conVarString->AddToTail(var);
-	g_SMAPI->RegisterConCommandBase(g_PLAPI, var);
-	return true;
-}
 
 static bool Mono_UnregisterConCommand(MonoString* name)
 {
@@ -161,6 +144,80 @@ static bool Mono_UnregisterConCommand(MonoString* name)
 		return true;
 	}
 };
+
+static uint64 Mono_RegisterConVarString(MonoString* name, MonoString* description, int flags, MonoString* defaultValue)
+{
+#ifdef _DEBUG
+	META_CONPRINTF("Entering Mono_RegisterConVarString : %s: %s\n", mono_string_to_utf8(name), mono_string_to_utf8(description));
+#endif
+
+	MonoConVarString* var = new MonoConVarString(++g_MonoPlugPlugin.m_conVarStringId, mono_string_to_utf8(name), mono_string_to_utf8(description), flags, mono_string_to_utf8(defaultValue));
+	if(g_SMAPI->RegisterConCommandBase(g_PLAPI, var))
+	{
+		g_MonoPlugPlugin.m_conVarString->AddToTail(var);
+		return var->NativeId();
+	}
+	return true;
+}
+
+static MonoString* Mono_GetConVarStringValue(uint64 nativeId)
+{
+#ifdef _DEBUG
+	META_CONPRINT("Entering Mono_GetConVarStringValue\n");
+#endif
+	MonoConVarString* var = NULL;
+	for(int i=0;i<g_MonoPlugPlugin.m_conVarString->Count(); i++)
+	{
+		MonoConVarString* elem = g_MonoPlugPlugin.m_conVarString->Element(i);
+		if(elem->NativeId() == nativeId)
+		{
+			var = elem;
+			break;
+		}
+	}
+
+	if(var)
+	{
+		return MONO_STRING(g_Domain, var->GetString());
+	}
+	else
+	{
+		return NULL;
+	}
+}
+
+static void Mono_SetConVarStringValue(uint64 nativeId, MonoString* value)
+{
+#ifdef _DEBUG
+	META_CONPRINT("Entering Mono_SetConVarStringValue\n");
+#endif
+
+	MonoConVarString* var = NULL;
+	for(int i=0;i<g_MonoPlugPlugin.m_conVarString->Count(); i++)
+	{
+		MonoConVarString* elem = g_MonoPlugPlugin.m_conVarString->Element(i);
+		if(elem->NativeId() == nativeId)
+		{
+			var = elem;
+			break;
+		}
+	}
+
+	if(var)
+	{
+		var->SetValue(mono_string_to_utf8(value));
+	}
+}
+
+static void ConVarStringChangeCallback(IConVar *var, const char *pOldValue, float flOldValue)
+{
+#ifdef _DEBUG
+	META_CONPRINT("Entering ConVarStringChangeCallback\n");
+#endif
+
+	MonoConVarString* strVar = (MonoConVarString*)var;
+	MONO_CALL(g_MonoPlugPlugin.m_ClsMain, g_MonoPlugPlugin.g_EVT_ConVarStringValueChanged);
+}
 
 #endif //_MONOPLUG_H
 

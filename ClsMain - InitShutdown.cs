@@ -1,5 +1,6 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
+using System.Text;
 
 namespace MonoPlug
 {
@@ -13,7 +14,9 @@ namespace MonoPlug
             //Create lists
             this._lstMsg = new List<MessageEntry>();
             this._plugins = new Dictionary<AppDomain, ClsPluginBase>();
+
             this._commands = new Dictionary<string, ConCommandEntry>();
+            this._varString = new Dictionary<UInt64, ConVarEntry>();
 
             Mono_Msg("M: Called ClsMain::_Init()\n");
 
@@ -24,7 +27,7 @@ namespace MonoPlug
             this.RegisterCommand(null, "clr_plugin_list", "List available plugins", this.clr_plugin_list, FCVAR.FCVAR_GAMEDLL);
             this.RegisterCommand(null, "clr_plugin_refresh", "Refresh plugin list", this.clr_plugin_refresh, FCVAR.FCVAR_GAMEDLL);
 
-            this.RegisterConVarString(null, "clr_mono_version", "Get current Mono runtime version", FCVAR.FCVAR_GAMEDLL | FCVAR.FCVAR_SPONLY | FCVAR.FCVAR_CHEAT, ClsMain.MonoVersion, this.clr_mono_version_get, this.clr_mono_version_set);
+            this.RegisterConVarString(null, "clr_mono_version", "Get current Mono runtime version", FCVAR.FCVAR_GAMEDLL | FCVAR.FCVAR_SPONLY | FCVAR.FCVAR_CHEAT, ClsMain.MonoVersion);
         }
 
         /// <summary>
@@ -50,25 +53,6 @@ namespace MonoPlug
                 Mono_Msg(ex.GetType().FullName + "\n");
                 Mono_Msg(ex.Message + "\n");
                 Mono_Msg(ex.StackTrace + "\n");
-            }
-        }
-
-        /// <summary>
-        /// Message handling function 
-        /// </summary>		
-        internal void _HandleMessages()
-        {
-            lock (this._lstMsg)
-            {
-                if (this._lstMsg.Count > 0)
-                {
-                    for (int i = 0; i < this._lstMsg.Count; i++)
-                    {
-                        MessageEntry msg = this._lstMsg[i];
-                        Mono_Msg(msg.Message);
-                    }
-                    this._lstMsg.Clear();
-                }
             }
         }
     }
