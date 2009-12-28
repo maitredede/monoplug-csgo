@@ -72,6 +72,21 @@ bool CMonoPlug::Load(PluginId id, ISmmAPI *ismm, char *error, size_t maxlen, boo
 		META_CONPRINTF("%s\n", error);
 		return false;
 	}
+
+#ifdef _DEBUG
+	//TODO : enumerate ClsMain methods signature to debug purposes
+	META_CONPRINTF("M:DEBUG\n");
+	void* iter = NULL;
+	MonoMethod* m = NULL;
+	while ((m = mono_class_get_methods (g_Class, &iter)))
+	{
+		META_CONPRINTF("%s\n", mono_method_full_name(m, true));
+	}
+#else
+	META_CONPRINTF("M:RELEASE\n");
+#endif
+
+
 	//One time init
 	if(!g_Domain)
 	{
@@ -126,19 +141,6 @@ bool CMonoPlug::Load(PluginId id, ISmmAPI *ismm, char *error, size_t maxlen, boo
 		ATTACH(MONOPLUG_NATMAN_CONVARSTRING_VALUECHANGED, g_EVT_ConVarStringValueChanged, g_Image);
 	}
 	
-#ifdef _DEBUG
-	//TODO : enumerate ClsMain methods signature to debug purposes
-	META_CONPRINTF("M:DEBUG\n");
-	void* iter = NULL;
-	MonoMethod* m = NULL;
-	while ((m = mono_class_get_methods (g_Class, &iter)))
-	{
-		META_CONPRINTF("%s\n", mono_method_full_name(m, true));
-	}
-#else
-	META_CONPRINTF("M:RELEASE\n");
-#endif
-
 	//ConCommandBase init code
 	this->m_conCommands = new CUtlVector<MonoConCommand*>();
 
