@@ -102,11 +102,6 @@ extern CMonoPlug g_MonoPlugPlugin;
 
 #define MONO_STRING(domain, str) ((str == NULL) ? NULL : mono_string_new(domain, str))
 
-static void Mono_Msg(MonoString* msg)
-{
-	META_CONPRINT(mono_string_to_utf8(msg));
-};
-
 class uint64Container
 {
 public:

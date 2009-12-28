@@ -5,6 +5,11 @@
 #include "monoconcommand.h"
 #include "BaseAccessor.h"
 
+static void Mono_Msg(MonoString* msg)
+{
+	META_CONPRINT(mono_string_to_utf8(msg));
+};
+
 class CMonoPlug: public ISmmPlugin
 {
 public:
