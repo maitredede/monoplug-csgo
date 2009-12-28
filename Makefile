@@ -18,7 +18,7 @@ SRCDS_BASE = $(BASE_DIR)/srcds
 ### EDIT BELOW FOR OTHER PROJECTS ###
 #####################################
 
-OBJECTS = monoplug.cpp
+OBJECTS = monoplug.cpp monoconcommand.cpp
 BINARY = monoplug_i486.so
 
 ##############################################
