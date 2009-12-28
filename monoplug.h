@@ -146,24 +146,18 @@ static bool Mono_UnregisterConCommand(MonoString* name)
 
 static uint64 Mono_RegisterConVarString(MonoString* name, MonoString* description, int flags, MonoString* defaultValue)
 {
-#ifdef _DEBUG
 	META_CONPRINTF("Entering Mono_RegisterConVarString : %s: %s\n", mono_string_to_utf8(name), mono_string_to_utf8(description));
-#endif
 
 	MonoConVarString* var = new MonoConVarString(++g_MonoPlugPlugin.m_conVarStringId, mono_string_to_utf8(name), mono_string_to_utf8(description), flags, mono_string_to_utf8(defaultValue));
 	if(g_SMAPI->RegisterConCommandBase(g_PLAPI, var))
 	{
 		g_MonoPlugPlugin.m_conVarString->AddToTail(var);
-#ifdef _DEBUG
-	META_CONPRINTF("Mono_RegisterConVarString var registered as : %d\n", var->NativeId());
-#endif
+		META_CONPRINTF("Mono_RegisterConVarString var registered as : %d\n", var->NativeId());
 		return var->NativeId();
 	}
 	else
 	{
-#ifdef _DEBUG
-	META_CONPRINT("Mono_RegisterConVarString var NOT registered\n");
-#endif
+		META_CONPRINT("Mono_RegisterConVarString var NOT registered\n");
 		return 0;
 	}
 }
