@@ -51,5 +51,15 @@ namespace MonoPlug
         protected virtual void LevelShutdown()
         {
         }
+
+        protected ClsConVarStrings RegisterConVarString(string name, string description, FCVAR flags, string defaultValue)
+        {
+            return this._main.RegisterConVarString(this, name, description, flags, defaultValue);
+        }
+
+        protected void UnregisterConVarString(ClsConVarStrings convar)
+        {
+            this._main.UnregisterConVarString(this, convar);
+        }
     }
 }

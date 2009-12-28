@@ -7,6 +7,7 @@ namespace MonoPlug
     partial class ClsMain
     {
         private Dictionary<UInt64, ConVarEntry> _varString;
+        private ClsConVarStrings _clr_mono_version;
 
         internal ClsConVarStrings RegisterConVarString(ClsPluginBase plugin, string name, string description, FCVAR flags, string defaultValue)
         {
@@ -62,6 +63,20 @@ namespace MonoPlug
             if (this._varString.ContainsKey(nativeId))
             {
                 this._varString[nativeId].Var.RaiseValueChanged();
+            }
+        }
+
+        internal void UnregisterConVarString(ClsPluginBase plugin, ClsConVarStrings convar)
+        {
+            if (convar == null) throw new ArgumentNullException("convar");
+
+            lock (this._varString)
+            {
+                if (this._varString.ContainsKey(convar.NativeID))
+                {
+                    Mono_UnegisterConVarString(convar.NativeID);
+                    this._varString.Remove(convar.NativeID);
+                }
             }
         }
     }

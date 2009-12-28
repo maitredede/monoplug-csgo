@@ -16,6 +16,7 @@
 #define MONOPLUG_NAMESPACE "MonoPlug"
 #define MONOPLUG_CLASSNAME "ClsMain"
 #define MONOPLUG_FULLCLASSNAME "MonoPlug.ClsMain"
+
 #define MONOPLUG_CALLBACK_MSG "MonoPlug.ClsMain::Mono_Msg"
 
 #define MONOPLUG_NATMAN_INIT "MonoPlug.ClsMain:_Init()"
@@ -26,6 +27,7 @@
 #define MONOPLUG_CALLBACK_UNREGISTERCONCOMMAND "MonoPlug.ClsMain::Mono_UnregisterConCommand(string)"
 
 #define MONOPLUG_CALLBACK_REGISTERCONVARSTRING "MonoPlug.ClsMain::Mono_RegisterConVarString(string,string,int,string)"
+#define MONOPLUG_CALLBACK_UNREGISTERCONVARSTRING "MonoPlug.ClsMain::Mono_UnregisterConVarString(ulong)"
 #define MONOPLUG_CALLBACK_CONVARSTRING_GETVALUE "MonoPlug.ClsMain::Mono_GetConVarStringValue(ulong)"
 #define MONOPLUG_CALLBACK_CONVARSTRING_SETVALUE "MonoPlug.ClsMain::Mono_SetConVarStringValue(ulong,string)"
 #define MONOPLUG_NATMAN_CONVARSTRING_VALUECHANGED "MonoPlug.ClsMain:_ConVarStringChanged(ulong)"
@@ -99,5 +101,30 @@ extern CMonoPlug g_MonoPlugPlugin;
 #define MONO_CALL(target, methodHandle) MONO_CALL_ARGS(target, methodHandle, NULL)
 
 #define MONO_STRING(domain, str) ((str == NULL) ? NULL : mono_string_new(domain, str))
+
+static void Mono_Msg(MonoString* msg);
+
+static bool Mono_RegisterConCommand(MonoString* name, MonoString* description, MonoDelegate* code, int flags);
+static bool Mono_UnregisterConCommand(MonoString* name);
+
+static uint64 Mono_RegisterConVarString(MonoString* name, MonoString* description, int flags, MonoString* defaultValue);
+static void Mono_UnregisterConVarString(uint64 nativeID);
+static MonoString* Mono_GetConVarStringValue(uint64 nativeId);
+static void Mono_SetConVarStringValue(uint64 nativeId, MonoString* value);
+static void ConVarStringChangeCallback(IConVar *var, const char *pOldValue, float flOldValue);
+
+class uint64Container
+{
+public:
+	uint64Container(uint64 value)
+	{
+		this->m_value = value;
+	};
+	uint64 Value(){return this->m_value;};
+	void SetValue(uint64 value){this->m_value = value;};
+
+private:
+	uint64 m_value;
+};
 
 #endif //_MONOPLUG_COMMON_H_

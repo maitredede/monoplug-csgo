@@ -46,6 +46,11 @@ PLUGIN_EXPOSE(CMonoPlug, g_MonoPlugPlugin);
 //	this->m_HandleMessage = NULL;
 //}
 
+#ifdef _WIN32
+#include <windows.h>
+#include <stdio.h>
+#endif
+
 bool CMonoPlug::Load(PluginId id, ISmmAPI *ismm, char *error, size_t maxlen, bool late)
 {
 	//META_LOG(g_PLAPI, "Init Plugin.");
@@ -76,7 +81,24 @@ bool CMonoPlug::Load(PluginId id, ISmmAPI *ismm, char *error, size_t maxlen, boo
 	//One time init
 	if(!g_Domain)
 	{
+//#ifdef _WIN32
+//		HINSTANCE hDLL = NULL;
+//		hDLL = LoadLibrary("mono.dll");
+//		if(hDLL)
+//		{
+//			META_CONPRINT("Mono.dll loaded\n");
+//		}
+//		else
+//		{
+//			META_CONPRINT("Mono.dll NOT loaded\n");
+//		}
+//#endif
+
+#ifndef _WIN32
+		//crash on windows
 		mono_config_parse(NULL);
+#endif
+
 		g_Domain = mono_jit_init(dllPath);
 		if(!g_Domain)
 		{
@@ -125,8 +147,11 @@ bool CMonoPlug::Load(PluginId id, ISmmAPI *ismm, char *error, size_t maxlen, boo
 		mono_add_internal_call (MONOPLUG_CALLBACK_REGISTERCONCOMMAND, (gconstpointer)Mono_RegisterConCommand);
 		mono_add_internal_call (MONOPLUG_CALLBACK_UNREGISTERCONCOMMAND, (gconstpointer)Mono_UnregisterConCommand);
 		mono_add_internal_call (MONOPLUG_CALLBACK_REGISTERCONVARSTRING, (gconstpointer)Mono_RegisterConVarString);
+		mono_add_internal_call (MONOPLUG_CALLBACK_UNREGISTERCONVARSTRING, (gconstpointer)Mono_UnregisterConVarString);
+
 		mono_add_internal_call (MONOPLUG_CALLBACK_CONVARSTRING_GETVALUE, (gconstpointer)Mono_GetConVarStringValue);
-		mono_add_internal_call (MONOPLUG_CALLBACK_REGISTERCONVARSTRING, (gconstpointer)Mono_SetConVarStringValue);
+
+		mono_add_internal_call (MONOPLUG_CALLBACK_CONVARSTRING_SETVALUE, (gconstpointer)Mono_SetConVarStringValue);
 
 		//Get callbacks from native to managed
 		ATTACH(MONOPLUG_NATMAN_INIT, g_Init, g_Image);
@@ -142,8 +167,10 @@ bool CMonoPlug::Load(PluginId id, ISmmAPI *ismm, char *error, size_t maxlen, boo
 	//ConCommandBase init code
 	this->m_conCommands = new CUtlVector<MonoConCommand*>();
 
-	this->m_conVarString = new CUtlVector<MonoConVarString*>();
-	this->m_conVarStringId = 0;
+	//this->m_conVarString = new CUtlVector<MonoConVarString*>();
+	this->m_convarStringId = new CUtlVector<uint64Container*>();
+	this->m_convarStringPtr = new CUtlVector<ConVar*>();
+	this->m_convarStringIdValue = 0;
 	
 	ATTACH(MONOPLUG_NATMAN_CONVARSTRING_VALUECHANGED, m_EVT_ConVarStringValueChanged, g_Image);
 	
@@ -152,7 +179,7 @@ bool CMonoPlug::Load(PluginId id, ISmmAPI *ismm, char *error, size_t maxlen, boo
 	mono_runtime_object_init(this->m_ClsMain);
 	
 	MONO_CALL(this->m_ClsMain, g_Init);
-	
+
 	//Final hooks	
 	SH_ADD_HOOK_MEMFUNC(IServerGameDLL, ServerActivate, server, this, &CMonoPlug::Hook_ServerActivate, true);
 	SH_ADD_HOOK_MEMFUNC(IServerGameDLL, GameFrame, server, this, &CMonoPlug::Hook_GameFrame, true);
@@ -284,8 +311,150 @@ bool BaseAccessor::RegisterConCommandBase(ConCommandBase *pCommandBase)
 	return META_REGCVAR(pCommandBase);
 };
 
-MonoConVarString::MonoConVarString(uint64 nativeId, char* name, char* description, int flags, char* defaultValue)
-: ConVar(name, defaultValue, flags, description, (FnChangeCallback_t)ConVarStringChangeCallback)
+
+void Mono_Msg(MonoString* msg)
 {
-	this->m_nativeId = nativeId;
-}
+	META_CONPRINT(mono_string_to_utf8(msg));
+};
+
+bool Mono_RegisterConCommand(MonoString* name, MonoString* description, MonoDelegate* code, int flags)
+{
+	MonoConCommand* com = new MonoConCommand(mono_string_to_utf8(name), mono_string_to_utf8(description), code, flags);
+	if(g_SMAPI->RegisterConCommandBase(g_PLAPI, com))
+	{
+		g_MonoPlugPlugin.m_conCommands->AddToTail(com);
+		return true;
+	}
+	else
+	{
+		delete com;
+		return false;
+	}
+};
+
+bool Mono_UnregisterConCommand(MonoString* name)
+{
+	const char* s_name = mono_string_to_utf8(name);
+
+	for(int i = 0; i < 	g_MonoPlugPlugin.m_conCommands->Count(); i++)
+	{
+		MonoConCommand* item = 	g_MonoPlugPlugin.m_conCommands->Element(i);
+
+		if(Q_strcmp(item->GetName(), s_name) == 0)
+		{
+			g_SMAPI->UnregisterConCommandBase(g_PLAPI, item);
+			g_MonoPlugPlugin.m_conCommands->Remove(i);
+			delete item;
+			return true;
+		}
+	}
+
+	META_CONPRINTF("Mono_UnregisterConCommand : Command NOT found\n");
+	return false;
+};
+
+uint64 Mono_RegisterConVarString(MonoString* name, MonoString* description, int flags, MonoString* defaultValue)
+{
+	uint64 nativeID = ++g_MonoPlugPlugin.m_convarStringIdValue;
+	ConVar* var = new ConVar(mono_string_to_utf8(name), mono_string_to_utf8(defaultValue), flags, mono_string_to_utf8(description), (FnChangeCallback_t)ConVarStringChangeCallback);
+	if(g_SMAPI->RegisterConCommandBase(g_PLAPI, var))
+	{
+		//g_MonoPlugPlugin.m_conVarString->AddToTail(var);
+		g_MonoPlugPlugin.m_convarStringId->AddToTail(new uint64Container(nativeID));
+		g_MonoPlugPlugin.m_convarStringPtr->AddToTail(var);
+		return nativeID;
+	}
+	else
+	{
+		META_CONPRINTF("Mono_RegisterConVarString var '%s' NOT registered\n", mono_string_to_utf8(name));
+		return 0;
+	}
+};
+
+void Mono_UnregisterConVarString(uint64 nativeID)
+{
+	for(int i=0;i<g_MonoPlugPlugin.m_convarStringId->Count(); i++)
+	{
+		uint64Container* cont = g_MonoPlugPlugin.m_convarStringId->Element(i);
+		if(cont->Value() == nativeID)
+		{
+			ConVar* var = g_MonoPlugPlugin.m_convarStringPtr->Element(i);
+			g_SMAPI->UnregisterConCommandBase(g_PLAPI, var);
+			g_MonoPlugPlugin.m_convarStringId->Remove(i);
+			g_MonoPlugPlugin.m_convarStringPtr->Remove(i);
+			delete var;
+			break;
+		}
+
+		//MonoConVarString* elem = g_MonoPlugPlugin.m_conVarString->Element(i);
+		//if(elem->NativeId() == nativeID)
+		//{
+		//	g_SMAPI->UnregisterConCommandBase(g_PLAPI, elem);
+		//	g_MonoPlugPlugin.m_conVarString->Remove(i);
+		//	delete elem;
+		//	break;
+		//}
+	}
+
+};
+
+MonoString* Mono_GetConVarStringValue(uint64 nativeID)
+{
+#ifdef _DEBUG
+	META_CONPRINTF("Entering Mono_GetConVarStringValue : %l\n", nativeID);
+#endif
+	for(int i=0;i<g_MonoPlugPlugin.m_convarStringId->Count(); i++)
+	{
+		uint64Container* cont = g_MonoPlugPlugin.m_convarStringId->Element(i);
+		if(cont->Value() == nativeID)
+		{
+			ConVar* var = g_MonoPlugPlugin.m_convarStringPtr->Element(i);
+
+			return MONO_STRING(g_Domain, var->GetString());
+		}
+	}
+	//for(int i=0;i<g_MonoPlugPlugin.m_conVarString->Count(); i++)
+	//{
+	//	MonoConVarString* elem = g_MonoPlugPlugin.m_conVarString->Element(i);
+	//	if(elem->NativeId() == nativeId)
+	//	{
+	//		return MONO_STRING(g_Domain, elem->GetValueString());
+	//	}
+	//}
+
+	return NULL;
+};
+
+void Mono_SetConVarStringValue(uint64 nativeID, MonoString* value)
+{
+#ifdef _DEBUG
+	META_CONPRINT("Entering Mono_SetConVarStringValue\n");
+#endif
+
+	for(int i=0;i<g_MonoPlugPlugin.m_convarStringId->Count(); i++)
+	{
+		uint64Container* cont = g_MonoPlugPlugin.m_convarStringId->Element(i);
+		if(cont->Value() == nativeID)
+		{
+			ConVar* var = g_MonoPlugPlugin.m_convarStringPtr->Element(i);
+
+			var->SetValue(mono_string_to_utf8(value));
+			break;
+		}
+	}
+	//for(int i=0;i<g_MonoPlugPlugin.m_conVarString->Count(); i++)
+	//{
+	//	MonoConVarString* elem = g_MonoPlugPlugin.m_conVarString->Element(i);
+	//	if(elem->NativeId() == nativeId)
+	//	{
+	//		elem->SetValue(mono_string_to_utf8(value));
+	//		break;
+	//	}
+	//}
+};
+
+//MonoConVarString::MonoConVarString(uint64 nativeId, char* name, char* description, int flags, char* defaultValue)
+//: ConVar(name, defaultValue, flags, description, (FnChangeCallback_t)NULL /*(FnChangeCallback_t)ConVarStringChangeCallback*/)
+//{
+//	this->m_nativeId = nativeId;
+//};

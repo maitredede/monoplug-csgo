@@ -25,6 +25,7 @@ namespace MonoPlug
         public string Name { get { return this._name; } }
         public string Description { get { return this._desc; } }
         public FCVAR Flags { get { return this._flags; } }
+        internal UInt64 NativeID { get { return this._nativeId; } }
 
         public string Value
         {

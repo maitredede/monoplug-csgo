@@ -16,6 +16,8 @@ namespace MonoPlug
 
         [MethodImpl(MethodImplOptions.InternalCall)]
         private static extern UInt64 Mono_RegisterConVarString(string name, string description, int flags, string defaultValue);
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        private static extern void Mono_UnegisterConVarString(UInt64 nativeID);
 
 
         [MethodImpl(MethodImplOptions.InternalCall)]

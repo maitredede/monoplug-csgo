@@ -2,7 +2,7 @@
 <VisualStudioProject
 	ProjectType="Visual C++"
 	Version="9,00"
-	Name="stub_mm"
+	Name="monoplug"
 	ProjectGUID="{E62E5876-E1E2-41A0-85CA-1B41B9DA55F9}"
 	RootNamespace="stub_mm"
 	Keyword="Win32Proj"
@@ -987,6 +987,10 @@
 			Filter="h;hpp;hxx;hm;inl;inc;xsd"
 			UniqueIdentifier="{93995380-89BD-4b04-88EB-625FBE52EBFB}"
 			>
+			<File
+				RelativePath=".\BaseAccessor.h"
+				>
+			</File>
 			<File
 				RelativePath=".\engine_wrappers.h"
 				>
