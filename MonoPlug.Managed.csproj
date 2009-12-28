@@ -33,11 +33,15 @@
   </PropertyGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>
+    <Compile Include="ClsMain - clr_mono_version.cs" />
     <Compile Include="ClsMain - clr_plugin_list.cs" />
     <Compile Include="ClsMain - clr_plugin_refresh.cs" />
     <Compile Include="ClsMain - clr_test.cs" />
     <Compile Include="ClsMain.cs" />
     <Compile Include="ConCommandAttribute.cs" />
+    <Compile Include="ConCommandEntry.cs" />
+    <Compile Include="ConVarDelegates.cs" />
+    <Compile Include="ConVarEntry.cs" />
     <Compile Include="FCVAR.cs" />
     <Compile Include="MessageType.cs" />
     <Compile Include="MessageEntry.cs" />

@@ -107,6 +107,7 @@ bool CMonoPlug::Load(PluginId id, ISmmAPI *ismm, char *error, size_t maxlen, boo
 		mono_add_internal_call (MONOPLUG_CALLBACK_MSG, (gconstpointer)Mono_Msg);
 		mono_add_internal_call (MONOPLUG_CALLBACK_REGISTERCONCOMMAND, (gconstpointer)Mono_RegisterConCommand);
 		mono_add_internal_call (MONOPLUG_CALLBACK_UNREGISTERCONCOMMAND, (gconstpointer)Mono_UnregisterConCommand);
+		mono_add_internal_call (MONOPLUG_CALLBACK_REGISTERCONVARSTRING, (gconstpointer)Mono_RegisterConVarString);
 
 		//Get callbacks from native to managed
 		ATTACH(MONOPLUG_NATMAN_INIT, g_Init, g_Image);
@@ -132,6 +133,7 @@ bool CMonoPlug::Load(PluginId id, ISmmAPI *ismm, char *error, size_t maxlen, boo
 #endif
 
 	this->m_conCommands = new CUtlVector<MonoConCommand*>();
+	this->m_conVarString = new CUtlVector<MonoConVarString*>();
 	
 	//Create object instance
 	this->m_ClsMain = mono_object_new(g_Domain, g_Class);
@@ -154,7 +156,6 @@ bool CMonoPlug::Load(PluginId id, ISmmAPI *ismm, char *error, size_t maxlen, boo
 #else
 	ConCommandBaseMgr::OneTimeInit(&s_BaseAccessor);
 #endif
-
 	return true;
 }
 
@@ -309,3 +310,11 @@ void MonoConCommand::Dispatch(const CCommand &command)
 	//	META_CONPRINT("Can't get ConCommandDelegate class\n");
 	//}
 }
+
+MonoConVarString::MonoConVarString(char* name, char* description, int flags, MonoMethod* varGet, MonoMethod* varSet, char* defaultValue)
+: ConVar(name, defaultValue, flags, description)
+{
+	this->m_get = varGet;
+	this->m_set = varSet;
+}
+

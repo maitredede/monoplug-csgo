@@ -37,6 +37,7 @@ private:
 	MonoMethod* m_PluginLoad;
 public:
 	CUtlVector<MonoConCommand*>* m_conCommands;
+	CUtlVector<MonoConVarString*>* m_conVarString;
 };
 
 /** 
@@ -58,20 +59,27 @@ static void Mono_Msg(MonoString* msg)
 	META_CONPRINT(mono_string_to_utf8(msg));
 };
 
-typedef MonoDelegate CCode;
-
 class MonoConCommand : public ConCommand
 {
 public:
-	MonoConCommand(char* name, char* description, CCode* code, int flags);
+	MonoConCommand(char* name, char* description, int flags, MonoDelegate* code);
 private:
 	void Dispatch( const CCommand &command );
-	CCode* m_code;
+	MonoDelegate* m_code;
+};
+
+class MonoConVarString : public ConVar
+{
+public:
+	MonoConVarString(char* name, char* description, int flags, MonoMethod* varGet, MonoMethod* varSet, char* defaultValue);
+private:
+	MonoMethod* m_get;
+	MonoMethod* m_set;
 };
 
 extern CMonoPlug g_MonoPlugPlugin;
 
-static bool Mono_RegisterConCommand(MonoString* name, MonoString* description, CCode* code, int flags)
+static bool Mono_RegisterConCommand(MonoString* name, MonoString* description, MonoDelegate* code, int flags)
 {
 	META_CONPRINTF("Entering Mono_RegisterConCommand : %s: %s\n", mono_string_to_utf8(name), mono_string_to_utf8(description));
 
@@ -85,7 +93,16 @@ static bool Mono_RegisterConCommand(MonoString* name, MonoString* description, C
 	return true;
 };
 
-static void Mono_UnregisterConCommand(MonoString* name)
+static bool Mono_RegisterConVarString(MonoString* name, MonoString* description, MonoString* defaultValue, MonoDelegate* getFunction, MonoDelegate* setFunction, int flags)
+{
+	META_CONPRINTF("Entering Mono_RegisterConVarString : %s: %s\n", mono_string_to_utf8(name), mono_string_to_utf8(description));
+	MonoConVarString* var = new MonoConVarString(mono_string_to_utf8(name), mono_string_to_utf8(description), flags, getFunction, setFunction, mono_string_to_utf8(defaultValue));
+	g_MonoPlugPlugin.m_conVarString->AddToTail(var);
+	g_SMAPI->RegisterConCommandBase(g_PLAPI, var);
+	return true;
+}
+
+static bool Mono_UnregisterConCommand(MonoString* name)
 {
 	META_CONPRINTF("Entering Mono_UnregisterConCommand : %s\n", mono_string_to_utf8(name));
 	MonoConCommand* com = NULL;
@@ -95,7 +112,7 @@ static void Mono_UnregisterConCommand(MonoString* name)
 	if(!g_MonoPlugPlugin.m_conCommands)
 	{
 		META_CONPRINT("g_MonoPlugin.m_ConCommands IS NULL\n");
-		return;
+		return false;
 	}
 	META_CONPRINTF("g_MonoPlugPlugin.m_conCommands->Count() = %d\n", g_MonoPlugPlugin.m_conCommands->Count());
 
@@ -106,7 +123,7 @@ static void Mono_UnregisterConCommand(MonoString* name)
 		if(!item)
 		{
 			META_CONPRINT("item IS NULL\n");
-			return;
+			return false;
 		}
 		META_CONPRINTF("item[%d] item->GetName() => %s ; s_name = %s\n", i, item->GetName(), s_name);
 		if(Q_strcmp(item->GetName(), s_name) == 0)
@@ -122,7 +139,7 @@ static void Mono_UnregisterConCommand(MonoString* name)
 	if(NULL == com)
 	{
 		META_CONPRINTF("Mono_UnregisterConCommand : Command NOT found\n");
-		//return false;
+		return false;
 	}
 	else
 	{
@@ -141,7 +158,7 @@ static void Mono_UnregisterConCommand(MonoString* name)
 		delete com;
 
 		META_CONPRINTF("Mono_UnregisterConCommand : Command delete -> OK\n");
-		//return true;
+		return true;
 	}
 };
 

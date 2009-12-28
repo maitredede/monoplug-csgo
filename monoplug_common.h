@@ -24,6 +24,7 @@
 
 #define MONOPLUG_CALLBACK_REGISTERCONCOMMAND "MonoPlug.ClsMain::Mono_RegisterConCommand(string,string,MonoPlug.ConCommandDelegate,int)"
 #define MONOPLUG_CALLBACK_UNREGISTERCONCOMMAND "MonoPlug.ClsMain::Mono_UnregisterConCommand(string)"
+#define MONOPLUG_CALLBACK_REGISTERCONVARSTRING "MonoPlug.ClsMain::Mono_RegisterConVarString(string,string,string,MonoPlug.ConVarStringGetDelegate,MonoPlug.ConVarStringSetDelegate,int)"
 
 #define MONOPLUG_CLSMAIN_EVT_LEVELINIT "MonoPlug.ClsMain:EVT_LevelInit(string,string,string,string,bool,bool)"
 #define MONOPLUG_CLSMAIN_EVT_LEVELSHUTDOWN "MonoPlug.ClsMain:EVT_LevelShutdown()"
@@ -87,5 +88,6 @@ extern MonoMethod* g_EVT_LevelShutdown;
 
 class MonoConCommand;
 class CMonoPlug;
+class MonoConVarString;
 
 #endif //_MONOPLUG_COMMON_H_

@@ -23,6 +23,8 @@ namespace MonoPlug
             this.RegisterCommand(null, "clr_test", "Test clr", this.clr_test, FCVAR.FCVAR_GAMEDLL);
             this.RegisterCommand(null, "clr_plugin_list", "List available plugins", this.clr_plugin_list, FCVAR.FCVAR_GAMEDLL);
             this.RegisterCommand(null, "clr_plugin_refresh", "Refresh plugin list", this.clr_plugin_refresh, FCVAR.FCVAR_GAMEDLL);
+
+            this.RegisterConVarString(null, "clr_mono_version", "Get current Mono runtime version", FCVAR.FCVAR_GAMEDLL | FCVAR.FCVAR_SPONLY | FCVAR.FCVAR_CHEAT, ClsMain.MonoVersion, this.clr_mono_version_get, this.clr_mono_version_set);
         }
 
         /// <summary>
