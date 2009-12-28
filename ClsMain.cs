@@ -242,12 +242,14 @@ namespace MonoPlug
 
         internal static void ValidateFlags(FCVAR flags, string argName)
         {
-            int wrk = (int)flags;
+            FCVAR all = FCVAR.FCVAR_NONE;
             foreach (FCVAR value in Enum.GetValues(typeof(FCVAR)))
             {
-                wrk = wrk | (((int)value) ^ -1);
+                all |= value;
             }
-            if (wrk != 0)
+            int revall = ((int)all) ^ -1;
+            int calc = ((int)flags) & revall;
+            if (calc != 0)
             {
                 throw new ArgumentOutOfRangeException(argName);
             }
