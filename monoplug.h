@@ -154,9 +154,18 @@ static uint64 Mono_RegisterConVarString(MonoString* name, MonoString* descriptio
 	if(g_SMAPI->RegisterConCommandBase(g_PLAPI, var))
 	{
 		g_MonoPlugPlugin.m_conVarString->AddToTail(var);
+#ifdef _DEBUG
+	META_CONPRINTF("Mono_RegisterConVarString var registered as : %d\n", var->NativeId());
+#endif
 		return var->NativeId();
 	}
-	return true;
+	else
+	{
+#ifdef _DEBUG
+	META_CONPRINT("Mono_RegisterConVarString var NOT registered\n");
+#endif
+		return 0;
+	}
 }
 
 static MonoString* Mono_GetConVarStringValue(uint64 nativeId)
