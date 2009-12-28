@@ -102,16 +102,10 @@ extern CMonoPlug g_MonoPlugPlugin;
 
 #define MONO_STRING(domain, str) ((str == NULL) ? NULL : mono_string_new(domain, str))
 
-static void Mono_Msg(MonoString* msg);
-
-static bool Mono_RegisterConCommand(MonoString* name, MonoString* description, MonoDelegate* code, int flags);
-static bool Mono_UnregisterConCommand(MonoString* name);
-
-static uint64 Mono_RegisterConVarString(MonoString* name, MonoString* description, int flags, MonoString* defaultValue);
-static void Mono_UnregisterConVarString(uint64 nativeID);
-static MonoString* Mono_GetConVarStringValue(uint64 nativeId);
-static void Mono_SetConVarStringValue(uint64 nativeId, MonoString* value);
-static void ConVarStringChangeCallback(IConVar *var, const char *pOldValue, float flOldValue);
+static void Mono_Msg(MonoString* msg)
+{
+	META_CONPRINT(mono_string_to_utf8(msg));
+};
 
 class uint64Container
 {
