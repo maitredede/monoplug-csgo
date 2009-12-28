@@ -36,7 +36,7 @@ private:
 	MonoMethod* m_PluginLoad;
 public:
 	MonoObject* m_ClsMain;
-	MonoMethod* g_EVT_ConVarStringValueChanged;
+	MonoMethod* m_EVT_ConVarStringValueChanged;
 
 	CUtlVector<MonoConCommand*>* m_conCommands;
 
@@ -218,7 +218,7 @@ static void ConVarStringChangeCallback(IConVar *var, const char *pOldValue, floa
 	gpointer args[1];
 	uint64 val = strVar->NativeId(); 
 	args[0] = &(val);
-	MONO_CALL_ARGS(g_MonoPlugPlugin.m_ClsMain, g_MonoPlugPlugin.g_EVT_ConVarStringValueChanged, args);
+	MONO_CALL_ARGS(g_MonoPlugPlugin.m_ClsMain, g_MonoPlugPlugin.m_EVT_ConVarStringValueChanged, args);
 }
 
 #endif //_MONOPLUG_H

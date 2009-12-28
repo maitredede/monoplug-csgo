@@ -73,20 +73,6 @@ bool CMonoPlug::Load(PluginId id, ISmmAPI *ismm, char *error, size_t maxlen, boo
 		return false;
 	}
 
-#ifdef _DEBUG
-	//TODO : enumerate ClsMain methods signature to debug purposes
-	META_CONPRINTF("M:DEBUG\n");
-	void* iter = NULL;
-	MonoMethod* m = NULL;
-	while ((m = mono_class_get_methods (g_Class, &iter)))
-	{
-		META_CONPRINTF("%s\n", mono_method_full_name(m, true));
-	}
-#else
-	META_CONPRINTF("M:RELEASE\n");
-#endif
-
-
 	//One time init
 	if(!g_Domain)
 	{
@@ -120,6 +106,20 @@ bool CMonoPlug::Load(PluginId id, ISmmAPI *ismm, char *error, size_t maxlen, boo
 			return false;
 		}
 
+#ifdef _DEBUG
+	//TODO : enumerate ClsMain methods signature to debug purposes
+	META_CONPRINTF("M:DEBUG\n");
+	void* iter = NULL;
+	MonoMethod* m = NULL;
+	while ((m = mono_class_get_methods (g_Class, &iter)))
+	{
+		META_CONPRINTF("%s\n", mono_method_full_name(m, true));
+	}
+#else
+	META_CONPRINTF("M:RELEASE\n");
+#endif
+
+
 		//Add internal calls from managed to native
 		mono_add_internal_call (MONOPLUG_CALLBACK_MSG, (gconstpointer)Mono_Msg);
 		mono_add_internal_call (MONOPLUG_CALLBACK_REGISTERCONCOMMAND, (gconstpointer)Mono_RegisterConCommand);
@@ -137,8 +137,6 @@ bool CMonoPlug::Load(PluginId id, ISmmAPI *ismm, char *error, size_t maxlen, boo
 		ATTACH(MONOPLUG_CLSMAIN_EVT_LEVELINIT, g_EVT_LevelInit, g_Image);
 		ATTACH(MONOPLUG_CLSMAIN_EVT_LEVELSHUTDOWN, g_EVT_LevelShutdown, g_Image);
 
-		//Convars
-		ATTACH(MONOPLUG_NATMAN_CONVARSTRING_VALUECHANGED, g_EVT_ConVarStringValueChanged, g_Image);
 	}
 	
 	//ConCommandBase init code
@@ -146,6 +144,8 @@ bool CMonoPlug::Load(PluginId id, ISmmAPI *ismm, char *error, size_t maxlen, boo
 
 	this->m_conVarString = new CUtlVector<MonoConVarString*>();
 	this->m_conVarStringId = 0;
+	
+	ATTACH(MONOPLUG_NATMAN_CONVARSTRING_VALUECHANGED, m_EVT_ConVarStringValueChanged, g_Image);
 	
 	//Create object instance
 	this->m_ClsMain = mono_object_new(g_Domain, g_Class);
