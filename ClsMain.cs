@@ -239,6 +239,18 @@ namespace MonoPlug
                 }
             }
         }
+
+        internal static void ValidateFlags(FCVAR flags, string argName)
+        {
+            int wrk = (int)flags;
+            foreach (FCVAR value in Enum.GetValues(typeof(FCVAR)))
+            {
+                wrk = wrk | (((int)value) ^ -1);
+            }
+            if (wrk != 0)
+            {
+                throw new ArgumentOutOfRangeException(argName);
+            }
+        }
     }
 }
-

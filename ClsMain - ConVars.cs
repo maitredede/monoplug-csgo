@@ -12,7 +12,7 @@ namespace MonoPlug
         {
             if (string.IsNullOrEmpty(name)) throw new ArgumentNullException("name");
             if (string.IsNullOrEmpty(description)) throw new ArgumentNullException("description");
-            if (!Enum.IsDefined(typeof(FCVAR), flags)) throw new ArgumentOutOfRangeException("flags");
+            ValidateFlags(flags, "flags");
 
             lock (this._varString)
             {
