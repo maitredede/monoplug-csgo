@@ -14,3 +14,4 @@ void MonoConCommand::Dispatch(const CCommand &command)
 	MONO_DELEGATE_CALL(this->m_code, args);
 	META_CONPRINTF("Called delegate of command %s\n", this->GetName());
 };
+
