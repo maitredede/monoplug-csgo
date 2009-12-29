@@ -84,5 +84,21 @@ namespace MonoPlug
         {
             return IsMethodOfSignature(method, delegateSignature, null);
         }
+
+        internal static string[] Explode(string args)
+        {
+            if (args == null)
+            {
+                return null;
+            }
+            if (string.IsNullOrEmpty(args))
+            {
+                return new string[] { };
+            }
+
+            char space = ' ';
+            //TODO : better args split
+            return args.Split(space);
+        }
     }
 }
