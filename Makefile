@@ -21,8 +21,6 @@ SRCDS_BASE = $(BASE_DIR)/srcds
 OBJECTS = monoplug.cpp monoconcommand.cpp
 BINARY = monoplug_i486.so
 
-CSPROJECTS = MonoPlug.Managed.csproj MonoPlug.Samples.csproj
-
 ##############################################
 ### CONFIGURE ANY OTHER FLAGS/OPTIONS HERE ###
 ##############################################
@@ -30,13 +28,7 @@ CSPROJECTS = MonoPlug.Managed.csproj MonoPlug.Samples.csproj
 OPT_FLAGS = -O3 -funroll-loops -s -pipe
 GCC4_FLAGS = -fvisibility=hidden -fvisibility-inlines-hidden `pkg-config --cflags mono`
 DEBUG_FLAGS = -g -ggdb3 -D_DEBUG
-
-XB_DEBUG = /property:Configuration=Debug
-XB_RELEASE = /property:Configuration=Release
-XB_FLAGS = /t:Build
-
 CPP = gcc-4.1
-XBUILD = xbuild
 
 override ENGSET = false
 ifeq "$(ENGINE)" "original"
@@ -110,11 +102,9 @@ INCLUDE += -I. -I.. -I$(HL2PUB) -I$(HL2PUB)/engine -I$(HL2PUB)/mathlib -I$(HL2PU
 ifeq "$(DEBUG)" "true"
 	BIN_DIR = Debug.$(ENGINE)
 	CFLAGS += $(DEBUG_FLAGS)
-	XB_FLAGS += $(XB_DEBUG)
 else
 	BIN_DIR = Release.$(ENGINE)
 	CFLAGS += $(OPT_FLAGS)
-	XB_FLAGS += $(XB_RELEASE)
 endif
 
 GCC_VERSION := $(shell $(CPP) -dumpversion >&1 | cut -b1)
@@ -132,16 +122,12 @@ OBJ_LINUX := $(OBJECTS:%.cpp=$(BIN_DIR)/%.o)
 
 $(BIN_DIR)/%.o: %.cpp
 	$(CPP) $(INCLUDE) $(CFLAGS) -o $@ -c $<
-	
-$(CSPROJECTS:%.csproj):
-	$(XBUILD) $(XB_FLAGS) $<
 
 all: check
 	mkdir -p $(BIN_DIR)
 	ln -sf $(HL2LIB)/vstdlib_$(LIB_SUFFIX).so
 	ln -sf $(HL2LIB)/tier0_$(LIB_SUFFIX).so
-	$(MAKE) -f Makefile monoplugnative
-	$(MAKE) -f Makefile monoplugmanaged
+	$(MAKE) -f Makefile monoplug_native
 	
 check:
 	if [ "$(ENGSET)" = "false" ]; then \
@@ -150,11 +136,8 @@ check:
 		exit 1; \
 	fi
 
-monoplugnative: check $(OBJ_LINUX)
+monoplug_native: check $(OBJ_LINUX)
 	$(CPP) $(INCLUDE) -m32 $(OBJ_LINUX) $(LINK) -shared -ldl -lm -o$(BIN_DIR)/$(BINARY)
-	
-monoplugmanaged: check $(CSPROJECTS:%.csproj)
-	
 
 default: all
 
