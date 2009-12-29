@@ -15,8 +15,8 @@ namespace MonoPlug
             this._lstMsg = new List<MessageEntry>();
             this._plugins = new Dictionary<AppDomain, ClsPluginBase>();
 
-            this._commands = new Dictionary<string, ConCommandEntry>();
-            this._varString = new Dictionary<UInt64, ConVarEntry>();
+            this._ConCommands = new Dictionary<string, ConCommandEntry>();
+            this._ConVarString = new Dictionary<UInt64, ConVarEntry>();
 
             //get current thread Id to check for interthread calls
             this._mainThreadId = System.Threading.Thread.CurrentThread.ManagedThreadId;

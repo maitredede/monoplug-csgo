@@ -55,7 +55,7 @@ namespace MonoPlug
             }
         }
 
-        private Dictionary<string, ConCommandEntry> _commands = null;
+        private Dictionary<string, ConCommandEntry> _ConCommands = null;
 
         internal bool RegisterCommand(ClsPluginBase plugin, string name, string description, ConCommandDelegate code, FCVAR flags)
         {
@@ -70,9 +70,9 @@ namespace MonoPlug
             entry.Description = description;
             entry.Code = code;
 
-            lock (this._commands)
+            lock (this._ConCommands)
             {
-                if (this._commands.ContainsKey(name))
+                if (this._ConCommands.ContainsKey(name))
                 {
                     return false;
                 }
@@ -80,7 +80,7 @@ namespace MonoPlug
                 Mono_RegisterConCommand(name, description, code, (int)flags);
                 if (true)
                 {
-                    this._commands.Add(name, entry);
+                    this._ConCommands.Add(name, entry);
                     return true;
                 }
                 //else
@@ -92,15 +92,15 @@ namespace MonoPlug
 
         internal bool UnregisterCommand(ClsPluginBase plugin, string name)
         {
-            lock (this._commands)
+            lock (this._ConCommands)
             {
-                if (this._commands.ContainsKey(name))
+                if (this._ConCommands.ContainsKey(name))
                 {
-                    ConCommandEntry entry = this._commands[name];
+                    ConCommandEntry entry = this._ConCommands[name];
                     if (entry.Plugin == plugin)
                     {
                         Mono_UnregisterConCommand(name);
-                        this._commands.Remove(name);
+                        this._ConCommands.Remove(name);
                         return true;
                         //						if()
                         //						{

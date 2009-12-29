@@ -6,7 +6,7 @@ namespace MonoPlug
 {
     partial class ClsMain
     {
-        private Dictionary<UInt64, ConVarEntry> _varString = null;
+        private Dictionary<UInt64, ConVarEntry> _ConVarString = null;
         private ClsConVarStrings _clr_mono_version = null;
 
         internal ClsConVarStrings RegisterConVarString(ClsPluginBase plugin, string name, string description, FCVAR flags, string defaultValue)
@@ -15,7 +15,7 @@ namespace MonoPlug
             if (string.IsNullOrEmpty(description)) throw new ArgumentNullException("description");
             ValidateFlags(flags, "flags");
 
-            lock (this._varString)
+            lock (this._ConVarString)
             {
                 //Check if var exists
                 if (this.VarStringExists(name)) return null;
@@ -29,7 +29,7 @@ namespace MonoPlug
                     ConVarEntry entry = new ConVarEntry();
                     entry.Plugin = plugin;
                     entry.Var = new ClsConVarStrings(nativeId, name, description, flags);
-                    this._varString.Add(nativeId, entry);
+                    this._ConVarString.Add(nativeId, entry);
                     return entry.Var;
                 }
                 else
@@ -41,9 +41,9 @@ namespace MonoPlug
 
         private bool VarStringExists(string name)
         {
-            foreach (UInt64 key in this._varString.Keys)
+            foreach (UInt64 key in this._ConVarString.Keys)
             {
-                if (this._varString[key].Var.Name.Equals(name, StringComparison.InvariantCultureIgnoreCase))
+                if (this._ConVarString[key].Var.Name.Equals(name, StringComparison.InvariantCultureIgnoreCase))
                 {
                     return true;
                 }
@@ -60,9 +60,9 @@ namespace MonoPlug
             //#if DEBUG
             //            Mono_Msg(string.Format("M:_ConVarStringChanged({0})", nativeId));
             //#endif
-            if (this._varString.ContainsKey(nativeId))
+            if (this._ConVarString.ContainsKey(nativeId))
             {
-                this._varString[nativeId].Var.RaiseValueChanged();
+                this._ConVarString[nativeId].Var.RaiseValueChanged();
             }
         }
 
@@ -70,12 +70,12 @@ namespace MonoPlug
         {
             if (convar == null) throw new ArgumentNullException("convar");
 
-            lock (this._varString)
+            lock (this._ConVarString)
             {
-                if (this._varString.ContainsKey(convar.NativeID))
+                if (this._ConVarString.ContainsKey(convar.NativeID))
                 {
                     Mono_UnregisterConVarString(convar.NativeID);
-                    this._varString.Remove(convar.NativeID);
+                    this._ConVarString.Remove(convar.NativeID);
                 }
             }
         }
