@@ -129,10 +129,12 @@ ifeq "$(GCC_VERSION)" "4"
 endif
 
 OBJ_LINUX := $(OBJECTS:%.cpp=$(BIN_DIR)/%.o)
-CS_ELEMS := $(CSPROJECTS:%.csproj)
 
 $(BIN_DIR)/%.o: %.cpp
 	$(CPP) $(INCLUDE) $(CFLAGS) -o $@ -c $<
+	
+$(CSPROJECTS:%.csproj): %.csproj
+	$(XBUILD) $(XB_FLAGS) $<
 
 all: check
 	mkdir -p $(BIN_DIR)
@@ -151,8 +153,8 @@ check:
 monoplugnative: check $(OBJ_LINUX)
 	$(CPP) $(INCLUDE) -m32 $(OBJ_LINUX) $(LINK) -shared -ldl -lm -o$(BIN_DIR)/$(BINARY)
 	
-monoplugmanaged: check $(CS_ELEMS)
-	$(XBUILD) $(XB_FLAGS) $(CS_ELEMS)
+monoplugmanaged: check $(CSPROJECTS:%.csproj)
+	
 
 default: all
 
