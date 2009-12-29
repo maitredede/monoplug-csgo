@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Threading;
 
 namespace MonoPlug
 {
@@ -10,6 +11,17 @@ namespace MonoPlug
 
         internal void Msg(string message)
         {
+            if (Thread.CurrentThread.ManagedThreadId == this._mainThreadId)
+            {
+                lock (this._lckMsg)
+                {
+                    Mono_Msg(message);
+                }
+            }
+            else
+            {
+                Console.WriteLine("MONO_MSG INTERTHREAD CALL");
+            }
         }
 
         internal void Msg(string format, params object[] vals)
