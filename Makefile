@@ -129,6 +129,8 @@ endif
 
 OBJ_LINUX := $(OBJECTS:%.cpp=$(BIN_DIR)/%.o)
 
+OBJ_CS := $(CSPROJECTS:%.csproj)
+
 $(CSPROJECTS:%.csproj):
 	$(XBUILD) $(XB_FLAGS) $<
 
@@ -152,7 +154,7 @@ check:
 monoplug_native: check $(OBJ_LINUX)
 	$(CPP) $(INCLUDE) -m32 $(OBJ_LINUX) $(LINK) -shared -ldl -lm -o$(BIN_DIR)/$(BINARY)
 
-monoplug_managed: check $(CSPROJECTS:%.csproj)
+monoplug_managed: check $(OBJ_CS)
 	
 	
 default: all
