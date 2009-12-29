@@ -95,9 +95,6 @@ public: //Hooks
 		bool loadGame,
 		bool background);
 	void Hook_LevelShutdown(void);
-private:
-	MonoMethod* m_ListPlugins;
-	MonoMethod* m_PluginLoad;
 public:
 	MonoObject* m_ClsMain;
 

@@ -16,70 +16,19 @@ namespace MonoPlug
         /// <summary>
         /// List of awaiting Messages 
         /// </summary>
-        private List<MessageEntry> _lstMsg;
+        private List<MessageEntry> _lstMsg = null;
         /// <summary>
         /// Plugin instanciated and running 
         /// </summary>
-        private Dictionary<AppDomain, ClsPluginBase> _plugins;
+        private Dictionary<AppDomain, ClsPluginBase> _plugins = null;
         /// <summary>
         /// Available plugin cache list 
         /// </summary>
-        private PluginDefinition[] _pluginCache;
+        private PluginDefinition[] _pluginCache = null;
         #endregion
 
         public ClsMain()
         {
-        }
-
-        /// <summary>
-        /// Callback for plugin load 
-        /// </summary>
-        /// <param name="type">
-        /// The <see cref="System.String"/> that represent the plugin type (shown in clr_plugin_list)
-        /// </param>
-        internal void _PluginLoad(string type)
-        {
-            try
-            {
-                lock (this._plugins)
-                {
-                    PluginDefinition desc = null;
-                    foreach (PluginDefinition plug in this._pluginCache)
-                    {
-                        if (plug.Type == type)
-                        {
-                            desc = plug;
-                            break;
-                        }
-                    }
-
-                    if (desc == null)
-                    {
-                        Msg("Can't find plugin type : {0}\n", type);
-                    }
-                    else
-                    {
-                        try
-                        {
-                            AppDomain dom = AppDomain.CreateDomain(desc.Name);
-                            ClsMain main = (ClsMain)dom.CreateInstanceFromAndUnwrap(Assembly.GetExecutingAssembly().CodeBase, typeof(ClsMain).FullName);
-                            ClsPluginBase plugin = main.CreatePlugin(desc);
-                            this._plugins.Add(dom, plugin); ;
-                            plugin.Init(this);
-                        }
-                        catch (Exception ex)
-                        {
-                            Msg("Can't load plugin : {0} : {1}\n", type, ex.Message);
-                        }
-                    }
-                }
-            }
-            catch (Exception ex)
-            {
-                Msg("PluginLoad Exception : {0}\n", ex.GetType().FullName);
-                Msg("{0}\n", ex.Message);
-                Msg("{0}\n", ex.StackTrace);
-            }
         }
 
         /// <summary>
@@ -90,7 +39,6 @@ namespace MonoPlug
         /// </returns>
         private PluginDefinition[] GetPlugins()
         {
-            List<PluginDefinition> lst = new List<PluginDefinition>();
             AppDomain dom = null;
             try
             {
@@ -101,22 +49,13 @@ namespace MonoPlug
 
                 //Instanciate the remote wrapper
                 ClsMain main = (ClsMain)dom.CreateInstanceFromAndUnwrap(Assembly.GetExecutingAssembly().CodeBase, typeof(ClsMain).FullName);
-                ClsPluginBase[] arr = main.GetPluginsFromDirectory(path);
-
-                //Gather plugin data
-                foreach (ClsPluginBase plugin in arr)
-                {
-                    PluginDefinition desc = new PluginDefinition();
-                    desc.File = plugin.GetType().Assembly.Location;
-                    desc.Name = plugin.Name;
-                    desc.Type = plugin.GetType().FullName;
-                    lst.Add(desc);
-                }
+                return main.Remote_GetPluginsFromDirectory(path);
             }
             catch (Exception ex)
             {
                 Msg("GetPlugins Error : {0}\n", ex.Message);
                 Msg("GetPlugins Error : {0}\n", ex.StackTrace);
+                return new PluginDefinition[] { };
             }
             finally
             {
@@ -126,8 +65,6 @@ namespace MonoPlug
                     AppDomain.Unload(dom);
                 }
             }
-
-            return lst.ToArray();
         }
 
         /// <summary>
@@ -139,7 +76,7 @@ namespace MonoPlug
         /// <returns>
         /// A <see cref="ClsPluginBase"/> Plugin instance
         /// </returns>
-        private ClsPluginBase CreatePlugin(PluginDefinition desc)
+        private ClsPluginBase Remote_CreatePlugin(PluginDefinition desc)
         {
             Assembly asm = Assembly.LoadFile(desc.File);
             Type t = asm.GetType(desc.Type, true);
@@ -156,16 +93,17 @@ namespace MonoPlug
         /// <returns>
         /// A <see cref="ClsPluginBase"/> Plugins array
         /// </returns>
-        private ClsPluginBase[] GetPluginsFromDirectory(string path)
+        private PluginDefinition[] Remote_GetPluginsFromDirectory(string path)
         {
-            List<ClsPluginBase> lst = new List<ClsPluginBase>();
+            List<PluginDefinition> lst = new List<PluginDefinition>();
             string[] files = Directory.GetFiles(path, "*.dll");
             foreach (string file in files)
             {
 
                 try
                 {
-                    Assembly asm = Assembly.LoadFile(Path.Combine(path, file));
+                    string filename = Path.Combine(path, file);
+                    Assembly asm = Assembly.LoadFile(filename);
                     foreach (Type t in asm.GetTypes())
                     {
                         try
@@ -174,7 +112,11 @@ namespace MonoPlug
                             {
                                 ConstructorInfo ctor = t.GetConstructor(Type.EmptyTypes);
                                 ClsPluginBase plugin = (ClsPluginBase)ctor.Invoke(null);
-                                lst.Add(plugin);
+                                PluginDefinition definition = new PluginDefinition();
+                                definition.File = filename;
+                                definition.Name = plugin.Name;
+                                definition.Type = plugin.GetType().FullName;
+                                lst.Add(definition);
                             }
                         }
                         catch//(Exception ex)
