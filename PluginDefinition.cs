@@ -3,6 +3,7 @@ using System;
 
 namespace MonoPlug
 {
+    [Serializable]
     internal struct PluginDefinition
     {
         public string File { get; set; }
