@@ -133,7 +133,7 @@ OBJ_LINUX := $(OBJECTS:%.cpp=$(BIN_DIR)/%.o)
 $(BIN_DIR)/%.o: %.cpp
 	$(CPP) $(INCLUDE) $(CFLAGS) -o $@ -c $<
 	
-$(CSPROJECTS:%.csproj): %.csproj
+$(CSPROJECTS:%.csproj):
 	$(XBUILD) $(XB_FLAGS) $<
 
 all: check
