@@ -11,10 +11,18 @@ namespace MonoPlug
         {
             if (this._pluginCache == null)
                 this._pluginCache = new PluginDefinition[] { };
-            Msg("Found {0} plugins\n", this._pluginCache.Length);
+            Msg("Available : {0} plugins\n", this._pluginCache.Length);
             foreach (PluginDefinition desc in this._pluginCache)
             {
-                Msg(desc.ToString() + "\n");
+                Msg("  {0}\n", desc);
+            }
+            lock (this._plugins)
+            {
+                Msg("Loaded : {0} plugins\n", this._plugins.Count);
+                foreach (AppDomain dom in this._plugins.Keys)
+                {
+                    Msg("  {0}\n", this._plugins[dom].Name);
+                }
             }
         }
     }

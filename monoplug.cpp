@@ -90,9 +90,9 @@ static MonoString* Mono_GetConVarStringValue(uint64 nativeID)
 
 static void Mono_SetConVarStringValue(uint64 nativeID, MonoString* value)
 {
-#ifdef _DEBUG
-	META_CONPRINT("Entering Mono_SetConVarStringValue\n");
-#endif
+//#ifdef _DEBUG
+//	META_CONPRINT("Entering Mono_SetConVarStringValue\n");
+//#endif
 
 	for(int i=0;i<g_MonoPlugPlugin.m_convarStringId->Count(); i++)
 	{

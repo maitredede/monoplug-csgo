@@ -37,6 +37,7 @@
     <Compile Include="ClsMain - clr_plugin_list.cs" />
     <Compile Include="ClsMain - clr_plugin_load.cs" />
     <Compile Include="ClsMain - clr_plugin_refresh.cs" />
+    <Compile Include="ClsMain - clr_plugin_unload.cs" />
     <Compile Include="ClsMain - clr_test.cs" />
     <Compile Include="ClsMain - ConVars.cs" />
     <Compile Include="ClsMain - InitShutdown.cs" />

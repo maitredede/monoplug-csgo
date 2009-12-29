@@ -15,9 +15,11 @@ namespace MonoPlug
         private ManualResetEvent _waitIn;
         private ManualResetEvent _waitOut;
 
+        private int _isInITCall = 0;
+
         private void InterthreadCall(InternalActionDelegate d)
         {
-            if (Thread.CurrentThread.ManagedThreadId == this._mainThreadId)
+            if (Thread.CurrentThread.ManagedThreadId == this._mainThreadId || Interlocked.Exchange(ref this._isInITCall, this._isInITCall) > 1)
             {
                 d.Invoke();
             }
@@ -27,7 +29,10 @@ namespace MonoPlug
                 this._waitIn.WaitOne();
                 lock (this._lckThreadSync)
                 {
+                    Interlocked.Increment(ref this._isInITCall);
                     d.Invoke();
+                    Interlocked.Decrement(ref this._isInITCall);
+
                     if (Interlocked.Decrement(ref this._queueLength) == 0)
                     {
                         this._waitIn.Reset();
