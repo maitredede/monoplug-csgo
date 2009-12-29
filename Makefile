@@ -151,7 +151,7 @@ check:
 monoplugnative: check $(OBJ_LINUX)
 	$(CPP) $(INCLUDE) -m32 $(OBJ_LINUX) $(LINK) -shared -ldl -lm -o$(BIN_DIR)/$(BINARY)
 	
-monoplugmanaged:
+monoplugmanaged: check $(CS_ELEMS)
 	$(XBUILD) $(XB_FLAGS) $(CS_ELEMS)
 
 default: all
