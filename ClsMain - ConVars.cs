@@ -6,8 +6,8 @@ namespace MonoPlug
 {
     partial class ClsMain
     {
-        private Dictionary<UInt64, ConVarEntry> _varString;
-        private ClsConVarStrings _clr_mono_version;
+        private Dictionary<UInt64, ConVarEntry> _varString = null;
+        private ClsConVarStrings _clr_mono_version = null;
 
         internal ClsConVarStrings RegisterConVarString(ClsPluginBase plugin, string name, string description, FCVAR flags, string defaultValue)
         {

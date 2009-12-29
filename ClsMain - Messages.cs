@@ -7,21 +7,14 @@ namespace MonoPlug
 {
     partial class ClsMain
     {
-        private readonly object _lckMsg = new object();
-
         internal void Msg(string message)
         {
-            if (Thread.CurrentThread.ManagedThreadId == this._mainThreadId)
+            InternalActionDelegate d = () =>
             {
-                lock (this._lckMsg)
-                {
-                    Mono_Msg(message);
-                }
-            }
-            else
-            {
-                Console.WriteLine("MONO_MSG INTERTHREAD CALL");
-            }
+                Mono_Msg(message);
+            };
+
+            this.InterthreadCall(d);
         }
 
         internal void Msg(string format, params object[] vals)

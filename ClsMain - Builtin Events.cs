@@ -28,9 +28,5 @@ namespace MonoPlug
                 }
             }
         }
-
-        internal void EVT_GameFrame()
-        {
-        }
     }
 }

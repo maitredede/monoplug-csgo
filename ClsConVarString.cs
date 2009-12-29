@@ -7,7 +7,7 @@ namespace MonoPlug
 #if DEBUG
     [System.Diagnostics.DebuggerDisplay("ConVarString : {Name} = {Value}")]
 #endif
-    public sealed class ClsConVarStrings
+    public sealed class ClsConVarStrings : MarshalByRefObject
     {
         private readonly string _name;
         private readonly string _desc;

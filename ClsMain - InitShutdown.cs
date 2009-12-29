@@ -20,6 +20,8 @@ namespace MonoPlug
 
             //get current thread Id to check for interthread calls
             this._mainThreadId = System.Threading.Thread.CurrentThread.ManagedThreadId;
+            this._waitIn = new System.Threading.ManualResetEvent(false);
+            this._waitOut = new System.Threading.ManualResetEvent(false);
 
             //Refresh plugin cache
             this.clr_plugin_refresh(string.Empty);

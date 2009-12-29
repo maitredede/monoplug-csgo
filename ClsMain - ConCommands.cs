@@ -55,7 +55,7 @@ namespace MonoPlug
             }
         }
 
-        private Dictionary<string, ConCommandEntry> _commands;
+        private Dictionary<string, ConCommandEntry> _commands = null;
 
         internal bool RegisterCommand(ClsPluginBase plugin, string name, string description, ConCommandDelegate code, FCVAR flags)
         {
