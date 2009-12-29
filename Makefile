@@ -34,7 +34,8 @@ CPP = gcc-4.1
 XBUILD = xbuild
 XB_DEBUG = /property:Configuration=Debug
 XB_RELEASE = /property:Configuration=Release
-XB_FLAGS = /t:Build /nologo
+XB_FLAGS = /t:Build /nologo /verbosity:quiet /noconsolelogger
+XB_CLEAN = /t:Clean /nologo /verbosity:quiet /noconsolelogger
 
 
 override ENGSET = false
@@ -110,10 +111,12 @@ ifeq "$(DEBUG)" "true"
 	BIN_DIR = Debug.$(ENGINE)
 	CFLAGS += $(DEBUG_FLAGS)
 	XB_FLAGS += $(XB_DEBUG)
+	XB_CLEAN += $(XB_DEBUG)
 else
 	BIN_DIR = Release.$(ENGINE)
 	CFLAGS += $(OPT_FLAGS)
 	XB_FLAGS += $(XB_RELEASE)
+	 XB_CLEAN += $(XB_RELEASE)
 endif
 
 GCC_VERSION := $(shell $(CPP) -dumpversion >&1 | cut -b1)
@@ -128,11 +131,6 @@ ifeq "$(GCC_VERSION)" "4"
 endif
 
 OBJ_LINUX := $(OBJECTS:%.cpp=$(BIN_DIR)/%.o)
-
-OBJ_CS := $(CSPROJECTS:%.csproj)
-
-$(CSPROJECTS:%.csproj):
-	$(XBUILD) $(XB_FLAGS) $<
 
 $(BIN_DIR)/%.o: %.cpp
 	$(CPP) $(INCLUDE) $(CFLAGS) -o $@ -c $<
@@ -154,13 +152,14 @@ check:
 monoplug_native: check $(OBJ_LINUX)
 	$(CPP) $(INCLUDE) -m32 $(OBJ_LINUX) $(LINK) -shared -ldl -lm -o$(BIN_DIR)/$(BINARY)
 
-monoplug_managed: check $(OBJ_CS)
-	$(XBUILD) $(XB_FLAGS) $(OBJ_CS)
-	echo $(OBJ_CS)
+monoplug_managed: check $(CSPROJECT)
+#	-$(foreach PRJ,$(CSPROJECT), echo PROJECT : $(PRJ); )
+	$(foreach PRJ,$(CSPROJECT), $(XBUILD) $(XB_FLAGS) $(PRJ); )
 	
 default: all
 
 clean: check
 	rm -rf $(BIN_DIR)/*.o
 	rm -rf $(BIN_DIR)/$(BINARY)
+	$(foreach PRJ,$(CSPROJECT), $(XBUILD) $(XB_CLEAN) $(PRJ); )
 
