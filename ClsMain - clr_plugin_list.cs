@@ -6,14 +6,15 @@ namespace MonoPlug
 {
     partial class ClsMain
     {
-        private void clr_plugin_list(string args)
+        [ConCommand("clr_plugin_list", "List available plugins", FCVAR.FCVAR_GAMEDLL)]
+        public void clr_plugin_list(string args)
         {
             if (this._pluginCache == null)
                 this._pluginCache = new PluginDefinition[] { };
-            Mono_Msg(string.Format("Found {0} plugins\n", this._pluginCache.Length));
+            Msg("Found {0} plugins\n", this._pluginCache.Length);
             foreach (PluginDefinition desc in this._pluginCache)
             {
-                Mono_Msg(desc.ToString() + "\n");
+                Msg(desc.ToString() + "\n");
             }
         }
     }

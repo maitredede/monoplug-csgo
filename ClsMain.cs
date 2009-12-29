@@ -55,7 +55,7 @@ namespace MonoPlug
 
                     if (desc == null)
                     {
-                        Mono_Msg("Can't find plugin type : " + type + "\n");
+                        Msg("Can't find plugin type : {0}\n", type);
                     }
                     else
                     {
@@ -69,40 +69,17 @@ namespace MonoPlug
                         }
                         catch (Exception ex)
                         {
-                            Mono_Msg("Can't load plugin : " + type + "\n");
-                            Mono_Msg(ex.Message + "\n");
+                            Msg("Can't load plugin : {0} : {1}\n", type, ex.Message);
                         }
                     }
                 }
             }
             catch (Exception ex)
             {
-                Mono_Msg("PluginLoad Exception : " + ex.GetType().FullName + "\n");
-                Mono_Msg(ex.Message + "\n");
-                Mono_Msg(ex.StackTrace + "\n");
+                Msg("PluginLoad Exception : {0}\n", ex.GetType().FullName);
+                Msg("{0}\n", ex.Message);
+                Msg("{0}\n", ex.StackTrace);
             }
-        }
-
-        private void AppendMessage(MessageType t, string m)
-        {
-            if (!string.IsNullOrEmpty(m))
-            {
-                lock (this._lstMsg)
-                {
-                    this._lstMsg.Add(new MessageEntry(t, m));
-                }
-            }
-        }
-
-        /// <summary>
-        /// Enqueue a Msg 
-        /// </summary>
-        /// <param name="msg">
-        /// A <see cref="System.String"/> : The message to enqueue
-        /// </param>
-        internal void Msg(string msg)
-        {
-            this.AppendMessage(MessageType.Msg, msg);
         }
 
         /// <summary>
@@ -114,16 +91,19 @@ namespace MonoPlug
         private PluginDefinition[] GetPlugins()
         {
             List<PluginDefinition> lst = new List<PluginDefinition>();
+            AppDomain dom = null;
             try
             {
-                AppDomain dom = AppDomain.CreateDomain("GetPlugins");
+                //Create another domain to gather plugin data
+                dom = AppDomain.CreateDomain("GetPlugins");
                 string path = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
-                Mono_Msg("Path is :" + path + "\n");
+                Msg("CLR: Assembly path is : {0}\n", path);
+
+                //Instanciate the remote wrapper
                 ClsMain main = (ClsMain)dom.CreateInstanceFromAndUnwrap(Assembly.GetExecutingAssembly().CodeBase, typeof(ClsMain).FullName);
-                //Assembly asm = dom.Load(Assembly.GetExecutingAssembly().Location);
-                //Type t = asm.GetType(typeof(ClsMain).FullName, true);
                 ClsPluginBase[] arr = main.GetPluginsFromDirectory(path);
 
+                //Gather plugin data
                 foreach (ClsPluginBase plugin in arr)
                 {
                     PluginDefinition desc = new PluginDefinition();
@@ -132,14 +112,21 @@ namespace MonoPlug
                     desc.Type = plugin.GetType().FullName;
                     lst.Add(desc);
                 }
-
-                AppDomain.Unload(dom);
             }
             catch (Exception ex)
             {
-                Mono_Msg(string.Format("GetPlugins Error : {0}\n", ex.Message));
-                Mono_Msg(string.Format("GetPlugins Error : {0}\n", ex.StackTrace));
+                Msg("GetPlugins Error : {0}\n", ex.Message);
+                Msg("GetPlugins Error : {0}\n", ex.StackTrace);
             }
+            finally
+            {
+                if (dom != null)
+                {
+                    //Destroy remote domain
+                    AppDomain.Unload(dom);
+                }
+            }
+
             return lst.ToArray();
         }
 
@@ -192,67 +179,16 @@ namespace MonoPlug
                         }
                         catch//(Exception ex)
                         {
-                            Mono_Msg(string.Format("Can't create type : {0}\n", t.FullName));
+                            Msg("Can't create type : {0}\n", t.FullName);
                         }
                     }
                 }
                 catch //(Exception ex)
                 {
-                    Mono_Msg(string.Format("Can't load file : {0}\n", file));
+                    Msg("Can't load file : {0}\n", file);
                 }
             }
             return lst.ToArray();
-        }
-
-        /// <value>
-        /// Get Mono Runtime version
-        /// </value>
-        internal static string MonoVersion
-        {
-            get
-            {
-                Type t = Type.GetType("Mono.Runtime");
-                if (t == null)
-                    return "Not on Mono Runtime";
-                PropertyInfo prop = t.GetProperty("Version");
-                if (prop == null)
-                {
-                    t = Type.GetType("Consts", false, false);
-                    if (t == null)
-                    {
-                        return ("Can't Mono.Runtime.Version or Consts.MonoVersion");
-                    }
-                    else
-                    {
-                        FieldInfo f = t.GetField("MonoVersion");
-                        return (string)f.GetValue(null);
-                    }
-                }
-                else
-                {
-                    object version = prop.GetValue(null, null);
-                    if (version == null)
-                    {
-                        return "Version is null";
-                    }
-                    return prop.GetValue(null, null).ToString();
-                }
-            }
-        }
-
-        internal static void ValidateFlags(FCVAR flags, string argName)
-        {
-            FCVAR all = FCVAR.FCVAR_NONE;
-            foreach (FCVAR value in Enum.GetValues(typeof(FCVAR)))
-            {
-                all |= value;
-            }
-            int revall = ((int)all) ^ -1;
-            int calc = ((int)flags) & revall;
-            if (calc != 0)
-            {
-                throw new ArgumentOutOfRangeException(argName);
-            }
         }
     }
 }

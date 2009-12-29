@@ -41,6 +41,8 @@
     <Compile Include="ClsMain - ConVars.cs" />
     <Compile Include="ClsMain - InitShutdown.cs" />
     <Compile Include="ClsMain - Messages.cs" />
+    <Compile Include="ClsMain - Threading.cs" />
+    <Compile Include="ClsMain - Tools.cs" />
     <Compile Include="ClsMain.cs" />
     <Compile Include="ConCommandAttribute.cs" />
     <Compile Include="ConCommandEntry.cs" />

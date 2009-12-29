@@ -7,27 +7,32 @@ namespace MonoPlug
     partial class ClsMain
     {
 #if DEBUG
-        [ConCommand("clr_test", "Add the clr_untest command", FCVAR.FCVAR_GAMEDLL)]
+        private ClsConVarStrings _clr_vartest = null;
+
+        [ConCommand("clr_test", "Command for testing purposes", FCVAR.FCVAR_GAMEDLL)]
         private void clr_test(string args)
         {
             //this.RegisterCommand(null, "clr_untest", "Remove the clr_test command", this.clr_untest, FCVAR.FCVAR_GAMEDLL);
             //Mono_Msg("clr_untest registered OK\n");
-            Mono_Msg(string.Format("Current vartest value is {0}\n", this._clr_vartest.Value));
-            this._clr_vartest.Value = DateTime.Now.ToLongTimeString();
+            //Mono_Msg(string.Format("Current vartest value is {0}\n", this._clr_vartest.Value));
+            //this._clr_vartest.Value = DateTime.Now.ToLongTimeString();
+            if (this._clr_vartest == null)
+            {
+                Mono_Msg("M:Create var\n");
+                this._clr_vartest = this.RegisterConVarString(null, "clr_var", "Test var", FCVAR.FCVAR_CHEAT, "je de lol");
+                this._clr_vartest.ValueChanged += this._clr_vartest_changed;
+            }
+            else
+            {
+                Mono_Msg("M:Delete var\n");
+                this.UnregisterConVarString(null, this._clr_vartest);
+                this._clr_vartest = null;
+            }
         }
 
-        //[ConCommand("clr_untest", "Remove the clr_test command", FCVAR.FCVAR_GAMEDLL)]
-        //private void clr_untest(string args)
-        //{
-        //    this.UnregisterCommand(null, "clr_test");
-        //    Mono_Msg("clr_test unregistred\n");
-        //}
-
-        private ClsConVarStrings _clr_vartest;
         private void _clr_vartest_changed(object sender, EventArgs e)
         {
             Mono_Msg(string.Format("M: VARTEST Value changed : {0}\n", this._clr_vartest.Value));
-            DumpThreadId();
         }
 #endif
     }

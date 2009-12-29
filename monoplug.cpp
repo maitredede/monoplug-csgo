@@ -26,8 +26,9 @@ MonoClass *g_Class = NULL;
 
 MonoMethod* g_Init = NULL;
 MonoMethod* g_Shutdown = NULL;
-MonoMethod* g_HandleMessage = NULL;
+//MonoMethod* g_HandleMessage = NULL;
 
+MonoMethod* g_EVT_GameFrame = NULL;
 MonoMethod* g_EVT_LevelInit = NULL;
 MonoMethod* g_EVT_LevelShutdown = NULL;
 MonoMethod* g_EVT_ConVarStringValueChanged = NULL;
@@ -48,6 +49,11 @@ public:
 
 PLUGIN_EXPOSE(CMonoPlug, g_MonoPlugPlugin);
 
+static uint64 Mono_RegisterConVarString(MonoString* name, MonoString* description, int flags, MonoString* defaultValue);
+static void Mono_UnregisterConVarString(uint64 nativeID);
+static bool Mono_RegisterConCommand(MonoString* name, MonoString* description, MonoDelegate* code, int flags);
+static bool Mono_UnregisterConCommand(MonoString* name);
+
 static void ConVarStringChangeCallback(IConVar *var, const char *pOldValue, float flOldValue)
 {
 	ConVar* v = (ConVar*)var;
@@ -61,77 +67,6 @@ static void ConVarStringChangeCallback(IConVar *var, const char *pOldValue, floa
 		args[0] = &val;
 		MONO_CALL_ARGS(g_MonoPlugPlugin.m_ClsMain, g_EVT_ConVarStringValueChanged, args);
 	}
-};
-
-
-static bool Mono_RegisterConCommand(MonoString* name, MonoString* description, MonoDelegate* code, int flags)
-{
-	MonoConCommand* com = new MonoConCommand(mono_string_to_utf8(name), mono_string_to_utf8(description), code, flags);
-	g_pCVar->RegisterConCommand(com);
-	//{
-		g_MonoPlugPlugin.m_conCommands->AddToTail(com);
-		return true;
-	//}
-	//else
-	//{
-	//	delete com;
-	//	return false;
-	//}
-};
-
-static bool Mono_UnregisterConCommand(MonoString* name)
-{
-	const char* s_name = mono_string_to_utf8(name);
-
-	for(int i = 0; i < 	g_MonoPlugPlugin.m_conCommands->Count(); i++)
-	{
-		MonoConCommand* item = 	g_MonoPlugPlugin.m_conCommands->Element(i);
-
-		if(Q_strcmp(item->GetName(), s_name) == 0)
-		{
-			g_pCVar->UnregisterConCommand(item);
-			g_MonoPlugPlugin.m_conCommands->Remove(i);
-			delete item;
-			return true;
-		}
-	}
-
-	META_CONPRINTF("Mono_UnregisterConCommand : Command NOT found\n");
-	return false;
-};
-
-static uint64 Mono_RegisterConVarString(MonoString* name, MonoString* description, int flags, MonoString* defaultValue)
-{
-	uint64 nativeID = ++g_MonoPlugPlugin.m_convarStringIdValue;
-	ConVar* var = new ConVar(
-		mono_string_to_utf8(name),
-		mono_string_to_utf8(defaultValue),
-		flags,
-		mono_string_to_utf8(description)
-		, (FnChangeCallback_t)ConVarStringChangeCallback
-		);
-	g_pCVar->RegisterConCommand(var);
-	g_MonoPlugPlugin.m_convarStringId->AddToTail(new uint64Container(nativeID));
-	g_MonoPlugPlugin.m_convarStringPtr->AddToTail(var);
-	return nativeID;
-};
-
-static void Mono_UnregisterConVarString(uint64 nativeID)
-{
-	for(int i=0;i<g_MonoPlugPlugin.m_convarStringId->Count(); i++)
-	{
-		uint64Container* cont = g_MonoPlugPlugin.m_convarStringId->Element(i);
-		if(cont->Value() == nativeID)
-		{
-			ConVar* var = g_MonoPlugPlugin.m_convarStringPtr->Element(i);
-			g_pCVar->UnregisterConCommand(var);
-			g_MonoPlugPlugin.m_convarStringId->Remove(i);
-			g_MonoPlugPlugin.m_convarStringPtr->Remove(i);
-			delete var;
-			break;
-		}
-	}
-
 };
 
 static MonoString* Mono_GetConVarStringValue(uint64 nativeID)
@@ -238,6 +173,7 @@ bool CMonoPlug::Load(PluginId id, ISmmAPI *ismm, char *error, size_t maxlen, boo
 			META_CONPRINTF("%s\n", error);
 			return false;
 		}
+
 		g_Assembly = mono_domain_assembly_open(g_Domain, dllPath);
 		if(!g_Assembly)
 		{
@@ -287,9 +223,9 @@ bool CMonoPlug::Load(PluginId id, ISmmAPI *ismm, char *error, size_t maxlen, boo
 		//Get callbacks from native to managed
 		ATTACH(MONOPLUG_NATMAN_INIT, g_Init, g_Image);
 		ATTACH(MONOPLUG_NATMAN_SHUTDOWN, g_Shutdown, g_Image);
-		ATTACH(MONOPLUG_NATMAN_HANDLEMESSAGE, g_HandleMessage, g_Image);
 		
 		//Events
+		ATTACH(MONOPLUG_CLSMAIN_EVT_GAMEFRAME, g_EVT_GameFrame, g_Image);
 		ATTACH(MONOPLUG_CLSMAIN_EVT_LEVELINIT, g_EVT_LevelInit, g_Image);
 		ATTACH(MONOPLUG_CLSMAIN_EVT_LEVELSHUTDOWN, g_EVT_LevelShutdown, g_Image);
 		ATTACH(MONOPLUG_NATMAN_CONVARSTRING_VALUECHANGED, g_EVT_ConVarStringValueChanged, g_Image);
@@ -368,7 +304,7 @@ void CMonoPlug::Hook_GameFrame(bool simulating)
 	 * true  | game is ticking
 	 * false | game is not ticking
 	 */
-	 //MONO_CALL(this->m_ClsMain, g_HandleMessage);
+	MONO_CALL(this->m_ClsMain, g_EVT_GameFrame);
 }
 
 bool CMonoPlug::Hook_LevelInit(const char *pMapName,
@@ -452,3 +388,93 @@ void MonoConCommand::Dispatch(const CCommand &command)
 	args[0] = MONO_STRING(g_Domain, command.ArgS());
 	MONO_DELEGATE_CALL(this->m_code, args);
 };
+
+uint64 Mono_RegisterConVarString(MonoString* name, MonoString* description, int flags, MonoString* defaultValue)
+{
+	uint64 nativeID = ++g_MonoPlugPlugin.m_convarStringIdValue;
+	ConVar* var = new ConVar(
+		mono_string_to_utf8(name),
+		mono_string_to_utf8(defaultValue),
+		flags,
+		mono_string_to_utf8(description)
+		, ConVarStringChangeCallback
+		);
+		g_MonoPlugPlugin.m_convarStringId->AddToTail(new uint64Container(nativeID));
+		g_MonoPlugPlugin.m_convarStringPtr->AddToTail(var);
+		return nativeID;
+	////g_pCVar->RegisterConCommand(var);
+	//if(META_REGCVAR(var))
+	//{
+	//	g_MonoPlugPlugin.m_convarStringId->AddToTail(new uint64Container(nativeID));
+	//	g_MonoPlugPlugin.m_convarStringPtr->AddToTail(var);
+	//	return nativeID;
+	//}
+	//else
+	//{
+	//	return 0;
+	//}
+};
+
+void Mono_UnregisterConVarString(uint64 nativeID)
+{
+	for(int i=0;i<g_MonoPlugPlugin.m_convarStringId->Count(); i++)
+	{
+		uint64Container* cont = g_MonoPlugPlugin.m_convarStringId->Element(i);
+		if(cont->Value() == nativeID)
+		{
+			ConVar* var = g_MonoPlugPlugin.m_convarStringPtr->Element(i);
+			//g_pCVar->UnregisterConCommand(var);
+			META_UNREGCVAR(var);
+			g_MonoPlugPlugin.m_convarStringId->Remove(i);
+			g_MonoPlugPlugin.m_convarStringPtr->Remove(i);
+			delete var;
+			break;
+		}
+	}
+
+};
+
+bool Mono_RegisterConCommand(MonoString* name, MonoString* description, MonoDelegate* code, int flags)
+{
+	MonoConCommand* com = new MonoConCommand(mono_string_to_utf8(name), mono_string_to_utf8(description), code, flags);
+
+	//if(META_REGCVAR(com))
+	//{
+		g_MonoPlugPlugin.m_conCommands->AddToTail(com);
+		return true;
+	//}
+	//return false;
+	//g_pCVar->RegisterConCommand(com);
+	//{
+		//g_MonoPlugPlugin.m_conCommands->AddToTail(com);
+		//return true;
+	//}
+	//else
+	//{
+	//	delete com;
+	//	return false;
+	//}
+};
+
+bool Mono_UnregisterConCommand(MonoString* name)
+{
+	const char* s_name = mono_string_to_utf8(name);
+
+	for(int i = 0; i < 	g_MonoPlugPlugin.m_conCommands->Count(); i++)
+	{
+		MonoConCommand* item = 	g_MonoPlugPlugin.m_conCommands->Element(i);
+
+		if(Q_strcmp(item->GetName(), s_name) == 0)
+		{
+			//g_pCVar->UnregisterConCommand(item);
+			META_UNREGCVAR(item);
+			g_MonoPlugPlugin.m_conCommands->Remove(i);
+			delete item;
+			return true;
+		}
+	}
+
+	META_CONPRINTF("Mono_UnregisterConCommand : Command NOT found\n");
+	return false;
+};
+

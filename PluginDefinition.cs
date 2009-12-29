@@ -5,14 +5,10 @@ namespace MonoPlug
 {
     internal sealed class PluginDefinition
     {
-        public string File;
-        public string Type;
-        public string Name;
-
-        public PluginDefinition Clone()
-        {
-            return (PluginDefinition)this.MemberwiseClone();
-        }
+        public string File { get; set; }
+        public string Type { get; set; }
+        public string Name { get; set; }
+        //public ConCommandAttribute[] Commands { get; set; }
 
         public override string ToString()
         {
