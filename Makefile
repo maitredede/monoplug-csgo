@@ -34,7 +34,7 @@ CPP = gcc-4.1
 XBUILD = xbuild
 XB_DEBUG = /property:Configuration=Debug
 XB_RELEASE = /property:Configuration=Release
-XB_FLAGS = /t:Build
+XB_FLAGS = /t:Build /nologo
 
 
 override ENGSET = false
@@ -156,6 +156,7 @@ monoplug_native: check $(OBJ_LINUX)
 
 monoplug_managed: check $(OBJ_CS)
 	$(XBUILD) $(XB_FLAGS) $(OBJ_CS)
+	echo $(OBJ_CS)
 	
 default: all
 
