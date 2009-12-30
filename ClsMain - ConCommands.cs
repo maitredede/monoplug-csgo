@@ -55,8 +55,6 @@ namespace MonoPlug
             }
         }
 
-        private Dictionary<string, ConCommandEntry> _ConCommands = null;
-
         internal bool RegisterCommand(ClsPluginBase plugin, string name, string description, ConCommandDelegate code, FCVAR flags)
         {
             if (code == null) throw new ArgumentNullException("code");
@@ -77,7 +75,11 @@ namespace MonoPlug
                     return false;
                 }
 
-                Mono_RegisterConCommand(name, description, code, (int)flags);
+                bool ret = false;
+                this.InterThreadCall(() =>
+                {
+                    ret = Mono_RegisterConCommand(name, description, code, (int)flags);
+                });
                 if (true)
                 {
                     this._ConCommands.Add(name, entry);
@@ -99,7 +101,11 @@ namespace MonoPlug
                     ConCommandEntry entry = this._ConCommands[name];
                     if (entry.Plugin == plugin)
                     {
-                        Mono_UnregisterConCommand(name);
+                        bool ret = false;
+                        this.InterThreadCall(() =>
+                        {
+                            ret = Mono_UnregisterConCommand(name);
+                        });
                         this._ConCommands.Remove(name);
                         return true;
                         //						if()

@@ -3,9 +3,13 @@ using System.Threading;
 
 namespace MonoPlug
 {
-    public class ConClock : ClsPluginBase
+    public sealed class ConClock : ClsPluginBase
     {
-        public override string Name { get { return "Console clock"; } }
+        public override string Name { get { return "Sample Console Clock"; } }
+        public override string Description
+        {
+            get { return "Write current time to console each seconds, and update a convar with value"; }
+        }
 
         private Timer _t;
 

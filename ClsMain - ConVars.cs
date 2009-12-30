@@ -1,14 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Threading;
 
 namespace MonoPlug
 {
     partial class ClsMain
     {
-        private Dictionary<UInt64, ConVarEntry> _ConVarString = null;
-        private ClsConVarStrings _clr_mono_version = null;
-
         internal ClsConVarStrings RegisterConVarString(ClsPluginBase plugin, string name, string description, FCVAR flags, string defaultValue)
         {
             if (string.IsNullOrEmpty(name)) throw new ArgumentNullException("name");
@@ -21,9 +19,13 @@ namespace MonoPlug
                 if (this.VarStringExists(name)) return null;
 
                 //Register native var
-                UInt64 nativeId = Mono_RegisterConVarString(name, description, (int)flags, defaultValue);
+                UInt64 nativeId = 0;
+                this.InterThreadCall(() =>
+                {
+                    nativeId = Mono_RegisterConVarString(name, description, (int)flags, defaultValue);
+                });
 
-                Mono_Msg(string.Format("M: RegisterConVarString '{0}' NativeId is {1}\n", name, nativeId));
+                Msg("M: RegisterConVarString '{0}' NativeId is {1}\n", name, nativeId);
                 if (nativeId > 0)
                 {
                     ConVarEntry entry = new ConVarEntry();
@@ -62,7 +64,10 @@ namespace MonoPlug
             //#endif
             if (this._ConVarString.ContainsKey(nativeId))
             {
-                this._ConVarString[nativeId].Var.RaiseValueChanged();
+                ThreadPool.QueueUserWorkItem((object o) =>
+                {
+                    this._ConVarString[nativeId].Var.RaiseValueChanged();
+                });
             }
         }
 
@@ -74,7 +79,10 @@ namespace MonoPlug
             {
                 if (this._ConVarString.ContainsKey(convar.NativeID))
                 {
-                    Mono_UnregisterConVarString(convar.NativeID);
+                    this.InterThreadCall(() =>
+                    {
+                        Mono_UnregisterConVarString(convar.NativeID);
+                    });
                     this._ConVarString.Remove(convar.NativeID);
                 }
             }

@@ -24,5 +24,11 @@ namespace MonoPlug
         internal static extern string Mono_GetConVarStringValue(UInt64 nativeId);
         [MethodImpl(MethodImplOptions.InternalCall)]
         internal static extern void Mono_SetConVarStringValue(UInt64 nativeId, string value);
+
+        //Events
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        internal static extern void Mono_HookClientConnect_Add();
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        internal static extern void Mono_HookClientConnect_Remove();
     }
 }

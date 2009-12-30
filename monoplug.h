@@ -24,23 +24,21 @@
 #define MONOPLUG_FULLCLASSNAME "MonoPlug.ClsMain"
 
 #define MONOPLUG_CALLBACK_MSG "MonoPlug.ClsMain::Mono_Msg"
-
-#define MONOPLUG_NATMAN_INIT "MonoPlug.ClsMain:_Init()"
-#define MONOPLUG_NATMAN_SHUTDOWN "MonoPlug.ClsMain:_Shutdown()"
-//#define MONOPLUG_NATMAN_HANDLEMESSAGE "MonoPlug.ClsMain:_HandleMessages()"
-#define MONOPLUG_CLSMAIN_EVT_GAMEFRAME "MonoPlug.ClsMain:EVT_GameFrame()"
-
 #define MONOPLUG_CALLBACK_REGISTERCONCOMMAND "MonoPlug.ClsMain::Mono_RegisterConCommand(string,string,MonoPlug.ConCommandDelegate,int)"
 #define MONOPLUG_CALLBACK_UNREGISTERCONCOMMAND "MonoPlug.ClsMain::Mono_UnregisterConCommand(string)"
-
 #define MONOPLUG_CALLBACK_REGISTERCONVARSTRING "MonoPlug.ClsMain::Mono_RegisterConVarString(string,string,int,string)"
 #define MONOPLUG_CALLBACK_UNREGISTERCONVARSTRING "MonoPlug.ClsMain::Mono_UnregisterConVarString(ulong)"
 #define MONOPLUG_CALLBACK_CONVARSTRING_GETVALUE "MonoPlug.ClsMain::Mono_GetConVarStringValue(ulong)"
 #define MONOPLUG_CALLBACK_CONVARSTRING_SETVALUE "MonoPlug.ClsMain::Mono_SetConVarStringValue(ulong,string)"
-#define MONOPLUG_NATMAN_CONVARSTRING_VALUECHANGED "MonoPlug.ClsMain:_ConVarStringChanged(ulong)"
 
+#define MONOPLUG_NATMAN_INIT "MonoPlug.ClsMain:_Init()"
+#define MONOPLUG_NATMAN_SHUTDOWN "MonoPlug.ClsMain:_Shutdown()"
+#define MONOPLUG_NATMAN_CONVARSTRING_VALUECHANGED "MonoPlug.ClsMain:_ConVarStringChanged(ulong)"
+//#define MONOPLUG_NATMAN_HANDLEMESSAGE "MonoPlug.ClsMain:_HandleMessages()"
+
+#define MONOPLUG_NATMAN_GAMEFRAME "MonoPlug.ClsMain:EVT_GameFrame()"
 #define MONOPLUG_CLSMAIN_EVT_LEVELINIT "MonoPlug.ClsMain:EVT_LevelInit(string,string,string,string,bool,bool)"
-#define MONOPLUG_CLSMAIN_EVT_LEVELSHUTDOWN "MonoPlug.ClsMain:EVT_LevelShutdown()"
+//#define MONOPLUG_CLSMAIN_EVT_LEVELSHUTDOWN "MonoPlug.ClsMain:EVT_LevelShutdown()"
 
 #if defined WIN32 && !defined snprintf
 #define snprintf _snprintf
@@ -94,7 +92,7 @@ public: //Hooks
 		char const *pLandmarkName,
 		bool loadGame,
 		bool background);
-	void Hook_LevelShutdown(void);
+	//void Hook_LevelShutdown(void);
 public:
 	MonoObject* m_ClsMain;
 
@@ -114,6 +112,7 @@ static void Mono_Msg(MonoString* msg)
 
 extern CMonoPlug g_MonoPlugPlugin;
 extern MonoDomain* g_Domain;
+extern MonoImage* g_Image;
 extern MonoMethod* g_EVT_ConVarStringValueChanged;
 
 PLUGIN_GLOBALVARS();
@@ -155,5 +154,35 @@ PLUGIN_GLOBALVARS();
  #define MONO_CALL(target, methodHandle) MONO_CALL_ARGS(target, methodHandle, NULL)
  
  #define MONO_STRING(domain, str) ((str == NULL) ? NULL : mono_string_new(domain, str))
+
+
+#define MONO_EVENT_DECL_HOOK0_VOID(ifacetype, ifacefunc, attr, overload, ifaceptr, post) \
+SH_DECL_HOOK0_void(ifacetype, ifacefunc, attr, overload); \
+MonoMethod* g_MethodRaise##ifacefunc = NULL; \
+static void EventHookRaise_##ifacefunc() \
+{ \
+	if(g_MethodRaise##ifacefunc) \
+	{ \
+		META_CONPRINT("EVT : native raise\n"); \
+		MONO_CALL(g_MonoPlugPlugin.m_ClsMain, g_MethodRaise##ifacefunc); \
+	} \
+}; \
+static void EventHookAttach_##ifacefunc() \
+{ \
+	META_CONPRINT("EVT : add hook\n"); \
+	SH_ADD_HOOK_STATICFUNC(ifacetype, ifacefunc, ifaceptr, &EventHookRaise_##ifacefunc, post); \
+}; \
+static void EventHookDetach_##ifacefunc() \
+{ \
+	META_CONPRINT("EVT : remove hook\n"); \
+	SH_REMOVE_HOOK_STATICFUNC(ifacetype, ifacefunc, ifaceptr, &EventHookRaise_##ifacefunc, post); \
+};
+
+#define MONO_EVENT_INIT_HOOK0_VOID(ifacefunc, managedRaise, managedAttach, managedDetach) \
+	ATTACH(managedRaise, g_MethodRaise##ifacefunc, g_Image); \
+	mono_add_internal_call(managedAttach, EventHookAttach_##ifacefunc); \
+	mono_add_internal_call(managedDetach, EventHookDetach_##ifacefunc);
+
+#define MONO_EVENT_UNLOAD_HOOK0_VOID(ifacefunc) g_MethodRaise##ifacefunc = NULL;
 
 #endif //_MONOPLUG_H

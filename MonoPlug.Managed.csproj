@@ -33,23 +33,31 @@
   </PropertyGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>
+    <Compile Include="ClientConnectEventArgs.cs" />
     <Compile Include="ClsConVarString.cs" />
+    <Compile Include="ClsEvents.cs" />
     <Compile Include="ClsMain - clr_plugin_list.cs" />
     <Compile Include="ClsMain - clr_plugin_load.cs" />
     <Compile Include="ClsMain - clr_plugin_refresh.cs" />
     <Compile Include="ClsMain - clr_plugin_unload.cs" />
     <Compile Include="ClsMain - clr_test.cs" />
     <Compile Include="ClsMain - ConVars.cs" />
-    <Compile Include="ClsMain - InitShutdown.cs" />
+    <Compile Include="ClsMain - IEvents.cs" />
+    <Compile Include="ClsMain - Load.cs" />
     <Compile Include="ClsMain - Messages.cs" />
+    <Compile Include="ClsMain - Players.cs" />
+    <Compile Include="ClsMain - RemoteAppDomain.cs" />
     <Compile Include="ClsMain - Threading.cs" />
     <Compile Include="ClsMain - Tools.cs" />
+    <Compile Include="ClsMain - Unload.cs" />
     <Compile Include="ClsMain.cs" />
+    <Compile Include="ClsPlayer.cs" />
     <Compile Include="ConCommandAttribute.cs" />
     <Compile Include="ConCommandEntry.cs" />
     <Compile Include="ConVarDelegates.cs" />
     <Compile Include="ConVarEntry.cs" />
     <Compile Include="FCVAR.cs" />
+    <Compile Include="IEvents.cs" />
     <Compile Include="InternalActionDelegate.cs" />
     <Compile Include="MessageType.cs" />
     <Compile Include="MessageEntry.cs" />

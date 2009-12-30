@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 using System.Reflection;
+using System.Threading;
 
 namespace MonoPlug
 {
@@ -10,8 +11,9 @@ namespace MonoPlug
         [ConCommand("clr_plugin_load", "Load a CLR plugin into memory", FCVAR.FCVAR_GAMEDLL)]
         private void clr_plugin_load(string args)
         {
-            InternalActionDelegate d = () =>
+            ThreadStart d = () =>
             {
+                ClsPluginBase plugin = null;
                 //Search if plugin is not already loaded
                 lock (this._plugins)
                 {
@@ -34,26 +36,32 @@ namespace MonoPlug
                             {
                                 dom = AppDomain.CreateDomain(plug.Name);
                                 ClsMain main = (ClsMain)dom.CreateInstanceFromAndUnwrap(Assembly.GetExecutingAssembly().CodeBase, typeof(ClsMain).FullName);
-                                ClsPluginBase plugin = main.Remote_CreatePlugin(plug);
-                                this._plugins.Add(dom, plugin);
+                                plugin = main.Remote_CreatePlugin(this, plug);
+                                Msg("M: Plugin inited\n");
                                 plugin.Init(this);
                                 Msg("Plugin '{0}' loaded\n", plug.Name);
+                                this._plugins.Add(dom, plugin);
                             }
                             catch (Exception ex)
                             {
+                                Msg("Can't load plugin '{0}' : {1}\n", args, ex.Message);
+                                Msg("{0}\n", ex.StackTrace);
                                 if (dom != null)
                                     AppDomain.Unload(dom);
-                                Msg("Can't load plugin : {0} : {1}\n", args, ex.Message);
+                                plugin = null;
                             }
                             break;
                         }
                     }
                 }
 
-                Msg("Can't find plugin type : {0}\n", args);
+                if (plugin == null)
+                {
+                    Msg("Can't find or load plugin type : {0}\n", args);
+                }
             };
 
-            this.InterthreadCall(d);
+            this.InterThreadCall(d);
         }
     }
 }

@@ -9,7 +9,7 @@ namespace MonoPlug
 #if DEBUG
         private ClsConVarStrings _clr_vartest = null;
 
-        [ConCommand("clr_test", "Command for testing purposes", FCVAR.FCVAR_GAMEDLL)]
+        [ConCommand("clr_test", "Command for testing purposes, /!\\ unpredictable effects ahead /!\\", FCVAR.FCVAR_GAMEDLL)]
         private void clr_test(string args)
         {
             //this.RegisterCommand(null, "clr_untest", "Remove the clr_test command", this.clr_untest, FCVAR.FCVAR_GAMEDLL);
@@ -18,13 +18,13 @@ namespace MonoPlug
             //this._clr_vartest.Value = DateTime.Now.ToLongTimeString();
             if (this._clr_vartest == null)
             {
-                Mono_Msg("M:Create var\n");
+                Msg("M:Create var\n");
                 this._clr_vartest = this.RegisterConVarString(null, "clr_var", "Test var", FCVAR.FCVAR_CHEAT, "je de lol");
                 this._clr_vartest.ValueChanged += this._clr_vartest_changed;
             }
             else
             {
-                Mono_Msg("M:Delete var\n");
+                Msg("M:Delete var\n");
                 this.UnregisterConVarString(null, this._clr_vartest);
                 this._clr_vartest = null;
             }
@@ -32,7 +32,7 @@ namespace MonoPlug
 
         private void _clr_vartest_changed(object sender, EventArgs e)
         {
-            Mono_Msg(string.Format("M: VARTEST Value changed : {0}\n", this._clr_vartest.Value));
+            Msg("M: VARTEST Value changed : {0}\n", this._clr_vartest.Value);
         }
 #endif
     }

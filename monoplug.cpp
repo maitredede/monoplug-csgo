@@ -1,9 +1,6 @@
 #include "monoplug.h"
 
-SH_DECL_HOOK6(IServerGameDLL, LevelInit, SH_NOATTRIB, 0, bool, char const *, char const *, char const *, char const *, bool, bool);
-SH_DECL_HOOK3_void(IServerGameDLL, ServerActivate, SH_NOATTRIB, 0, edict_t *, int, int);
 SH_DECL_HOOK1_void(IServerGameDLL, GameFrame, SH_NOATTRIB, 0, bool);
-SH_DECL_HOOK0_void(IServerGameDLL, LevelShutdown, SH_NOATTRIB, 0);
 
 CMonoPlug g_MonoPlugPlugin;
 
@@ -24,15 +21,13 @@ MonoAssembly* g_Assembly = NULL;
 MonoImage *g_Image = NULL;
 MonoClass *g_Class = NULL;
 
-MonoMethod* g_Init = NULL;
-MonoMethod* g_Shutdown = NULL;
-//MonoMethod* g_HandleMessage = NULL;
+MonoMethod* g_ClsMain_Init = NULL;
+MonoMethod* g_ClsMain_Shutdown = NULL;
 
 MonoMethod* g_EVT_GameFrame = NULL;
-MonoMethod* g_EVT_LevelInit = NULL;
-MonoMethod* g_EVT_LevelShutdown = NULL;
 MonoMethod* g_EVT_ConVarStringValueChanged = NULL;
 
+MONO_EVENT_DECL_HOOK0_VOID(IServerGameDLL, LevelShutdown, SH_NOATTRIB, 0, server, false);
 
 /** 
  * Something like this is needed to register cvars/CON_COMMANDs.
@@ -148,19 +143,6 @@ bool CMonoPlug::Load(PluginId id, ISmmAPI *ismm, char *error, size_t maxlen, boo
 	//One time init
 	if(!g_Domain)
 	{
-//#ifdef _WIN32
-//		HINSTANCE hDLL = NULL;
-//		hDLL = LoadLibrary("mono.dll");
-//		if(hDLL)
-//		{
-//			META_CONPRINT("Mono.dll loaded\n");
-//		}
-//		else
-//		{
-//			META_CONPRINT("Mono.dll NOT loaded\n");
-//		}
-//#endif
-
 #ifndef _WIN32
 		//crash on windows
 		mono_config_parse(NULL);
@@ -197,19 +179,17 @@ bool CMonoPlug::Load(PluginId id, ISmmAPI *ismm, char *error, size_t maxlen, boo
 		}
 
 #ifdef _DEBUG
-	//TODO : enumerate ClsMain methods signature to debug purposes
-	META_CONPRINTF("M:DEBUG\n");
-	void* iter = NULL;
-	MonoMethod* m = NULL;
-	while ((m = mono_class_get_methods (g_Class, &iter)))
-	{
-		META_CONPRINTF("%s\n", mono_method_full_name(m, true));
-	}
+		//TODO : enumerate ClsMain methods signature to debug purposes
+		META_CONPRINTF("M:DEBUG\n");
+		void* iter = NULL;
+		MonoMethod* m = NULL;
+		while ((m = mono_class_get_methods (g_Class, &iter)))
+		{
+			META_CONPRINTF("%s\n", mono_method_full_name(m, true));
+		}
 #else
 	META_CONPRINTF("M:RELEASE\n");
 #endif
-
-
 		//Add internal calls from managed to native
 		mono_add_internal_call (MONOPLUG_CALLBACK_MSG, (gconstpointer)Mono_Msg);
 		mono_add_internal_call (MONOPLUG_CALLBACK_REGISTERCONCOMMAND, (gconstpointer)Mono_RegisterConCommand);
@@ -221,37 +201,34 @@ bool CMonoPlug::Load(PluginId id, ISmmAPI *ismm, char *error, size_t maxlen, boo
 		mono_add_internal_call (MONOPLUG_CALLBACK_CONVARSTRING_SETVALUE, (gconstpointer)Mono_SetConVarStringValue);
 
 		//Get callbacks from native to managed
-		ATTACH(MONOPLUG_NATMAN_INIT, g_Init, g_Image);
-		ATTACH(MONOPLUG_NATMAN_SHUTDOWN, g_Shutdown, g_Image);
+		ATTACH(MONOPLUG_NATMAN_INIT, g_ClsMain_Init, g_Image);
+		ATTACH(MONOPLUG_NATMAN_SHUTDOWN, g_ClsMain_Shutdown, g_Image);
 		
 		//Events
-		ATTACH(MONOPLUG_CLSMAIN_EVT_GAMEFRAME, g_EVT_GameFrame, g_Image);
-		ATTACH(MONOPLUG_CLSMAIN_EVT_LEVELINIT, g_EVT_LevelInit, g_Image);
-		ATTACH(MONOPLUG_CLSMAIN_EVT_LEVELSHUTDOWN, g_EVT_LevelShutdown, g_Image);
+		ATTACH(MONOPLUG_NATMAN_GAMEFRAME, g_EVT_GameFrame, g_Image);
 		ATTACH(MONOPLUG_NATMAN_CONVARSTRING_VALUECHANGED, g_EVT_ConVarStringValueChanged, g_Image);
 	}
+
+	MONO_EVENT_INIT_HOOK0_VOID(LevelShutdown, "MonoPlug.ClsMain:Raise_LevelShutdown()", "MonoPlug.ClsMain::Attach_LevelShutdown", "MonoPlug.ClsMain::Dettach_LevelShutdown");
 	
 	//ConCommandBase init code
 	this->m_conCommands = new CUtlVector<MonoConCommand*>();
-
-	//this->m_conVarString = new CUtlVector<MonoConVarString*>();
 	this->m_convarStringId = new CUtlVector<uint64Container*>();
 	this->m_convarStringPtr = new CUtlVector<ConVar*>();
 	this->m_convarStringIdValue = 0;
 	
-	
 	//Create object instance
 	this->m_ClsMain = mono_object_new(g_Domain, g_Class);
 	mono_runtime_object_init(this->m_ClsMain);
-	
-	MONO_CALL(this->m_ClsMain, g_Init);
+
+	//Init object
+	MONO_CALL(this->m_ClsMain, g_ClsMain_Init);
+	META_CONPRINT("MP: Init OK\n");
 
 	//Final hooks	
-	SH_ADD_HOOK_MEMFUNC(IServerGameDLL, LevelInit, server, this, &CMonoPlug::Hook_LevelInit, true);
-	SH_ADD_HOOK_MEMFUNC(IServerGameDLL, ServerActivate, server, this, &CMonoPlug::Hook_ServerActivate, true);
 	SH_ADD_HOOK_MEMFUNC(IServerGameDLL, GameFrame, server, this, &CMonoPlug::Hook_GameFrame, true);
-	SH_ADD_HOOK_MEMFUNC(IServerGameDLL, LevelShutdown, server, this, &CMonoPlug::Hook_LevelShutdown, false);
 
+	META_CONPRINT("MP: Hooks OK\n");
 	ENGINE_CALL(LogPrint)("All hooks started!\n");
 
 #if SOURCE_ENGINE >= SE_ORANGEBOX
@@ -268,22 +245,7 @@ bool CMonoPlug::Unload(char *error, size_t maxlen)
 	//Mono is leaked, so trying to unload plugin lead to segfault
 	Q_snprintf(error, maxlen, "Unload denied to avoid segfault caused by Mono.");
 	return false;
-	
-	//SH_REMOVE_HOOK_MEMFUNC(IServerGameDLL, ServerActivate, server, this, &CMonoPlug::Hook_ServerActivate, true);
-	//SH_REMOVE_HOOK_MEMFUNC(IServerGameDLL, GameFrame, server, this, &CMonoPlug::Hook_GameFrame, true);
-
-	//SH_REMOVE_HOOK_MEMFUNC(IServerGameDLL, LevelInit, server, this, &CMonoPlug::Hook_LevelInit, true);
-	//SH_REMOVE_HOOK_MEMFUNC(IServerGameDLL, LevelShutdown, server, this, &CMonoPlug::Hook_LevelShutdown, false);
-
-	//Clean mono
-	//MONO_CALL(this->m_ClsMain, g_Shutdown);
-
-	//DO NOT CALL : leaked -> generate a segfault and Mono suggest only OneTime init
-	//mono_jit_cleanup(this->m_ClrDomain);
-	
-	//delete this->m_conCommands;
-	
-	//return true;
+	//MONO_EVENT_UNLOAD_HOOK0_VOID(LevelShutdown);
 }
 
 void CMonoPlug::OnVSPListening(IServerPluginCallbacks *iface)
@@ -323,17 +285,17 @@ bool CMonoPlug::Hook_LevelInit(const char *pMapName,
 	args[4] = &loadGame;
 	args[5] = &background;
 	
-	MONO_CALL_ARGS(this->m_ClsMain, g_EVT_LevelInit, args);
+	//MONO_CALL_ARGS(this->m_ClsMain, g_EVT_LevelInit, args);
 
 	return true;
 }
 
-void CMonoPlug::Hook_LevelShutdown()
-{
-	META_LOG(g_PLAPI, "Hook_LevelShutdown()");
-
-	MONO_CALL(this->m_ClsMain, g_EVT_LevelShutdown);
-}
+//void CMonoPlug::Hook_LevelShutdown()
+//{
+//	META_LOG(g_PLAPI, "Hook_LevelShutdown()");
+//
+//	MONO_CALL(this->m_ClsMain, g_EVT_LevelShutdown);
+//}
 
 const char *CMonoPlug::GetLicense()
 {

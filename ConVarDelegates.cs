@@ -4,6 +4,6 @@ using System.Text;
 
 namespace MonoPlug
 {
-    public delegate string ConVarStringGetDelegate();
-    public delegate void ConVarStringSetDelegate(string value);
+    internal delegate string ConVarStringGetDelegate();
+    internal delegate void ConVarStringSetDelegate(string value);
 }

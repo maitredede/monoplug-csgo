@@ -7,17 +7,7 @@ namespace MonoPlug
 {
     partial class ClsMain
     {
-        private int _mainThreadId = 0;
-
-        private int _queueLength = 0;
-
-        private readonly object _lckThreadSync = new object();
-        private ManualResetEvent _waitIn;
-        private ManualResetEvent _waitOut;
-
-        private int _isInITCall = 0;
-
-        private void InterthreadCall(InternalActionDelegate d)
+        internal void InterThreadCall(ThreadStart d)
         {
             if (Thread.CurrentThread.ManagedThreadId == this._mainThreadId || Interlocked.Exchange(ref this._isInITCall, this._isInITCall) > 1)
             {
