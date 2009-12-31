@@ -7,6 +7,7 @@ namespace MonoPlug
 {
     partial class ClsMain
     {
+        [Obsolete("Use register function", true)]
         private void LoadAllCommands(object item)
         {
             Type t = item.GetType();
@@ -25,12 +26,13 @@ namespace MonoPlug
                         {
                             code = (ConCommandDelegate)Delegate.CreateDelegate(d, item, m);
                         }
-                        this.RegisterCommand(null, att.Name, att.Description, code, att.Flags);
+                        this.RegisterCommand(null, att.Name, att.Description, code, att.Flags, null);
                     }
                 }
             }
         }
 
+        [Obsolete("Use register function", true)]
         private void LoadAllCommands(ClsPluginBase plugin)
         {
             Type t = plugin.GetType();
@@ -49,64 +51,62 @@ namespace MonoPlug
                         {
                             code = (ConCommandDelegate)Delegate.CreateDelegate(d, plugin, m);
                         }
-                        this.RegisterCommand(plugin, att.Name, att.Description, code, att.Flags);
+                        this.RegisterCommand(plugin, att.Name, att.Description, code, att.Flags, null);
                     }
                 }
             }
         }
 
-        internal bool RegisterCommand(ClsPluginBase plugin, string name, string description, ConCommandDelegate code, FCVAR flags)
+        internal ClsConCommand RegisterCommand(ClsPluginBase plugin, string name, string description, ConCommandDelegate code, FCVAR flags, ConCommandCompleteDelegate complete)
         {
             if (code == null) throw new ArgumentNullException("code");
             if (string.IsNullOrEmpty(name)) throw new ArgumentNullException("name");
             if (string.IsNullOrEmpty(description)) throw new ArgumentNullException("description");
             ValidateFlags(flags, "flags");
 
-            ConCommandEntry entry = new ConCommandEntry();
-            entry.Plugin = plugin;
-            entry.Name = name;
-            entry.Description = description;
-            entry.Code = code;
-
             lock (this._ConCommands)
             {
                 if (this._ConCommands.ContainsKey(name))
                 {
-                    return false;
+                    return null;
                 }
+
+                ConCommandEntry entry = new ConCommandEntry();
+                entry.Plugin = plugin;
+                entry.Command = new ClsConCommand(0, name, description, flags, code, complete);
 
                 bool ret = false;
                 this.InterThreadCall(() =>
                 {
-                    ret = Mono_RegisterConCommand(name, description, code, (int)flags);
+                    ret = Mono_RegisterConCommand(name, description, code, (int)flags, complete);
                 });
-                if (true)
+                if (ret)
                 {
                     this._ConCommands.Add(name, entry);
-                    return true;
+                    return entry.Command;
                 }
-                //else
-                //{
-                //    return false;
-                //}
+                else
+                {
+                    return null;
+                }
             }
         }
 
-        internal bool UnregisterCommand(ClsPluginBase plugin, string name)
+        internal bool UnregisterCommand(ClsPluginBase plugin, ClsConCommand command)
         {
             lock (this._ConCommands)
             {
-                if (this._ConCommands.ContainsKey(name))
+                if (this._ConCommands.ContainsKey(command.Name))
                 {
-                    ConCommandEntry entry = this._ConCommands[name];
+                    ConCommandEntry entry = this._ConCommands[command.Name];
                     if (entry.Plugin == plugin)
                     {
                         bool ret = false;
                         this.InterThreadCall(() =>
                         {
-                            ret = Mono_UnregisterConCommand(name);
+                            ret = Mono_UnregisterConCommand(command.Name);
                         });
-                        this._ConCommands.Remove(name);
+                        this._ConCommands.Remove(command.Name);
                         return true;
                         //						if()
                         //						{

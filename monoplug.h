@@ -24,7 +24,7 @@
 #define MONOPLUG_FULLCLASSNAME "MonoPlug.ClsMain"
 
 #define MONOPLUG_CALLBACK_MSG "MonoPlug.ClsMain::Mono_Msg"
-#define MONOPLUG_CALLBACK_REGISTERCONCOMMAND "MonoPlug.ClsMain::Mono_RegisterConCommand(string,string,MonoPlug.ConCommandDelegate,int)"
+#define MONOPLUG_CALLBACK_REGISTERCONCOMMAND "MonoPlug.ClsMain::Mono_RegisterConCommand(string,string,MonoPlug.ConCommandDelegate,int,MonoPlug.ConCommandCompleteDelegate)"
 #define MONOPLUG_CALLBACK_UNREGISTERCONCOMMAND "MonoPlug.ClsMain::Mono_UnregisterConCommand(string)"
 #define MONOPLUG_CALLBACK_REGISTERCONVARSTRING "MonoPlug.ClsMain::Mono_RegisterConVarString(string,string,int,string)"
 #define MONOPLUG_CALLBACK_UNREGISTERCONVARSTRING "MonoPlug.ClsMain::Mono_UnregisterConVarString(ulong)"
@@ -50,10 +50,13 @@ PLUGIN_GLOBALVARS();
 class MonoConCommand : public ConCommand
 {
 public:
-	MonoConCommand(char* name, char* description, MonoDelegate* code, int flags);
-private:
+	MonoConCommand(char* name, char* description, MonoDelegate* code, int flags, MonoDelegate* complete = NULL);
+	int AutoCompleteSuggest( const char *partial, CUtlVector< CUtlString > &commands );
+	bool CanAutoComplete( void );
 	void Dispatch( const CCommand &command );
+private:
 	MonoDelegate* m_code;
+	MonoDelegate* m_complete;
 };
 
 class uint64Container
@@ -101,6 +104,9 @@ public:
 	uint64 m_convarStringIdValue;
 	CUtlVector<ConVar*>* m_convarStringPtr;
 	CUtlVector<uint64Container*>* m_convarStringId;
+	
+	//CUtlVector<uint64Container*>* m_conCommandId;
+	//CUtlVector<ConCommand*>* m_conCommandPtr;
 };
 
 

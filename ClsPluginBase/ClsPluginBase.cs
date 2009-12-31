@@ -3,16 +3,17 @@ using System;
 
 namespace MonoPlug
 {
-    public abstract class ClsPluginBase : MarshalByRefObject
+    public abstract partial class ClsPluginBase : MarshalByRefObject
     {
         private ClsMain _main;
 
         internal void Init(ClsMain main)
         {
+#if DEBUG
+            main.Msg("ClsPluginBase:: Init in AppDomain '{0}'\n", AppDomain.CurrentDomain.FriendlyName);
+#endif
+
             this._main = main;
-
-            Msg("ClsPluginBase:: Init in AppDomain '{0}'\n", AppDomain.CurrentDomain.FriendlyName);
-
             this.Load();
         }
 
@@ -28,7 +29,6 @@ namespace MonoPlug
 
         public abstract string Name { get; }
         public abstract string Description { get; }
-        protected IEvents Events { get { return this._main; } }
 
         public ClsPluginBase()
         {
@@ -39,16 +39,16 @@ namespace MonoPlug
             this._main.Msg(format, args);
         }
 
-        [Obsolete("Replace with hooked events")]
-        internal void EVT_LevelInit(string mapName, string mapEntities, string oldLevel, string landmarkName, bool loadGame, bool background)
-        {
-            this.LevelInit(mapName, mapEntities, oldLevel, landmarkName, loadGame, background);
-        }
+        //[Obsolete("Replace with hooked events")]
+        //internal void EVT_LevelInit(string mapName, string mapEntities, string oldLevel, string landmarkName, bool loadGame, bool background)
+        //{
+        //    this.LevelInit(mapName, mapEntities, oldLevel, landmarkName, loadGame, background);
+        //}
 
-        [Obsolete("Replace with hooked events")]
-        protected virtual void LevelInit(string mapName, string mapEntities, string oldLevel, string landmarkName, bool loadGame, bool background)
-        {
-        }
+        //[Obsolete("Replace with hooked events")]
+        //protected virtual void LevelInit(string mapName, string mapEntities, string oldLevel, string landmarkName, bool loadGame, bool background)
+        //{
+        //}
 
         protected ClsConVarStrings RegisterConVarString(string name, string description, FCVAR flags, string defaultValue)
         {

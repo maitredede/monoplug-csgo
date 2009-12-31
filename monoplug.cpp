@@ -46,7 +46,7 @@ PLUGIN_EXPOSE(CMonoPlug, g_MonoPlugPlugin);
 
 static uint64 Mono_RegisterConVarString(MonoString* name, MonoString* description, int flags, MonoString* defaultValue);
 static void Mono_UnregisterConVarString(uint64 nativeID);
-static bool Mono_RegisterConCommand(MonoString* name, MonoString* description, MonoDelegate* code, int flags);
+static bool Mono_RegisterConCommand(MonoString* name, MonoString* description, MonoDelegate* code, int flags, MonoDelegate* complete);
 static bool Mono_UnregisterConCommand(MonoString* name);
 
 static void ConVarStringChangeCallback(IConVar *var, const char *pOldValue, float flOldValue)
@@ -212,11 +212,15 @@ bool CMonoPlug::Load(PluginId id, ISmmAPI *ismm, char *error, size_t maxlen, boo
 	MONO_EVENT_INIT_HOOK0_VOID(LevelShutdown, "MonoPlug.ClsMain:Raise_LevelShutdown()", "MonoPlug.ClsMain::Attach_LevelShutdown", "MonoPlug.ClsMain::Dettach_LevelShutdown");
 	
 	//ConCommandBase init code
-	this->m_conCommands = new CUtlVector<MonoConCommand*>();
+	this->m_convarStringIdValue = 0;
+
+	//this->m_conCommands = new CUtlVector<MonoConCommand*>();
 	this->m_convarStringId = new CUtlVector<uint64Container*>();
 	this->m_convarStringPtr = new CUtlVector<ConVar*>();
-	this->m_convarStringIdValue = 0;
 	
+	//this->m_conCommandId = new CUtlVector<uint64Container*>();
+	//this->m_conCommandPtr = new CUtlVector<ConCommand*>();
+
 	//Create object instance
 	this->m_ClsMain = mono_object_new(g_Domain, g_Class);
 	mono_runtime_object_init(this->m_ClsMain);
@@ -338,10 +342,11 @@ const char *CMonoPlug::GetURL()
 }
 
 
-MonoConCommand::MonoConCommand(char* name, char* description, MonoDelegate* code, int flags)
+MonoConCommand::MonoConCommand(char* name, char* description, MonoDelegate* code, int flags,MonoDelegate* complete)
 : ConCommand(name, (FnCommandCallback_t)NULL, description, flags, (FnCommandCompletionCallback)NULL)
 {
 	this->m_code = code;
+	this->m_complete = complete;
 };
 
 void MonoConCommand::Dispatch(const CCommand &command)
@@ -349,6 +354,23 @@ void MonoConCommand::Dispatch(const CCommand &command)
 	void* args[1];
 	args[0] = MONO_STRING(g_Domain, command.ArgS());
 	MONO_DELEGATE_CALL(this->m_code, args);
+};
+
+int MonoConCommand::AutoCompleteSuggest( const char *partial, CUtlVector< CUtlString > &commands )
+{
+	return 0;
+};
+
+bool MonoConCommand::CanAutoComplete()
+{
+	if(this->m_code)
+	{
+		return true;
+	}
+	else
+	{
+		return false;
+	}
 };
 
 uint64 Mono_RegisterConVarString(MonoString* name, MonoString* description, int flags, MonoString* defaultValue)
@@ -396,7 +418,7 @@ void Mono_UnregisterConVarString(uint64 nativeID)
 
 };
 
-bool Mono_RegisterConCommand(MonoString* name, MonoString* description, MonoDelegate* code, int flags)
+bool Mono_RegisterConCommand(MonoString* name, MonoString* description, MonoDelegate* code, int flags, MonoDelegate* complete)
 {
 	MonoConCommand* com = new MonoConCommand(mono_string_to_utf8(name), mono_string_to_utf8(description), code, flags);
 

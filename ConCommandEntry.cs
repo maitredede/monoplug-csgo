@@ -6,9 +6,10 @@ namespace MonoPlug
 {
     internal struct ConCommandEntry
     {
-        public ClsPluginBase Plugin;
-        public string Name;
-        public string Description;
-        public ConCommandDelegate Code;
+        public ClsPluginBase Plugin { get; set; }
+        //public string Name { get; set; }
+        //public string Description { get; set; }
+        //public ConCommandDelegate Code { get; set; }
+        public ClsConCommand Command { get; set; }
     }
 }

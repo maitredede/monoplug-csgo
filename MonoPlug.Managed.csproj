@@ -34,24 +34,26 @@
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>
     <Compile Include="ClientConnectEventArgs.cs" />
+    <Compile Include="ClsConCommandBase.cs" />
+    <Compile Include="ClsConCommand.cs" />
     <Compile Include="ClsConVarString.cs" />
-    <Compile Include="ClsEvents.cs" />
-    <Compile Include="ClsMain - clr_plugin_list.cs" />
-    <Compile Include="ClsMain - clr_plugin_load.cs" />
-    <Compile Include="ClsMain - clr_plugin_refresh.cs" />
-    <Compile Include="ClsMain - clr_plugin_unload.cs" />
-    <Compile Include="ClsMain - clr_test.cs" />
-    <Compile Include="ClsMain - ConVars.cs" />
-    <Compile Include="ClsMain - IEvents.cs" />
-    <Compile Include="ClsMain - Load.cs" />
-    <Compile Include="ClsMain - Messages.cs" />
-    <Compile Include="ClsMain - Players.cs" />
-    <Compile Include="ClsMain - RemoteAppDomain.cs" />
-    <Compile Include="ClsMain - Threading.cs" />
-    <Compile Include="ClsMain - Tools.cs" />
-    <Compile Include="ClsMain - Unload.cs" />
-    <Compile Include="ClsMain.cs" />
+    <Compile Include="ClsMain\ClsMain - clr_plugin_list.cs" />
+    <Compile Include="ClsMain\ClsMain - clr_plugin_load.cs" />
+    <Compile Include="ClsMain\ClsMain - clr_plugin_refresh.cs" />
+    <Compile Include="ClsMain\ClsMain - clr_plugin_unload.cs" />
+    <Compile Include="ClsMain\ClsMain - clr_test.cs" />
+    <Compile Include="ClsMain\ClsMain - ConVars.cs" />
+    <Compile Include="ClsMain\ClsMain - IEvents.cs" />
+    <Compile Include="ClsMain\ClsMain - Load.cs" />
+    <Compile Include="ClsMain\ClsMain - Messages.cs" />
+    <Compile Include="ClsMain\ClsMain - Players.cs" />
+    <Compile Include="ClsMain\ClsMain - RemoteAppDomain.cs" />
+    <Compile Include="ClsMain\ClsMain - Threading.cs" />
+    <Compile Include="ClsMain\ClsMain - Tools.cs" />
+    <Compile Include="ClsMain\ClsMain - Unload.cs" />
+    <Compile Include="ClsMain\ClsMain.cs" />
     <Compile Include="ClsPlayer.cs" />
+    <Compile Include="ClsPluginBase\ClsPluginBase - EVT LevelShutdown.cs" />
     <Compile Include="ConCommandAttribute.cs" />
     <Compile Include="ConCommandEntry.cs" />
     <Compile Include="ConVarDelegates.cs" />
@@ -62,10 +64,10 @@
     <Compile Include="MessageType.cs" />
     <Compile Include="MessageEntry.cs" />
     <Compile Include="PluginDefinition.cs" />
-    <Compile Include="ClsPluginBase.cs" />
-    <Compile Include="ClsMain - Native.cs" />
-    <Compile Include="ClsMain - Builtin Events.cs" />
-    <Compile Include="ClsMain - ConCommands.cs" />
+    <Compile Include="ClsPluginBase\ClsPluginBase.cs" />
+    <Compile Include="ClsMain\ClsMain - Native.cs" />
+    <Compile Include="ClsMain\ClsMain - Builtin Events.cs" />
+    <Compile Include="ClsMain\ClsMain - ConCommands.cs" />
     <Compile Include="ConCommandDelegate.cs" />
   </ItemGroup>
   <ItemGroup>

@@ -4,6 +4,7 @@ using System.Text;
 
 namespace MonoPlug
 {
+    [Obsolete("Use register function", true)]
     [AttributeUsage(AttributeTargets.Method, AllowMultiple = false, Inherited = false)]
     public sealed class ConCommandAttribute : Attribute
     {

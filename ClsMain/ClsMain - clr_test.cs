@@ -9,7 +9,7 @@ namespace MonoPlug
 #if DEBUG
         private ClsConVarStrings _clr_vartest = null;
 
-        [ConCommand("clr_test", "Command for testing purposes, /!\\ unpredictable effects ahead /!\\", FCVAR.FCVAR_GAMEDLL)]
+        //[ConCommand("clr_test", "Command for testing purposes, /!\\ unpredictable effects ahead /!\\", FCVAR.FCVAR_GAMEDLL)]
         private void clr_test(string args)
         {
             //this.RegisterCommand(null, "clr_untest", "Remove the clr_test command", this.clr_untest, FCVAR.FCVAR_GAMEDLL);

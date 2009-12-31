@@ -8,7 +8,7 @@ namespace MonoPlug
 {
     partial class ClsMain
     {
-        [ConCommand("clr_plugin_refresh", "Refresh plugin list", FCVAR.FCVAR_GAMEDLL)]
+        //[ConCommand("clr_plugin_refresh", "Refresh plugin list", FCVAR.FCVAR_GAMEDLL)]
         public void clr_plugin_refresh(string args)
         {
             Mono_Msg("CB: clr_plugin_refresh Enter\n");

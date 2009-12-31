@@ -59,9 +59,9 @@ namespace MonoPlug
         /// <param name="nativeId"></param>
         internal void _ConVarStringChanged(UInt64 nativeId)
         {
-            //#if DEBUG
-            //            Mono_Msg(string.Format("M:_ConVarStringChanged({0})", nativeId));
-            //#endif
+#if DEBUG
+            Msg("ClsMain::_ConVarStringChanged({0})", nativeId);
+#endif
             if (this._ConVarString.ContainsKey(nativeId))
             {
                 ThreadPool.QueueUserWorkItem((object o) =>

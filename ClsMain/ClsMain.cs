@@ -27,10 +27,15 @@ namespace MonoPlug
         /// Available plugin cache list 
         /// </summary>
         private PluginDefinition[] _pluginCache = null;
+
         private Dictionary<string, ConCommandEntry> _ConCommands = null;
 
         private Dictionary<UInt64, ConVarEntry> _ConVarString = null;
         private ClsConVarStrings _clr_mono_version = null;
+        private ClsConCommand _clr_plugin_list = null;
+        private ClsConCommand _clr_plugin_refresh = null;
+        private ClsConCommand _clr_plugin_load = null;
+        private ClsConCommand _clr_plugin_unload = null;
 
         private int _mainThreadId = 0;
         private int _queueLength = 0;

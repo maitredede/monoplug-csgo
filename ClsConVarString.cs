@@ -7,7 +7,7 @@ namespace MonoPlug
 #if DEBUG
     [System.Diagnostics.DebuggerDisplay("ConVarString : {Name} = {Value}")]
 #endif
-    public sealed class ClsConVarStrings : MarshalByRefObject
+    public sealed class ClsConVarStrings : ClsConCommandBase
     {
         private readonly string _name;
         private readonly string _desc;
@@ -15,17 +15,9 @@ namespace MonoPlug
         private readonly FCVAR _flags;
 
         internal ClsConVarStrings(UInt64 nativeId, string name, string description, FCVAR flags)
+            : base(nativeId, name, description, flags)
         {
-            this._nativeId = nativeId;
-            this._name = name;
-            this._desc = description;
-            this._flags = flags;
         }
-
-        public string Name { get { return this._name; } }
-        public string Description { get { return this._desc; } }
-        public FCVAR Flags { get { return this._flags; } }
-        internal UInt64 NativeID { get { return this._nativeId; } }
 
         public string Value
         {

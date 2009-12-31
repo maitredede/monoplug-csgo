@@ -6,7 +6,7 @@ namespace MonoPlug
 {
     partial class ClsMain
     {
-        [ConCommand("clr_plugin_unload", "Unload a loaded plugin", FCVAR.FCVAR_GAMEDLL)]
+        //[ConCommand("clr_plugin_unload", "Unload a loaded plugin", FCVAR.FCVAR_GAMEDLL)]
         private void clr_plugin_unload(string args)
         {
             //Find if plugin is loaded
@@ -21,18 +21,18 @@ namespace MonoPlug
                         plugin.UnInit();
 
                         //Clean commands
-                        List<string> lstCommands = new List<string>();
+                        List<ClsConCommand> lstCommands = new List<ClsConCommand>();
                         lock (this._ConCommands)
                         {
-                            foreach (string cmd in this._ConCommands.Keys)
+                            foreach (string name in this._ConCommands.Keys)
                             {
-                                if (this._ConCommands[cmd].Plugin == plugin)
+                                if (this._ConCommands[name].Plugin == plugin)
                                 {
-                                    lstCommands.Add(cmd);
+                                    lstCommands.Add(this._ConCommands[name].Command);
                                 }
                             }
                         }
-                        foreach (string cmd in lstCommands)
+                        foreach (ClsConCommand cmd in lstCommands)
                         {
                             this.UnregisterCommand(plugin, cmd);
                         }
@@ -55,11 +55,11 @@ namespace MonoPlug
                         }
 
                         //Clean plugin
-                        string name = plugin.Name;
+                        string plugname = plugin.Name;
                         this._plugins.Remove(dom);
                         AppDomain.Unload(dom);
 
-                        Msg("Plugin '{0}' unloaded\n", name);
+                        Msg("Plugin '{0}' unloaded\n", plugname);
                         return;
                     }
                 }

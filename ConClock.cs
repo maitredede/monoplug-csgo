@@ -5,7 +5,7 @@ namespace MonoPlug
 {
     public sealed class ConClock : ClsPluginBase
     {
-        public override string Name { get { return "Sample Console Clock"; } }
+        public override string Name { get { return "ConClock"; } }
         public override string Description
         {
             get { return "Write current time to console each seconds, and update a convar with value"; }

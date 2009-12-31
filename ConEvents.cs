@@ -15,26 +15,7 @@ namespace MonoPlug
             try
             {
                 Msg("ConEvents:: Load in AppDomain '{0}'\n", AppDomain.CurrentDomain.FriendlyName);
-                if (this.Events != null)
-                {
-                    EventHandler e = new EventHandler(this.Events_LevelShutdown);
-                    foreach (Assembly a in AppDomain.CurrentDomain.GetAssemblies())
-                    {
-                        Msg("Loaded : assembly name={0}\n", a.FullName);
-                    }
-
-                    Msg("ConEvents::Load A1\n");
-                    Msg(this.Events.ToString() + "\n");
-                    DT add = new DT(this.Events.LevelShutdown_Add);
-                    Msg("ConEvents::Load A2\n");
-                    add.Invoke(this.Events_LevelShutdown);
-                    //this.Events.LevelShutdown_Add(this.Events_LevelShutdown);
-                    Msg("ConEvents::Load A3\n");
-                }
-                else
-                {
-                    Msg("ConEvents::Load E1\n");
-                }
+                this.LevelShutdown += this.Events_LevelShutdown;
                 Msg("ConEvents::Loaded\n");
             }
             catch (Exception ex)
@@ -51,7 +32,7 @@ namespace MonoPlug
 
         protected override void Unload()
         {
-            this.Events.LevelShutdown_Remove(this.Events_LevelShutdown);
+            this.LevelShutdown -= this.Events_LevelShutdown;
         }
 
         public override string Name
