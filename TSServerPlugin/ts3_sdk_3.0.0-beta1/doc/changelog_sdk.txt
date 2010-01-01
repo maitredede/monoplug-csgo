@@ -1,0 +1,14 @@
+=============================================================
+      TeamSpeak 3 - Software Development Kit Changelog
+             Copyright TeamSpeak Systems GmbH
+                 http://www.teamspeak.com
+=============================================================
+           + Added feature or noticable improvement
+           - Bug fix or something removed
+           * Changed or Information
+           ! Important - Take note!
+=============================================================
+
+
+=== SDK Release 3.0.0-beta1 19 Dec 2009
+* Initial beta release
