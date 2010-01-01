@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Text;
 using System.Net;
@@ -7,14 +7,21 @@ namespace MonoPlug
 {
     public sealed class ClientConnectEventArgs : EventArgs
     {
-        internal ClientConnectEventArgs()
+		private int _id;
+		private string _name;
+		private IPEndPoint _address;
+		
+        internal ClientConnectEventArgs(int id, string name, IPEndPoint address)
         {
+			this._id=id;
+			this._name=name;
+			this._address=address;
         }
 
-        public int Id { get; private set; }
-        public string Name { get; private set; }
-        public IPEndPoint Address { get; private set; }
-        public bool Authorized { get; set; }
-        public string RejectReason { get; set; }
+        public int Id { get{return this._id; }}
+        public string Name { get{return this._name;} }
+        public IPEndPoint Address { get{return this._address;}}
+        //public bool Authorized { get; set; }
+        //public string RejectReason { get; set; }
     }
 }
