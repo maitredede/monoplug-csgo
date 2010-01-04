@@ -40,7 +40,7 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\Test.Lib\Test.Lib.csproj">
+    <ProjectReference Include="..\Test.Lib\Test.Lib.csproj">
       <Project>{30705943-77F6-42B0-AB15-F7B69283519C}</Project>
       <Name>Test.Lib</Name>
     </ProjectReference>

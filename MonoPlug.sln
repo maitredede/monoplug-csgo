@@ -29,7 +29,7 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "sample_mm", "sample_mm\samp
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Test", "Test\Test.csproj", "{2030D379-63F7-4541-BFC7-2A131B1B1091}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Test.Lib", "..\Test.Lib\Test.Lib.csproj", "{30705943-77F6-42B0-AB15-F7B69283519C}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Test.Lib", "Test.Lib\Test.Lib.csproj", "{30705943-77F6-42B0-AB15-F7B69283519C}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

@@ -169,22 +169,23 @@ static void EventHookRaise_##ifacefunc() \
 { \
 	if(g_MethodRaise##ifacefunc) \
 	{ \
-		META_CONPRINT("EVT : native raise\n"); \
+		META_CONPRINTF("EVT : native raise %s::%s\n", #ifacetype, #ifaceptr); \
 		MONO_CALL(g_MonoPlugPlugin.m_ClsMain, g_MethodRaise##ifacefunc); \
 	} \
 }; \
 static void EventHookAttach_##ifacefunc() \
 { \
-	META_CONPRINT("EVT : add hook\n"); \
+	META_CONPRINTF("EVT : add hook %s::%s\n", #ifacetype, #ifaceptr); \
 	SH_ADD_HOOK_STATICFUNC(ifacetype, ifacefunc, ifaceptr, &EventHookRaise_##ifacefunc, post); \
 }; \
 static void EventHookDetach_##ifacefunc() \
 { \
-	META_CONPRINT("EVT : remove hook\n"); \
+	META_CONPRINTF("EVT : remove hook %s::%s\n", #ifacetype, #ifaceptr); \
 	SH_REMOVE_HOOK_STATICFUNC(ifacetype, ifacefunc, ifaceptr, &EventHookRaise_##ifacefunc, post); \
 };
 
 #define MONO_EVENT_INIT_HOOK0_VOID(ifacefunc, managedRaise, managedAttach, managedDetach) \
+	META_CONPRINTF("EVT : hook init\n", #ifacefunc); \
 	ATTACH(managedRaise, g_MethodRaise##ifacefunc, g_Image); \
 	mono_add_internal_call(managedAttach, EventHookAttach_##ifacefunc); \
 	mono_add_internal_call(managedDetach, EventHookDetach_##ifacefunc);
