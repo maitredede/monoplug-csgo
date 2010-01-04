@@ -34,11 +34,9 @@
 #define MONOPLUG_NATMAN_INIT "MonoPlug.ClsMain:_Init()"
 #define MONOPLUG_NATMAN_SHUTDOWN "MonoPlug.ClsMain:_Shutdown()"
 #define MONOPLUG_NATMAN_CONVARSTRING_VALUECHANGED "MonoPlug.ClsMain:_ConVarStringChanged(ulong)"
-//#define MONOPLUG_NATMAN_HANDLEMESSAGE "MonoPlug.ClsMain:_HandleMessages()"
 
 #define MONOPLUG_NATMAN_GAMEFRAME "MonoPlug.ClsMain:EVT_GameFrame()"
 #define MONOPLUG_CLSMAIN_EVT_LEVELINIT "MonoPlug.ClsMain:EVT_LevelInit(string,string,string,string,bool,bool)"
-//#define MONOPLUG_CLSMAIN_EVT_LEVELSHUTDOWN "MonoPlug.ClsMain:EVT_LevelShutdown()"
 
 #if defined WIN32 && !defined snprintf
 #define snprintf _snprintf
@@ -87,16 +85,7 @@ public:
 	const char *GetDate();
 	const char *GetLogTag();
 public: //Hooks
-	//void Hook_ServerActivate(edict_t *pEdictList, int edictCount, int clientMax);
 	void Hook_GameFrame(bool simulating);
-	//bool Hook_LevelInit(const char *pMapName,
-	//	char const *pMapEntities,
-	//	char const *pOldLevel,
-	//	char const *pLandmarkName,
-	//	bool loadGame,
-	//	bool background);
-	//void Hook_LevelShutdown(void);
-
 public: //IGameEventListener2
 	// game event listener
 	void FireGameEvent( IGameEvent *event );
@@ -109,9 +98,6 @@ public:
 	CUtlVector<ConVar*>* m_convarStringPtr;
 	CUtlVector<uint64Container*>* m_convarStringId;
 	
-	//CUtlVector<uint64Container*>* m_conCommandId;
-	//CUtlVector<ConCommand*>* m_conCommandPtr;
-
 	ConCommand* m_pSayCmd;
 	ConCommand* m_pSayTeamCmd;
 };
@@ -147,28 +133,11 @@ PLUGIN_GLOBALVARS();
          } \
 };
  
-//#define MONO_CALL_ARGS(target, methodHandle, args) \
-//	MonoObject* methodHandle##exception = NULL; \
-//     mono_runtime_invoke(methodHandle, target, args, &exception); \
-//     if(methodHandle##exception) \
-//     { \
-//             mono_print_unhandled_exception(exception); \
-//     }
-
 static MonoObject* MONO_CALL_ARGS(void* target, MonoMethod* methodHandle, void** args);
 static MonoObject* MONO_DELEGATE_CALL(MonoDelegate* delegateObject, void** args);
 
- //Code from : http://www.mail-archive.com/mono-list@lists.ximian.com/msg26230.html
- //#define MONO_DELEGATE_CALL(delegateObject, args) \
- //{\
- //        MonoMethod* MONO_DELEGATE_CALL_dlgMethod = mono_get_delegate_invoke(mono_object_get_class((MonoObject*)delegateObject)); \
- //        MONO_CALL_ARGS(delegateObject, MONO_DELEGATE_CALL_dlgMethod, args); \
- //};
- 
- #define MONO_CALL(target, methodHandle) MONO_CALL_ARGS(target, methodHandle, NULL)
- 
- #define MONO_STRING(domain, str) ((str == NULL) ? NULL : mono_string_new(domain, str))
-
+#define MONO_CALL(target, methodHandle) MONO_CALL_ARGS(target, methodHandle, NULL)
+#define MONO_STRING(domain, str) ((str == NULL) ? NULL : mono_string_new(domain, str))
 
 #define MONO_EVENT_DECL_HOOK0_VOID(ifacetype, ifacefunc, attr, overload, ifaceptr, post) \
 SH_DECL_HOOK0_void(ifacetype, ifacefunc, attr, overload); \

@@ -87,13 +87,23 @@ namespace MonoPlug
             List<string> lst = new List<string>();
 
             string[] args = partial.Split(new char[] { ' ' }, 2, StringSplitOptions.RemoveEmptyEntries);
-            if (args.Length == 2 && !string.IsNullOrEmpty(args[1]))
+            if (args.Length == 2)
             {
-                foreach (PluginDefinition desc in this._pluginCache)
+                if (string.IsNullOrEmpty(args[1]))
                 {
-                    if (desc.Name.ToUpperInvariant().Contains(args[1].ToUpperInvariant()))
+                    foreach (PluginDefinition desc in this._pluginCache)
                     {
                         lst.Add(string.Format("{0} {1}", args[0], desc.Name));
+                    }
+                }
+                else
+                {
+                    foreach (PluginDefinition desc in this._pluginCache)
+                    {
+                        if (desc.Name.ToUpperInvariant().Contains(args[1].ToUpperInvariant()))
+                        {
+                            lst.Add(string.Format("{0} {1}", args[0], desc.Name));
+                        }
                     }
                 }
             }

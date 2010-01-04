@@ -16,7 +16,7 @@ ICvar *icvar = NULL;
 IFileSystem* filesystem = NULL;
 CGlobalVars *gpGlobals = NULL;
 
-MonoDomain* g_Domain = NULL;
+static MonoDomain* g_Domain = NULL;
 MonoAssembly* g_Assembly = NULL;
 MonoImage *g_Image = NULL;
 MonoClass *g_Class = NULL;
@@ -79,16 +79,11 @@ static MonoString* Mono_GetConVarStringValue(uint64 nativeID)
 			return MONO_STRING(g_Domain, var->GetString());
 		}
 	}
-	//return MONO_STRING(g_Domain, "TEST");
 	return NULL;
 };
 
 static void Mono_SetConVarStringValue(uint64 nativeID, MonoString* value)
 {
-//#ifdef _DEBUG
-//	META_CONPRINT("Entering Mono_SetConVarStringValue\n");
-//#endif
-
 	for(int i=0;i<g_MonoPlugPlugin.m_convarStringId->Count(); i++)
 	{
 		uint64Container* cont = g_MonoPlugPlugin.m_convarStringId->Element(i);
@@ -132,7 +127,7 @@ bool CMonoPlug::Load(PluginId id, ISmmAPI *ismm, char *error, size_t maxlen, boo
 	Q_snprintf( dllPath, sizeof(dllPath), MONOPLUG_DLLFILE, dir); 
 	delete dir;
 
-	META_CONPRINTF("MONOPLUG : managed dll file is : %s\n", dllPath);
+	META_LOG(g_PLAPI, "Managed dll file is : %s", dllPath);
 	if(!filesystem->FileExists(dllPath))
 	{
 		Q_snprintf(error, maxlen, "Can't find managed DLL : %s", dllPath);
@@ -179,7 +174,7 @@ bool CMonoPlug::Load(PluginId id, ISmmAPI *ismm, char *error, size_t maxlen, boo
 		}
 
 #ifdef _DEBUG
-		//TODO : enumerate ClsMain methods signature to debug purposes
+		//Enumerate ClsMain methods signature to debug purposes
 		META_CONPRINTF("M:DEBUG\n");
 		void* iter = NULL;
 		MonoMethod* m = NULL;
@@ -223,12 +218,12 @@ bool CMonoPlug::Load(PluginId id, ISmmAPI *ismm, char *error, size_t maxlen, boo
 
 	//Init object
 	MONO_CALL(this->m_ClsMain, g_ClsMain_Init);
-	META_CONPRINT("MP: Init OK\n");
+	//META_CONPRINT("MP: Init OK\n");
 
 	//Final hooks	
 	SH_ADD_HOOK_MEMFUNC(IServerGameDLL, GameFrame, server, this, &CMonoPlug::Hook_GameFrame, true);
 
-	META_CONPRINT("MP: Hooks OK\n");
+	//META_CONPRINT("MP: Hooks OK\n");
 	ENGINE_CALL(LogPrint)("All hooks started!\n");
 
 #if SOURCE_ENGINE >= SE_ORANGEBOX
@@ -322,8 +317,9 @@ void MonoConCommand::Dispatch(const CCommand &command)
 {
 	void* args[1];
 	args[0] = MONO_STRING(g_Domain, command.ArgS());
-	META_CONPRINTF("Dispatch command : %s\n", command.GetCommandString());
+	META_CONPRINTF("Dispatch command BEGIN : %s\n", command.GetCommandString());
 	MONO_DELEGATE_CALL(this->m_code, args);
+	META_CONPRINTF("Dispatch command END : %s\n", command.GetCommandString());
 };
 
 int MonoConCommand::AutoCompleteSuggest( const char *partial, CUtlVector< CUtlString > &commands )

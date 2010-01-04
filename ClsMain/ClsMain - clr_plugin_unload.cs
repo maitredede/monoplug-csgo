@@ -9,6 +9,7 @@ namespace MonoPlug
         //[ConCommand("clr_plugin_unload", "Unload a loaded plugin", FCVAR.FCVAR_GAMEDLL)]
         private void clr_plugin_unload(string args)
         {
+            Msg("M: clr_plugin_unload 0\n");
             try
             {
                 Msg("M: clr_plugin_unload A\n");

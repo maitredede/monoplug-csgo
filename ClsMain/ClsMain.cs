@@ -16,10 +16,6 @@ namespace MonoPlug
     {
         #region Private fields
         /// <summary>
-        /// List of awaiting Messages 
-        /// </summary>
-        private List<MessageEntry> _lstMsg = null;
-        /// <summary>
         /// Plugin instanciated and running 
         /// </summary>
         private Dictionary<AppDomain, ClsPluginBase> _plugins = null;

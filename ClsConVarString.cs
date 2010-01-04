@@ -9,11 +9,6 @@ namespace MonoPlug
 #endif
     public sealed class ClsConVarStrings : ClsConCommandBase
     {
-        private readonly string _name;
-        private readonly string _desc;
-        private readonly UInt64 _nativeId;
-        private readonly FCVAR _flags;
-
         internal ClsConVarStrings(UInt64 nativeId, string name, string description, FCVAR flags)
             : base(nativeId, name, description, flags)
         {
@@ -24,12 +19,12 @@ namespace MonoPlug
             get
             {
                 //Get from native var
-                return ClsMain.Mono_GetConVarStringValue(this._nativeId);
+                return ClsMain.Mono_GetConVarStringValue(base.NativeID);
             }
             set
             {
                 //Set native var
-                ClsMain.Mono_SetConVarStringValue(this._nativeId, value);
+                ClsMain.Mono_SetConVarStringValue(base.NativeID, value);
             }
         }
 

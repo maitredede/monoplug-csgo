@@ -41,7 +41,7 @@ namespace MonoPlug
                     Msg("ClsPluginBase::LevelShutdown_remove B\n");
                     this._events.RemoveHandler(_EventToken_LevelShutdown, value);
                     Msg("ClsPluginBase::LevelShutdown_remove C {0}\n", this._EventCounter_LevelShutdown);
-                    if (this._EventCounter_LevelShutdown++ == 0)
+                    if (--this._EventCounter_LevelShutdown == 0)
                     {
                         Msg("ClsPluginBase::LevelShutdown_remove D\n");
                         this._main.LevelShutdown_Remove(this);
