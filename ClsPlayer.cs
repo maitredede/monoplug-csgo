@@ -8,44 +8,33 @@ namespace MonoPlug
     [System.Diagnostics.DebuggerDisplay("#{Id} {Name}")]
     public sealed class ClsPlayer : MarshalByRefObject
     {
+        private int _armor = 0;
+        private int _death = 0;
+        private int _frag = 0;
+        private int _health = 0;
+        private int _maxhealth = 0;
+        private string _name = string.Empty;
+        private string _steamid = string.Empty;
+        private int _id = 0;
+        private string _language = string.Empty;
+
         internal ClsPlayer()
         {
         }
 
-        internal void SetId(int value) { this._id = value; }
-        internal void SetName(string value) { this._name = value; }
-        internal void SetSteamID(string value) { this._steamid = value; }
-        internal void SetTeamIndex(int value) { this._teamIndex = value; }
-
-        private int _id;
-        private string _name;
-        private string _steamid;
-        private int _teamIndex;
-        private int _frag;
-        private int _death;
-        private bool _isConnected;
-        private int _armor;
-
-        private bool _isPlayer;
-        private bool _isHLTV;
-        private bool _isFakeClient;
-        private bool _isDead;
-        private bool _isInAVehicle;
-        private bool _isObserver;
-
-        private TimeSpan _connected;
-        private int _ping;
-        private int _loss;
-        private string _state;
-        private IPEndPoint _address;
-
-        public int Id { get { return this._id; } }
+        public int Armor { get { return this._armor; } }
+        public int Death { get { return this._death; } }
+        public int Frag { get { return this._frag; } }
+        public int Health { get { return this._health; } }
+        public int MaxHealth { get { return this._maxhealth; } }
         public string Name { get { return this._name; } }
         public string SteamID { get { return this._steamid; } }
-        public TimeSpan Connected { get { return this._connected; } }
-        public int Ping { get { return this._ping; } }
-        public int Loss { get { return this._loss; } }
-        public string State { get { return this._state; } }
-        public IPEndPoint Address { get { return this._address; } }
+        public int Id { get { return this._id; } }
+        public string Language { get { return this._language; } }
+
+        public override string ToString()
+        {
+            return string.Format("#{0} {1}", this._id, this._name);
+        }
     }
 }

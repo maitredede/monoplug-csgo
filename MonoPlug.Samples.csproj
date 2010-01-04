@@ -46,5 +46,6 @@
   <ItemGroup>
     <Compile Include="ConClock.cs" />
     <Compile Include="ConEvents.cs" />
+    <Compile Include="ConSample.cs" />
   </ItemGroup>
 </Project>

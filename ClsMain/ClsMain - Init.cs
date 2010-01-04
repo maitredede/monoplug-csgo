@@ -16,16 +16,10 @@ namespace MonoPlug
             try
             {
 #endif
-                //Create lists
-                this._plugins = new Dictionary<AppDomain, ClsPluginBase>();
-                this._ConCommands = new Dictionary<string, ConCommandEntry>();
-                this._ConVarString = new Dictionary<UInt64, ConVarEntry>();
-
                 //get current thread Id to check for interthread calls
                 this._mainThreadId = System.Threading.Thread.CurrentThread.ManagedThreadId;
                 this._waitIn = new System.Threading.ManualResetEvent(false);
                 this._waitOut = new System.Threading.ManualResetEvent(false);
-                Msg("Debugger attached : {0}\n", System.Diagnostics.Debugger.IsAttached);
 
                 //Refresh plugin cache
                 this.clr_plugin_refresh(string.Empty);

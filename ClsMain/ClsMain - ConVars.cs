@@ -87,5 +87,15 @@ namespace MonoPlug
                 }
             }
         }
+
+        internal string GetConvarStringValue(string name)
+        {
+            string value = null;
+            this.InterThreadCall(() =>
+                {
+                    value = Mono_Convar_GetValue_String(name);
+                });
+            return value;
+        }
     }
 }

@@ -30,5 +30,9 @@ namespace MonoPlug
         internal static extern void Mono_HookClientConnect_Add();
         [MethodImpl(MethodImplOptions.InternalCall)]
         internal static extern void Mono_HookClientConnect_Remove();
+
+        //Convar values
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        internal static extern string Mono_Convar_GetValue_String(string name);
     }
 }

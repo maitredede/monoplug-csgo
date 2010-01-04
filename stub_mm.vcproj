@@ -988,6 +988,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\mono_event_hooks.h"
+				>
+			</File>
+			<File
 				RelativePath=".\monoplug.h"
 				>
 			</File>

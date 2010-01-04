@@ -18,15 +18,17 @@ namespace MonoPlug
         /// <summary>
         /// Plugin instanciated and running 
         /// </summary>
-        private Dictionary<AppDomain, ClsPluginBase> _plugins = null;
+        private readonly Dictionary<AppDomain, ClsPluginBase> _plugins = new Dictionary<AppDomain, ClsPluginBase>();
+
+        private readonly Dictionary<string, ConCommandEntry> _ConCommands = new Dictionary<string, ConCommandEntry>();
+        private readonly Dictionary<UInt64, ConVarEntry> _ConVarString = new Dictionary<ulong, ConVarEntry>();
+
         /// <summary>
         /// Available plugin cache list 
         /// </summary>
         private PluginDefinition[] _pluginCache = null;
 
-        private Dictionary<string, ConCommandEntry> _ConCommands = null;
-
-        private Dictionary<UInt64, ConVarEntry> _ConVarString = null;
+        //Internal commands and vars
         private ClsConVarStrings _clr_mono_version = null;
         private ClsConCommand _clr_plugin_list = null;
         private ClsConCommand _clr_plugin_refresh = null;

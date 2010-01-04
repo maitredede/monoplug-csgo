@@ -19,7 +19,8 @@ CGlobalVars *gpGlobals = NULL;
 static MonoDomain* g_Domain = NULL;
 MonoAssembly* g_Assembly = NULL;
 MonoImage *g_Image = NULL;
-MonoClass *g_Class = NULL;
+MonoClass *g_Class_ClsMain = NULL;
+MonoClass *g_Class_ClsPlayer = NULL;
 
 MonoMethod* g_ClsMain_Init = NULL;
 MonoMethod* g_ClsMain_Shutdown = NULL;
@@ -27,7 +28,7 @@ MonoMethod* g_ClsMain_Shutdown = NULL;
 MonoMethod* g_EVT_GameFrame = NULL;
 MonoMethod* g_EVT_ConVarStringValueChanged = NULL;
 
-MONO_EVENT_DECL_HOOK0_VOID(IServerGameDLL, LevelShutdown, SH_NOATTRIB, 0, server, false);
+static MonoObject* GetManagedPlayer(edict_t * edict);
 
 /** 
  * Something like this is needed to register cvars/CON_COMMANDs.
@@ -43,6 +44,24 @@ public:
 } s_BaseAccessor;
 
 PLUGIN_EXPOSE(CMonoPlug, g_MonoPlugPlugin);
+
+MONO_EVENT_DECL_HOOK0_VOID(IServerGameDLL, LevelShutdown, SH_NOATTRIB, 0, server, false);
+MONO_EVENT_DECL_HOOK2_VOID(IServerGameClients, ClientCommand, SH_NOATTRIB, 0, gameclients, false, edict_t *, const CCommand &)
+{
+	if (!param1 || param1->IsFree())
+	{
+		return;
+	}
+
+	gpointer args[2];
+	args[0] = GetManagedPlayer(param1);
+	args[1] = MONO_STRING(g_Domain, param2.ArgS());
+
+
+	MONO_CALL_ARGS(g_MonoPlugPlugin.m_ClsMain, method, args);
+};
+
+
 
 static uint64 Mono_RegisterConVarString(MonoString* name, MonoString* description, int flags, MonoString* defaultValue);
 static void Mono_UnregisterConVarString(uint64 nativeID);
@@ -80,6 +99,19 @@ static MonoString* Mono_GetConVarStringValue(uint64 nativeID)
 		}
 	}
 	return NULL;
+};
+
+static MonoString* Mono_Convar_GetValue_String(MonoString* name)
+{
+	ConVar* var = icvar->FindVar(mono_string_to_utf8(name));
+	if(var)
+	{
+		return MONO_STRING(g_Domain, var->GetString());
+	}
+	else
+	{
+		return NULL;
+	}
 };
 
 static void Mono_SetConVarStringValue(uint64 nativeID, MonoString* value)
@@ -165,20 +197,30 @@ bool CMonoPlug::Load(PluginId id, ISmmAPI *ismm, char *error, size_t maxlen, boo
 			META_CONPRINTF("%s\n", error);
 			return false;
 		}
-		g_Class = mono_class_from_name(g_Image, MONOPLUG_NAMESPACE, MONOPLUG_CLASSNAME);
-		if(!g_Class)
-		{
-			Q_snprintf(error, maxlen, "Can't get main type");
-			META_CONPRINTF("%s\n", error);
-			return false;
-		}
+
+		MONO_GET_CLASS(g_Image, g_Class_ClsMain, MONOPLUG_NAMESPACE, MONOPLUG_CLASSNAME_CLSMAIN, error, maxlen)
+		MONO_GET_CLASS(g_Image, g_Class_ClsPlayer, MONOPLUG_NAMESPACE, MONOPLUG_CLASSNAME_CLSPLAYER, error, maxlen)
+		//g_Class_ClsMain = mono_class_from_name(g_Image, MONOPLUG_NAMESPACE, MONOPLUG_CLASSNAME_CLSMAIN);
+		//if(!g_Class_ClsMain)
+		//{
+		//	Q_snprintf(error, maxlen, "Can't get type ClsMain");
+		//	META_CONPRINTF("%s\n", error);
+		//	return false;
+		//}
+		//g_Class_ClsPlayer = mono_class_from_name(g_Image, MONOPLUG_NAMESPACE, "ClsPlayer");
+		//if(!g_Class_ClsPlayer)
+		//{
+		//	Q_snprintf(error, maxlen, "Can't get type ClsPlayer");
+		//	META_CONPRINTF("%s\n", error);
+		//	return false;
+		//}
 
 #ifdef _DEBUG
 		//Enumerate ClsMain methods signature to debug purposes
 		META_CONPRINTF("M:DEBUG\n");
 		void* iter = NULL;
 		MonoMethod* m = NULL;
-		while ((m = mono_class_get_methods (g_Class, &iter)))
+		while ((m = mono_class_get_methods (g_Class_ClsMain, &iter)))
 		{
 			META_CONPRINTF("%s\n", mono_method_full_name(m, true));
 		}
@@ -186,14 +228,15 @@ bool CMonoPlug::Load(PluginId id, ISmmAPI *ismm, char *error, size_t maxlen, boo
 	META_CONPRINTF("M:RELEASE\n");
 #endif
 		//Add internal calls from managed to native
-		mono_add_internal_call (MONOPLUG_CALLBACK_MSG, (gconstpointer)Mono_Msg);
-		mono_add_internal_call (MONOPLUG_CALLBACK_REGISTERCONCOMMAND, (gconstpointer)Mono_RegisterConCommand);
-		mono_add_internal_call (MONOPLUG_CALLBACK_UNREGISTERCONCOMMAND, (gconstpointer)Mono_UnregisterConCommand);
-		mono_add_internal_call (MONOPLUG_CALLBACK_REGISTERCONVARSTRING, (gconstpointer)Mono_RegisterConVarString);
-		mono_add_internal_call (MONOPLUG_CALLBACK_UNREGISTERCONVARSTRING, (gconstpointer)Mono_UnregisterConVarString);
+		mono_add_internal_call (MONOPLUG_CALLBACK_MSG, Mono_Msg);
+		mono_add_internal_call (MONOPLUG_CALLBACK_REGISTERCONCOMMAND, Mono_RegisterConCommand);
+		mono_add_internal_call (MONOPLUG_CALLBACK_UNREGISTERCONCOMMAND, Mono_UnregisterConCommand);
+		mono_add_internal_call (MONOPLUG_CALLBACK_REGISTERCONVARSTRING, Mono_RegisterConVarString);
+		mono_add_internal_call (MONOPLUG_CALLBACK_UNREGISTERCONVARSTRING, Mono_UnregisterConVarString);
 
-		mono_add_internal_call (MONOPLUG_CALLBACK_CONVARSTRING_GETVALUE, (gconstpointer)Mono_GetConVarStringValue);
-		mono_add_internal_call (MONOPLUG_CALLBACK_CONVARSTRING_SETVALUE, (gconstpointer)Mono_SetConVarStringValue);
+		mono_add_internal_call (MONOPLUG_CALLBACK_CONVARSTRING_GETVALUE, Mono_GetConVarStringValue);
+		mono_add_internal_call (MONOPLUG_CALLBACK_CONVARSTRING_SETVALUE, Mono_SetConVarStringValue);
+		mono_add_internal_call (MONOPLUG_CALLBACK_CONVAR_GETVALUE_STRING, Mono_Convar_GetValue_String);
 
 		//Get callbacks from native to managed
 		ATTACH(MONOPLUG_NATMAN_INIT, g_ClsMain_Init, g_Image);
@@ -204,7 +247,8 @@ bool CMonoPlug::Load(PluginId id, ISmmAPI *ismm, char *error, size_t maxlen, boo
 		ATTACH(MONOPLUG_NATMAN_CONVARSTRING_VALUECHANGED, g_EVT_ConVarStringValueChanged, g_Image);
 	}
 
-	MONO_EVENT_INIT_HOOK0_VOID(LevelShutdown, "MonoPlug.ClsMain:Raise_LevelShutdown()", "MonoPlug.ClsMain::Attach_LevelShutdown", "MonoPlug.ClsMain::Dettach_LevelShutdown");
+	MONO_EVENT_INIT_HOOK0_VOID(LevelShutdown, "MonoPlug.ClsMain:Raise_LevelShutdown()", "MonoPlug.ClsMain::Attach_LevelShutdown", "MonoPlug.ClsMain::Detach_LevelShutdown");
+	MONO_EVENT_INIT_HOOK2_VOID(ClientCommand, "MonoPlug.ClsMain:Raise_ClientCommand(MonoPlug.ClsPlayer,string)", "MonoPlug.ClsMain::Attach_ClientCommand", "MonoPlug.ClsMain::Detach_ClientCommand");
 	
 	//ConCommandBase init code
 	this->m_convarStringIdValue = 0;
@@ -213,7 +257,7 @@ bool CMonoPlug::Load(PluginId id, ISmmAPI *ismm, char *error, size_t maxlen, boo
 	this->m_convarStringPtr = new CUtlVector<ConVar*>();
 	
 	//Create object instance
-	this->m_ClsMain = mono_object_new(g_Domain, g_Class);
+	this->m_ClsMain = mono_object_new(g_Domain, g_Class_ClsMain);
 	mono_runtime_object_init(this->m_ClsMain);
 
 	//Init object
@@ -461,5 +505,51 @@ MonoObject* MONO_DELEGATE_CALL(MonoDelegate* delegateObject, void** args)
 	{
 		return ret;
 	}
-}
+};
 
+MonoObject* GetManagedPlayer(edict_t * pEdict)
+{
+	if(!pEdict || pEdict->IsFree())
+	{
+		return NULL;
+	}
+
+	if(playerinfomanager)
+	{
+		IPlayerInfo *playerinfo = playerinfomanager->GetPlayerInfo(pEdict);
+
+		if(playerinfo)
+		{
+			MonoObject* player = mono_object_new(g_Domain, g_Class_ClsPlayer);
+			mono_runtime_object_init(player);
+
+			int valint = playerinfo->GetArmorValue();
+			MONO_SET_FIELD(g_Class_ClsPlayer, "_armor", player, &valint);
+			valint = playerinfo->GetDeathCount();
+			MONO_SET_FIELD(g_Class_ClsPlayer, "_death", player, &valint);
+			valint = playerinfo->GetFragCount();
+			MONO_SET_FIELD(g_Class_ClsPlayer, "_frag", player, &valint);
+			valint = playerinfo->GetHealth();
+			MONO_SET_FIELD(g_Class_ClsPlayer, "_health", player, &valint);
+			valint = playerinfo->GetMaxHealth();
+			MONO_SET_FIELD(g_Class_ClsPlayer, "_maxhealth", player, &valint);
+			
+			MONO_SET_FIELD(g_Class_ClsPlayer, "_name", player, MONO_STRING(g_Domain, playerinfo->GetName()));
+			MONO_SET_FIELD(g_Class_ClsPlayer, "_steamid", player, MONO_STRING(g_Domain, playerinfo->GetNetworkIDString()));
+			valint = playerinfo->GetUserID();
+			MONO_SET_FIELD(g_Class_ClsPlayer, "_id", player, &valint);
+
+			MONO_SET_FIELD(g_Class_ClsPlayer, "_language", player, MONO_STRING(g_Domain, engine->GetClientConVarValue(IndexOfEdict(pEdict), "cl_language")));
+
+			return player;
+		}
+		else
+		{
+			return NULL;
+		}
+	}
+	else
+	{
+		return NULL;
+	}
+};

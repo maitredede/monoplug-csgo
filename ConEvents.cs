@@ -14,6 +14,7 @@ namespace MonoPlug
         {
             try
             {
+                this.ClientCommand += this.ClientCommand_Sample;
                 this.LevelShutdown += this.Events_LevelShutdown;
             }
             catch (Exception ex)
@@ -34,6 +35,7 @@ namespace MonoPlug
             {
                 Msg("ConEvents::Unload : A\n");
                 this.LevelShutdown -= this.Events_LevelShutdown;
+                this.ClientCommand -= this.ClientCommand_Sample;
                 Msg("ConEvents::Unload : A\n");
             }
             catch (Exception ex)
@@ -63,5 +65,18 @@ namespace MonoPlug
             this.Msg("ConEvents: LevelShutdown\n");
         }
 
+        private void ClientCommand_Sample(object sender, ClientCommandEventArgs e)
+        {
+            string name;
+            if (e.Player == null)
+            {
+                name = "<null>";
+            }
+            else
+            {
+                name = e.Player.Name ?? "<player name is null>";
+            }
+            this.Msg("ConEvents: ClientCommand from {0} {1}\n", name);
+        }
     }
 }

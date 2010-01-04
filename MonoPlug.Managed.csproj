@@ -33,7 +33,10 @@
   </PropertyGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>
-    <Compile Include="ClientConnectEventArgs.cs" />
+    <Compile Include="ClsMain\ClsMain - Events LevelShutdown.cs" />
+    <Compile Include="ClsMain\ClsMain - Events ClientCommand.cs" />
+    <Compile Include="EventArgs\ClientCommandEventArgs.cs" />
+    <Compile Include="EventArgs\ClientConnectEventArgs.cs" />
     <Compile Include="ClsConCommandBase.cs" />
     <Compile Include="ClsConCommand.cs" />
     <Compile Include="ClsConVarString.cs" />
@@ -43,7 +46,7 @@
     <Compile Include="ClsMain\ClsMain - clr_plugin_unload.cs" />
     <Compile Include="ClsMain\ClsMain - clr_test.cs" />
     <Compile Include="ClsMain\ClsMain - ConVars.cs" />
-    <Compile Include="ClsMain\ClsMain - IEvents.cs" />
+    <Compile Include="ClsMain\ClsMain - Events.cs" />
     <Compile Include="ClsMain\ClsMain - Init.cs" />
     <Compile Include="ClsMain\ClsMain - Messages.cs" />
     <Compile Include="ClsMain\ClsMain - Players.cs" />
@@ -53,6 +56,8 @@
     <Compile Include="ClsMain\ClsMain - Shutdown.cs" />
     <Compile Include="ClsMain\ClsMain.cs" />
     <Compile Include="ClsPlayer.cs" />
+    <Compile Include="ClsPluginBase\ClsPluginBase - Events.cs" />
+    <Compile Include="ClsPluginBase\ClsPluginBase - EVT ClientCommand.cs" />
     <Compile Include="ClsPluginBase\ClsPluginBase - EVT LevelShutdown.cs" />
     <Compile Include="ConCommandAttribute.cs" />
     <Compile Include="ConCommandEntry.cs" />

@@ -20,7 +20,8 @@
 
 #define MONOPLUG_DLLFILE "%s/addons/MonoPlug.Managed.dll"
 #define MONOPLUG_NAMESPACE "MonoPlug"
-#define MONOPLUG_CLASSNAME "ClsMain"
+#define MONOPLUG_CLASSNAME_CLSMAIN "ClsMain"
+#define MONOPLUG_CLASSNAME_CLSPLAYER "ClsPlayer"
 #define MONOPLUG_FULLCLASSNAME "MonoPlug.ClsMain"
 
 #define MONOPLUG_CALLBACK_MSG "MonoPlug.ClsMain::Mono_Msg"
@@ -30,6 +31,7 @@
 #define MONOPLUG_CALLBACK_UNREGISTERCONVARSTRING "MonoPlug.ClsMain::Mono_UnregisterConVarString(ulong)"
 #define MONOPLUG_CALLBACK_CONVARSTRING_GETVALUE "MonoPlug.ClsMain::Mono_GetConVarStringValue(ulong)"
 #define MONOPLUG_CALLBACK_CONVARSTRING_SETVALUE "MonoPlug.ClsMain::Mono_SetConVarStringValue(ulong,string)"
+#define MONOPLUG_CALLBACK_CONVAR_GETVALUE_STRING "MonoPlug.ClsMain::Mono_Convar_GetValue_String(string)"
 
 #define MONOPLUG_NATMAN_INIT "MonoPlug.ClsMain:_Init()"
 #define MONOPLUG_NATMAN_SHUTDOWN "MonoPlug.ClsMain:_Shutdown()"
@@ -139,34 +141,17 @@ static MonoObject* MONO_DELEGATE_CALL(MonoDelegate* delegateObject, void** args)
 #define MONO_CALL(target, methodHandle) MONO_CALL_ARGS(target, methodHandle, NULL)
 #define MONO_STRING(domain, str) ((str == NULL) ? NULL : mono_string_new(domain, str))
 
-#define MONO_EVENT_DECL_HOOK0_VOID(ifacetype, ifacefunc, attr, overload, ifaceptr, post) \
-SH_DECL_HOOK0_void(ifacetype, ifacefunc, attr, overload); \
-MonoMethod* g_MethodRaise##ifacefunc = NULL; \
-static void EventHookRaise_##ifacefunc() \
-{ \
-	if(g_MethodRaise##ifacefunc) \
+#include "mono_event_hooks.h"
+
+#define MONO_GET_CLASS(assemblyImage, classPtr, classNamespace, className, errstr, maxstr) \
+	classPtr = mono_class_from_name(assemblyImage, classNamespace, className); \
+	if(!classPtr) \
 	{ \
-		META_CONPRINTF("EVT : native raise %s::%s\n", #ifacetype, #ifaceptr); \
-		MONO_CALL(g_MonoPlugPlugin.m_ClsMain, g_MethodRaise##ifacefunc); \
-	} \
-}; \
-static void EventHookAttach_##ifacefunc() \
-{ \
-	META_CONPRINTF("EVT : add hook %s::%s\n", #ifacetype, #ifaceptr); \
-	SH_ADD_HOOK_STATICFUNC(ifacetype, ifacefunc, ifaceptr, &EventHookRaise_##ifacefunc, post); \
-}; \
-static void EventHookDetach_##ifacefunc() \
-{ \
-	META_CONPRINTF("EVT : remove hook %s::%s\n", #ifacetype, #ifaceptr); \
-	SH_REMOVE_HOOK_STATICFUNC(ifacetype, ifacefunc, ifaceptr, &EventHookRaise_##ifacefunc, post); \
-};
+		Q_snprintf(errstr, maxstr, "Can't get type %s", className); \
+		META_CONPRINTF("%s\n", errstr); \
+		return false; \
+	}
 
-#define MONO_EVENT_INIT_HOOK0_VOID(ifacefunc, managedRaise, managedAttach, managedDetach) \
-	META_CONPRINTF("EVT : hook init %s\n", #ifacefunc); \
-	ATTACH(managedRaise, g_MethodRaise##ifacefunc, g_Image); \
-	mono_add_internal_call(managedAttach, EventHookAttach_##ifacefunc); \
-	mono_add_internal_call(managedDetach, EventHookDetach_##ifacefunc);
-
-#define MONO_EVENT_UNLOAD_HOOK0_VOID(ifacefunc) g_MethodRaise##ifacefunc = NULL;
+#define MONO_SET_FIELD(classPtr, fieldName, object, value) mono_field_set_value(object, mono_class_get_field_from_name(classPtr, fieldName), value);
 
 #endif //_MONOPLUG_H
