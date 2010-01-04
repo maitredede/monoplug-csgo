@@ -14,9 +14,7 @@ namespace MonoPlug
         {
             try
             {
-                Msg("ConEvents:: Load in AppDomain '{0}'\n", AppDomain.CurrentDomain.FriendlyName);
                 this.LevelShutdown += this.Events_LevelShutdown;
-                Msg("ConEvents::Loaded\n");
             }
             catch (Exception ex)
             {
@@ -32,7 +30,22 @@ namespace MonoPlug
 
         protected override void Unload()
         {
-            this.LevelShutdown -= this.Events_LevelShutdown;
+            try
+            {
+                Msg("ConEvents::Unload : A\n");
+                this.LevelShutdown -= this.Events_LevelShutdown;
+                Msg("ConEvents::Unload : A\n");
+            }
+            catch (Exception ex)
+            {
+                while (ex != null)
+                {
+                    Msg(ex.GetType().FullName + "\n");
+                    Msg(ex.Message + "\n");
+                    Msg(ex.StackTrace + "\n");
+                    ex = ex.InnerException;
+                }
+            }
         }
 
         public override string Name

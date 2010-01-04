@@ -70,7 +70,7 @@ public:
 
 };
 
-class CMonoPlug: public ISmmPlugin, public IMetamodListener
+class CMonoPlug: public ISmmPlugin, public IMetamodListener, public IGameEventListener2
 {
 public:
 	bool Load(PluginId id, ISmmAPI *ismm, char *error, size_t maxlen, bool late);
@@ -87,15 +87,19 @@ public:
 	const char *GetDate();
 	const char *GetLogTag();
 public: //Hooks
-	void Hook_ServerActivate(edict_t *pEdictList, int edictCount, int clientMax);
+	//void Hook_ServerActivate(edict_t *pEdictList, int edictCount, int clientMax);
 	void Hook_GameFrame(bool simulating);
-	bool Hook_LevelInit(const char *pMapName,
-		char const *pMapEntities,
-		char const *pOldLevel,
-		char const *pLandmarkName,
-		bool loadGame,
-		bool background);
+	//bool Hook_LevelInit(const char *pMapName,
+	//	char const *pMapEntities,
+	//	char const *pOldLevel,
+	//	char const *pLandmarkName,
+	//	bool loadGame,
+	//	bool background);
 	//void Hook_LevelShutdown(void);
+
+public: //IGameEventListener2
+	// game event listener
+	void FireGameEvent( IGameEvent *event );
 public:
 	MonoObject* m_ClsMain;
 
@@ -107,6 +111,9 @@ public:
 	
 	//CUtlVector<uint64Container*>* m_conCommandId;
 	//CUtlVector<ConCommand*>* m_conCommandPtr;
+
+	ConCommand* m_pSayCmd;
+	ConCommand* m_pSayTeamCmd;
 };
 
 
@@ -140,22 +147,23 @@ PLUGIN_GLOBALVARS();
          } \
 };
  
-#define MONO_CALL_ARGS(target, methodHandle, args) \
-{\
-         MonoObject* exception = NULL; \
-         mono_runtime_invoke(methodHandle, target, args, &exception); \
-         if(exception) \
-         { \
-                 mono_print_unhandled_exception(exception); \
-         } \
-};
- 
+//#define MONO_CALL_ARGS(target, methodHandle, args) \
+//	MonoObject* methodHandle##exception = NULL; \
+//     mono_runtime_invoke(methodHandle, target, args, &exception); \
+//     if(methodHandle##exception) \
+//     { \
+//             mono_print_unhandled_exception(exception); \
+//     }
+
+static MonoObject* MONO_CALL_ARGS(void* target, MonoMethod* methodHandle, void** args);
+static MonoObject* MONO_DELEGATE_CALL(MonoDelegate* delegateObject, void** args);
+
  //Code from : http://www.mail-archive.com/mono-list@lists.ximian.com/msg26230.html
- #define MONO_DELEGATE_CALL(delegateObject, args) \
- {\
-         MonoMethod* dlgMethod = mono_get_delegate_invoke(mono_object_get_class((MonoObject*)delegateObject)); \
-         MONO_CALL_ARGS(delegateObject, dlgMethod, args); \
- };
+ //#define MONO_DELEGATE_CALL(delegateObject, args) \
+ //{\
+ //        MonoMethod* MONO_DELEGATE_CALL_dlgMethod = mono_get_delegate_invoke(mono_object_get_class((MonoObject*)delegateObject)); \
+ //        MONO_CALL_ARGS(delegateObject, MONO_DELEGATE_CALL_dlgMethod, args); \
+ //};
  
  #define MONO_CALL(target, methodHandle) MONO_CALL_ARGS(target, methodHandle, NULL)
  
@@ -185,7 +193,7 @@ static void EventHookDetach_##ifacefunc() \
 };
 
 #define MONO_EVENT_INIT_HOOK0_VOID(ifacefunc, managedRaise, managedAttach, managedDetach) \
-	META_CONPRINTF("EVT : hook init\n", #ifacefunc); \
+	META_CONPRINTF("EVT : hook init %s\n", #ifacefunc); \
 	ATTACH(managedRaise, g_MethodRaise##ifacefunc, g_Image); \
 	mono_add_internal_call(managedAttach, EventHookAttach_##ifacefunc); \
 	mono_add_internal_call(managedDetach, EventHookDetach_##ifacefunc);

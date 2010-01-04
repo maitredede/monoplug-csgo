@@ -26,23 +26,23 @@ namespace MonoPlug
             }
         }
 
-        public string[] clr_plugin_list_complete(string partial)
-        {
-            if (this._pluginCache == null)
-                this._pluginCache = new PluginDefinition[] { };
-            List<string> lst = new List<string>();
+        //public string[] clr_plugin_list_complete(string partial)
+        //{
+        //    if (this._pluginCache == null)
+        //        this._pluginCache = new PluginDefinition[] { };
+        //    List<string> lst = new List<string>();
 
-            if (!string.IsNullOrEmpty(partial))
-            {
-                foreach (PluginDefinition desc in this._pluginCache)
-                {
-                    if (desc.Name.ToUpperInvariant().Contains(partial.ToUpperInvariant()))
-                    {
-                        lst.Add(desc.Name);
-                    }
-                }
-            }
-            return lst.ToArray();
-        }
+        //    if (!string.IsNullOrEmpty(partial))
+        //    {
+        //        foreach (PluginDefinition desc in this._pluginCache)
+        //        {
+        //            if (desc.Name.ToUpperInvariant().Contains(partial.ToUpperInvariant()))
+        //            {
+        //                lst.Add(desc.Name);
+        //            }
+        //        }
+        //    }
+        //    return lst.ToArray();
+        //}
     }
 }

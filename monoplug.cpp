@@ -213,14 +213,10 @@ bool CMonoPlug::Load(PluginId id, ISmmAPI *ismm, char *error, size_t maxlen, boo
 	
 	//ConCommandBase init code
 	this->m_convarStringIdValue = 0;
-
-	//this->m_conCommands = new CUtlVector<MonoConCommand*>();
+	this->m_conCommands = new CUtlVector<MonoConCommand*>();
 	this->m_convarStringId = new CUtlVector<uint64Container*>();
 	this->m_convarStringPtr = new CUtlVector<ConVar*>();
 	
-	//this->m_conCommandId = new CUtlVector<uint64Container*>();
-	//this->m_conCommandPtr = new CUtlVector<ConCommand*>();
-
 	//Create object instance
 	this->m_ClsMain = mono_object_new(g_Domain, g_Class);
 	mono_runtime_object_init(this->m_ClsMain);
@@ -241,6 +237,11 @@ bool CMonoPlug::Load(PluginId id, ISmmAPI *ismm, char *error, size_t maxlen, boo
 #else
 	ConCommandBaseMgr::OneTimeInit(&s_BaseAccessor);
 #endif
+
+	//From SourceMod ChatTriggers
+	m_pSayCmd = icvar->FindCommand("say");
+	m_pSayTeamCmd = icvar->FindCommand("say_team");
+
 	return true;
 }
 
@@ -249,17 +250,13 @@ bool CMonoPlug::Unload(char *error, size_t maxlen)
 	//Mono is leaked, so trying to unload plugin lead to segfault
 	Q_snprintf(error, maxlen, "Unload denied to avoid segfault caused by Mono.");
 	return false;
-	//MONO_EVENT_UNLOAD_HOOK0_VOID(LevelShutdown);
+
+	//TODO : Clean remove hooks and hacks
 }
 
 void CMonoPlug::OnVSPListening(IServerPluginCallbacks *iface)
 {
 	vsp_callbacks = iface;
-}
-
-void CMonoPlug::Hook_ServerActivate(edict_t *pEdictList, int edictCount, int clientMax)
-{
-	META_LOG(g_PLAPI, "ServerActivate() called: edictCount = %d, clientMax = %d", edictCount, clientMax);
 }
 
 void CMonoPlug::Hook_GameFrame(bool simulating)
@@ -272,34 +269,6 @@ void CMonoPlug::Hook_GameFrame(bool simulating)
 	 */
 	MONO_CALL(this->m_ClsMain, g_EVT_GameFrame);
 }
-
-bool CMonoPlug::Hook_LevelInit(const char *pMapName,
-								char const *pMapEntities,
-								char const *pOldLevel,
-								char const *pLandmarkName,
-								bool loadGame,
-								bool background)
-{
-
-	void* args[6];
-	args[0] = MONO_STRING(g_Domain, pMapName);
-	args[1] = MONO_STRING(g_Domain, pMapEntities);
-	args[2] = MONO_STRING(g_Domain, pOldLevel);
-	args[3] = MONO_STRING(g_Domain, pLandmarkName);
-	args[4] = &loadGame;
-	args[5] = &background;
-	
-	//MONO_CALL_ARGS(this->m_ClsMain, g_EVT_LevelInit, args);
-
-	return true;
-}
-
-//void CMonoPlug::Hook_LevelShutdown()
-//{
-//	META_LOG(g_PLAPI, "Hook_LevelShutdown()");
-//
-//	MONO_CALL(this->m_ClsMain, g_EVT_LevelShutdown);
-//}
 
 const char *CMonoPlug::GetLicense()
 {
@@ -353,17 +322,34 @@ void MonoConCommand::Dispatch(const CCommand &command)
 {
 	void* args[1];
 	args[0] = MONO_STRING(g_Domain, command.ArgS());
+	META_CONPRINTF("Dispatch command : %s\n", command.GetCommandString());
 	MONO_DELEGATE_CALL(this->m_code, args);
 };
 
 int MonoConCommand::AutoCompleteSuggest( const char *partial, CUtlVector< CUtlString > &commands )
 {
-	return 0;
+	void* args[1];
+	args[0] = MONO_STRING(g_Domain, partial);
+	MonoObject* ret = MONO_DELEGATE_CALL(this->m_complete, args);
+	if(ret)
+	{
+		MonoArray* arr = (MonoArray*)ret;
+		for(uint i=0;i<mono_array_length(arr);i++)
+		{
+			MonoString* str = mono_array_get(arr, MonoString*, i);
+			commands.AddToTail(CUtlString(mono_string_to_utf8(str)));
+		}
+		return mono_array_length(arr);
+	}
+	else
+	{
+		return 0;
+	}
 };
 
 bool MonoConCommand::CanAutoComplete()
 {
-	if(this->m_code)
+	if(this->m_complete)
 	{
 		return true;
 	}
@@ -380,23 +366,12 @@ uint64 Mono_RegisterConVarString(MonoString* name, MonoString* description, int 
 		mono_string_to_utf8(name),
 		mono_string_to_utf8(defaultValue),
 		flags,
-		mono_string_to_utf8(description)
-		, ConVarStringChangeCallback
+		mono_string_to_utf8(description),
+		ConVarStringChangeCallback
 		);
-		g_MonoPlugPlugin.m_convarStringId->AddToTail(new uint64Container(nativeID));
-		g_MonoPlugPlugin.m_convarStringPtr->AddToTail(var);
-		return nativeID;
-	////g_pCVar->RegisterConCommand(var);
-	//if(META_REGCVAR(var))
-	//{
-	//	g_MonoPlugPlugin.m_convarStringId->AddToTail(new uint64Container(nativeID));
-	//	g_MonoPlugPlugin.m_convarStringPtr->AddToTail(var);
-	//	return nativeID;
-	//}
-	//else
-	//{
-	//	return 0;
-	//}
+	g_MonoPlugPlugin.m_convarStringId->AddToTail(new uint64Container(nativeID));
+	g_MonoPlugPlugin.m_convarStringPtr->AddToTail(var);
+	return nativeID;
 };
 
 void Mono_UnregisterConVarString(uint64 nativeID)
@@ -407,7 +382,6 @@ void Mono_UnregisterConVarString(uint64 nativeID)
 		if(cont->Value() == nativeID)
 		{
 			ConVar* var = g_MonoPlugPlugin.m_convarStringPtr->Element(i);
-			//g_pCVar->UnregisterConCommand(var);
 			META_UNREGCVAR(var);
 			g_MonoPlugPlugin.m_convarStringId->Remove(i);
 			g_MonoPlugPlugin.m_convarStringPtr->Remove(i);
@@ -420,24 +394,10 @@ void Mono_UnregisterConVarString(uint64 nativeID)
 
 bool Mono_RegisterConCommand(MonoString* name, MonoString* description, MonoDelegate* code, int flags, MonoDelegate* complete)
 {
-	MonoConCommand* com = new MonoConCommand(mono_string_to_utf8(name), mono_string_to_utf8(description), code, flags);
+	MonoConCommand* com = new MonoConCommand(mono_string_to_utf8(name), mono_string_to_utf8(description), code, flags, complete);
 
-	//if(META_REGCVAR(com))
-	//{
-		g_MonoPlugPlugin.m_conCommands->AddToTail(com);
-		return true;
-	//}
-	//return false;
-	//g_pCVar->RegisterConCommand(com);
-	//{
-		//g_MonoPlugPlugin.m_conCommands->AddToTail(com);
-		//return true;
-	//}
-	//else
-	//{
-	//	delete com;
-	//	return false;
-	//}
+	g_MonoPlugPlugin.m_conCommands->AddToTail(com);
+	return true;
 };
 
 bool Mono_UnregisterConCommand(MonoString* name)
@@ -461,4 +421,49 @@ bool Mono_UnregisterConCommand(MonoString* name)
 	META_CONPRINTF("Mono_UnregisterConCommand : Command NOT found\n");
 	return false;
 };
+
+void CMonoPlug::FireGameEvent( IGameEvent *event )
+{
+	if (!event)
+		return;
+
+	const char *name = event->GetName();
+
+	META_LOG(g_PLAPI, "event '%s' received\n", name);
+	META_CONPRINTF("event '%s' received\n", name);
+}
+
+MonoObject* MONO_CALL_ARGS(void* target, MonoMethod* methodHandle, void** args)
+{
+	MonoObject* exception = NULL;
+	MonoObject* ret = mono_runtime_invoke(methodHandle, target, args, &exception);
+	if(exception)
+	{
+		mono_print_unhandled_exception(exception);
+		return NULL;
+	}
+	else
+	{
+		return ret;
+	}
+};
+
+MonoObject* MONO_DELEGATE_CALL(MonoDelegate* delegateObject, void** args)
+{
+	//Code from : http://www.mail-archive.com/mono-list@lists.ximian.com/msg26230.html
+	//MonoClass* dlgClass = mono_object_get_class((MonoObject*)delegateObject);
+	//MonoMethod* dlgMethod = mono_get_delegate_invoke(dlgClass);
+	//return MONO_CALL_ARGS(delegateObject, dlgMethod, args);
+	MonoObject* exception = NULL;
+	MonoObject* ret = mono_runtime_delegate_invoke((MonoObject*)delegateObject, args, &exception);
+	if(exception)
+	{
+		mono_print_unhandled_exception(exception);
+		return NULL;
+	}
+	else
+	{
+		return ret;
+	}
+}
 

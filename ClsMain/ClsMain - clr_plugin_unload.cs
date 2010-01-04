@@ -9,62 +9,92 @@ namespace MonoPlug
         //[ConCommand("clr_plugin_unload", "Unload a loaded plugin", FCVAR.FCVAR_GAMEDLL)]
         private void clr_plugin_unload(string args)
         {
-            //Find if plugin is loaded
-            lock (this._plugins)
+            try
             {
-                foreach (AppDomain dom in this._plugins.Keys)
+                Msg("M: clr_plugin_unload A\n");
+                //Find if plugin is loaded
+                bool found = false;
+                lock (this._plugins)
                 {
-                    ClsPluginBase plugin = this._plugins[dom];
-                    if (plugin.Name.Equals(args, StringComparison.InvariantCultureIgnoreCase))
+                    foreach (AppDomain dom in this._plugins.Keys)
                     {
-                        //Deinit plugin
-                        plugin.UnInit();
-
-                        //Clean commands
-                        List<ClsConCommand> lstCommands = new List<ClsConCommand>();
-                        lock (this._ConCommands)
+                        Msg("M: clr_plugin_unload B\n");
+                        ClsPluginBase plugin = this._plugins[dom];
+                        Msg("M: clr_plugin_unload C {0}\n", plugin.Name);
+                        if (plugin.Name.Equals(args, StringComparison.InvariantCultureIgnoreCase))
                         {
-                            foreach (string name in this._ConCommands.Keys)
+                            found = true;
+                            Msg("M: clr_plugin_unload D\n");
+                            //Deinit plugin
+                            plugin.UnInit();
+
+                            Msg("M: clr_plugin_unload E\n");
+
+                            //Clean commands
+                            List<ClsConCommand> lstCommands = new List<ClsConCommand>();
+                            lock (this._ConCommands)
                             {
-                                if (this._ConCommands[name].Plugin == plugin)
+                                foreach (string name in this._ConCommands.Keys)
                                 {
-                                    lstCommands.Add(this._ConCommands[name].Command);
+                                    if (this._ConCommands[name].Plugin == plugin)
+                                    {
+                                        lstCommands.Add(this._ConCommands[name].Command);
+                                    }
                                 }
                             }
-                        }
-                        foreach (ClsConCommand cmd in lstCommands)
-                        {
-                            this.UnregisterCommand(plugin, cmd);
-                        }
-
-                        //Clean vars
-                        List<ClsConVarStrings> lstVars = new List<ClsConVarStrings>();
-                        lock (this._ConVarString)
-                        {
-                            foreach (ulong id in this._ConVarString.Keys)
+                            Msg("M: clr_plugin_unload F {0}\n", lstCommands.Count);
+                            foreach (ClsConCommand cmd in lstCommands)
                             {
-                                if (this._ConVarString[id].Plugin == plugin)
+                                this.UnregisterCommand(plugin, cmd);
+                            }
+
+                            Msg("M: clr_plugin_unload G\n");
+                            //Clean vars
+                            List<ClsConVarStrings> lstVars = new List<ClsConVarStrings>();
+                            lock (this._ConVarString)
+                            {
+                                foreach (ulong id in this._ConVarString.Keys)
                                 {
-                                    lstVars.Add(this._ConVarString[id].Var);
+                                    if (this._ConVarString[id].Plugin == plugin)
+                                    {
+                                        lstVars.Add(this._ConVarString[id].Var);
+                                    }
                                 }
                             }
-                        }
-                        foreach (ClsConVarStrings v in lstVars)
-                        {
-                            this.UnregisterConVarString(plugin, v);
-                        }
+                            Msg("M: clr_plugin_unload H {0}\n", lstVars.Count);
+                            foreach (ClsConVarStrings v in lstVars)
+                            {
+                                this.UnregisterConVarString(plugin, v);
+                            }
 
-                        //Clean plugin
-                        string plugname = plugin.Name;
-                        this._plugins.Remove(dom);
-                        AppDomain.Unload(dom);
+                            Msg("M: clr_plugin_unload I\n");
+                            //Clean plugin
+                            string plugname = plugin.Name;
+                            this._plugins.Remove(dom);
+                            Msg("M: clr_plugin_unload J\n");
+                            this._plugins.Remove(dom);
+                            AppDomain.Unload(dom);
 
-                        Msg("Plugin '{0}' unloaded\n", plugname);
-                        return;
+                            Msg("Plugin '{0}' unloaded\n", plugname);
+                            break;
+                        }
                     }
                 }
+                if (!found)
+                {
+                    Msg("Plugin '{0}' not found or loaded\n", args);
+                }
             }
-            Msg("Plugin '{0}' not found or loaded\n", args);
+            catch (Exception ex)
+            {
+                while (ex != null)
+                {
+                    Msg(ex.GetType().FullName + "\n");
+                    Msg(ex.Message + "\n");
+                    Msg(ex.StackTrace + "\n");
+                    ex = ex.InnerException;
+                }
+            }
         }
     }
 }
