@@ -8,7 +8,12 @@ namespace MonoPlug
     {
         internal ClsPlayer[] GetPlayers()
         {
-            throw new NotImplementedException();
+            return this.InterThreadCall<ClsPlayer[], object>(this.GetPlayers_CALL, null);
+        }
+
+        private ClsPlayer[] GetPlayers_CALL(object data)
+        {
+            return NativeMethods.Mono_GetPlayers();
         }
     }
 }

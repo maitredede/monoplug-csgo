@@ -8,7 +8,6 @@ namespace MonoPlug
 {
     partial class ClsMain
     {
-        //[ConCommand("clr_plugin_load", "Load a CLR plugin into memory", FCVAR.FCVAR_GAMEDLL)]
         private void clr_plugin_load(string args)
         {
             ClsPluginBase plugin = null;
@@ -34,9 +33,6 @@ namespace MonoPlug
                         {
                             Msg("clr_plugin_load: A\n");
                             dom = AppDomain.CreateDomain(plug.Name);
-                            //dom.AssemblyResolve += this._asmResolve;
-                            //dom.AssemblyLoad += this._asmLoad;
-                            //dom.TypeResolve += this._asmTypeResolve;
 
                             Msg("clr_plugin_load: B\n");
                             Msg("  Assembly location : {0}\n", Assembly.GetExecutingAssembly().Location);

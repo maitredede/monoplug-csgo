@@ -20,8 +20,11 @@ namespace MonoPlug
         /// </summary>
         private readonly Dictionary<AppDomain, ClsPluginBase> _plugins = new Dictionary<AppDomain, ClsPluginBase>();
 
-        private readonly Dictionary<string, ConCommandEntry> _ConCommands = new Dictionary<string, ConCommandEntry>();
-        private readonly Dictionary<UInt64, ConVarEntry> _ConVarString = new Dictionary<ulong, ConVarEntry>();
+        private Dictionary<UInt64, ConVarEntry> _convars = new Dictionary<UInt64, ConVarEntry>();
+        private readonly Dictionary<string, ConCommandEntry> _concommands = new Dictionary<string, ConCommandEntry>();
+
+        [Obsolete("Rewriting", true)]
+        private readonly Dictionary<UInt64, ConVarEntry> _ConVarString = new Dictionary<UInt64, ConVarEntry>();
 
         /// <summary>
         /// Available plugin cache list 
@@ -29,7 +32,7 @@ namespace MonoPlug
         private PluginDefinition[] _pluginCache = null;
 
         //Internal commands and vars
-        private ClsConVarStrings _clr_mono_version = null;
+        private ClsConvar _clr_mono_version = null;
         private ClsConCommand _clr_plugin_list = null;
         private ClsConCommand _clr_plugin_refresh = null;
         private ClsConCommand _clr_plugin_load = null;

@@ -6,73 +6,73 @@ namespace MonoPlug
 {
     partial class ClsMain
     {
-        //[ConCommand("clr_plugin_unload", "Unload a loaded plugin", FCVAR.FCVAR_GAMEDLL)]
         private void clr_plugin_unload(string args)
         {
-            Mono_Msg("M: clr_plugin_unload 0\n");
+            NativeMethods.Mono_Msg("M: clr_plugin_unload 0\n");
             try
             {
-                Mono_Msg("M: clr_plugin_unload A\n");
+                NativeMethods.Mono_Msg("M: clr_plugin_unload A\n");
                 //Find if plugin is loaded
                 bool found = false;
                 lock (this._plugins)
                 {
                     foreach (AppDomain dom in this._plugins.Keys)
                     {
-                        Mono_Msg("M: clr_plugin_unload B\n");
+                        NativeMethods.Mono_Msg("M: clr_plugin_unload B\n");
                         ClsPluginBase plugin = this._plugins[dom];
                         Msg("M: clr_plugin_unload C {0}\n", plugin.Name);
                         if (plugin.Name.Equals(args, StringComparison.InvariantCultureIgnoreCase))
                         {
                             found = true;
-                            Mono_Msg("M: clr_plugin_unload D\n");
+                            NativeMethods.Mono_Msg("M: clr_plugin_unload D\n");
                             //Deinit plugin
                             plugin.UnInit();
 
-                            Mono_Msg("M: clr_plugin_unload E\n");
+                            NativeMethods.Mono_Msg("M: clr_plugin_unload E\n");
 
-                            //Clean commands
+                            //TODO : Clean commands
                             List<ClsConCommand> lstCommands = new List<ClsConCommand>();
-                            lock (this._ConCommands)
+                            lock (this._concommands)
                             {
-                                foreach (string name in this._ConCommands.Keys)
+                                foreach (string name in this._concommands.Keys)
                                 {
-                                    if (this._ConCommands[name].Plugin == plugin)
+                                    if (this._concommands[name].Plugin == plugin)
                                     {
-                                        lstCommands.Add(this._ConCommands[name].Command);
+                                        lstCommands.Add(this._concommands[name].Command);
                                     }
                                 }
                             }
                             Msg("M: clr_plugin_unload F {0}\n", lstCommands.Count);
                             foreach (ClsConCommand cmd in lstCommands)
                             {
-                                this.UnregisterCommand(plugin, cmd);
+                                this.UnregisterConCommand(plugin, cmd);
                             }
 
-                            Mono_Msg("M: clr_plugin_unload G\n");
+                            NativeMethods.Mono_Msg("M: clr_plugin_unload G\n");
+
                             //Clean vars
-                            List<ClsConVarStrings> lstVars = new List<ClsConVarStrings>();
-                            lock (this._ConVarString)
+                            List<ClsConvar> lstVars = new List<ClsConvar>();
+                            lock (this._convars)
                             {
-                                foreach (ulong id in this._ConVarString.Keys)
+                                foreach (ulong id in this._convars.Keys)
                                 {
-                                    if (this._ConVarString[id].Plugin == plugin)
+                                    if (this._convars[id].Plugin == plugin)
                                     {
-                                        lstVars.Add(this._ConVarString[id].Var);
+                                        lstVars.Add(this._convars[id].Var);
                                     }
                                 }
                             }
                             Msg("M: clr_plugin_unload H {0}\n", lstVars.Count);
-                            foreach (ClsConVarStrings v in lstVars)
+                            foreach (ClsConvar v in lstVars)
                             {
-                                this.UnregisterConVarString(plugin, v);
+                                this.UnregisterConvar(plugin, v);
                             }
 
-                            Mono_Msg("M: clr_plugin_unload I\n");
+                            NativeMethods.Mono_Msg("M: clr_plugin_unload I\n");
                             //Clean plugin
                             string plugname = plugin.Name;
                             this._plugins.Remove(dom);
-                            Mono_Msg("M: clr_plugin_unload J\n");
+                            NativeMethods.Mono_Msg("M: clr_plugin_unload J\n");
                             this._plugins.Remove(dom);
                             AppDomain.Unload(dom);
 

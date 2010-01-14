@@ -18,10 +18,13 @@ namespace MonoPlug
             {
                 msg = string.Format(format, vals);
             }
-            this.InterThreadCall(() =>
-            {
-                Mono_Msg(msg);
-            });
+            this.InterThreadCall<object, string>(this.MsgCall, msg);
+        }
+
+        private object MsgCall(string msg)
+        {
+            NativeMethods.Mono_Msg(msg);
+            return null;
         }
     }
 }

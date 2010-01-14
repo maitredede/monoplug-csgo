@@ -18,10 +18,16 @@ namespace MonoPlug
                 if (!this._events.ContainsKey(evt))
                 {
                     this._events.Add(evt, new List<ClsPluginBase>());
-                    this.InterThreadCall(attach);
+                    this.InterThreadCall<object, ThreadStart>(this.Event_Add_Call, attach);
                 }
                 this._events[evt].Add(plugin);
             }
+        }
+
+        private object Event_Add_Call(ThreadStart attach)
+        {
+            attach.Invoke();
+            return null;
         }
 
         private void Event_Remove(ClsPluginBase plugin, object evt, ThreadStart detach)
@@ -42,10 +48,16 @@ namespace MonoPlug
                     if (lst.Count == 0)
                     {
                         this._events.Remove(evt);
-                        this.InterThreadCall(detach);
+                        this.InterThreadCall<object, ThreadStart>(this.Event_Remove_Call, detach);
                     }
                 }
             }
+        }
+
+        private object Event_Remove_Call(ThreadStart detach)
+        {
+            detach.Invoke();
+            return null;
         }
     }
 }

@@ -9,7 +9,7 @@ namespace MonoPlug
         /// <summary>
         /// Callback for plugin shutdown 
         /// </summary>
-        internal void _Shutdown()
+        internal void Shutdown()
         {
             try
             {
@@ -32,11 +32,11 @@ namespace MonoPlug
             }
 
             //Remove internals
-            this.UnregisterConVarString(null, this._clr_mono_version);
-            this.UnregisterCommand(null, this._clr_plugin_list);
-            this.UnregisterCommand(null, this._clr_plugin_refresh);
-            this.UnregisterCommand(null, this._clr_plugin_load);
-            this.UnregisterCommand(null, this._clr_plugin_unload);
+            this.UnregisterConvar(null, this._clr_mono_version);
+            this.UnregisterConCommand(null, this._clr_plugin_list);
+            //this.UnregisterCommand(null, this._clr_plugin_refresh);
+            //this.UnregisterCommand(null, this._clr_plugin_load);
+            //this.UnregisterCommand(null, this._clr_plugin_unload);
         }
     }
 }

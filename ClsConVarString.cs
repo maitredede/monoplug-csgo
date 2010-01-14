@@ -1,41 +1,41 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
+﻿//using System;
+//using System.Collections.Generic;
+//using System.Text;
 
-namespace MonoPlug
-{
-#if DEBUG
-    [System.Diagnostics.DebuggerDisplay("ConVarString : {Name} = {Value}")]
-#endif
-    public sealed class ClsConVarStrings : ClsConCommandBase
-    {
-        internal ClsConVarStrings(UInt64 nativeId, string name, string description, FCVAR flags)
-            : base(nativeId, name, description, flags)
-        {
-        }
+//namespace MonoPlug
+//{
+//#if DEBUG
+//    [System.Diagnostics.DebuggerDisplay("ConVarString : {Name} = {Value}")]
+//#endif
+//    [Obsolete("To be removed", true)]
+//    public sealed class ClsConVarStrings : ClsConvar
+//    {
+//        internal ClsConVarStrings(ClsMain main, UInt64 nativeId, string name, string description, FCVAR flags)
+//            : base(main, nativeId, name, description, flags)
+//        {
+//        }
 
-        public string Value
-        {
-            get
-            {
-                //Get from native var
-                return ClsMain.Mono_GetConVarStringValue(base.NativeID);
-            }
-            set
-            {
-                //Set native var
-                ClsMain.Mono_SetConVarStringValue(base.NativeID, value);
-            }
-        }
+//        public string Value
+//        {
+//            get
+//            {
+//                string v = null;
+//                this._main.InterThreadCall(() =>
+//                {
 
-        public event EventHandler ValueChanged;
-
-        internal void RaiseValueChanged()
-        {
-            if (this.ValueChanged != null)
-            {
-                this.ValueChanged(this, EventArgs.Empty);
-            }
-        }
-    }
-}
+//                    //Get from native var
+//                    v = NativeMethods.Mono_GetConVarStringValue(base.NativeID);
+//                });
+//                return v;
+//            }
+//            set
+//            {
+//                //Set native var
+//                this._main.InterThreadCall(() =>
+//                {
+//                    NativeMethods.Mono_SetConVarStringValue(base.NativeID, value);
+//                });
+//            }
+//        }
+//    }
+//}

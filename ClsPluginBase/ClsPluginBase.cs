@@ -50,14 +50,24 @@ namespace MonoPlug
         //{
         //}
 
-        protected ClsConVarStrings RegisterConVarString(string name, string description, FCVAR flags, string defaultValue)
+        //protected ClsConVarStrings RegisterConVarString(string name, string description, FCVAR flags, string defaultValue)
+        //{
+        //    return this._main.RegisterConVarString(this, name, description, flags, defaultValue);
+        //}
+
+        //protected void UnregisterConVarString(ClsConVarStrings convar)
+        //{
+        //    this._main.UnregisterConVarString(this, convar);
+        //}
+
+        protected ClsConvar RegisterConvar(string name, string help, FCVAR flags, string defaultValue)
         {
-            return this._main.RegisterConVarString(this, name, description, flags, defaultValue);
+            return this._main.RegisterConvar(this, name, help, flags, defaultValue);
         }
 
-        protected void UnregisterConVarString(ClsConVarStrings convar)
+        protected void UnregisterConvar(ClsConvar var)
         {
-            this._main.UnregisterConVarString(this, convar);
+            this._main.UnregisterConvar(this, var);
         }
 
         protected ClsPlayer[] GetPlayers()
