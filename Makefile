@@ -35,7 +35,8 @@ CPP = gcc-4.1
 XBUILD = xbuild
 XB_DEBUG = /property:Configuration=Debug
 XB_RELEASE = /property:Configuration=Release
-XB_FLAGS = /t:Build /nologo /verbosity:quiet /noconsolelogger
+XB_FLAGS = /t:Build /nologo
+#XB_FLAGS = /t:Build /nologo /verbosity:quiet /noconsolelogger
 XB_CLEAN = /t:Clean /nologo /verbosity:quiet /noconsolelogger
 
 
