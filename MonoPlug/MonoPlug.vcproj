@@ -974,31 +974,31 @@
 			UniqueIdentifier="{4FC737F1-C7A5-4376-A066-2A32D752A2FF}"
 			>
 			<File
-				RelativePath=".\CMonoCommand.cpp"
+				RelativePath="..\CMonoCommand.cpp"
 				>
 			</File>
 			<File
-				RelativePath=".\CMonoConsole.cpp"
+				RelativePath="..\CMonoConsole.cpp"
 				>
 			</File>
 			<File
-				RelativePath=".\CMonoHelpers.cpp"
+				RelativePath="..\CMonoHelpers.cpp"
 				>
 			</File>
 			<File
-				RelativePath=".\CMonoPlug.cpp"
+				RelativePath="..\CMonoPlug.cpp"
 				>
 			</File>
 			<File
-				RelativePath=".\CMonoPlugAccessor.cpp"
+				RelativePath="..\CMonoPlugAccessor.cpp"
 				>
 			</File>
 			<File
-				RelativePath=".\CMonoPlugListener.cpp"
+				RelativePath="..\CMonoPlugListener.cpp"
 				>
 			</File>
 			<File
-				RelativePath=".\monoCallbacks.cpp"
+				RelativePath="..\monoCallbacks.cpp"
 				>
 			</File>
 		</Filter>
@@ -1008,35 +1008,35 @@
 			UniqueIdentifier="{93995380-89BD-4b04-88EB-625FBE52EBFB}"
 			>
 			<File
-				RelativePath=".\CMonoCommand.h"
+				RelativePath="..\CMonoCommand.h"
 				>
 			</File>
 			<File
-				RelativePath=".\CMonoConsole.h"
+				RelativePath="..\CMonoConsole.h"
 				>
 			</File>
 			<File
-				RelativePath=".\CMonoHelpers.h"
+				RelativePath="..\CMonoHelpers.h"
 				>
 			</File>
 			<File
-				RelativePath=".\CMonoPlug.h"
+				RelativePath="..\CMonoPlug.h"
 				>
 			</File>
 			<File
-				RelativePath=".\CMonoPlugAccessor.h"
+				RelativePath="..\CMonoPlugAccessor.h"
 				>
 			</File>
 			<File
-				RelativePath=".\CMonoPlugListener.h"
+				RelativePath="..\CMonoPlugListener.h"
 				>
 			</File>
 			<File
-				RelativePath=".\Common.h"
+				RelativePath="..\Common.h"
 				>
 			</File>
 			<File
-				RelativePath=".\monoCallbacks.h"
+				RelativePath="..\monoCallbacks.h"
 				>
 			</File>
 		</Filter>
