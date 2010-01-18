@@ -18,7 +18,7 @@ SRCDS_BASE = $(BASE_DIR)/srcds
 ### EDIT BELOW FOR OTHER PROJECTS ###
 #####################################
 
-OBJECTS = MonoPlug/%.cpp
+OBJECTS = %.cpp
 BINARY = monoplug_i486.so
 CSPROJECT = MonoPlug.Managed/MonoPlug.Managed.csproj MonoPlug.Samples/MonoPlug.Samples.csproj
 
