@@ -141,6 +141,8 @@ public:
 	MonoClassField* m_Field_ClsPlayer_death;
 	MonoClassField* m_Field_ClsPlayer_ip;
 	MonoClassField* m_Field_ClsPlayer_language;
+	MonoClassField* m_Field_ClsPlayer_avgLatency;
+	MonoClassField* m_Field_ClsPlayer_timeConnected;
 
 	MonoArray* m_players;
 

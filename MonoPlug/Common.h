@@ -16,6 +16,8 @@
 #include <utlmap.h>
 #include <filesystem.h>
 
+#include <inetchannelinfo.h>
+
 class CMonoPlug;
 class CMonoHelpers;
 class CMonoPlugListener;

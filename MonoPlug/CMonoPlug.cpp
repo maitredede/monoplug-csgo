@@ -101,6 +101,8 @@ bool CMonoPlug::Load(PluginId id, ISmmAPI *ismm, char *error, size_t maxlen, boo
 	MONO_GET_FIELD(this->m_Field_ClsPlayer_death, this->m_Class_ClsPlayer, "_death", error, maxlen)
 	MONO_GET_FIELD(this->m_Field_ClsPlayer_ip, this->m_Class_ClsPlayer, "_ip", error, maxlen)
 	MONO_GET_FIELD(this->m_Field_ClsPlayer_language, this->m_Class_ClsPlayer, "_language", error, maxlen)
+	MONO_GET_FIELD(this->m_Field_ClsPlayer_avgLatency, this->m_Class_ClsPlayer, "_avgLatency", error, maxlen)
+	MONO_GET_FIELD(this->m_Field_ClsPlayer_timeConnected, this->m_Class_ClsPlayer, "_timeConnected", error, maxlen)
 
 	MONO_ATTACH("MonoPlug.ClsMain:Init()", this->m_ClsMain_Init, this->m_image);
 	MONO_ATTACH("MonoPlug.ClsMain:Shutdown()", this->m_ClsMain_Shutdown, this->m_image);
@@ -108,21 +110,21 @@ bool CMonoPlug::Load(PluginId id, ISmmAPI *ismm, char *error, size_t maxlen, boo
 	MONO_ATTACH("MonoPlug.ClsMain:GameFrame()", this->m_ClsMain_EVT_GameFrame, this->m_image);
 	MONO_ATTACH("MonoPlug.ClsMain:ConvarChanged(ulong)", this->m_ClsMain_ConvarChanged, this->m_image);
 
-	mono_add_internal_call ("MonoPlug.NativeMethods::Mono_Msg", Mono_Msg);
-	mono_add_internal_call ("MonoPlug.NativeMethods::Mono_Log", Mono_Log);
-	mono_add_internal_call ("MonoPlug.NativeMethods::Mono_RegisterConvar", Mono_RegisterConvar);
-	mono_add_internal_call ("MonoPlug.NativeMethods::Mono_UnregisterConvar", Mono_UnregisterConvar);
-	mono_add_internal_call ("MonoPlug.NativeMethods::Mono_Convar_GetString", Mono_Convar_GetString);
-	mono_add_internal_call ("MonoPlug.NativeMethods::Mono_Convar_SetString", Mono_Convar_SetString);
+	mono_add_internal_call ("MonoPlug.NativeMethods::Mono_Msg", (const void*)Mono_Msg);
+	mono_add_internal_call ("MonoPlug.NativeMethods::Mono_Log", (const void*)Mono_Log);
+	mono_add_internal_call ("MonoPlug.NativeMethods::Mono_RegisterConvar", (const void*)Mono_RegisterConvar);
+	mono_add_internal_call ("MonoPlug.NativeMethods::Mono_UnregisterConvar", (const void*)Mono_UnregisterConvar);
+	mono_add_internal_call ("MonoPlug.NativeMethods::Mono_Convar_GetString", (const void*)Mono_Convar_GetString);
+	mono_add_internal_call ("MonoPlug.NativeMethods::Mono_Convar_SetString", (const void*)Mono_Convar_SetString);
 
-	mono_add_internal_call ("MonoPlug.NativeMethods::Mono_RegisterConCommand", Mono_RegisterConCommand);
-	mono_add_internal_call ("MonoPlug.NativeMethods::Mono_UnregisterConCommand", Mono_UnregisterConCommand);
+	mono_add_internal_call ("MonoPlug.NativeMethods::Mono_RegisterConCommand", (const void*)Mono_RegisterConCommand);
+	mono_add_internal_call ("MonoPlug.NativeMethods::Mono_UnregisterConCommand", (const void*)Mono_UnregisterConCommand);
 
-	mono_add_internal_call ("MonoPlug.NativeMethods::Mono_GetPlayers", Mono_GetPlayers);
+	mono_add_internal_call ("MonoPlug.NativeMethods::Mono_GetPlayers", (const void*)Mono_GetPlayers);
 
 	//Console messages
-	mono_add_internal_call ("MonoPlug.NativeMethods::Attach_ConMessage", Attach_ConMessage);
-	mono_add_internal_call ("MonoPlug.NativeMethods::Detach_ConMessage", Detach_ConMessage);
+	mono_add_internal_call ("MonoPlug.NativeMethods::Attach_ConMessage", (const void*)Attach_ConMessage);
+	mono_add_internal_call ("MonoPlug.NativeMethods::Detach_ConMessage", (const void*)Detach_ConMessage);
 	MONO_ATTACH("MonoPlug.ClsMain:Raise_ConMessage(bool,bool,int,int,int,int,string)", this->m_ClsMain_ConPrint, this->m_image);
 	this->m_console = new CMonoConsole(this);
 
@@ -226,7 +228,9 @@ void CMonoPlug::ServerActivate(edict_t *pEdictList, int edictCount, int clientMa
 	//Create player tracking array
 	this->m_players = mono_array_new(g_Domain, this->m_Class_ClsPlayer, this->m_EdictCount);
 
-	for(mono_array_size_t i = 0; i < this->m_EdictCount ; i++)
+	mono_array_size_t max = (mono_array_size_t)this->m_EdictCount;
+
+	for(mono_array_size_t i = 0; i < max ; i++)
 	{
 		mono_array_set(this->m_players, MonoObject*, i, NULL);
 	}
@@ -278,6 +282,8 @@ void CMonoPlug::ClientPutInServer(edict_t *pEntity, const char *playername)
 	int pid = this->m_Engine->GetPlayerUserId(pEntity);
 
 	INetChannelInfo* net = this->m_Engine->GetPlayerNetInfo(id);
+	float avgLatency = net->GetAvgLatency(MAX_FLOWS);
+	float timeConnected = net->GetTimeConnected();
 	int pfrag = pi->GetFragCount();
 	int pdeath = pi->GetDeathCount();
 
@@ -285,7 +291,10 @@ void CMonoPlug::ClientPutInServer(edict_t *pEntity, const char *playername)
 	mono_field_set_value(player, this->m_Field_ClsPlayer_name, MONO_STRING(g_Domain, pi->GetName()));
 	mono_field_set_value(player, this->m_Field_ClsPlayer_frag, &pfrag);
 	mono_field_set_value(player, this->m_Field_ClsPlayer_death, &pdeath);
+	mono_field_set_value(player, this->m_Field_ClsPlayer_ip, MONO_STRING(g_Domain, net->GetAddress()));
 	mono_field_set_value(player, this->m_Field_ClsPlayer_language, MONO_STRING(g_Domain, this->m_Engine->GetClientConVarValue(id, "cl_language")));
+	mono_field_set_value(player, this->m_Field_ClsPlayer_avgLatency, &avgLatency);
+	mono_field_set_value(player, this->m_Field_ClsPlayer_timeConnected, &timeConnected);
 
 	void* args[1];
 	args[0] = player;

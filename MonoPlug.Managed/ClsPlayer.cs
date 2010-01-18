@@ -21,6 +21,8 @@ namespace MonoPlug
         private int _id = 0;
         private string _language = string.Empty;
         private string _ip = string.Empty;
+        private float _avgLatency = 0;
+        private float _timeConnected = 0;
 
         internal ClsPlayer()
         {
@@ -66,6 +68,14 @@ namespace MonoPlug
         /// Client IP
         /// </summary>
         public string IP { get { return this._ip; } }
+        /// <summary>
+        /// Average player latency
+        /// </summary>
+        public float AverageLatency { get { return this._avgLatency; } }
+        /// <summary>
+        /// Time player is connected
+        /// </summary>
+        public float TimeConnected { get { return this._timeConnected; } }
 
         /// <summary>
         /// Get a string summary of player
