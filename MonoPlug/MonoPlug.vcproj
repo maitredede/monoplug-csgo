@@ -492,7 +492,7 @@
 		</Configuration>
 		<Configuration
 			Name="Debug - Orange Box Valve|Win32"
-			OutputDirectory="$(SolutionDir)$(ConfigurationName)"
+			OutputDirectory="$(SolutionDir)Debug\addons"
 			IntermediateDirectory="$(ConfigurationName)"
 			ConfigurationType="2"
 			CharacterSet="2"
@@ -571,7 +571,7 @@
 		</Configuration>
 		<Configuration
 			Name="Release - Orange Box Valve|Win32"
-			OutputDirectory="$(SolutionDir)$(ConfigurationName)"
+			OutputDirectory="$(SolutionDir)Release\addons"
 			IntermediateDirectory="$(ConfigurationName)"
 			ConfigurationType="2"
 			CharacterSet="2"
@@ -973,12 +973,72 @@
 			Filter="cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx"
 			UniqueIdentifier="{4FC737F1-C7A5-4376-A066-2A32D752A2FF}"
 			>
+			<File
+				RelativePath=".\CMonoCommand.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\CMonoConsole.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\CMonoHelpers.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\CMonoPlug.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\CMonoPlugAccessor.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\CMonoPlugListener.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\monoCallbacks.cpp"
+				>
+			</File>
 		</Filter>
 		<Filter
 			Name="Header Files"
 			Filter="h;hpp;hxx;hm;inl;inc;xsd"
 			UniqueIdentifier="{93995380-89BD-4b04-88EB-625FBE52EBFB}"
 			>
+			<File
+				RelativePath=".\CMonoCommand.h"
+				>
+			</File>
+			<File
+				RelativePath=".\CMonoConsole.h"
+				>
+			</File>
+			<File
+				RelativePath=".\CMonoHelpers.h"
+				>
+			</File>
+			<File
+				RelativePath=".\CMonoPlug.h"
+				>
+			</File>
+			<File
+				RelativePath=".\CMonoPlugAccessor.h"
+				>
+			</File>
+			<File
+				RelativePath=".\CMonoPlugListener.h"
+				>
+			</File>
+			<File
+				RelativePath=".\Common.h"
+				>
+			</File>
+			<File
+				RelativePath=".\monoCallbacks.h"
+				>
+			</File>
 		</Filter>
 		<Filter
 			Name="Resource Files"

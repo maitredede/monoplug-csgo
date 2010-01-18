@@ -18,7 +18,6 @@ SRCDS_BASE = $(BASE_DIR)/srcds
 ### EDIT BELOW FOR OTHER PROJECTS ###
 #####################################
 
-# OBJECTS = monoplug.cpp
 OBJECTS = CMonoCommand.cpp CMonoConsole.cpp CMonoHelpers.cpp CMonoPlug.cpp CMonoPlugAccessor.cpp
 OBJECTS += CMonoPlugListener.cpp monoCallbacks.cpp
 BINARY = monoplug_i486.so
@@ -110,12 +109,14 @@ INCLUDE += -I. -I.. -I$(HL2PUB) -I$(HL2PUB)/engine -I$(HL2PUB)/mathlib -I$(HL2PU
 ################################################
 
 ifeq "$(DEBUG)" "true"
-	BIN_DIR = Debug.$(ENGINE)
+	#BIN_DIR = Debug.$(ENGINE)
+	BIN_DIR = Debug/addons
 	CFLAGS += $(DEBUG_FLAGS)
 	XB_FLAGS += $(XB_DEBUG)
 	XB_CLEAN += $(XB_DEBUG)
 else
-	BIN_DIR = Release.$(ENGINE)
+	#BIN_DIR = Release.$(ENGINE)
+	BIN_DIR = Release/addons
 	CFLAGS += $(OPT_FLAGS)
 	XB_FLAGS += $(XB_RELEASE)
 	 XB_CLEAN += $(XB_RELEASE)
