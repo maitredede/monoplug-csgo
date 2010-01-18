@@ -18,12 +18,12 @@ namespace MonoPlug
 
         protected override void Load()
         {
-            this.ClientCommand += this.ClientCommand_Sample;
+            //this.ClientCommand += this.ClientCommand_Sample;
         }
 
         protected override void Unload()
         {
-            this.ClientCommand -= this.ClientCommand_Sample;
+            //this.ClientCommand -= this.ClientCommand_Sample;
         }
 
         private void ClientCommand_Sample(object sender, ClientCommandEventArgs e)

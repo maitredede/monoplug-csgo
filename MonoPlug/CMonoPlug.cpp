@@ -120,6 +120,16 @@ bool CMonoPlug::Load(PluginId id, ISmmAPI *ismm, char *error, size_t maxlen, boo
 
 	mono_add_internal_call ("MonoPlug.NativeMethods::Mono_GetPlayers", Mono_GetPlayers);
 
+	//Console messages
+	mono_add_internal_call ("MonoPlug.NativeMethods::Attach_ConMessage", Attach_ConMessage);
+	mono_add_internal_call ("MonoPlug.NativeMethods::Detach_ConMessage", Detach_ConMessage);
+	MONO_ATTACH("MonoPlug.ClsMain:Raise_ConMessage(bool,bool,int,int,int,int,string)", this->m_ClsMain_ConPrint, this->m_image);
+	this->m_console = new CMonoConsole(this);
+
+	//Client connection events
+	MONO_ATTACH("MonoPlug.ClsMain:Raise_ClientPutInServer(MonoPlug.ClsPlayer)", this->m_ClsMain_ClientPutInServer, this->m_image);
+	MONO_ATTACH("MonoPlug.ClsMain:Raise_ClientDisconnect(MonoPlug.ClsPlayer)", this->m_ClsMain_ClientDisconnect, this->m_image);
+
 	//Create object instance
 	this->m_main = mono_object_new(g_Domain, this->m_Class_ClsMain);
 	mono_runtime_object_init(this->m_main);
@@ -182,6 +192,7 @@ bool CMonoPlug::Load(PluginId id, ISmmAPI *ismm, char *error, size_t maxlen, boo
 
 	MonoObject* r = CMonoHelpers::MONO_CALL(this->m_main, this->m_ClsMain_Init, NULL);
 	bool ret = *(bool*)mono_object_unbox(r);
+
 	return ret;
 
 	//return true;
@@ -264,17 +275,22 @@ void CMonoPlug::ClientPutInServer(edict_t *pEntity, const char *playername)
 		
 
 	//Fill player data
-	int value = this->m_Engine->GetPlayerUserId(pEntity);
+	int pid = this->m_Engine->GetPlayerUserId(pEntity);
 
 	INetChannelInfo* net = this->m_Engine->GetPlayerNetInfo(id);
+	int pfrag = pi->GetFragCount();
+	int pdeath = pi->GetDeathCount();
 
-	mono_field_set_value(player, this->m_Field_ClsPlayer_id, &value);
+	mono_field_set_value(player, this->m_Field_ClsPlayer_id, &pid);
 	mono_field_set_value(player, this->m_Field_ClsPlayer_name, MONO_STRING(g_Domain, pi->GetName()));
-	mono_field_set_value(player, this->m_Field_ClsPlayer_frag, &value);
-	mono_field_set_value(player, this->m_Field_ClsPlayer_death, &value);
+	mono_field_set_value(player, this->m_Field_ClsPlayer_frag, &pfrag);
+	mono_field_set_value(player, this->m_Field_ClsPlayer_death, &pdeath);
 	mono_field_set_value(player, this->m_Field_ClsPlayer_language, MONO_STRING(g_Domain, this->m_Engine->GetClientConVarValue(id, "cl_language")));
 
 	//Todo : raise event in managed plugins
+	void* args[1];
+	args[0] = player;
+	CMonoHelpers::MONO_CALL(this->m_main, this->m_ClsMain_ClientPutInServer, args);
 }
 
 void CMonoPlug::ClientDisconnect(edict_t *pEntity)
@@ -286,7 +302,11 @@ void CMonoPlug::ClientDisconnect(edict_t *pEntity)
 
 	int id = this->m_Engine->IndexOfEdict(pEntity);
 
+	MonoObject* player= mono_array_get(this->m_players, MonoObject*, id);
+
 	mono_array_set(this->m_players, MonoObject*, id, NULL);
 
-	//Todo : raise event in managed plugins
+	void* args[1];
+	args[0] = player;
+	CMonoHelpers::MONO_CALL(this->m_main, this->m_ClsMain_ClientDisconnect, args);
 }

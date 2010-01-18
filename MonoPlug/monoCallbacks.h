@@ -20,4 +20,7 @@ bool Mono_UnregisterConCommand(MonoString* name);
 
 MonoArray* Mono_GetPlayers();
 
+void Attach_ConMessage();
+void Detach_ConMessage();
+
 #endif

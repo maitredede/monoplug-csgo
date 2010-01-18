@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Threading;
 
 namespace MonoPlug
 {
@@ -13,7 +14,8 @@ namespace MonoPlug
         {
             try
             {
-                lock (this._plugins)
+                this._lckPlugins.AcquireWriterLock(Timeout.Infinite);
+                try
                 {
                     foreach (AppDomain dom in this._plugins.Keys)
                     {
@@ -22,6 +24,10 @@ namespace MonoPlug
                         AppDomain.Unload(dom);
                     }
                     this._plugins.Clear();
+                }
+                finally
+                {
+                    this._lckPlugins.ReleaseWriterLock();
                 }
             }
             catch (Exception ex)
@@ -34,9 +40,9 @@ namespace MonoPlug
             //Remove internals
             this.UnregisterConvar(null, this._clr_mono_version);
             this.UnregisterConCommand(null, this._clr_plugin_list);
-            //this.UnregisterCommand(null, this._clr_plugin_refresh);
-            //this.UnregisterCommand(null, this._clr_plugin_load);
-            //this.UnregisterCommand(null, this._clr_plugin_unload);
+            this.UnregisterConCommand(null, this._clr_plugin_refresh);
+            this.UnregisterConCommand(null, this._clr_plugin_load);
+            this.UnregisterConCommand(null, this._clr_plugin_unload);
         }
     }
 }

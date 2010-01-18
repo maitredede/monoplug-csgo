@@ -8,6 +8,7 @@ namespace MonoPlug
     partial class ClsPluginBase
     {
         private int _EventCounter_LevelShutdown = 0;
+        private static readonly object _EventToken_LevelShutdown = new object();
 
         protected event EventHandler LevelShutdown
         {

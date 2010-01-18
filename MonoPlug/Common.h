@@ -20,6 +20,7 @@ class CMonoPlug;
 class CMonoHelpers;
 class CMonoPlugListener;
 class CMonoCommand;
+class CMonoConsole;
 
 extern CMonoPlug g_MonoPlug;
 extern CMonoPlugListener g_Listener;

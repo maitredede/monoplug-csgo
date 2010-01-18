@@ -6,6 +6,7 @@
 #include "CMonoCommand.h"
 #include "CMonoPlugAccessor.h"
 #include "CMonoPlugListener.h"
+#include "CMonoConsole.h"
 #include "monoCallbacks.h"
 
 #if defined WIN32 && !defined snprintf
@@ -128,6 +129,9 @@ public:
 	MonoMethod* m_ClsMain_Shutdown;
 	MonoMethod* m_ClsMain_EVT_GameFrame;
 	MonoMethod* m_ClsMain_ConvarChanged;
+	MonoMethod* m_ClsMain_ConPrint;
+	MonoMethod* m_ClsMain_ClientPutInServer;
+	MonoMethod* m_ClsMain_ClientDisconnect;
 	MonoObject* m_main;
 
 	MonoClass* m_Class_ClsPlayer;
@@ -147,6 +151,7 @@ public:
 public:
 	int m_EdictCount;
 	int m_MaxPlayers;
+	CMonoConsole* m_console;
 };
 
 //extern CMonoPlug g_MonoPlug;

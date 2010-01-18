@@ -190,3 +190,13 @@ MonoArray* Mono_GetPlayers()
 
 	return arr;
 };
+
+void Attach_ConMessage()
+{
+	g_MonoPlug.m_icvar->InstallConsoleDisplayFunc(g_MonoPlug.m_console);
+};
+
+void Detach_ConMessage()
+{
+	g_MonoPlug.m_icvar->RemoveConsoleDisplayFunc(g_MonoPlug.m_console);
+};

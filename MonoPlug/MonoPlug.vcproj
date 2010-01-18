@@ -978,6 +978,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\CMonoConsole.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\CMonoHelpers.cpp"
 				>
 			</File>
@@ -1005,6 +1009,10 @@
 			>
 			<File
 				RelativePath=".\CMonoCommand.h"
+				>
+			</File>
+			<File
+				RelativePath=".\CMonoConsole.h"
 				>
 			</File>
 			<File

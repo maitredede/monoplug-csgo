@@ -29,7 +29,17 @@ namespace MonoPlug
 
         [MethodImpl(MethodImplOptions.InternalCall)]
         internal static extern ClsPlayer[] Mono_GetPlayers();
+
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        internal static extern void Attach_ConMessage();
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        internal static extern void Detach_ConMessage();
         //Below is not native attached
+
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        internal static extern void Attach_LevelShutdown();
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        internal static extern void Detach_LevelShutdown();
 
         [MethodImpl(MethodImplOptions.InternalCall)]
         [Obsolete("To be removed", true)]

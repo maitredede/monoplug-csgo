@@ -40,6 +40,7 @@
   <ItemGroup>
     <Reference Include="System" />
     <Reference Include="System.Data" />
+    <Reference Include="System.Drawing" />
     <Reference Include="System.Xml" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
@@ -47,5 +48,6 @@
     <Compile Include="ConClock.cs" />
     <Compile Include="ConEvents.cs" />
     <Compile Include="ConSample.cs" />
+    <Compile Include="ConWCFConsole.cs" />
   </ItemGroup>
 </Project>

@@ -14,8 +14,9 @@ namespace MonoPlug
         {
             try
             {
-                this.ClientCommand += this.ClientCommand_Sample;
+                //this.ClientCommand += this.ClientCommand_Sample;
                 this.LevelShutdown += this.Events_LevelShutdown;
+                this.ConMessage += this.Events_ConMessage;
             }
             catch (Exception ex)
             {
@@ -35,7 +36,8 @@ namespace MonoPlug
             {
                 Msg("ConEvents::Unload : A\n");
                 this.LevelShutdown -= this.Events_LevelShutdown;
-                this.ClientCommand -= this.ClientCommand_Sample;
+                //this.ClientCommand -= this.ClientCommand_Sample;
+                this.ConMessage -= this.Events_ConMessage;
                 Msg("ConEvents::Unload : A\n");
             }
             catch (Exception ex)
@@ -65,18 +67,23 @@ namespace MonoPlug
             this.Msg("ConEvents: LevelShutdown\n");
         }
 
-        private void ClientCommand_Sample(object sender, ClientCommandEventArgs e)
+        private void Events_ClientCommand(object sender, ClientCommandEventArgs e)
         {
             string name;
-            if (e.Player == null)
+            if (e.Client == null)
             {
                 name = "<null>";
             }
             else
             {
-                name = e.Player.Name ?? "<player name is null>";
+                name = e.Client.Name ?? "<player name is null>";
             }
             this.Msg("ConEvents: ClientCommand from {0} {1}\n", name);
+        }
+
+        private void Events_ConMessage(object sender, ConMessageEventArgs e)
+        {
+            //don't msg here, potential loopback
         }
     }
 }
