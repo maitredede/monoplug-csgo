@@ -159,6 +159,7 @@ monoplug_native: check $(OBJ_LINUX)
 monoplug_managed: check $(CSPROJECT)
 #	-$(foreach PRJ,$(CSPROJECT), echo PROJECT : $(PRJ); )
 #	$(foreach PRJ,$(CSPROJECT), $(XBUILD) $(XB_FLAGS) $(PRJ); )
+	pwd
 	cd MonoPlug.Managed
 	$(XBUILD) $(XB_FLAGS) MonoPlug.Managed.csproj
 	cd ..
