@@ -39,7 +39,7 @@ namespace MonoPlug
 
         private bool RegisterConCommand_Call(ConCommandEntry entry)
         {
-            return NativeMethods.Mono_RegisterConCommand(entry.Command.Name, entry.Command.Description, entry.Command.Code, (int)entry.Command.Flags, entry.Command.Complete);
+            return NativeMethods.Mono_RegisterConCommand(entry.Command.Name, entry.Command.Help, entry.Command.Code, (int)entry.Command.Flags, entry.Command.Complete);
         }
 
         internal bool UnregisterConCommand(ClsPluginBase plugin, ClsConCommand command)

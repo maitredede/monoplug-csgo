@@ -5,7 +5,7 @@ using System.Text;
 namespace MonoPlug
 {
     /// <summary>
-    /// ConVar flags
+    /// Flags for ConCommands and Convars
     /// </summary>
     [Flags]
     public enum FCVAR : int
@@ -44,28 +44,66 @@ namespace MonoPlug
         /// This cvar cannot be changed by clients connected to a multiplayer server.
         /// </summary>
         FCVAR_SPONLY = 1 << 6,  // This cvar cannot be changed by clients connected to a multiplayer server.
+        /// <summary>
+        /// set to cause it to be saved to vars.rc
+        /// </summary>
         FCVAR_ARCHIVE = 1 << 7,	// set to cause it to be saved to vars.rc
+        /// <summary>
+        /// notifies players when changed
+        /// </summary>
         FCVAR_NOTIFY = 1 << 8,	// notifies players when changed
+        /// <summary>
+        /// changes the client's info string
+        /// </summary>
         FCVAR_USERINFO = 1 << 9,	// changes the client's info string
         /// <summary>
-        /// Only useable in singleplayer / debug / multiplayer & sv_cheats
+        /// Only useable in singleplayer / debug / multiplayer and sv_cheats
         /// </summary>
         FCVAR_CHEAT = 1 << 14, // Only useable in singleplayer / debug / multiplayer & sv_cheats
+        /// <summary>
+        /// This cvar's string cannot contain unprintable characters ( e.g., used for player name etc ).
+        /// </summary>
         FCVAR_PRINTABLEONLY = 1 << 10, // This cvar's string cannot contain unprintable characters ( e.g., used for player name etc ).
+        /// <summary>
+        /// If this is a FCVAR_SERVER, don't log changes to the log file / console if we are creating a log
+        /// </summary>
         FCVAR_UNLOGGED = 1 << 11, // If this is a FCVAR_SERVER, don't log changes to the log file / console if we are creating a log
+        /// <summary>
+        /// never try to print that cvar
+        /// </summary>
         FCVAR_NEVER_AS_STRING = 1 << 12, // never try to print that cvar
 
-
+        /// <summary>
+        /// server setting enforced on clients, TODO rename to FCAR_SERVER at some time
+        /// </summary>
         FCVAR_REPLICATED = 1 << 13,	// server setting enforced on clients, TODO rename to FCAR_SERVER at some time
+        /// <summary>
+        /// record this cvar when starting a demo file
+        /// </summary>
         FCVAR_DEMO = 1 << 16,  // record this cvar when starting a demo file
+        /// <summary>
+        /// don't record these command in demofiles
+        /// </summary>
         FCVAR_DONTRECORD = 1 << 17,  // don't record these command in demofiles
+        /// <summary>
+        /// cvar cannot be changed by a client that is connected to a server
+        /// </summary>
         FCVAR_NOT_CONNECTED = 1 << 22,	// cvar cannot be changed by a client that is connected to a server
+        /// <summary>
+        /// cvar written to config.cfg on the Xbox
+        /// </summary>
         FCVAR_ARCHIVE_XBOX = 1 << 24, // cvar written to config.cfg on the Xbox
         /// <summary>
         /// the server is allowed to execute this command on clients via ClientCommand/NET_StringCmd/CBaseClientState::ProcessStringCmd.
         /// </summary>
         FCVAR_SERVER_CAN_EXECUTE = 1 << 28,// the server is allowed to execute this command on clients via ClientCommand/NET_StringCmd/CBaseClientState::ProcessStringCmd.
+        /// <summary>
+        /// If this is set, then the server is not allowed to query this cvar's value (via IServerPluginHelpers::StartQueryCvarValue).
+        /// </summary>
         FCVAR_SERVER_CANNOT_QUERY = 1 << 29,// If this is set, then the server is not allowed to query this cvar's value (via IServerPluginHelpers::StartQueryCvarValue).
+        /// <summary>
+        /// IVEngineClient::ClientCmd is allowed to execute this command. 
+        /// </summary>
         FCVAR_CLIENTCMD_CAN_EXECUTE = 1 << 30,	// IVEngineClient::ClientCmd is allowed to execute this command. 
     }
 }

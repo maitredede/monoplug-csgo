@@ -8,15 +8,6 @@ namespace MonoPlug
 {
     partial class ClsMain
     {
-        /// <summary>
-        /// Create a plugin instance 
-        /// </summary>
-        /// <param name="desc">
-        /// A <see cref="PluginDesc"/> Description of plugin to create
-        /// </param>
-        /// <returns>
-        /// A <see cref="ClsPluginBase"/> Plugin instance
-        /// </returns>
         private ClsPluginBase Remote_CreatePlugin(ClsMain owner, PluginDefinition desc)
         {
             try
@@ -38,15 +29,6 @@ namespace MonoPlug
             }
         }
 
-        /// <summary>
-        /// Get plugins of a directory 
-        /// </summary>
-        /// <param name="path">
-        /// A <see cref="System.String"/> Path to search
-        /// </param>
-        /// <returns>
-        /// A <see cref="ClsPluginBase"/> Plugins array
-        /// </returns>
         private PluginDefinition[] Remote_GetPluginsFromDirectory(ClsMain owner, string path)
         {
             List<PluginDefinition> lst = new List<PluginDefinition>();

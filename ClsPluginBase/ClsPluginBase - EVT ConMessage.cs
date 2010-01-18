@@ -9,6 +9,9 @@ namespace MonoPlug
         private int _EventCounter_ConMessage = 0;
         private static readonly object _EventToken_ConMessage = new object();
 
+        /// <summary>
+        /// Event raised when a console message has been printed
+        /// </summary>
         public event EventHandler<ConMessageEventArgs> ConMessage
         {
             add

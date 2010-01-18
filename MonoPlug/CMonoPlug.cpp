@@ -287,7 +287,6 @@ void CMonoPlug::ClientPutInServer(edict_t *pEntity, const char *playername)
 	mono_field_set_value(player, this->m_Field_ClsPlayer_death, &pdeath);
 	mono_field_set_value(player, this->m_Field_ClsPlayer_language, MONO_STRING(g_Domain, this->m_Engine->GetClientConVarValue(id, "cl_language")));
 
-	//Todo : raise event in managed plugins
 	void* args[1];
 	args[0] = player;
 	CMonoHelpers::MONO_CALL(this->m_main, this->m_ClsMain_ClientPutInServer, args);

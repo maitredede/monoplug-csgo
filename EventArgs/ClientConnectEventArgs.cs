@@ -5,24 +5,24 @@ using System.Net;
 
 namespace MonoPlug
 {
-    [Obsolete("To be removed", true)]
-    public sealed class ClientConnectEventArgs : EventArgs
-    {
-        private int _id;
-        private string _name;
-        private IPEndPoint _address;
+    //[Obsolete("To be removed", true)]
+    //public sealed class ClientConnectEventArgs : EventArgs
+    //{
+    //    private int _id;
+    //    private string _name;
+    //    private IPEndPoint _address;
 
-        internal ClientConnectEventArgs(int id, string name, IPEndPoint address)
-        {
-            this._id = id;
-            this._name = name;
-            this._address = address;
-        }
+    //    internal ClientConnectEventArgs(int id, string name, IPEndPoint address)
+    //    {
+    //        this._id = id;
+    //        this._name = name;
+    //        this._address = address;
+    //    }
 
-        public int Id { get { return this._id; } }
-        public string Name { get { return this._name; } }
-        public IPEndPoint Address { get { return this._address; } }
-        //public bool Authorized { get; set; }
-        //public string RejectReason { get; set; }
-    }
+    //    public int Id { get { return this._id; } }
+    //    public string Name { get { return this._name; } }
+    //    public IPEndPoint Address { get { return this._address; } }
+    //    //public bool Authorized { get; set; }
+    //    //public string RejectReason { get; set; }
+    //}
 }

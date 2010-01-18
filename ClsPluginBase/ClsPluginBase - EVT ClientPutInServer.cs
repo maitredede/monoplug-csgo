@@ -9,6 +9,9 @@ namespace MonoPlug
         private int _EventCounter_ClientPutInServer = 0;
         private static readonly object _EventToken_ClientPutInServer = new object();
 
+        /// <summary>
+        /// Event raised when a client has been put in server
+        /// </summary>
         protected event EventHandler ClientPutInServer
         {
             add

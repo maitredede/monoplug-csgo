@@ -10,6 +10,9 @@ namespace MonoPlug
         private int _EventCounter_LevelShutdown = 0;
         private static readonly object _EventToken_LevelShutdown = new object();
 
+        /// <summary>
+        /// Event LevelShutdown
+        /// </summary>
         protected event EventHandler LevelShutdown
         {
             add

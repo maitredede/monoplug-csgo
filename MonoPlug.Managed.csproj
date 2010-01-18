@@ -26,10 +26,12 @@
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>none</DebugType>
-    <Optimize>false</Optimize>
+    <Optimize>true</Optimize>
     <OutputPath>bin\Release</OutputPath>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+    <DocumentationFile>bin\Release\MonoPlug.Managed.XML</DocumentationFile>
   </PropertyGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>
@@ -70,6 +72,7 @@
     <Compile Include="ConVarDelegates.cs" />
     <Compile Include="ConVarEntry.cs" />
     <Compile Include="FCVAR.cs" />
+    <Compile Include="InterThreadCallDelegate.cs" />
     <Compile Include="NativeMethods.cs" />
     <Compile Include="PluginDefinition.cs" />
     <Compile Include="ClsPluginBase\ClsPluginBase.cs" />

@@ -7,12 +7,11 @@ namespace MonoPlug
 {
     partial class ClsMain
     {
-        internal delegate TRet InterThreadCallDelegate<TRet, TParam>(TParam param);
-
         /// <summary>
         /// Make call to the engine in sync with its main thread
         /// </summary>
         /// <param name="d">Code to call</param>
+        /// <param name="parameter">Argument of call</param>
         internal TRet InterThreadCall<TRet, TParam>(InterThreadCallDelegate<TRet, TParam> d, TParam parameter)
         {
             TRet returnValue;

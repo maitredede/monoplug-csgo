@@ -4,6 +4,9 @@ using System.Text;
 
 namespace MonoPlug
 {
+    /// <summary>
+    /// A ConCommand instance, created using the <see cref="MonoPlug.ClsPluginBase.RegisterConCommand(System.String,System.String,MonoPlug.FCVAR,MonoPlug.ConCommandDelegate,MonoPlug.ConCommandCompleteDelegate)"/> function.
+    /// </summary>
     public sealed class ClsConCommand : ClsConCommandBase
     {
         private readonly ConCommandDelegate _code;

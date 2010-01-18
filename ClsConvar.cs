@@ -4,6 +4,9 @@ using System.Text;
 
 namespace MonoPlug
 {
+    /// <summary>
+    /// A Convar used by managed code
+    /// </summary>
     public class ClsConvar : ClsConCommandBase
     {
         internal readonly ClsMain _main;
@@ -14,6 +17,9 @@ namespace MonoPlug
             this._main = main;
         }
 
+        /// <summary>
+        /// Raised when the value has changed
+        /// </summary>
         public event EventHandler ValueChanged;
 
         internal void RaiseValueChanged()
@@ -24,6 +30,10 @@ namespace MonoPlug
             }
         }
 
+        /// <summary>
+        /// Get the Convar value as string
+        /// </summary>
+        /// <returns>Convar value as string</returns>
         public string GetString()
         {
             return this._main.InterThreadCall<string, object>(this.GetStringCall, null);
@@ -34,6 +44,10 @@ namespace MonoPlug
             return NativeMethods.Mono_Convar_GetString(this.NativeID);
         }
 
+        /// <summary>
+        /// Set Convar value as string
+        /// </summary>
+        /// <param name="value">Value</param>
         public void SetValue(string value)
         {
             this._main.InterThreadCall<object, string>(this.SetStringCall, value);
