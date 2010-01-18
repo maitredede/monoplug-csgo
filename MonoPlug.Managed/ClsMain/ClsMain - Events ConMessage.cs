@@ -19,7 +19,7 @@ namespace MonoPlug
             this.Event_Remove(plugin, _evtConMessage, NativeMethods.Detach_ConMessage);
         }
 
-        private void Raise_ConMessage(bool hasColor, bool debug, int r, int g, int b, int a, string msg)
+        internal void Raise_ConMessage(bool hasColor, bool debug, int r, int g, int b, int a, string msg)
         {
             ConMessageEventArgs e = new ConMessageEventArgs(hasColor, debug, Color.FromArgb(a, r, g, b), msg);
             List<ClsPluginBase> lst = null;

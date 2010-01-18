@@ -19,7 +19,7 @@ namespace MonoPlug
             this.Event_Remove(plugin, _evtLevelShutdown, NativeMethods.Detach_LevelShutdown);
         }
 
-        private void Raise_LevelShutdown()
+        internal void Raise_LevelShutdown()
         {
             List<ClsPluginBase> lst = null;
             lock (this._events)

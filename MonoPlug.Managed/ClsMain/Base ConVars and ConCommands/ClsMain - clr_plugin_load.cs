@@ -110,22 +110,5 @@ namespace MonoPlug
             }
             return lst.ToArray();
         }
-
-        private Assembly _asmResolve(object s, ResolveEventArgs a)
-        {
-            Msg("Assembly Resolve : asm='{0}'\n", a.Name);
-            return Assembly.Load(a.Name);
-        }
-
-        private void _asmLoad(object s, AssemblyLoadEventArgs a)
-        {
-            Msg("Assembly Load : asm='{0}'\n", a.LoadedAssembly.FullName);
-        }
-
-        private Assembly _asmTypeResolve(object s, ResolveEventArgs a)
-        {
-            Msg("Assembly TypeResolve : asm='{0}'\n", a.Name);
-            return Assembly.Load(a.Name);
-        }
     }
 }

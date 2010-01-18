@@ -24,9 +24,6 @@ namespace MonoPlug
         private Dictionary<UInt64, ConVarEntry> _convars = new Dictionary<UInt64, ConVarEntry>();
         private readonly Dictionary<string, ConCommandEntry> _concommands = new Dictionary<string, ConCommandEntry>();
 
-        [Obsolete("Rewriting", true)]
-        private readonly Dictionary<UInt64, ConVarEntry> _ConVarString = new Dictionary<UInt64, ConVarEntry>();
-
         /// <summary>
         /// Available plugin cache list 
         /// </summary>

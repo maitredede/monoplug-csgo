@@ -39,6 +39,7 @@ namespace MonoPlug
 
             //Remove internals
             this.UnregisterConvar(null, this._clr_mono_version);
+            this.UnregisterConCommand(null, this._clr_test);
             this.UnregisterConCommand(null, this._clr_plugin_list);
             this.UnregisterConCommand(null, this._clr_plugin_refresh);
             this.UnregisterConCommand(null, this._clr_plugin_load);
