@@ -21,7 +21,7 @@ SRCDS_BASE = $(BASE_DIR)/srcds
 OBJECTS = CMonoCommand.cpp CMonoConsole.cpp CMonoHelpers.cpp CMonoPlug.cpp CMonoPlugAccessor.cpp
 OBJECTS += CMonoPlugListener.cpp monoCallbacks.cpp
 BINARY = monoplug_i486.so
-#CSPROJECT = MonoPlug.Managed/MonoPlug.Managed.csproj MonoPlug.Samples/MonoPlug.Samples.csproj
+CSPROJECT = MonoPlug.Managed/MonoPlug.Managed.csproj MonoPlug.Samples/MonoPlug.Samples.csproj
 
 ##############################################
 ### CONFIGURE ANY OTHER FLAGS/OPTIONS HERE ###
@@ -158,14 +158,7 @@ monoplug_native: check $(OBJ_LINUX)
 
 monoplug_managed: check $(CSPROJECT)
 #	-$(foreach PRJ,$(CSPROJECT), echo PROJECT : $(PRJ); )
-#	$(foreach PRJ,$(CSPROJECT), $(XBUILD) $(XB_FLAGS) $(PRJ); )
-	pwd
-	cd MonoPlug.Managed
-	$(XBUILD) $(XB_FLAGS) MonoPlug.Managed.csproj
-	cd ..
-	cd MonoPlug.Samples
-	$(XBUILD) $(XB_FLAGS) MonoPlug.Samples.csproj
-	cd ..
+	$(foreach PRJ,$(CSPROJECT), $(XBUILD) $(XB_FLAGS) $(PRJ); )
 	
 default: all
 
