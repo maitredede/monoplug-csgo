@@ -38,4 +38,3 @@ MonoObject* CMonoHelpers::MONO_DELEGATE_CALL(MonoDelegate* delegateObject, void*
 		return ret;
 	}
 };
-
