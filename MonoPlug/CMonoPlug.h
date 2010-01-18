@@ -173,7 +173,8 @@ int UTIL_FindOffset(const char *ClassName, const char *PropertyName);
 		} \
 		if (num >= 999) \
 			break; \
-	} while ( num_var=ismm->FormatIface(name, sizeof(name)-1) ); \
+		num_var=ismm->FormatIface(name, sizeof(name)-1) ; \
+	} while ( num_var ); \
 	if (!assn_var) { \
 		if (error) \
 			snprintf(error, maxlen, "Could not find interface %s", name); \
