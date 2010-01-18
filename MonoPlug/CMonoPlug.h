@@ -166,7 +166,8 @@ int UTIL_FindOffset(const char *ClassName, const char *PropertyName);
 
 #define	FIND_IFACE(func, assn_var, num_var, name, type) \
 	do { \
-		if ( (assn_var=(type)((ismm->func())(name, NULL))) != NULL ) { \
+		assn_var = (type)((ismm->func())(name, NULL)); \
+		if ( assn_var != NULL ) { \
 			num = 0; \
 			break; \
 		} \
