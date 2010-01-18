@@ -35,7 +35,7 @@ bool CMonoPlug::Load(PluginId id, ISmmAPI *ismm, char *error, size_t maxlen, boo
 	char iface_buffer[255];
 	int num=0;
 	strcpy(iface_buffer, INTERFACEVERSION_SERVERGAMEDLL);
-	FIND_IFACE(GetServerFactory, this->m_ServerDll, num, iface_buffer, (IServerGameDLL *))
+	FIND_IFACE(GetServerFactory, (this->m_ServerDll), num, iface_buffer, IServerGameDLL *)
 	strcpy(iface_buffer, INTERFACEVERSION_VENGINESERVER);
 	FIND_IFACE(GetEngineFactory, this->m_Engine, num, iface_buffer, IVEngineServer *)
 	strcpy(iface_buffer, INTERFACEVERSION_SERVERGAMECLIENTS);
