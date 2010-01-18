@@ -19,4 +19,4 @@ private:
 	MonoDelegate* m_complete;
 };
 
-#endif _MONOCOMMAND_H_
+#endif //_MONOCOMMAND_H_
