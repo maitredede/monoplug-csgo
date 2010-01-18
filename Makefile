@@ -5,14 +5,14 @@
 ### EDIT THESE PATHS FOR YOUR OWN SETUP ###
 ###########################################
 
-BASE_DIR = /home/dede
-HL2SDK_ORIG = $(BASE_DIR)/mercurial/hl2sdk
-HL2SDK_OB = $(BASE_DIR)/mercurial/hl2sdk-ob
-HL2SDK_OB_VALVE = $(BASE_DIR)/mercurial/hl2sdk-ob-valve
-HL2SDK_L4D = $(BASE_DIR)/mercurial/hl2sdk-l4d
-HL2SDK_L4D2 = $(BASE_DIR)/mercurial/hl2sdk-l4d2
-MMSOURCE18 = $(BASE_DIR)/mercurial/mmsource-1.8
-SRCDS_BASE = $(BASE_DIR)/srcds
+BASE_DIR = /home/dede/MonoPlug
+HL2SDK_ORIG = $(BASE_DIR)/../mercurial/hl2sdk
+HL2SDK_OB = $(BASE_DIR)/../mercurial/hl2sdk-ob
+HL2SDK_OB_VALVE = $(BASE_DIR)/../mercurial/hl2sdk-ob-valve
+HL2SDK_L4D = $(BASE_DIR)/../mercurial/hl2sdk-l4d
+HL2SDK_L4D2 = $(BASE_DIR)/../mercurial/hl2sdk-l4d2
+MMSOURCE18 = $(BASE_DIR)/../mercurial/mmsource-1.8
+SRCDS_BASE = $(BASE_DIR)/../srcds
 
 #####################################
 ### EDIT BELOW FOR OTHER PROJECTS ###
@@ -153,7 +153,10 @@ check:
 	fi
 
 monoplug_native: check $(OBJ_LINUX)
+	ORG = `pwd`
+	cd $(BASEDIR)
 	$(CPP) $(INCLUDE) -m32 $(OBJ_LINUX) $(LINK) -shared -ldl -lm -o$(BIN_DIR)/$(BINARY)
+	cd $(ORG)
 
 monoplug_managed: check $(CSPROJECT)
 #	-$(foreach PRJ,$(CSPROJECT), echo PROJECT : $(PRJ); )
