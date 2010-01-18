@@ -1,0 +1,4 @@
+#!/bin/sh
+svn update
+make ENGINE=orangeboxvalve DEBUG=true clean
+make ENGINE=orangeboxvalve DEBUG=true
