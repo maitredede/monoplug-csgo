@@ -1,0 +1,4 @@
+#!bin/sh
+cd MonoPlug
+make --makefile=../Makefile clean DEBUG=true ENGINE=orangeboxvalve && make --makefile=../Makefile DEBUG=true ENGINE=orangeboxvalve
+cd ..

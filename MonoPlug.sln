@@ -5,6 +5,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "CS", "CS", "{284668E1-445D-
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{69B642F6-199F-4D53-A2C3-8A4EE28EF447}"
 	ProjectSection(SolutionItems) = preProject
+		compile = compile
 		Makefile = Makefile
 		mono.def = mono.def
 		mono.exp = mono.exp
