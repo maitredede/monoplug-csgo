@@ -170,7 +170,7 @@ MonoArray* Mono_GetPlayers()
 	CUtlVector<MonoObject*>* lst = new CUtlVector<MonoObject*>();
 
 	//Search for players
-	mono_array_size max = (mono_array_size)g_MonoPlug.m_EdictCount;
+	mono_array_size_t max = (mono_array_size_t)g_MonoPlug.m_EdictCount;
 	for(mono_array_size_t i = 0; i < max ; i++)
 	{
 		MonoObject* player = mono_array_get(g_MonoPlug.m_players, MonoObject*, i);
