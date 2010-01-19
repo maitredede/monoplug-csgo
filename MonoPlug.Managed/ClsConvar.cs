@@ -58,5 +58,26 @@ namespace MonoPlug
             NativeMethods.Mono_Convar_SetString(this.NativeID, value);
             return null;
         }
+
+        public bool GetBoolean()
+        {
+            return this._main.InterThreadCall<bool, object>(this.GetBooleanCall, null);
+        }
+
+        private bool GetBooleanCall(object state)
+        {
+            return NativeMethods.Mono_Convar_GetBoolean(this.NativeID);
+        }
+
+        public void SetValue(bool value)
+        {
+            this._main.InterThreadCall<object, bool>(this.SetBooleanCall, value);
+        }
+
+        private object SetBooleanCall(bool value)
+        {
+            NativeMethods.Mono_Convar_SetBoolean(this.NativeID, value);
+            return null;
+        }
     }
 }

@@ -14,6 +14,7 @@
     <OldToolsVersion>2.0</OldToolsVersion>
     <UpgradeBackupLocation>
     </UpgradeBackupLocation>
+    <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -35,11 +36,14 @@
   </PropertyGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>
+    <Compile Include="Check.cs" />
     <Compile Include="ClsConvar.cs" />
     <Compile Include="ClsMain\ClsMain - Events Client Connection.cs" />
     <Compile Include="ClsMain\ClsMain - Events ConMessage.cs" />
     <Compile Include="ClsMain\ClsMain - Events LevelShutdown.cs" />
     <Compile Include="ClsMain\ClsMain - Events ClientCommand.cs" />
+    <Compile Include="ClsPluginBase\ClsPluginBase - DialogMessage.cs" />
+    <Compile Include="ClsPluginBase\ClsPluginBase - EVT ClientDisconnect.cs" />
     <Compile Include="ClsPluginBase\ClsPluginBase - EVT ClientPutInServer.cs" />
     <Compile Include="ClsPluginBase\ClsPluginBase - EVT ConMessage.cs" />
     <Compile Include="EventArgs\ClientEventArgs.cs" />
@@ -72,16 +76,20 @@
     <Compile Include="ConVarDelegates.cs" />
     <Compile Include="ConVarEntry.cs" />
     <Compile Include="FCVAR.cs" />
+    <Compile Include="DialogMessage.cs" />
     <Compile Include="InterThreadCallDelegate.cs" />
     <Compile Include="NativeMethods.cs" />
     <Compile Include="PluginDefinition.cs" />
     <Compile Include="ClsPluginBase\ClsPluginBase.cs" />
-    <Compile Include="ClsMain\ClsMain - Native.cs" />
     <Compile Include="ClsMain\ClsMain - ConCommands.cs" />
     <Compile Include="ConCommandDelegate.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="System" />
+    <Reference Include="System.Core">
+      <RequiredTargetFramework>3.5</RequiredTargetFramework>
+    </Reference>
     <Reference Include="System.Data" />
     <Reference Include="System.Drawing" />
     <Reference Include="System.Xml" />

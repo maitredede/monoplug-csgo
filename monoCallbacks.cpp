@@ -28,9 +28,15 @@ uint64 Mono_RegisterConvar(MonoString* name, MonoString* help, int flags, MonoSt
 			mono_string_to_utf8(help),
 			Mono_ConvarValueChanged
 			);
-		g_MonoPlug.m_convars->Insert(var, nativeID);
-		META_REGCVAR(var);
-		return nativeID;
+		//if(META_REGCVAR(var))
+		{
+			g_MonoPlug.m_convars->Insert(var, nativeID);
+			return nativeID;
+		}
+		//else
+		//{
+		//	return 0;
+		//}
 	}
 };
 
@@ -78,45 +84,58 @@ void Mono_ConvarValueChanged(IConVar *var, const char *pOldValue, float flOldVal
 
 MonoString* Mono_Convar_GetString(uint64 nativeID)
 {
-	ConVar* var = NULL;
-
 	unsigned short i = g_MonoPlug.m_convars->FirstInorder();
 	while(i != g_MonoPlug.m_convars->InvalidIndex())
 	{
 		if(g_MonoPlug.m_convars->Element(i) == nativeID)
 		{
-			var = g_MonoPlug.m_convars->Key(i);
-			break;
+			ConVar* var = g_MonoPlug.m_convars->Key(i);
+			return MONO_STRING(g_Domain, var->GetString());
 		}
 	}
-
-	if(var)
-	{
-		return MONO_STRING(g_Domain, var->GetString());
-	}
-	else
-	{
-		return NULL;
-	}
+	return NULL;
 };
 
 void Mono_Convar_SetString(uint64 nativeID, MonoString* value)
 {
-	ConVar* var = NULL;
+	unsigned short i = g_MonoPlug.m_convars->FirstInorder();
+	while(i++ != g_MonoPlug.m_convars->InvalidIndex())
+	{
+		if(g_MonoPlug.m_convars->Element(i) == nativeID)
+		{
+			ConVar* var = g_MonoPlug.m_convars->Key(i);
+			char* c_value = mono_string_to_utf8(value);
+			var->SetValue(c_value);
+			break;
+		}
+	}
+};
 
+bool Mono_Convar_GetBoolean(uint64 nativeID)
+{
 	unsigned short i = g_MonoPlug.m_convars->FirstInorder();
 	while(i != g_MonoPlug.m_convars->InvalidIndex())
 	{
 		if(g_MonoPlug.m_convars->Element(i) == nativeID)
 		{
-			var = g_MonoPlug.m_convars->Key(i);
-			break;
+			ConVar* var = g_MonoPlug.m_convars->Key(i);
+			return var->GetBool();
 		}
 	}
+	return FALSE;
+};
 
-	if(var)
+void Mono_Convar_SetBoolean(uint64 nativeID, bool value)
+{
+	unsigned short i = g_MonoPlug.m_convars->FirstInorder();
+	while(i++ != g_MonoPlug.m_convars->InvalidIndex())
 	{
-		var->SetValue(mono_string_to_utf8(value));
+		if(g_MonoPlug.m_convars->Element(i) == nativeID)
+		{
+			ConVar* var = g_MonoPlug.m_convars->Key(i);
+			var->SetValue(value);
+			break;
+		}
 	}
 };
 
@@ -165,33 +184,6 @@ bool Mono_UnregisterConCommand(MonoString* name)
 	return false;
 };
 
-MonoArray* Mono_GetPlayers()
-{
-	CUtlVector<MonoObject*>* lst = new CUtlVector<MonoObject*>();
-
-	//Search for players
-	mono_array_size_t max = (mono_array_size_t)g_MonoPlug.m_EdictCount;
-	for(mono_array_size_t i = 0; i < max ; i++)
-	{
-		MonoObject* player = mono_array_get(g_MonoPlug.m_players, MonoObject*, i);
-		if(player)
-		{
-			lst->AddToTail(player);
-		}
-	}
-
-	//Convert native vector to managed list
-	MonoArray* arr = mono_array_new(g_Domain, g_MonoPlug.m_Class_ClsPlayer, lst->Count());
-	for(int i=0; i<lst->Count(); i++)
-	{
-		mono_array_set(arr, MonoObject*, i, lst->Element(i));
-	}
-
-	delete lst;
-
-	return arr;
-};
-
 void Attach_ConMessage()
 {
 	g_MonoPlug.m_icvar->InstallConsoleDisplayFunc(g_MonoPlug.m_console);
@@ -200,4 +192,21 @@ void Attach_ConMessage()
 void Detach_ConMessage()
 {
 	g_MonoPlug.m_icvar->RemoveConsoleDisplayFunc(g_MonoPlug.m_console);
+};
+
+void Mono_ClientDialogMessage(int client, MonoString* title, MonoString* message, int a, int r, int g, int b, int level, int time)
+{
+	edict_t* pEntity = EdictOfUserId(client);
+	if(pEntity)
+	{
+		KeyValues *kv = new KeyValues( "msg" );
+		kv->SetString( "title", mono_string_to_utf8(title) );
+		kv->SetString( "msg", mono_string_to_utf8(message) );
+		kv->SetColor( "color", Color( r, g, b, a ));
+		kv->SetInt( "level", level);
+		kv->SetInt( "time", time);
+
+		g_MonoPlug.m_helpers->CreateMessage(pEntity, DIALOG_MSG, kv, g_MonoPlug.m_vsp_callbacks);
+		kv->deleteThis();
+	}
 };

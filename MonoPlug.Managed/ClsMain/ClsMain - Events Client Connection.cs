@@ -21,6 +21,8 @@ namespace MonoPlug
 
         internal void Raise_ClientPutInServer(ClsPlayer player)
         {
+            this.AddPlayer(player);
+
             List<ClsPluginBase> lst = null;
             lock (this._events)
             {
@@ -39,8 +41,28 @@ namespace MonoPlug
             }
         }
 
-        internal void Raise_ClientDisconnect(ClsPlayer player)
+        internal void Raise_ClientDisconnect(int playerId)
         {
+            ClsPlayer player = this.RemovePlayer(playerId);
+            if (player != null)
+            {
+                List<ClsPluginBase> lst = null;
+                lock (this._events)
+                {
+                    if (this._events.ContainsKey(_evtToken_ClientDisconnect))
+                    {
+                        lst = new List<ClsPluginBase>(this._events[_evtToken_ClientDisconnect]);
+                    }
+                }
+                if (lst != null && lst.Count > 0)
+                {
+                    ClientEventArgs e = new ClientEventArgs(player);
+                    foreach (ClsPluginBase plugin in lst)
+                    {
+                        plugin.Raise_ClientDisconnect(this, e);
+                    }
+                }
+            }
             //TODO : Raise_ClientDisconnect
         }
     }

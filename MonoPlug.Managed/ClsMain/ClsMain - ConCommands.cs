@@ -7,16 +7,16 @@ namespace MonoPlug
 {
     partial class ClsMain
     {
-        internal ClsConCommand RegisterConCommand(ClsPluginBase plugin, string name, string description, ConCommandDelegate code, FCVAR flags, ConCommandCompleteDelegate complete)
+        internal ClsConCommand RegisterConCommand(ClsPluginBase plugin, string name, string help, ConCommandDelegate code, FCVAR flags, ConCommandCompleteDelegate complete)
         {
-            if (code == null) throw new ArgumentNullException("code");
-            if (string.IsNullOrEmpty(name)) throw new ArgumentNullException("name");
-            if (string.IsNullOrEmpty(description)) throw new ArgumentNullException("description");
-            ValidateFlags(flags, "flags");
+            Check.NonNull("code", code);
+            Check.NonNullOrEmpty("name", name);
+            Check.NonNullOrEmpty("help", help);
+            Check.ValidFlags(flags, "flags");
 
             ConCommandEntry entry = new ConCommandEntry();
             entry.Plugin = plugin;
-            entry.Command = new ClsConCommand(ulong.MinValue, name, description, flags, code, complete);
+            entry.Command = new ClsConCommand(ulong.MinValue, name, help, flags, code, complete);
 
             lock (this._concommands)
             {

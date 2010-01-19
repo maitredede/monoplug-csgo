@@ -21,14 +21,18 @@ namespace MonoPlug
         internal static extern string Mono_Convar_GetString(UInt64 nativeID);
         [MethodImpl(MethodImplOptions.InternalCall)]
         internal static extern void Mono_Convar_SetString(UInt64 nativeID, string value);
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        internal static extern bool Mono_Convar_GetBoolean(UInt64 nativeID);
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        internal static extern void Mono_Convar_SetBoolean(UInt64 nativeID, bool value);
 
         [MethodImpl(MethodImplOptions.InternalCall)]
         internal static extern bool Mono_RegisterConCommand(string name, string description, ConCommandDelegate code, int flags, ConCommandCompleteDelegate complete);
         [MethodImpl(MethodImplOptions.InternalCall)]
         internal static extern bool Mono_UnregisterConCommand(string name);
 
-        [MethodImpl(MethodImplOptions.InternalCall)]
-        internal static extern ClsPlayer[] Mono_GetPlayers();
+        //[MethodImpl(MethodImplOptions.InternalCall)]
+        //internal static extern ClsPlayer[] Mono_GetPlayers();
 
         [MethodImpl(MethodImplOptions.InternalCall)]
         internal static extern void Attach_ConMessage();
@@ -40,6 +44,9 @@ namespace MonoPlug
         internal static extern void Attach_LevelShutdown();
         [MethodImpl(MethodImplOptions.InternalCall)]
         internal static extern void Detach_LevelShutdown();
+
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        internal static extern void Mono_ClientDialogMessage(int client, string title, string message, int a, int r, int g, int b, int level, int time);
 
         [MethodImpl(MethodImplOptions.InternalCall)]
         [Obsolete("To be removed", true)]

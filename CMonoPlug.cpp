@@ -48,6 +48,8 @@ bool CMonoPlug::Load(PluginId id, ISmmAPI *ismm, char *error, size_t maxlen, boo
 	FIND_IFACE(GetEngineFactory, this->m_icvar, num, iface_buffer, ICvar *);
 	strcpy(iface_buffer, INTERFACEVERSION_PLAYERINFOMANAGER);
 	FIND_IFACE(GetServerFactory, this->m_playerinfomanager, num, iface_buffer, IPlayerInfoManager *);
+	strcpy(iface_buffer, INTERFACEVERSION_ISERVERPLUGINHELPERS);
+	FIND_IFACE(GetEngineFactory, this->m_helpers, num, iface_buffer, IServerPluginHelpers *);
 
 	META_LOG(g_PLAPI, "Starting plugin (Mono)\n");
 	//Get game dir
@@ -93,6 +95,10 @@ bool CMonoPlug::Load(PluginId id, ISmmAPI *ismm, char *error, size_t maxlen, boo
 		return false;
 	}
 	MONO_GET_CLASS(this->m_image, this->m_Class_ClsMain, "MonoPlug", "ClsMain", error, maxlen)
+	MONO_ATTACH("MonoPlug.ClsMain:Init()", this->m_ClsMain_Init, this->m_image);
+	MONO_ATTACH("MonoPlug.ClsMain:Shutdown()", this->m_ClsMain_Shutdown, this->m_image);
+	MONO_ATTACH("MonoPlug.ClsMain:GameFrame()", this->m_ClsMain_EVT_GameFrame, this->m_image);
+	MONO_ATTACH("MonoPlug.ClsMain:ConvarChanged(ulong)", this->m_ClsMain_ConvarChanged, this->m_image);
 
 	MONO_GET_CLASS(this->m_image, this->m_Class_ClsPlayer, "MonoPlug", "ClsPlayer", error, maxlen)
 	MONO_GET_FIELD(this->m_Field_ClsPlayer_id, this->m_Class_ClsPlayer, "_id", error, maxlen)
@@ -104,23 +110,17 @@ bool CMonoPlug::Load(PluginId id, ISmmAPI *ismm, char *error, size_t maxlen, boo
 	MONO_GET_FIELD(this->m_Field_ClsPlayer_avgLatency, this->m_Class_ClsPlayer, "_avgLatency", error, maxlen)
 	MONO_GET_FIELD(this->m_Field_ClsPlayer_timeConnected, this->m_Class_ClsPlayer, "_timeConnected", error, maxlen)
 
-	MONO_ATTACH("MonoPlug.ClsMain:Init()", this->m_ClsMain_Init, this->m_image);
-	MONO_ATTACH("MonoPlug.ClsMain:Shutdown()", this->m_ClsMain_Shutdown, this->m_image);
-
-	MONO_ATTACH("MonoPlug.ClsMain:GameFrame()", this->m_ClsMain_EVT_GameFrame, this->m_image);
-	MONO_ATTACH("MonoPlug.ClsMain:ConvarChanged(ulong)", this->m_ClsMain_ConvarChanged, this->m_image);
-
 	mono_add_internal_call ("MonoPlug.NativeMethods::Mono_Msg", (const void*)Mono_Msg);
 	mono_add_internal_call ("MonoPlug.NativeMethods::Mono_Log", (const void*)Mono_Log);
 	mono_add_internal_call ("MonoPlug.NativeMethods::Mono_RegisterConvar", (const void*)Mono_RegisterConvar);
 	mono_add_internal_call ("MonoPlug.NativeMethods::Mono_UnregisterConvar", (const void*)Mono_UnregisterConvar);
 	mono_add_internal_call ("MonoPlug.NativeMethods::Mono_Convar_GetString", (const void*)Mono_Convar_GetString);
 	mono_add_internal_call ("MonoPlug.NativeMethods::Mono_Convar_SetString", (const void*)Mono_Convar_SetString);
+	mono_add_internal_call ("MonoPlug.NativeMethods::Mono_Convar_GetBoolean", (const void*)Mono_Convar_GetBoolean);
+	mono_add_internal_call ("MonoPlug.NativeMethods::Mono_Convar_SetBoolean", (const void*)Mono_Convar_SetBoolean);
 
 	mono_add_internal_call ("MonoPlug.NativeMethods::Mono_RegisterConCommand", (const void*)Mono_RegisterConCommand);
 	mono_add_internal_call ("MonoPlug.NativeMethods::Mono_UnregisterConCommand", (const void*)Mono_UnregisterConCommand);
-
-	mono_add_internal_call ("MonoPlug.NativeMethods::Mono_GetPlayers", (const void*)Mono_GetPlayers);
 
 	//Console messages
 	mono_add_internal_call ("MonoPlug.NativeMethods::Attach_ConMessage", (const void*)Attach_ConMessage);
@@ -130,7 +130,9 @@ bool CMonoPlug::Load(PluginId id, ISmmAPI *ismm, char *error, size_t maxlen, boo
 
 	//Client connection events
 	MONO_ATTACH("MonoPlug.ClsMain:Raise_ClientPutInServer(MonoPlug.ClsPlayer)", this->m_ClsMain_ClientPutInServer, this->m_image);
-	MONO_ATTACH("MonoPlug.ClsMain:Raise_ClientDisconnect(MonoPlug.ClsPlayer)", this->m_ClsMain_ClientDisconnect, this->m_image);
+	MONO_ATTACH("MonoPlug.ClsMain:Raise_ClientDisconnect(int)", this->m_ClsMain_ClientDisconnect, this->m_image);
+
+	mono_add_internal_call ("MonoPlug.NativeMethods::Mono_ClientDialogMessage", (const void*)Mono_ClientDialogMessage);
 
 	//Create object instance
 	this->m_main = mono_object_new(g_Domain, this->m_Class_ClsMain);
@@ -139,18 +141,20 @@ bool CMonoPlug::Load(PluginId id, ISmmAPI *ismm, char *error, size_t maxlen, boo
 	//All object creation is OK, init internal ararys
 	this->m_convarNextId = 0;
 	this->m_convars = new CUtlMap<ConVar*, uint64>();
+	this->m_convars->SetLessFunc(LessFunc_CMonoCommand);
 	this->m_commands = new CUtlVector<CMonoCommand*>();
+
 
 	META_LOG(g_PLAPI, "Starting plugin (Remaining)\n");
 	ismm->AddListener(this, &g_Listener);
 
-	//Init our cvars/concmds
-#if SOURCE_ENGINE >= SE_ORANGEBOX
-	//g_pCVar = icvar;
-	ConVar_Register(0, &g_Accessor);
-#else
-	ConCommandBaseMgr::OneTimeInit(&s_BaseAccessor);
-#endif
+	/* Load the VSP listener.  This is usually needed for IServerPluginHelpers. */
+	if ((this->m_vsp_callbacks = ismm->GetVSPInfo(NULL)) == NULL)
+	{
+		ismm->AddListener(this, this);
+		ismm->EnableVSPListener();
+	}
+
 
 	//We're hooking the following things as POST, in order to seem like Server Plugins.
 	//However, I don't actually know if Valve has done server plugins as POST or not.
@@ -190,14 +194,32 @@ bool CMonoPlug::Load(PluginId id, ISmmAPI *ismm, char *error, size_t maxlen, boo
 
 	SH_CALL(m_Engine_CC, &IVEngineServer::LogPrint)("All hooks started!\n");
 
+	//Init our cvars/concmds
+#if SOURCE_ENGINE >= SE_ORANGEBOX
+	//g_pCVar = icvar;
+	ConVar_Register(0, this);
+#else
+	ConCommandBaseMgr::OneTimeInit(&s_BaseAccessor);
+#endif
+
 	g_SMAPI->AddListener(g_PLAPI, this);
 
 	MonoObject* r = CMonoHelpers::MONO_CALL(this->m_main, this->m_ClsMain_Init, NULL);
 	bool ret = *(bool*)mono_object_unbox(r);
 
 	return ret;
+}
 
-	//return true;
+bool CMonoPlug::RegisterConCommandBase(ConCommandBase *pVar)
+{
+	//this will work on any type of concmd!
+	return META_REGCVAR(pVar);
+}
+
+
+void CMonoPlug::OnVSPListening(IServerPluginCallbacks *iface)
+{
+	this->m_vsp_callbacks = iface;
 }
 
 void CMonoPlug::GameFrame(bool simulating)
@@ -225,15 +247,15 @@ void CMonoPlug::ServerActivate(edict_t *pEdictList, int edictCount, int clientMa
 	this->m_EdictCount = edictCount;
 	this->m_MaxPlayers = clientMax;
 
-	//Create player tracking array
-	this->m_players = mono_array_new(g_Domain, this->m_Class_ClsPlayer, this->m_EdictCount);
+	////Create player tracking array
+	////this->m_players = mono_array_new(g_Domain, this->m_Class_ClsPlayer, this->m_EdictCount);
 
-	mono_array_size_t max = (mono_array_size_t)this->m_EdictCount;
+	//mono_array_size_t max = (mono_array_size_t)this->m_EdictCount;
 
-	for(mono_array_size_t i = 0; i < max ; i++)
-	{
-		mono_array_set(this->m_players, MonoObject*, i, NULL);
-	}
+	//for(mono_array_size_t i = 0; i < max ; i++)
+	//{
+	//	mono_array_set(this->m_players, MonoObject*, i, NULL);
+	//}
 	RETURN_META(MRES_IGNORED);
 }
 
@@ -241,12 +263,12 @@ bool CMonoPlug::ClientConnect(edict_t *pEntity, const char *pszName, const char 
 {
 	META_LOG(g_PLAPI, "ClientConnect(%s, %s)", pszName, pszAddress);
 
-	int id = this->m_Engine->IndexOfEdict(pEntity);
-	MonoObject* player = mono_object_new(g_Domain, this->m_Class_ClsPlayer);
-	mono_runtime_object_init(player);
-	mono_array_set(this->m_players, MonoObject*, id, player);
+	//int id = this->m_Engine->IndexOfEdict(pEntity);
+	//MonoObject* player = mono_object_new(g_Domain, this->m_Class_ClsPlayer);
+	//mono_runtime_object_init(player);
+	//mono_array_set(this->m_players, MonoObject*, id, player);
 
-	mono_field_set_value(player, g_MonoPlug.m_Field_ClsPlayer_ip, MONO_STRING(g_Domain, pszAddress));
+	//mono_field_set_value(player, g_MonoPlug.m_Field_ClsPlayer_ip, MONO_STRING(g_Domain, pszAddress));
 
 	RETURN_META_VALUE(MRES_IGNORED, true);
 }
@@ -265,34 +287,49 @@ void CMonoPlug::ClientPutInServer(edict_t *pEntity, const char *playername)
 		return;
 	}
 
-	int id = this->m_Engine->IndexOfEdict(pEntity);
+	//int index = this->m_Engine->IndexOfEdict(pEntity);
 	IPlayerInfo* pi = this->m_playerinfomanager->GetPlayerInfo(pEntity);
 
-	MonoObject* player = mono_array_get(this->m_players, MonoObject*, id);
-	if(!player)
-	{
-		//Ugly bot hack
-		player = mono_object_new(g_Domain, this->m_Class_ClsPlayer);
-		mono_runtime_object_init(player);
-		mono_array_set(this->m_players, MonoObject*, id, player);
-	}
+	MonoObject* player = mono_object_new(g_Domain, this->m_Class_ClsPlayer);
+	mono_runtime_object_init(player);
+	////mono_array_set(this->m_players, MonoObject*, id, player);
+
+	//MonoObject* player = mono_array_get(this->m_players, MonoObject*, id);
+	//mono_field_set_value(player, g_MonoPlug.m_Field_ClsPlayer_ip, MONO_STRING(g_Domain, pszAddress));
+	//if(!player)
+	//{
+	//	//Ugly bot hack
+	//	player = mono_object_new(g_Domain, this->m_Class_ClsPlayer);
+	//	mono_runtime_object_init(player);
+	//}
 		
 
 	//Fill player data
-	int pid = this->m_Engine->GetPlayerUserId(pEntity);
+	int playerId = this->m_Engine->GetPlayerUserId(pEntity);
 
-	INetChannelInfo* net = this->m_Engine->GetPlayerNetInfo(id);
-	float avgLatency = net->GetAvgLatency(MAX_FLOWS);
-	float timeConnected = net->GetTimeConnected();
+	INetChannelInfo* net = this->m_Engine->GetPlayerNetInfo(playerId);
+	float avgLatency = -1.0;
+	float timeConnected = -1.0;
+	MonoString* address;
+	if(net)
+	{
+		avgLatency = net->GetAvgLatency(MAX_FLOWS);
+		timeConnected = net->GetTimeConnected();
+		address = MONO_STRING(g_Domain, net->GetAddress());
+	}
+	else
+	{
+		address = MONO_STRING(g_Domain, NULL);
+	}
 	int pfrag = pi->GetFragCount();
 	int pdeath = pi->GetDeathCount();
 
-	mono_field_set_value(player, this->m_Field_ClsPlayer_id, &pid);
+	mono_field_set_value(player, this->m_Field_ClsPlayer_id, &playerId);
 	mono_field_set_value(player, this->m_Field_ClsPlayer_name, MONO_STRING(g_Domain, pi->GetName()));
 	mono_field_set_value(player, this->m_Field_ClsPlayer_frag, &pfrag);
 	mono_field_set_value(player, this->m_Field_ClsPlayer_death, &pdeath);
-	mono_field_set_value(player, this->m_Field_ClsPlayer_ip, MONO_STRING(g_Domain, net->GetAddress()));
-	mono_field_set_value(player, this->m_Field_ClsPlayer_language, MONO_STRING(g_Domain, this->m_Engine->GetClientConVarValue(id, "cl_language")));
+	mono_field_set_value(player, this->m_Field_ClsPlayer_ip, address);
+	mono_field_set_value(player, this->m_Field_ClsPlayer_language, MONO_STRING(g_Domain, this->m_Engine->GetClientConVarValue(playerId, "cl_language")));
 	mono_field_set_value(player, this->m_Field_ClsPlayer_avgLatency, &avgLatency);
 	mono_field_set_value(player, this->m_Field_ClsPlayer_timeConnected, &timeConnected);
 
@@ -308,13 +345,14 @@ void CMonoPlug::ClientDisconnect(edict_t *pEntity)
 		return;
 	}
 
-	int id = this->m_Engine->IndexOfEdict(pEntity);
+	//int index = this->m_Engine->IndexOfEdict(pEntity);
+	int playerId = this->m_Engine->GetPlayerUserId(pEntity);
 
-	MonoObject* player= mono_array_get(this->m_players, MonoObject*, id);
+	//MonoObject* player= mono_array_get(this->m_players, MonoObject*, id);
 
-	mono_array_set(this->m_players, MonoObject*, id, NULL);
+	//mono_array_set(this->m_players, MonoObject*, id, NULL);
 
 	void* args[1];
-	args[0] = player;
+	args[0] = &playerId;
 	CMonoHelpers::MONO_CALL(this->m_main, this->m_ClsMain_ClientDisconnect, args);
 }

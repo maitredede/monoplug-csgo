@@ -17,6 +17,9 @@ namespace MonoPlug
                 //this.ClientCommand += this.ClientCommand_Sample;
                 this.LevelShutdown += this.Events_LevelShutdown;
                 this.ConMessage += this.Events_ConMessage;
+
+                this.ClientPutInServer += this.Events_ClientPutInServer;
+                this.ClientDisconnect += this.Events_ClientDisconnect;
             }
             catch (Exception ex)
             {
@@ -38,6 +41,8 @@ namespace MonoPlug
                 this.LevelShutdown -= this.Events_LevelShutdown;
                 //this.ClientCommand -= this.ClientCommand_Sample;
                 this.ConMessage -= this.Events_ConMessage;
+                this.ClientPutInServer -= this.Events_ClientPutInServer;
+                this.ClientDisconnect -= this.Events_ClientDisconnect;
                 Msg("ConEvents::Unload : A\n");
             }
             catch (Exception ex)
@@ -79,6 +84,16 @@ namespace MonoPlug
                 name = e.Client.Name ?? "<player name is null>";
             }
             this.Msg("ConEvents: ClientCommand from {0} {1}\n", name);
+        }
+
+        private void Events_ClientDisconnect(object sender, ClientEventArgs e)
+        {
+            this.Msg("Client disconnect : {0}\n", e.Client);
+        }
+
+        private void Events_ClientPutInServer(object sender, ClientEventArgs e)
+        {
+            this.Msg("Client Put in server : {0}\n", e.Client);
         }
 
         private void Events_ConMessage(object sender, ConMessageEventArgs e)

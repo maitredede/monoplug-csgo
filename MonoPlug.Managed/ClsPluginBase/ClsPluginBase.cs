@@ -1,5 +1,7 @@
 
 using System;
+using System.Collections.Generic;
+using System.Reflection;
 
 namespace MonoPlug
 {
@@ -16,8 +18,11 @@ namespace MonoPlug
             main.Msg("ClsPluginBase:: Init in AppDomain '{0}'\n", AppDomain.CurrentDomain.FriendlyName);
 #endif
 
+            ClsMain.DumpCurrentDomainAssemblies(main);
             this._main = main;
+            main.Msg("ClsPluginBase:: Loading...\n");
             this.Load();
+            main.Msg("ClsPluginBase:: Loaded...\n");
         }
 
         internal void UnInit()
@@ -118,7 +123,7 @@ namespace MonoPlug
         /// Get players on server
         /// </summary>
         /// <returns>Players array</returns>
-        protected ClsPlayer[] GetPlayers()
+        protected IList<ClsPlayer> GetPlayers()
         {
             return this._main.GetPlayers();
         }

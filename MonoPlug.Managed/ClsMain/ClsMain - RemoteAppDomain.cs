@@ -8,17 +8,21 @@ namespace MonoPlug
 {
     partial class ClsMain
     {
+        private ClsMain _remote_owner;
+
         private ClsPluginBase Remote_CreatePlugin(ClsMain owner, PluginDefinition desc)
         {
+            this._remote_owner = owner;
             try
             {
-                owner.Msg("RM: Trying to load file : {0}\n", desc.File);
+                DumpCurrentDomainAssemblies(owner);
+
+                AppDomain.CurrentDomain.AssemblyResolve += this.CurrentDomain_AssemblyResolve;
+                AppDomain.CurrentDomain.AssemblyLoad += this.CurrentDomain_AssemblyLoad;
+
                 Assembly asm = Assembly.LoadFile(desc.File);
-                owner.Msg("RM: Trying to get type : {0}\n", desc.Type);
                 Type t = asm.GetType(desc.Type, true);
-                owner.Msg("RM: Trying to call ctor\n");
                 ClsPluginBase plugin = (ClsPluginBase)t.GetConstructor(Type.EmptyTypes).Invoke(null);
-                owner.Msg("RM: Plugin created\n");
                 return plugin;
             }
             catch (Exception ex)
@@ -27,6 +31,28 @@ namespace MonoPlug
                 owner.Msg(ex.StackTrace);
                 throw ex;
             }
+        }
+
+        private void CurrentDomain_AssemblyLoad(object sender, AssemblyLoadEventArgs args)
+        {
+            this._remote_owner.Msg("RM: AssemblyLoad({0}) {1}", AppDomain.CurrentDomain.FriendlyName, args.LoadedAssembly.FullName);
+        }
+
+        private Assembly CurrentDomain_AssemblyResolve(object sender, ResolveEventArgs args)
+        {
+            this._remote_owner.Msg("RM: AssemblyResolve({0}) {1}", AppDomain.CurrentDomain.FriendlyName, args.Name);
+            return Assembly.Load(args.Name);
+        }
+
+        internal static void DumpCurrentDomainAssemblies(ClsMain main)
+        {
+            Assembly[] arr = AppDomain.CurrentDomain.GetAssemblies();
+            main.Msg("DumpCurrentDomainAssemblies : {0} loaded\n", arr.Length);
+            for (int i = 0; i < arr.Length; i++)
+            {
+                main.Msg("  {0} :: {1}\n", arr[i].FullName, arr[i].Location);
+            }
+            main.Msg("DumpCurrentDomainAssemblies : End\n");
         }
 
         private PluginDefinition[] Remote_GetPluginsFromDirectory(ClsMain owner, string path)
@@ -47,13 +73,16 @@ namespace MonoPlug
                             if (!t.IsAbstract && t.IsSubclassOf(typeof(ClsPluginBase)) && t.IsPublic)
                             {
                                 ConstructorInfo ctor = t.GetConstructor(Type.EmptyTypes);
-                                ClsPluginBase plugin = (ClsPluginBase)ctor.Invoke(null);
-                                PluginDefinition definition = new PluginDefinition();
-                                definition.File = filename;
-                                definition.Name = plugin.Name;
-                                definition.Type = plugin.GetType().FullName;
-                                definition.Description = plugin.Description;
-                                lst.Add(definition);
+                                if (ctor != null)
+                                {
+                                    ClsPluginBase plugin = (ClsPluginBase)ctor.Invoke(null);
+                                    PluginDefinition definition = new PluginDefinition();
+                                    definition.File = filename;
+                                    definition.Name = plugin.Name;
+                                    definition.Type = plugin.GetType().FullName;
+                                    definition.Description = plugin.Description;
+                                    lst.Add(definition);
+                                }
                             }
                         }
                         catch//(Exception ex)

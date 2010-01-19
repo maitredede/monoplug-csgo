@@ -7,7 +7,7 @@ namespace MonoPlug
     /// Delegate for managed ConCommands
     /// </summary>
     /// <param name="args">Arguments of command</param>
-    public delegate void ConCommandDelegate(string args);
+    public delegate void ConCommandDelegate(string line, string[] arguments);
 
     /// <summary>
     /// Delegate for managed ConCommands auto-completion

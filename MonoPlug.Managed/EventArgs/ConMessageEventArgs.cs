@@ -34,7 +34,7 @@ namespace MonoPlug
         /// </summary>
         public Color Color { get { return this._color; } }
 
-        internal ConMessageEventArgs(bool hasColor, bool isDebug, Color color, string msg)
+        public ConMessageEventArgs(bool hasColor, bool isDebug, Color color, string msg)
         {
             this._hasColor = hasColor;
             this._debug = isDebug;

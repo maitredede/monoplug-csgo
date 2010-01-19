@@ -12,7 +12,7 @@ namespace MonoPlug
         /// <summary>
         /// Event raised when a client has been put in server
         /// </summary>
-        protected event EventHandler ClientPutInServer
+        protected event EventHandler<ClientEventArgs> ClientPutInServer
         {
             add
             {
@@ -40,10 +40,10 @@ namespace MonoPlug
 
         internal void Raise_ClientPutInServer(object sender, ClientEventArgs e)
         {
-            EventHandler d;
+            EventHandler<ClientEventArgs> d;
             lock (this._events)
             {
-                d = (EventHandler)this._events[_EventToken_ClientPutInServer];
+                d = (EventHandler<ClientEventArgs>)this._events[_EventToken_ClientPutInServer];
             }
             if (d != null)
             {

@@ -12,7 +12,7 @@ namespace MonoPlug
         /// <summary>
         /// Event raised when a console message has been printed
         /// </summary>
-        public event EventHandler<ConMessageEventArgs> ConMessage
+        protected event EventHandler<ConMessageEventArgs> ConMessage
         {
             add
             {

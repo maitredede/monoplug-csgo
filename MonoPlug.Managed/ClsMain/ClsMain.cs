@@ -21,7 +21,7 @@ namespace MonoPlug
         private readonly Dictionary<AppDomain, ClsPluginBase> _plugins = new Dictionary<AppDomain, ClsPluginBase>();
         private readonly ReaderWriterLock _lckPlugins = new ReaderWriterLock();
 
-        private Dictionary<UInt64, ConVarEntry> _convars = new Dictionary<UInt64, ConVarEntry>();
+        private readonly Dictionary<UInt64, ConVarEntry> _convars = new Dictionary<UInt64, ConVarEntry>();
         private readonly Dictionary<string, ConCommandEntry> _concommands = new Dictionary<string, ConCommandEntry>();
 
         /// <summary>
@@ -35,14 +35,6 @@ namespace MonoPlug
         private ClsConCommand _clr_plugin_refresh = null;
         private ClsConCommand _clr_plugin_load = null;
         private ClsConCommand _clr_plugin_unload = null;
-
-        private int _mainThreadId = 0;
-        private int _queueLength = 0;
-        private readonly object _lckThreadSync = new object();
-        private ManualResetEvent _waitIn;
-        private ManualResetEvent _waitOut;
-
-        private int _isInITCall = 0;
         #endregion
 
         public ClsMain()

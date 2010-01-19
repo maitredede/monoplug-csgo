@@ -13,7 +13,7 @@
 #define snprintf _snprintf
 #endif
 
-class CMonoPlug : public ISmmPlugin, public IMetamodListener, public IGameEventListener2
+class CMonoPlug : public ISmmPlugin, public IMetamodListener, public IGameEventListener2, public IConCommandBaseAccessor
 {
 public:
 	bool Load(PluginId id, ISmmAPI *ismm, char *error, size_t maxlen, bool late);
@@ -62,6 +62,10 @@ public:
 	{
 		return "MONOPLUG";
 	}
+public: // IConCommandBaseAccessor
+	virtual bool RegisterConCommandBase(ConCommandBase *pVar);
+public: //IMetamodListener stuff
+	void OnVSPListening(IServerPluginCallbacks *iface);
 public:
 	//These functions are from IServerPluginCallbacks
 	//Note, the parameters might be a little different to match the actual calls!
@@ -116,6 +120,8 @@ public:
 	IServerGameClients *m_ServerClients;
 	ICvar *m_icvar;
 	IPlayerInfoManager *m_playerinfomanager;
+	IServerPluginHelpers *m_helpers;
+	IServerPluginCallbacks *m_vsp_callbacks;
 
 	SourceHook::CallClass<IVEngineServer> *m_Engine_CC;
 
@@ -130,8 +136,10 @@ public:
 	MonoMethod* m_ClsMain_EVT_GameFrame;
 	MonoMethod* m_ClsMain_ConvarChanged;
 	MonoMethod* m_ClsMain_ConPrint;
+
 	MonoMethod* m_ClsMain_ClientPutInServer;
 	MonoMethod* m_ClsMain_ClientDisconnect;
+
 	MonoObject* m_main;
 
 	MonoClass* m_Class_ClsPlayer;
@@ -144,7 +152,7 @@ public:
 	MonoClassField* m_Field_ClsPlayer_avgLatency;
 	MonoClassField* m_Field_ClsPlayer_timeConnected;
 
-	MonoArray* m_players;
+	//MonoArray* m_players;
 
 	CUtlVector<CMonoCommand*>* m_commands;
 
@@ -161,8 +169,6 @@ public:
 //
 //PLUGIN_GLOBALVARS();
 //
-edict_t *EdictOfUserId( int UserId );
-int UTIL_FindOffset(const char *ClassName, const char *PropertyName);
 
 #define	FIND_IFACE(func, assn_var, num_var, name, type) \
 	do { \

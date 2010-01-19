@@ -7,7 +7,7 @@ namespace MonoPlug
 {
     partial class ClsMain
     {
-        private void clr_plugin_unload(string args)
+        private void clr_plugin_unload(string line, string[] arguments)
         {
             NativeMethods.Mono_Msg("M: clr_plugin_unload 0\n");
             try
@@ -23,7 +23,7 @@ namespace MonoPlug
                         NativeMethods.Mono_Msg("M: clr_plugin_unload B\n");
                         ClsPluginBase plugin = this._plugins[dom];
                         Msg("M: clr_plugin_unload C {0}\n", plugin.Name);
-                        if (plugin.Name.Equals(args, StringComparison.InvariantCultureIgnoreCase))
+                        if (plugin.Name.Equals(line, StringComparison.InvariantCultureIgnoreCase))
                         {
                             found = true;
                             NativeMethods.Mono_Msg("M: clr_plugin_unload D\n");
@@ -89,7 +89,7 @@ namespace MonoPlug
                 }
                 if (!found)
                 {
-                    Msg("Plugin '{0}' not found or loaded\n", args);
+                    Msg("Plugin '{0}' not found or loaded\n", line);
                 }
             }
             catch (Exception ex)

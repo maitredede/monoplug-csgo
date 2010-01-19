@@ -9,9 +9,10 @@ namespace MonoPlug
     {
         internal ClsConvar RegisterConvar(ClsPluginBase plugin, string name, string help, FCVAR flags, string defaultValue)
         {
-            if (string.IsNullOrEmpty(name)) throw new ArgumentNullException("name");
-            if (string.IsNullOrEmpty(help)) throw new ArgumentNullException("description");
-            ValidateFlags(flags, "flags");
+            Check.NonNullOrEmpty("name", name);
+            Check.NonNullOrEmpty("help", help);
+            Check.NonNull("defaultValue", defaultValue);
+            Check.ValidFlags(flags, "flags");
 
             ConvarRegisterData data = new ConvarRegisterData();
             data.Name = name;
@@ -44,16 +45,22 @@ namespace MonoPlug
         internal void ConvarChanged(UInt64 nativeID)
         {
 #if DEBUG
-            Msg("ClsMain::_ConVarStringChanged({0})", nativeID);
+            NativeMethods.Mono_Msg(string.Format("ConvarChanged({0}) A", nativeID));
 #endif
             lock (this._convars)
             {
+                NativeMethods.Mono_Msg(string.Format("ConvarChanged({0}) B", nativeID));
                 if (this._convars.ContainsKey(nativeID))
                 {
+                    NativeMethods.Mono_Msg(string.Format("ConvarChanged({0}) C", nativeID));
                     ConVarEntry entry = this._convars[nativeID];
+                    NativeMethods.Mono_Msg(string.Format("ConvarChanged({0}) D", nativeID));
                     ThreadPool.QueueUserWorkItem(this.ConvarChangedRaise, entry);
+                    NativeMethods.Mono_Msg(string.Format("ConvarChanged({0}) E", nativeID));
                 }
             }
+
+            NativeMethods.Mono_Msg(string.Format("ConvarChanged({0}) F", nativeID));
         }
 
         private void ConvarChangedRaise(object state)

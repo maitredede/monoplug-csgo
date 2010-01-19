@@ -7,7 +7,7 @@ namespace MonoPlug
 {
     partial class ClsMain
     {
-        public void clr_plugin_list(string args)
+        public void clr_plugin_list(string line, string[] arguments)
         {
             if (this._pluginCache == null)
                 this._pluginCache = new PluginDefinition[] { };

@@ -1,5 +1,10 @@
 #include "CMonoCommand.h"
 
+bool LessFunc_CMonoCommand(ConVar* const& key1, ConVar* const& key2)
+{
+	return (strcmpi(key1->GetName(), key2->GetName()) < 0);
+};
+
 CMonoCommand::CMonoCommand(char* name, char* description, MonoDelegate* code, int flags,MonoDelegate* complete)
 : ConCommand(name, (FnCommandCallback_t)NULL, description, flags, (FnCommandCompletionCallback)NULL)
 {
@@ -9,11 +14,21 @@ CMonoCommand::CMonoCommand(char* name, char* description, MonoDelegate* code, in
 
 void CMonoCommand::Dispatch(const CCommand &command)
 {
-	void* args[1]; 
+	MonoArray* arr = mono_array_new(g_Domain, mono_get_string_class(), command.ArgC());
+	mono_array_size_t max = (mono_array_size_t)command.ArgC();
+	for(mono_array_size_t i = 0; i<max; i++)
+	{
+		MonoString* str = MONO_STRING(g_Domain, command.ArgV()[i]);
+		mono_array_set(arr, MonoString*, i, str);
+	}
+
+	void* args[2]; 
 	args[0] = MONO_STRING(g_Domain, command.ArgS());
-	META_CONPRINTF("Dispatch command BEGIN : %s\n", command.GetCommandString());
+	args[1] = arr;
+
+	//META_CONPRINTF("Dispatch command BEGIN : %s\n", command.GetCommandString());
 	CMonoHelpers::MONO_DELEGATE_CALL(this->m_code, args);
-	META_CONPRINTF("Dispatch command END : %s\n", command.GetCommandString());
+	//META_CONPRINTF("Dispatch command END : %s\n", command.GetCommandString());
 };
 
 int CMonoCommand::AutoCompleteSuggest( const char *partial, CUtlVector< CUtlString > &commands )

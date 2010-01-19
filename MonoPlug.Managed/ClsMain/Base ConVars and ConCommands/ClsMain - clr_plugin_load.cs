@@ -3,12 +3,13 @@ using System.Collections.Generic;
 using System.Text;
 using System.Reflection;
 using System.Threading;
+using System.IO;
 
 namespace MonoPlug
 {
     partial class ClsMain
     {
-        private void clr_plugin_load(string args)
+        private void clr_plugin_load(string line, string[] arguments)
         {
             ClsPluginBase plugin = null;
             //Search if plugin is not already loaded
@@ -17,7 +18,7 @@ namespace MonoPlug
             {
                 foreach (AppDomain dom in this._plugins.Keys)
                 {
-                    if (this._plugins[dom].Name.Equals(args, StringComparison.InvariantCultureIgnoreCase))
+                    if (this._plugins[dom].Name.Equals(line, StringComparison.InvariantCultureIgnoreCase))
                     {
                         Msg("Plugin already loaded\n");
                         return;
@@ -27,40 +28,46 @@ namespace MonoPlug
                 //Plugin not loaded, searching from cache
                 foreach (PluginDefinition plug in this._pluginCache)
                 {
-                    if (plug.Name.Equals(args, StringComparison.InvariantCultureIgnoreCase))
+                    if (plug.Name.Equals(line, StringComparison.InvariantCultureIgnoreCase))
                     {
                         AppDomain dom = null;
                         try
                         {
-                            Msg("clr_plugin_load: A\n");
                             dom = AppDomain.CreateDomain(plug.Name);
-
-                            Msg("clr_plugin_load: B\n");
                             Msg("  Assembly location : {0}\n", Assembly.GetExecutingAssembly().Location);
                             Msg("  Type fullname location : {0}\n", typeof(ClsMain).FullName);
                             ClsMain main = (ClsMain)dom.CreateInstanceFromAndUnwrap(Assembly.GetExecutingAssembly().Location, typeof(ClsMain).FullName);
-                            Msg("clr_plugin_load: C\n");
                             plugin = main.Remote_CreatePlugin(this, plug);
-                            Msg("clr_plugin_load: D\n");
-                            Msg("M: Plugin inited\n");
+                            this.Msg("  Remote .ctor OK\n");
                             plugin.Init(this);
-                            Msg("clr_plugin_load: E\n");
                             Msg("Plugin '{0}' loaded\n", plug.Name);
                             this._plugins.Add(dom, plugin);
-                            Msg("clr_plugin_load: F\n");
                         }
                         catch (NullReferenceException ex)
                         {
-                            Msg("Can't load plugin '{0}' : {1}\n", args, ex.Message);
+                            Msg("Can't load plugin (NullReferenceException) '{0}' : {1}\n", line, ex.Message);
                             Msg("{0}\n", ex.StackTrace);
+                            if (dom != null)
+                                AppDomain.Unload(dom);
+                            plugin = null;
+                        }
+                        catch (FileNotFoundException ex)
+                        {
+                            this.Msg("Can't load plugin (FileNotFoundException) '{0}' : {1}\n", line, ex.Message);
+                            this.Msg("{0}\n", ex.StackTrace);
+                            this.Msg("File was : {0}\n", ex.FileName);
                             if (dom != null)
                                 AppDomain.Unload(dom);
                             plugin = null;
                         }
                         catch (Exception ex)
                         {
-                            Msg("Can't load plugin '{0}' : {1}\n", args, ex.Message);
-                            Msg("{0}\n", ex.StackTrace);
+                            while (ex != null)
+                            {
+                                this.Msg("Can't load plugin ({0}) '{1}' : {2}\n", ex.GetType().Name, line, ex.Message);
+                                this.Msg("{0}\n", ex.StackTrace);
+                                ex = ex.InnerException;
+                            }
                             if (dom != null)
                                 AppDomain.Unload(dom);
                             plugin = null;
@@ -72,11 +79,6 @@ namespace MonoPlug
             finally
             {
                 this._lckPlugins.ReleaseWriterLock();
-            }
-
-            if (plugin == null)
-            {
-                Msg("Can't find or load plugin type : {0}\n", args);
             }
         }
 

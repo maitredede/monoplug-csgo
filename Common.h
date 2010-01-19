@@ -67,4 +67,12 @@ PLUGIN_GLOBALVARS();
 	} \
 };
 
+edict_t *EdictOfUserId( int UserId );
+int UTIL_FindOffset(const char *ClassName, const char *PropertyName);
+
+inline bool FStrEq(const char *sz1, const char *sz2)
+{
+	return(stricmp(sz1, sz2) == 0);
+};
+
 #endif //_COMMON_H_
