@@ -40,6 +40,7 @@ namespace MonoPlug
 
         public ClsMain()
         {
+            NativeMethods.Mono_Msg("DBG: RelativeSearchPath=" + AppDomain.CurrentDomain.RelativeSearchPath + "\n");
         }
     }
 }
