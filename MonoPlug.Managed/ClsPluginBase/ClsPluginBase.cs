@@ -15,17 +15,17 @@ namespace MonoPlug
         internal void Init(ClsMain main)
         {
 #if DEBUG
-            main.Msg("ClsPluginBase:: Init in AppDomain '{0}'\n", AppDomain.CurrentDomain.FriendlyName);
+            main.DevMsg("ClsPluginBase:: Init in AppDomain '{0}'\n", AppDomain.CurrentDomain.FriendlyName);
             ClsMain.DumpCurrentDomainAssemblies(main);
 #endif
             this._main = main;
 #if DEBUG
-            main.Msg("ClsPluginBase:: Loading...\n");
+            main.DevMsg("ClsPluginBase:: Loading...\n");
 #endif
             this.Load();
 #if DEBUG
             ClsMain.DumpCurrentDomainAssemblies(main);
-            main.Msg("ClsPluginBase:: Loaded...\n");
+            main.DevMsg("ClsPluginBase:: Loaded...\n");
 #endif
         }
 
@@ -75,6 +75,16 @@ namespace MonoPlug
         public void Msg(string format, params object[] args)
         {
             this._main.Msg(format, args);
+        }
+
+        /// <summary>
+        /// Write a message to the developper console
+        /// </summary>
+        /// <param name="format">Message format</param>
+        /// <param name="args">Arguments of format</param>
+        public void DevMsg(string format, params object[] args)
+        {
+            this._main.DevMsg(format, args);
         }
 
         /// <summary>

@@ -39,6 +39,7 @@
     <Compile Include="Check.cs" />
     <Compile Include="ClsConvar.cs" />
     <Compile Include="ClsConvarMain.cs" />
+    <Compile Include="ClsMain\ClsMain - Debug.cs" />
     <Compile Include="ClsMain\ClsMain - Events Client Connection.cs" />
     <Compile Include="ClsMain\ClsMain - Events ConMessage.cs" />
     <Compile Include="ClsMain\ClsMain - Events LevelShutdown.cs" />
@@ -76,7 +77,6 @@
     <Compile Include="ClsPluginBase\ClsPluginBase - EVT ClientCommand.cs" />
     <Compile Include="ClsPluginBase\ClsPluginBase - EVT LevelShutdown.cs" />
     <Compile Include="ConCommandEntry.cs" />
-    <Compile Include="ConVarDelegates.cs" />
     <Compile Include="ConVarEntry.cs" />
     <Compile Include="FCVAR.cs" />
     <Compile Include="DialogMessage.cs" />

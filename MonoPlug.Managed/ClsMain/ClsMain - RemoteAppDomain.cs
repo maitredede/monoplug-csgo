@@ -16,54 +16,35 @@ namespace MonoPlug
         private AppDomain CreateAppDomain(string name, out ClsMain proxy)
         {
             AppDomainSetup setup = new AppDomainSetup();
-            setup.ApplicationBase = this.GetAssemblyDirectory();
-            //setup.ShadowCopyFiles = true.ToString();
-
-            //#if DEBUG
-            //            this.Msg("DBG: Creatin domain {0}\n", name);
-            //#endif
+            //setup.ApplicationBase = this.GetAssemblyDirectory();
+            setup.ShadowCopyFiles = true.ToString();
             AppDomain dom = AppDomain.CreateDomain(name, null, setup);
-            //#if DEBUG
-            //            this.Msg("DBG: Get assembly mscore for domain {0}\n", name);
-            //#endif
-            Assembly system = dom.Load(typeof(Assembly).Assembly.FullName);
-            //#if DEBUG
-            //            this.Msg("DBG: Get System.Reflection.Assembly type for domain {0}\n", name);
-            //#endif
-            Type asmType = system.GetType(typeof(Assembly).FullName);
-            //#if DEBUG
-            //            this.Msg("DBG: Loading MonoPlug main assembly in domain {0}\n", name);
-            //#endif
-            Assembly remoteMain = (Assembly)asmType.InvokeMember("LoadFile", BindingFlags.Public | BindingFlags.Static | BindingFlags.InvokeMethod, null, null, new object[] { Assembly.GetExecutingAssembly().Location });
+            proxy = this.RemoteCreateClass<ClsMain>(dom);
 #if DEBUG
-            this.Msg("DBG: Getting ClsMain type for domain {0}\n", name);
-#endif
-            Type TClsMain = remoteMain.GetType(typeof(ClsMain).FullName);
-#if DEBUG
-            this.Msg("DBG: Creating proxy for domain {0}\n", name);
-#endif
-            proxy = (ClsMain)TClsMain.GetConstructor(Type.EmptyTypes).Invoke(null);
-            //proxy = (ClsMain)dom.CreateInstanceAndUnwrap(Assembly.GetExecutingAssembly().Location, typeof(ClsMain).FullName);
-#if DEBUG
-            this.Msg("DBG: Created proxy for domain {0}\n", name);
+            this.DevMsg("DBG: Fully created domain and proxy for domain '{0}'\n", name);
 #endif
             return dom;
         }
 
-        //private ClsMain _remote_owner;
+        private T RemoteCreateClass<T>(AppDomain dom) where T : class
+        {
+            return this.RemoteCreateClass<T>(dom, typeof(T).FullName);
+        }
+        private T RemoteCreateClass<T>(AppDomain dom, string typeName) where T : class
+        {
+            Assembly system = dom.Load(typeof(Assembly).Assembly.FullName);
+            Type assemblyType = system.GetType(typeof(Assembly).FullName);
+            Assembly remoteAssembly = (Assembly)assemblyType.InvokeMember("LoadFile", BindingFlags.Public | BindingFlags.Static | BindingFlags.InvokeMethod, null, null, new object[] { typeof(T).Assembly.Location });
+            Type remoteType = remoteAssembly.GetType(typeName);
+            T item = (T)remoteType.GetConstructor(Type.EmptyTypes).Invoke(null);
+            return item;
+        }
 
         private ClsPluginBase Remote_CreatePlugin(ClsMain owner, PluginDefinition desc)
         {
-            //this._remote_owner = owner;
             try
             {
-                this.Msg("DBG:RM: Loading file {0}\n", desc.File);
-                Assembly asm = Assembly.LoadFile(desc.File);
-#if DEBUG
-                DumpCurrentDomainAssemblies(owner);
-#endif
-                Type t = asm.GetType(desc.Type, true);
-                ClsPluginBase plugin = (ClsPluginBase)t.GetConstructor(Type.EmptyTypes).Invoke(null);
+                ClsPluginBase plugin = this.RemoteCreateClass<ClsPluginBase>(AppDomain.CurrentDomain, desc.Type);
                 return plugin;
             }
             catch (Exception ex)
@@ -74,26 +55,15 @@ namespace MonoPlug
             }
         }
 
-        //private void CurrentDomain_AssemblyLoad(object sender, AssemblyLoadEventArgs args)
-        //{
-        //    Console.WriteLine("RM: AssemblyLoad({0}) {1}", AppDomain.CurrentDomain.FriendlyName, args.LoadedAssembly.FullName);
-        //}
-
-        //private Assembly CurrentDomain_AssemblyResolve(object sender, ResolveEventArgs args)
-        //{
-        //    Console.WriteLine("RM: AssemblyResolve({0}) {1}", AppDomain.CurrentDomain.FriendlyName, args.Name);
-        //    return Assembly.Load(args.Name);
-        //}
-
         internal static void DumpCurrentDomainAssemblies(ClsMain main)
         {
             Assembly[] arr = AppDomain.CurrentDomain.GetAssemblies();
-            main.Msg("DumpCurrentDomainAssemblies : {0} loaded\n", arr.Length);
+            main.DevMsg("DumpCurrentDomainAssemblies : {0} loaded\n", arr.Length);
             for (int i = 0; i < arr.Length; i++)
             {
-                main.Msg("  {0} :: {1}\n", arr[i].FullName, arr[i].Location);
+                main.DevMsg("  {0} :: {1}\n", arr[i].FullName, arr[i].Location);
             }
-            main.Msg("DumpCurrentDomainAssemblies : End\n");
+            main.DevMsg("DumpCurrentDomainAssemblies : End\n");
         }
 
         private PluginDefinition[] Remote_GetPluginsFromDirectory(ClsMain owner, string path)
@@ -118,7 +88,7 @@ namespace MonoPlug
                                 {
                                     ClsPluginBase plugin = (ClsPluginBase)ctor.Invoke(null);
                                     PluginDefinition definition = new PluginDefinition();
-                                    definition.File = filename;
+                                    definition.File = Path.GetFileName(filename);
                                     definition.Name = plugin.Name;
                                     definition.Type = plugin.GetType().FullName;
                                     definition.Description = plugin.Description;
@@ -126,15 +96,21 @@ namespace MonoPlug
                                 }
                             }
                         }
-                        catch//(Exception ex)
+                        catch (Exception ex)
                         {
                             owner.Msg("Can't create type : {0}\n", t.FullName);
+#if DEBUG
+                            owner.Msg(ex);
+#endif
                         }
                     }
                 }
-                catch //(Exception ex)
+                catch (Exception ex)
                 {
                     owner.Msg("Can't load file : {0}\n", file);
+#if DEBUG
+                    owner.Msg(ex);
+#endif
                 }
             }
             return lst.ToArray();

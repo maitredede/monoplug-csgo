@@ -11,11 +11,13 @@ namespace MonoPlug
         {
             if (this._pluginCache == null)
                 this._pluginCache = new PluginDefinition[] { };
-            this.Msg("Available : {0} plugins\n", this._pluginCache.Length);
+            this.Msg("Assembly path : {0}\n", this.GetAssemblyDirectory());
+            this.Msg("Available     : {0} plugins\n", this._pluginCache.Length);
             foreach (PluginDefinition desc in this._pluginCache)
             {
                 this.Msg("  {0}\n", desc);
             }
+
             this._lckPlugins.AcquireReaderLock(Timeout.Infinite);
             try
             {

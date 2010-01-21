@@ -32,9 +32,7 @@ namespace MonoPlug
             }
             catch (Exception ex)
             {
-                Msg(ex.GetType().FullName + "\n");
-                Msg(ex.Message + "\n");
-                Msg(ex.StackTrace + "\n");
+                this.Msg(ex);
             }
 
             //Remove internals

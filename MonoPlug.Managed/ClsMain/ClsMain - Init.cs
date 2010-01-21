@@ -15,28 +15,13 @@ namespace MonoPlug
             this._mainThread = System.Threading.Thread.CurrentThread;
 
 #if DEBUG
-            this.Msg("DBG: ClsMain::Init (enter)\n");
+            this.DevMsg("DBG: ClsMain::Init (enter)\n");
             try
             {
 #endif
                 //Register base commands and vars
                 this._clr_mono_version = this.RegisterConvar(null, "clr_mono_version", "Get current Mono runtime version", FCVAR.FCVAR_SPONLY | FCVAR.FCVAR_CHEAT | FCVAR.FCVAR_PRINTABLEONLY, this.MonoVersion);
                 this._clr_plugin_directory = this.RegisterConvar(null, "clr_plugin_directory", "Assembly plugin search path", FCVAR.FCVAR_SPONLY | FCVAR.FCVAR_CHEAT | FCVAR.FCVAR_PRINTABLEONLY, this.GetAssemblyDirectory());
-                //#if DEBUG
-                //                object o = null;
-                //                Console.WriteLine(o.ToString());
-                //#endif
-
-                //Refresh plugin cache
-                this.clr_plugin_refresh(string.Empty, null);
-
-#if DEBUG
-                this.Msg("DBG: ClsMain::Init (A)\n");
-#endif
-
-#if DEBUG
-                this.Msg("DBG: ClsMain::Init (B)\n");
-#endif
 
                 this._clr_plugin_list = this.RegisterConCommand(null, "clr_plugin_list", "List available plugins and loaded plugins", this.clr_plugin_list, FCVAR.FCVAR_NONE, null);
                 this._clr_plugin_refresh = this.RegisterConCommand(null, "clr_plugin_refresh", "Refresh internal list of plugins", this.clr_plugin_refresh, FCVAR.FCVAR_NONE, null);
@@ -45,27 +30,21 @@ namespace MonoPlug
 #if DEBUG
                 this._clr_test = this.RegisterConCommand(null, "clr_test", "for developpement purposes only", this.clr_test, FCVAR.FCVAR_NONE, null);
 #endif
-                this.Msg("DBG: ClsMain::Init (C)\n");
+                //Refresh plugin cache
+                this.clr_plugin_refresh(string.Empty, null);
+
+                this.DevMsg("DBG: ClsMain::Init (C)\n");
                 return true;
 #if DEBUG
             }
-            catch (NullReferenceException ex)
-            {
-                this.Msg("NRE : {0}\n", ex.GetType().FullName);
-                this.Msg("NRE : {0}\n", ex.Message);
-                this.Msg("NRE : {0}\n", ex.StackTrace);
-                return true;
-            }
             catch (Exception ex)
             {
-                Console.WriteLine(ex.GetType().FullName);
-                Console.WriteLine(ex.Message);
-                Console.WriteLine(ex.StackTrace);
+                this.Msg(ex);
                 return false;
             }
             finally
             {
-                this.Msg("DBG: ClsMain::Init (exit)\n");
+                this.DevMsg("DBG: ClsMain::Init (exit)\n");
             }
 #endif
         }

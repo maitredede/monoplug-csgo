@@ -20,13 +20,8 @@ namespace MonoPlug
             }
             catch (Exception ex)
             {
-                while (ex != null)
-                {
-                    this.Msg("Plugin unload error : {0}\n", ex.GetType().FullName);
-                    this.Msg("Plugin unload error : {0}\n", ex.Message);
-                    this.Msg("Plugin unload error : {0}\n", ex.StackTrace);
-                    ex = ex.InnerException;
-                }
+                this.Msg("Plugin UnInit() error\n");
+                this.Msg(ex);
             }
 
             //Clean commands
@@ -50,13 +45,8 @@ namespace MonoPlug
             }
             catch (Exception ex)
             {
-                while (ex != null)
-                {
-                    this.Msg("Plugin unload error : {0}\n", ex.GetType().FullName);
-                    this.Msg("Plugin unload error : {0}\n", ex.Message);
-                    this.Msg("Plugin unload error : {0}\n", ex.StackTrace);
-                    ex = ex.InnerException;
-                }
+                this.Msg("Plugin ConCommandClean error\n");
+                this.Msg(ex);
             }
 
             //Clean convars
@@ -79,10 +69,10 @@ namespace MonoPlug
 
         private void clr_plugin_unload(string line, string[] arguments)
         {
-            NativeMethods.Mono_Msg("M: clr_plugin_unload 0\n");
+            NativeMethods.Mono_DevMsg("M: clr_plugin_unload 0\n");
             try
             {
-                NativeMethods.Mono_Msg("M: clr_plugin_unload A\n");
+                this.DevMsg("M: clr_plugin_unload A\n");
                 //Find if plugin is loaded
                 bool found = false;
                 this._lckPlugins.AcquireWriterLock(Timeout.Infinite);
@@ -90,25 +80,25 @@ namespace MonoPlug
                 {
                     foreach (AppDomain dom in this._plugins.Keys)
                     {
-                        NativeMethods.Mono_Msg("M: clr_plugin_unload B\n");
+                        this.DevMsg("M: clr_plugin_unload B\n");
                         ClsPluginBase plugin = this._plugins[dom];
-                        Msg("M: clr_plugin_unload C {0}\n", plugin.Name);
+                        this.DevMsg("M: clr_plugin_unload C {0}\n", plugin.Name);
                         if (plugin.Name.Equals(line, StringComparison.InvariantCultureIgnoreCase))
                         {
                             found = true;
-                            NativeMethods.Mono_Msg("M: clr_plugin_unload D\n");
+                            this.DevMsg("M: clr_plugin_unload D\n");
 
                             this.UnloadPlugin(dom, plugin);
 
-                            NativeMethods.Mono_Msg("M: clr_plugin_unload I\n");
+                            this.DevMsg("M: clr_plugin_unload I\n");
                             //Clean plugin
                             string plugname = plugin.Name;
                             this._plugins.Remove(dom);
-                            NativeMethods.Mono_Msg("M: clr_plugin_unload J\n");
+                            this.DevMsg("M: clr_plugin_unload J\n");
                             this._plugins.Remove(dom);
                             AppDomain.Unload(dom);
 
-                            Msg("Plugin '{0}' unloaded\n", plugname);
+                            this.Msg("Plugin '{0}' unloaded\n", plugname);
                             break;
                         }
                     }
@@ -119,18 +109,12 @@ namespace MonoPlug
                 }
                 if (!found)
                 {
-                    Msg("Plugin '{0}' not found or loaded\n", line);
+                    this.Msg("Plugin '{0}' not found or loaded\n", line);
                 }
             }
             catch (Exception ex)
             {
-                while (ex != null)
-                {
-                    this.Msg(ex.GetType().FullName + "\n");
-                    this.Msg(ex.Message + "\n");
-                    this.Msg(ex.StackTrace + "\n");
-                    ex = ex.InnerException;
-                }
+                this.Msg(ex);
             }
         }
     }

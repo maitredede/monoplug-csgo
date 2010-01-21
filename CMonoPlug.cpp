@@ -112,6 +112,7 @@ bool CMonoPlug::Load(PluginId id, ISmmAPI *ismm, char *error, size_t maxlen, boo
 
 	mono_add_internal_call ("MonoPlug.NativeMethods::Mono_Msg", (const void*)Mono_Msg);
 	mono_add_internal_call ("MonoPlug.NativeMethods::Mono_Log", (const void*)Mono_Log);
+	mono_add_internal_call ("MonoPlug.NativeMethods::Mono_DevMsg", (const void*)Mono_DevMsg);
 	mono_add_internal_call ("MonoPlug.NativeMethods::Mono_RegisterConvar", (const void*)Mono_RegisterConvar);
 	mono_add_internal_call ("MonoPlug.NativeMethods::Mono_UnregisterConvar", (const void*)Mono_UnregisterConvar);
 	mono_add_internal_call ("MonoPlug.NativeMethods::Mono_Convar_GetString", (const void*)Mono_Convar_GetString);

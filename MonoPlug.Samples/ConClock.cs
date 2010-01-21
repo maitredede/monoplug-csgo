@@ -22,13 +22,13 @@ namespace MonoPlug
 
         protected override void Load()
         {
-            this.Msg("ConClock:{0}\n", "A");
+            this.DevMsg("ConClock:{0}\n", "A");
             this._theTime = this.RegisterConvar("clr_sample_thetime", "Sample convar containing the time", FCVAR.FCVAR_SPONLY | FCVAR.FCVAR_PRINTABLEONLY, DateTime.MinValue.ToLongTimeString());
-            this.Msg("ConClock:{0}\n", "B");
+            this.DevMsg("ConClock:{0}\n", "B");
             this._enabled = this.RegisterConvar("clr_sample_thetime_enabled", "Enable or disable the ConClock plugin", FCVAR.FCVAR_NONE, "0");
-            this.Msg("ConClock:{0}\n", "C");
+            this.DevMsg("ConClock:{0}\n", "C");
             this._enabled.ValueChanged += this._enabled_ValueChanged;
-            this.Msg("ConClock:{0}\n", "D");
+            this.DevMsg("ConClock:{0}\n", "D");
         }
 
         private void _enabled_ValueChanged(object sender, EventArgs e)

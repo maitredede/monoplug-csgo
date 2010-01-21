@@ -47,22 +47,22 @@ namespace MonoPlug
         internal void ConvarChanged(UInt64 nativeID)
         {
 #if DEBUG
-            NativeMethods.Mono_Msg(string.Format("ConvarChanged({0}) A", nativeID));
+            NativeMethods.Mono_DevMsg(string.Format("ConvarChanged({0}) A", nativeID));
 #endif
             lock (this._convars)
             {
-                NativeMethods.Mono_Msg(string.Format("ConvarChanged({0}) B", nativeID));
+                NativeMethods.Mono_DevMsg(string.Format("ConvarChanged({0}) B", nativeID));
                 if (this._convars.ContainsKey(nativeID))
                 {
-                    NativeMethods.Mono_Msg(string.Format("ConvarChanged({0}) C", nativeID));
+                    NativeMethods.Mono_DevMsg(string.Format("ConvarChanged({0}) C", nativeID));
                     ConVarEntry entry = this._convars[nativeID];
-                    NativeMethods.Mono_Msg(string.Format("ConvarChanged({0}) D", nativeID));
+                    NativeMethods.Mono_DevMsg(string.Format("ConvarChanged({0}) D", nativeID));
                     ThreadPool.QueueUserWorkItem(this.ConvarChangedRaise, entry);
-                    NativeMethods.Mono_Msg(string.Format("ConvarChanged({0}) E", nativeID));
+                    NativeMethods.Mono_DevMsg(string.Format("ConvarChanged({0}) E", nativeID));
                 }
             }
 
-            NativeMethods.Mono_Msg(string.Format("ConvarChanged({0}) F", nativeID));
+            NativeMethods.Mono_DevMsg(string.Format("ConvarChanged({0}) F", nativeID));
         }
 
         private void ConvarChangedRaise(object state)

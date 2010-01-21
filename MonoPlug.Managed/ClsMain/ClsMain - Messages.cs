@@ -7,6 +7,21 @@ namespace MonoPlug
 {
     partial class ClsMain
     {
+        internal void Msg(Exception ex)
+        {
+            while (ex != null)
+            {
+                this.Msg("-- {0} --\n", ex.GetType().FullName);
+                this.Msg("{0}\n", ex.Message);
+                this.Msg("{0}\n", ex.StackTrace);
+                ex = ex.InnerException;
+                if (ex == null)
+                {
+                    this.Msg("---------------");
+                }
+            }
+        }
+
         internal void Msg(string format, params object[] vals)
         {
             string msg;

@@ -11,6 +11,8 @@ namespace MonoPlug
         internal static extern void Mono_Msg(string msg);
         [MethodImpl(MethodImplOptions.InternalCall)]
         internal static extern void Mono_Log(string msg);
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        internal static extern void Mono_DevMsg(string msg);
 
         [MethodImpl(MethodImplOptions.InternalCall)]
         internal static extern UInt64 Mono_RegisterConvar(string name, string description, int flags, string defaultValue);
@@ -47,12 +49,5 @@ namespace MonoPlug
 
         [MethodImpl(MethodImplOptions.InternalCall)]
         internal static extern void Mono_ClientDialogMessage(int client, string title, string message, int a, int r, int g, int b, int level, int time);
-
-        [MethodImpl(MethodImplOptions.InternalCall)]
-        [Obsolete("To be removed", true)]
-        internal static extern string Mono_GetConVarStringValue(UInt64 nativeId);
-        [MethodImpl(MethodImplOptions.InternalCall)]
-        [Obsolete("To be removed", true)]
-        internal static extern void Mono_SetConVarStringValue(UInt64 nativeId, string value);
     }
 }

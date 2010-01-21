@@ -14,8 +14,6 @@ namespace MonoPlug
             try
             {
                 string path = this.GetAssemblyDirectory();
-                this.Msg("CLR: Assembly path is : {0}\n", path);
-
                 //Create another domain to gather plugin data
                 ClsMain proxy;
                 dom = this.CreateAppDomain(typeof(ClsMain).FullName, out proxy);
@@ -24,13 +22,7 @@ namespace MonoPlug
             catch (Exception ex)
             {
                 this._pluginCache = new PluginDefinition[] { };
-                while (ex != null)
-                {
-                    this.Msg("GetPlugins Error : {0}\n", ex.GetType().FullName);
-                    this.Msg("GetPlugins Error : {0}\n", ex.Message);
-                    this.Msg("GetPlugins Error : {0}\n", ex.StackTrace);
-                    ex = ex.InnerException;
-                }
+                this.Msg(ex);
             }
             finally
             {

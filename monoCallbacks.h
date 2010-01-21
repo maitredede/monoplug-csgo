@@ -7,6 +7,8 @@
 
 void Mono_Msg(MonoString*);
 void Mono_Log(MonoString*);
+void Mono_DevMsg(MonoString* msg);
+
 uint64 Mono_RegisterConvar(MonoString* name, MonoString* help, int flags, MonoString* defaultValue);
 bool Mono_UnregisterConvar(uint64 nativeID);
 
