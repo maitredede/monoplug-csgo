@@ -15,17 +15,10 @@ namespace MonoPlug
 
         private AppDomain CreateAppDomain(string name, out ClsMain proxy)
         {
-            //AppDomainSetup setup = new AppDomainSetup();
-            //setup.DisallowCodeDownload = true;
-            //setup.ShadowCopyFiles = true.ToString();
-            //AppDomain dom = AppDomain.CreateDomain(name, null, this.GetAssemblyDirectory(), string.Empty, true, null, null);
             AppDomain dom = AppDomain.CreateDomain(name);
 #if DEBUG
             this.Msg("DBG: Created domain {0}\n", name);
 #endif
-            //dom.AssemblyLoad += this.CurrentDomain_AssemblyLoad;
-            //dom.AssemblyResolve += this.CurrentDomain_AssemblyResolve;
-
 #if DEBUG
             this.Msg("DBG: Creating proxy for domain {0}\n", name);
 #endif
@@ -36,19 +29,18 @@ namespace MonoPlug
             return dom;
         }
 
-        private ClsMain _remote_owner;
+        //private ClsMain _remote_owner;
 
         private ClsPluginBase Remote_CreatePlugin(ClsMain owner, PluginDefinition desc)
         {
-            this._remote_owner = owner;
+            //this._remote_owner = owner;
             try
             {
-                //DumpCurrentDomainAssemblies(owner);
-
-                //AppDomain.CurrentDomain.AssemblyResolve += this.CurrentDomain_AssemblyResolve;
-                //AppDomain.CurrentDomain.AssemblyLoad += this.CurrentDomain_AssemblyLoad;
-
+                this.Msg("DBG:RM: Loading file {0}\n", desc.File);
                 Assembly asm = Assembly.LoadFile(desc.File);
+#if DEBUG
+                DumpCurrentDomainAssemblies(owner);
+#endif
                 Type t = asm.GetType(desc.Type, true);
                 ClsPluginBase plugin = (ClsPluginBase)t.GetConstructor(Type.EmptyTypes).Invoke(null);
                 return plugin;
@@ -61,16 +53,16 @@ namespace MonoPlug
             }
         }
 
-        private void CurrentDomain_AssemblyLoad(object sender, AssemblyLoadEventArgs args)
-        {
-            Console.WriteLine("RM: AssemblyLoad({0}) {1}", AppDomain.CurrentDomain.FriendlyName, args.LoadedAssembly.FullName);
-        }
+        //private void CurrentDomain_AssemblyLoad(object sender, AssemblyLoadEventArgs args)
+        //{
+        //    Console.WriteLine("RM: AssemblyLoad({0}) {1}", AppDomain.CurrentDomain.FriendlyName, args.LoadedAssembly.FullName);
+        //}
 
-        private Assembly CurrentDomain_AssemblyResolve(object sender, ResolveEventArgs args)
-        {
-            Console.WriteLine("RM: AssemblyResolve({0}) {1}", AppDomain.CurrentDomain.FriendlyName, args.Name);
-            return Assembly.Load(args.Name);
-        }
+        //private Assembly CurrentDomain_AssemblyResolve(object sender, ResolveEventArgs args)
+        //{
+        //    Console.WriteLine("RM: AssemblyResolve({0}) {1}", AppDomain.CurrentDomain.FriendlyName, args.Name);
+        //    return Assembly.Load(args.Name);
+        //}
 
         internal static void DumpCurrentDomainAssemblies(ClsMain main)
         {

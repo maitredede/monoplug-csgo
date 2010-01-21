@@ -40,8 +40,6 @@ namespace MonoPlug
 
         public ClsMain()
         {
-            //AppDomain.CurrentDomain.AssemblyLoad += this.CurrentDomain_AssemblyLoad;
-            //AppDomain.CurrentDomain.AssemblyResolve += this.CurrentDomain_AssemblyResolve;
         }
     }
 }
