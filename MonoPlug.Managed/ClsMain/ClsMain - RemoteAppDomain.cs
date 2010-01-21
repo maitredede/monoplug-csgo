@@ -50,7 +50,6 @@ namespace MonoPlug
 #if DEBUG
                 this.DevMsg("  RemoteCreateClass C in [{0}] for [{1}]...\n", AppDomain.CurrentDomain.FriendlyName, dom.FriendlyName);
 #endif
-                dom.CreateInstanceFromAndUnwrap
                 T item = (T)dom.CreateInstanceAndUnwrap(remoteAssembly.FullName, typeName);
 
 #if DEBUG
