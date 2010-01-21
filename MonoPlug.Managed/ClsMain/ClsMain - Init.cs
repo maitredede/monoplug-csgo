@@ -19,6 +19,9 @@ namespace MonoPlug
             try
             {
 #endif
+                //Register base commands and vars
+                this._clr_mono_version = this.RegisterConvar(null, "clr_mono_version", "Get current Mono runtime version", FCVAR.FCVAR_SPONLY | FCVAR.FCVAR_CHEAT | FCVAR.FCVAR_PRINTABLEONLY, this.MonoVersion);
+                this._clr_plugin_directory = this.RegisterConvar(null, "clr_plugin_directory", "Assembly plugin search path", FCVAR.FCVAR_SPONLY | FCVAR.FCVAR_CHEAT | FCVAR.FCVAR_PRINTABLEONLY, this.GetAssemblyDirectory());
 #if DEBUG
                 object o = null;
                 Console.WriteLine(o.ToString());
@@ -30,9 +33,6 @@ namespace MonoPlug
 #if DEBUG
                 this.Msg("DBG: ClsMain::Init (A)\n");
 #endif
-                //Register base commands and vars
-                this._clr_mono_version = this.RegisterConvar(null, "clr_mono_version", "Get current Mono runtime version", FCVAR.FCVAR_SPONLY | FCVAR.FCVAR_CHEAT | FCVAR.FCVAR_PRINTABLEONLY, this.MonoVersion);
-                this._clr_plugin_directory = this.RegisterConvar(null, "clr_plugin_directory", "Assembly plugin search path", FCVAR.FCVAR_SPONLY | FCVAR.FCVAR_CHEAT | FCVAR.FCVAR_PRINTABLEONLY, this.GetAssemblyDirectory());
 
 #if DEBUG
                 this.Msg("DBG: ClsMain::Init (B)\n");
@@ -51,9 +51,9 @@ namespace MonoPlug
             }
             catch (NullReferenceException ex)
             {
-                this.Msg(ex.GetType().FullName);
-                this.Msg(ex.Message);
-                this.Msg(ex.StackTrace);
+                this.Msg("NRE : {0}\n", ex.GetType().FullName);
+                this.Msg("NRE : {0}\n", ex.Message);
+                this.Msg("NRE : {0}\n", ex.StackTrace);
                 return true;
             }
             catch (Exception ex)
