@@ -14,7 +14,7 @@ namespace MonoPlug
 #if DEBUG
             try
             {
-                this.DevMsg("DBG: Entering '{0}'...\n", "clr_plugin_load");
+                this.DevMsg("DBG: Entering '{0}' in domain [{1}]...\n", "clr_plugin_load", AppDomain.CurrentDomain.FriendlyName);
 #endif
                 ClsPluginBase plugin = null;
                 //Search if plugin is not already loaded
@@ -41,7 +41,7 @@ namespace MonoPlug
                                 ClsMain remoteProxy;
                                 dom = this.CreateAppDomain(pluginDef.Name, out remoteProxy);
 #if DEBUG
-                                this.DevMsg("DBG: Calling Remote_CreatePlugin()...\n");
+                                this.DevMsg("DBG: Calling Remote_CreatePlugin() for domain [{0}]...\n", dom.FriendlyName);
 #endif
                                 plugin = remoteProxy.Remote_CreatePlugin(this, pluginDef);
 #if DEBUG

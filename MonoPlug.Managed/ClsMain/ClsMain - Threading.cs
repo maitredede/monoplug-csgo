@@ -60,6 +60,10 @@ namespace MonoPlug
                 NativeMethods.Mono_DevMsg("ITH: DirectCall\n");
                 return d.Invoke(parameter);
             }
+            else
+            {
+                Console.WriteLine("ITH: dom={0} cur={1} main={2}\n", AppDomain.CurrentDomain.FriendlyName, Thread.CurrentThread, this._mainThread);
+            }
 
             using (ClsThreadItem item = new ClsThreadItem(d, parameter))
             {

@@ -55,7 +55,7 @@ namespace MonoPlug
         private ClsPluginBase Remote_CreatePlugin(ClsMain owner, PluginDefinition desc)
         {
 #if DEBUG
-            owner.DevMsg("DBG: Entering Remote_CreatePlugin for domain '{0}'...\n", AppDomain.CurrentDomain.FriendlyName);
+            owner.DevMsg("DBG: Entering Remote_CreatePlugin in domain '{0}'...\n", AppDomain.CurrentDomain.FriendlyName);
 #endif
             try
             {
