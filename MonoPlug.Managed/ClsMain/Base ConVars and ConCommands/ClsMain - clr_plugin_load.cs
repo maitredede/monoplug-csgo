@@ -41,7 +41,7 @@ namespace MonoPlug
                                 ClsMain remoteProxy;
                                 dom = this.CreateAppDomain(pluginDef.Name, out remoteProxy);
 #if DEBUG
-                                this.DevMsg("DBG: Calling Remote_CreatePlugin() for domain [{0}]...\n", dom.FriendlyName);
+                                this.DevMsg("DBG: Calling Remote_CreatePlugin() in [{0}] for [{1}]...\n", AppDomain.CurrentDomain, dom.FriendlyName);
 #endif
                                 plugin = remoteProxy.Remote_CreatePlugin(this, pluginDef);
 #if DEBUG

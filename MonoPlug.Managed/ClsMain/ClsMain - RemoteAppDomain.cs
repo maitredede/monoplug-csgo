@@ -33,21 +33,24 @@ namespace MonoPlug
         private T RemoteCreateClass<T>(AppDomain dom, string typeName) where T : class
         {
 #if DEBUG
-            this.DevMsg("    Entering RemoteCreateClass...\n");
+            this.DevMsg("Entering RemoteCreateClass in [{0}] for [{1}]...\n", AppDomain.CurrentDomain.FriendlyName, dom.FriendlyName);
             try
             {
 #endif
-                Assembly system = dom.Load(typeof(Assembly).Assembly.FullName);
-                Type assemblyType = system.GetType(typeof(Assembly).FullName);
-                Assembly remoteAssembly = (Assembly)assemblyType.InvokeMember("LoadFile", BindingFlags.Public | BindingFlags.Static | BindingFlags.InvokeMethod, null, null, new object[] { typeof(T).Assembly.Location });
-                Type remoteType = remoteAssembly.GetType(typeName);
-                T item = (T)remoteType.GetConstructor(Type.EmptyTypes).Invoke(null);
+                Assembly remoteSystemAssemnly = dom.Load(typeof(Assembly).Assembly.FullName);
+                Type remoteAssemblyType = remoteSystemAssemnly.GetType(typeof(Assembly).FullName);
+                Assembly remoteAssembly = (Assembly)remoteAssemblyType.InvokeMember("LoadFile", BindingFlags.Public | BindingFlags.Static | BindingFlags.InvokeMethod, null, null, new object[] { typeof(T).Assembly.Location });
+                //Type remoteType = remoteAssembly.GetType(typeName);
+
+                T item = (T)dom.CreateInstanceAndUnwrap(remoteAssembly.FullName, typeName);
+
+                //T item = (T)remoteType.GetConstructor(Type.EmptyTypes).Invoke(null);
                 return item;
 #if DEBUG
             }
             finally
             {
-                this.DevMsg("    Exiting RemoteCreateClass...\n");
+                this.DevMsg("Exiting RemoteCreateClass...\n");
             }
 #endif
         }
@@ -55,7 +58,7 @@ namespace MonoPlug
         private ClsPluginBase Remote_CreatePlugin(ClsMain owner, PluginDefinition desc)
         {
 #if DEBUG
-            owner.DevMsg("DBG: Entering Remote_CreatePlugin in domain '{0}'...\n", AppDomain.CurrentDomain.FriendlyName);
+            owner.DevMsg("DBG: Entering Remote_CreatePlugin in [{0}]...\n", AppDomain.CurrentDomain.FriendlyName);
 #endif
             try
             {
