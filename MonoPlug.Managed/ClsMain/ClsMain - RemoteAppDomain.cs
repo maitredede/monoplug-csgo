@@ -32,27 +32,51 @@ namespace MonoPlug
         }
         private T RemoteCreateClass<T>(AppDomain dom, string typeName) where T : class
         {
-            Assembly system = dom.Load(typeof(Assembly).Assembly.FullName);
-            Type assemblyType = system.GetType(typeof(Assembly).FullName);
-            Assembly remoteAssembly = (Assembly)assemblyType.InvokeMember("LoadFile", BindingFlags.Public | BindingFlags.Static | BindingFlags.InvokeMethod, null, null, new object[] { typeof(T).Assembly.Location });
-            Type remoteType = remoteAssembly.GetType(typeName);
-            T item = (T)remoteType.GetConstructor(Type.EmptyTypes).Invoke(null);
-            return item;
+#if DEBUG
+            try
+            {
+                this.DevMsg("    Entering RemoteCreateClass...");
+#endif
+                Assembly system = dom.Load(typeof(Assembly).Assembly.FullName);
+                Type assemblyType = system.GetType(typeof(Assembly).FullName);
+                Assembly remoteAssembly = (Assembly)assemblyType.InvokeMember("LoadFile", BindingFlags.Public | BindingFlags.Static | BindingFlags.InvokeMethod, null, null, new object[] { typeof(T).Assembly.Location });
+                Type remoteType = remoteAssembly.GetType(typeName);
+                T item = (T)remoteType.GetConstructor(Type.EmptyTypes).Invoke(null);
+                return item;
+#if DEBUG
+            }
+            finally
+            {
+                this.DevMsg("    Exiting RemoteCreateClass...");
+            }
+#endif
         }
 
         private ClsPluginBase Remote_CreatePlugin(ClsMain owner, PluginDefinition desc)
         {
+#if DEBUG
             try
             {
-                ClsPluginBase plugin = this.RemoteCreateClass<ClsPluginBase>(AppDomain.CurrentDomain, desc.Type);
-                return plugin;
+                this.DevMsg("DBG: Entering Remote_CreatePlugin...");
+#endif
+                try
+                {
+                    ClsPluginBase plugin = this.RemoteCreateClass<ClsPluginBase>(AppDomain.CurrentDomain, desc.Type);
+                    return plugin;
+                }
+                catch (Exception ex)
+                {
+                    owner.Msg("RM: Plugin error : {0}, {1}\n", ex.GetType().FullName, ex.Message);
+                    owner.Msg(ex.StackTrace);
+                    throw ex;
+                }
+#if DEBUG
             }
-            catch (Exception ex)
+            finally
             {
-                owner.Msg("RM: Plugin error : {0}, {1}\n", ex.GetType().FullName, ex.Message);
-                owner.Msg(ex.StackTrace);
-                throw ex;
+                this.DevMsg("DBG: Exiting Remote_CreatePlugin...");
             }
+#endif
         }
 
         internal static void DumpCurrentDomainAssemblies(ClsMain main)
