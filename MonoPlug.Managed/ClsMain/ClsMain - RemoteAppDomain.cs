@@ -39,13 +39,23 @@ namespace MonoPlug
             {
 #endif
                 Assembly remoteSystemAssemnly = dom.Load(typeof(Assembly).Assembly.FullName);
+#if DEBUG
+                this.DevMsg("  RemoteCreateClass A in [{0}] for [{1}]...\n", AppDomain.CurrentDomain.FriendlyName, dom.FriendlyName);
+#endif
                 Type remoteAssemblyType = remoteSystemAssemnly.GetType(typeof(Assembly).FullName);
+#if DEBUG
+                this.DevMsg("  RemoteCreateClass B in [{0}] for [{1}]...\n", AppDomain.CurrentDomain.FriendlyName, dom.FriendlyName);
+#endif
                 Assembly remoteAssembly = (Assembly)remoteAssemblyType.InvokeMember("LoadFile", BindingFlags.Public | BindingFlags.Static | BindingFlags.InvokeMethod, null, null, new object[] { typeof(T).Assembly.Location });
-                //Type remoteType = remoteAssembly.GetType(typeName);
-
+#if DEBUG
+                this.DevMsg("  RemoteCreateClass C in [{0}] for [{1}]...\n", AppDomain.CurrentDomain.FriendlyName, dom.FriendlyName);
+#endif
+                dom.CreateInstanceFromAndUnwrap
                 T item = (T)dom.CreateInstanceAndUnwrap(remoteAssembly.FullName, typeName);
 
-                //T item = (T)remoteType.GetConstructor(Type.EmptyTypes).Invoke(null);
+#if DEBUG
+                this.DevMsg("  RemoteCreateClass OK in [{0}] for [{1}]...\n", AppDomain.CurrentDomain.FriendlyName, dom.FriendlyName);
+#endif
                 return item;
 #if DEBUG
             }
