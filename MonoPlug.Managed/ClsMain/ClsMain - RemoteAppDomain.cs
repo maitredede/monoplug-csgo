@@ -34,7 +34,7 @@ namespace MonoPlug
 #if DEBUG
             this.Msg("DBG: Loading MonoPlug main assembly in domain {0}\n", name);
 #endif
-            Assembly remoteMain = (Assembly)asmType.InvokeMember("LoadFile", BindingFlags.Public | BindingFlags.Static, null, null, new object[] { Assembly.GetExecutingAssembly().Location });
+            Assembly remoteMain = (Assembly)asmType.InvokeMember("LoadFile", BindingFlags.Public | BindingFlags.Static | BindingFlags.InvokeMethod, null, null, new object[] { Assembly.GetExecutingAssembly().Location });
 #if DEBUG
             this.Msg("DBG: Creating proxy for domain {0}\n", name);
 #endif
