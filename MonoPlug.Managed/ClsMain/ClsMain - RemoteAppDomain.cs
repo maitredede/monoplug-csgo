@@ -33,9 +33,9 @@ namespace MonoPlug
         private T RemoteCreateClass<T>(AppDomain dom, string typeName) where T : class
         {
 #if DEBUG
+            this.DevMsg("    Entering RemoteCreateClass...\n");
             try
             {
-                this.DevMsg("    Entering RemoteCreateClass...");
 #endif
                 Assembly system = dom.Load(typeof(Assembly).Assembly.FullName);
                 Type assemblyType = system.GetType(typeof(Assembly).FullName);
@@ -47,7 +47,7 @@ namespace MonoPlug
             }
             finally
             {
-                this.DevMsg("    Exiting RemoteCreateClass...");
+                this.DevMsg("    Exiting RemoteCreateClass...\n");
             }
 #endif
         }
@@ -55,26 +55,23 @@ namespace MonoPlug
         private ClsPluginBase Remote_CreatePlugin(ClsMain owner, PluginDefinition desc)
         {
 #if DEBUG
+            owner.DevMsg("DBG: Entering Remote_CreatePlugin for domain '{0}'...\n", AppDomain.CurrentDomain.FriendlyName);
+#endif
             try
             {
-                this.DevMsg("DBG: Entering Remote_CreatePlugin...");
-#endif
-                try
-                {
-                    ClsPluginBase plugin = this.RemoteCreateClass<ClsPluginBase>(AppDomain.CurrentDomain, desc.Type);
-                    return plugin;
-                }
-                catch (Exception ex)
-                {
-                    owner.Msg("RM: Plugin error : {0}, {1}\n", ex.GetType().FullName, ex.Message);
-                    owner.Msg(ex.StackTrace);
-                    throw ex;
-                }
-#if DEBUG
+                ClsPluginBase plugin = this.RemoteCreateClass<ClsPluginBase>(AppDomain.CurrentDomain, desc.Type);
+                return plugin;
             }
+            catch (Exception ex)
+            {
+                owner.Msg("RM: Plugin error : {0}, {1}\n", ex.GetType().FullName, ex.Message);
+                owner.Msg(ex.StackTrace);
+                throw ex;
+            }
+#if DEBUG
             finally
             {
-                this.DevMsg("DBG: Exiting Remote_CreatePlugin...");
+                this.DevMsg("DBG: Exiting Remote_CreatePlugin...\n");
             }
 #endif
         }

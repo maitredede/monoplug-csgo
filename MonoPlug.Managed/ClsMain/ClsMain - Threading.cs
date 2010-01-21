@@ -57,6 +57,7 @@ namespace MonoPlug
             //Same thread, direct call
             if (Thread.CurrentThread == this._mainThread)
             {
+                NativeMethods.Mono_DevMsg("ITH: DirectCall\n");
                 return d.Invoke(parameter);
             }
 
@@ -66,6 +67,7 @@ namespace MonoPlug
                 this._lckThreadQueue.AcquireWriterLock(Timeout.Infinite);
                 try
                 {
+                    Console.WriteLine("ITH: Enqueue\n");
                     this._threadQueue.Enqueue(item);
                 }
                 finally
@@ -84,10 +86,24 @@ namespace MonoPlug
             this._lckThreadQueue.AcquireReaderLock(Timeout.Infinite);
             try
             {
-                while (this._threadQueue.Count > 0)
+                if (this._threadQueue.Count > 0)
                 {
-                    ClsThreadItem item = this._threadQueue.Dequeue();
-                    item.Execute();
+                    NativeMethods.Mono_DevMsg(string.Format("ITH: GameFrame {0} jobs\n", this._threadQueue.Count));
+                    LockCookie cookie = this._lckThreadQueue.UpgradeToWriterLock(Timeout.Infinite);
+                    try
+                    {
+                        while (this._threadQueue.Count > 0)
+                        {
+                            ClsThreadItem item = this._threadQueue.Dequeue();
+                            NativeMethods.Mono_DevMsg("ITH: Dequeue\n");
+                            item.Execute();
+                        }
+                    }
+                    finally
+                    {
+                        NativeMethods.Mono_DevMsg("ITH: loop exit\n");
+                        this._lckThreadQueue.DowngradeFromWriterLock(ref cookie);
+                    }
                 }
             }
             finally
