@@ -15,10 +15,11 @@ namespace MonoPlug
 
         private AppDomain CreateAppDomain(string name, out ClsMain proxy)
         {
-            AppDomainSetup setup = new AppDomainSetup();
-            //setup.ApplicationBase = this.GetAssemblyDirectory();
-            setup.ShadowCopyFiles = true.ToString();
-            AppDomain dom = AppDomain.CreateDomain(name, null, setup);
+            //AppDomainSetup setup = new AppDomainSetup();
+            ////setup.ApplicationBase = this.GetAssemblyDirectory();
+            //setup.ShadowCopyFiles = true.ToString();
+            //AppDomain dom = AppDomain.CreateDomain(name, null, setup);
+            AppDomain dom = AppDomain.CreateDomain(name);
             proxy = this.RemoteCreateClass<ClsMain>(dom);
 #if DEBUG
             this.DevMsg("DBG: Fully created domain and proxy for domain '{0}'\n", name);
