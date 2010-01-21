@@ -63,12 +63,12 @@ namespace MonoPlug
 
         private void CurrentDomain_AssemblyLoad(object sender, AssemblyLoadEventArgs args)
         {
-            this._remote_owner.Msg("RM: AssemblyLoad({0}) {1}", AppDomain.CurrentDomain.FriendlyName, args.LoadedAssembly.FullName);
+            Console.WriteLine("RM: AssemblyLoad({0}) {1}", AppDomain.CurrentDomain.FriendlyName, args.LoadedAssembly.FullName);
         }
 
         private Assembly CurrentDomain_AssemblyResolve(object sender, ResolveEventArgs args)
         {
-            this._remote_owner.Msg("RM: AssemblyResolve({0}) {1}", AppDomain.CurrentDomain.FriendlyName, args.Name);
+            Console.WriteLine("RM: AssemblyResolve({0}) {1}", AppDomain.CurrentDomain.FriendlyName, args.Name);
             return Assembly.Load(args.Name);
         }
 
