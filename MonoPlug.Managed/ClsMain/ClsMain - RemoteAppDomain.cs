@@ -23,8 +23,8 @@ namespace MonoPlug
 #if DEBUG
             this.Msg("DBG: Created domain {0}\n", name);
 #endif
-            dom.AssemblyLoad += this.CurrentDomain_AssemblyLoad;
-            dom.AssemblyResolve += this.CurrentDomain_AssemblyResolve;
+            //dom.AssemblyLoad += this.CurrentDomain_AssemblyLoad;
+            //dom.AssemblyResolve += this.CurrentDomain_AssemblyResolve;
 
 #if DEBUG
             this.Msg("DBG: Creating proxy for domain {0}\n", name);
