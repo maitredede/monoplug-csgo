@@ -12,7 +12,7 @@ namespace MonoPlug
         internal bool Init()
         {
             //get current thread Id to check for interthread calls
-            this._mainThread = System.Threading.Thread.CurrentThread;
+            this._mainThreadId = System.Threading.Thread.CurrentThread.ManagedThreadId;
 
 #if DEBUG
             this.DevMsg("DBG: ClsMain::Init (enter)\n");

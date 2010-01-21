@@ -7,8 +7,7 @@ namespace MonoPlug
 {
     partial class ClsMain
     {
-        //private int _mainThreadId = 0;
-        private Thread _mainThread = null;
+        private int _mainThreadId = 0;
 
         private sealed class ClsThreadItem : IDisposable
         {
@@ -55,14 +54,14 @@ namespace MonoPlug
         internal TRet InterThreadCall<TRet, TParam>(InterThreadCallDelegate<TRet, TParam> d, TParam parameter)
         {
             //Same thread, direct call
-            if (Thread.CurrentThread == this._mainThread)
+            if (Thread.CurrentThread.ManagedThreadId == this._mainThreadId)
             {
                 NativeMethods.Mono_DevMsg("ITH: DirectCall\n");
                 return d.Invoke(parameter);
             }
             else
             {
-                Console.WriteLine("ITH: dom={0} cur={1} main={2}\n", AppDomain.CurrentDomain.FriendlyName, Thread.CurrentThread, this._mainThread);
+                Console.WriteLine("ITH: dom={0} cur={1} main={2}\n", AppDomain.CurrentDomain.FriendlyName, Thread.CurrentThread.ManagedThreadId, this._mainThreadId);
             }
 
             using (ClsThreadItem item = new ClsThreadItem(d, parameter))
@@ -71,16 +70,18 @@ namespace MonoPlug
                 this._lckThreadQueue.AcquireWriterLock(Timeout.Infinite);
                 try
                 {
-                    Console.WriteLine("ITH: Enqueue\n");
+                    Console.WriteLine("ITH: Enqueuing\n");
                     this._threadQueue.Enqueue(item);
                 }
                 finally
                 {
+                    Console.WriteLine("ITH: Enqueued\n");
                     this._lckThreadQueue.ReleaseWriterLock();
                 }
 
+                Console.WriteLine("ITH: Wait\n");
                 item.WaitOne();
-
+                Console.WriteLine("ITH: Exit\n");
                 return (TRet)item.ReturnValue;
             }
         }
