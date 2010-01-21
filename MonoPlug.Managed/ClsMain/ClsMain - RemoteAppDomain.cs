@@ -20,47 +20,47 @@ namespace MonoPlug
             //setup.ShadowCopyFiles = true.ToString();
             AppDomain dom = AppDomain.CreateDomain(name, null, setup);
             //AppDomain dom = AppDomain.CreateDomain(name);
-            proxy = this.RemoteCreateClass<ClsMain>(dom);
+            proxy = this.RemoteCreateClass<ClsMain>(this, dom);
 #if DEBUG
             this.DevMsg("DBG: Fully created domain and proxy for domain '{0}'\n", name);
 #endif
             return dom;
         }
 
-        private T RemoteCreateClass<T>(AppDomain dom) where T : class
+        private T RemoteCreateClass<T>(ClsMain owner, AppDomain dom) where T : class
         {
-            return this.RemoteCreateClass<T>(dom, typeof(T).FullName);
+            return this.RemoteCreateClass<T>(owner, dom, typeof(T).FullName);
         }
-        private T RemoteCreateClass<T>(AppDomain dom, string typeName) where T : class
+        private T RemoteCreateClass<T>(ClsMain owner, AppDomain dom, string typeName) where T : class
         {
 #if DEBUG
-            this.DevMsg("Entering RemoteCreateClass in [{0}] for [{1}]...\n", AppDomain.CurrentDomain.FriendlyName, dom.FriendlyName);
+            owner.DevMsg("Entering RemoteCreateClass in [{0}] for [{1}]...\n", AppDomain.CurrentDomain.FriendlyName, dom.FriendlyName);
             try
             {
 #endif
                 Assembly remoteSystemAssemnly = dom.Load(typeof(Assembly).Assembly.FullName);
 #if DEBUG
-                this.DevMsg("  RemoteCreateClass A in [{0}] for [{1}]...\n", AppDomain.CurrentDomain.FriendlyName, dom.FriendlyName);
+                owner.DevMsg("  RemoteCreateClass A in [{0}] for [{1}]...\n", AppDomain.CurrentDomain.FriendlyName, dom.FriendlyName);
 #endif
                 Type remoteAssemblyType = remoteSystemAssemnly.GetType(typeof(Assembly).FullName);
 #if DEBUG
-                this.DevMsg("  RemoteCreateClass B in [{0}] for [{1}]...\n", AppDomain.CurrentDomain.FriendlyName, dom.FriendlyName);
+                owner.DevMsg("  RemoteCreateClass B in [{0}] for [{1}]...\n", AppDomain.CurrentDomain.FriendlyName, dom.FriendlyName);
 #endif
                 Assembly remoteAssembly = (Assembly)remoteAssemblyType.InvokeMember("LoadFile", BindingFlags.Public | BindingFlags.Static | BindingFlags.InvokeMethod, null, null, new object[] { typeof(T).Assembly.Location });
 #if DEBUG
-                this.DevMsg("  RemoteCreateClass C in [{0}] for [{1}]...\n", AppDomain.CurrentDomain.FriendlyName, dom.FriendlyName);
+                owner.DevMsg("  RemoteCreateClass C in [{0}] for [{1}]...\n", AppDomain.CurrentDomain.FriendlyName, dom.FriendlyName);
 #endif
                 T item = (T)dom.CreateInstanceAndUnwrap(remoteAssembly.FullName, typeName);
 
 #if DEBUG
-                this.DevMsg("  RemoteCreateClass OK in [{0}] for [{1}]...\n", AppDomain.CurrentDomain.FriendlyName, dom.FriendlyName);
+                owner.DevMsg("  RemoteCreateClass OK in [{0}] for [{1}]...\n", AppDomain.CurrentDomain.FriendlyName, dom.FriendlyName);
 #endif
                 return item;
 #if DEBUG
             }
             finally
             {
-                this.DevMsg("Exiting RemoteCreateClass...\n");
+                owner.DevMsg("Exiting RemoteCreateClass...\n");
             }
 #endif
         }
@@ -72,7 +72,7 @@ namespace MonoPlug
 #endif
             try
             {
-                ClsPluginBase plugin = this.RemoteCreateClass<ClsPluginBase>(AppDomain.CurrentDomain, desc.Type);
+                ClsPluginBase plugin = this.RemoteCreateClass<ClsPluginBase>(owner, AppDomain.CurrentDomain, desc.Type);
                 return plugin;
             }
             catch (Exception ex)
