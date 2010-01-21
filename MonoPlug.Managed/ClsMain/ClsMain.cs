@@ -41,6 +41,7 @@ namespace MonoPlug
         public ClsMain()
         {
             NativeMethods.Mono_DevMsg("DBG: New Main in domain " + AppDomain.CurrentDomain.FriendlyName + "\n");
+            NativeMethods.Mono_DevMsg("DBG: BaseDirectory=" + AppDomain.CurrentDomain.BaseDirectory + "\n");
             NativeMethods.Mono_DevMsg("DBG: RelativeSearchPath=" + AppDomain.CurrentDomain.RelativeSearchPath + "\n");
         }
     }
