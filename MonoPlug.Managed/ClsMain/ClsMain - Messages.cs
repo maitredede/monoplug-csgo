@@ -17,7 +17,7 @@ namespace MonoPlug
                 ex = ex.InnerException;
                 if (ex == null)
                 {
-                    this.Msg("---------------");
+                    this.Msg("---------------\n");
                 }
             }
         }
