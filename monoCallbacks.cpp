@@ -28,15 +28,15 @@ uint64 Mono_RegisterConvar(MonoString* name, MonoString* help, int flags, MonoSt
 			mono_string_to_utf8(help),
 			Mono_ConvarValueChanged
 			);
-		//if(META_REGCVAR(var))
+		if(META_REGCVAR(var))
 		{
 			g_MonoPlug.m_convars->Insert(var, nativeID);
 			return nativeID;
 		}
-		//else
-		//{
-		//	return 0;
-		//}
+		else
+		{
+			return 0;
+		}
 	}
 };
 
@@ -90,7 +90,7 @@ MonoString* Mono_Convar_GetString(uint64 nativeID)
 		if(g_MonoPlug.m_convars->Element(i) == nativeID)
 		{
 			ConVar* var = g_MonoPlug.m_convars->Key(i);
-			return MONO_STRING(g_Domain, var->GetString());
+			return CMonoHelpers::MONO_STRING(g_Domain, var->GetString());
 		}
 	}
 	return NULL;

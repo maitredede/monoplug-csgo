@@ -6,6 +6,7 @@
 class CMonoHelpers
 {
 public:
+	static MonoString* MONO_STRING(MonoDomain* domain, const char* str);
 	static MonoObject* MONO_CALL(void* target, MonoMethod* methodHandle, void** args = NULL);
 	static MonoObject* MONO_DELEGATE_CALL(MonoDelegate* delegateObject, void** args);
 };

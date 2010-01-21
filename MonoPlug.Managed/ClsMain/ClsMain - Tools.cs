@@ -27,7 +27,7 @@ namespace MonoPlug
         /// <value>
         /// Get Mono Runtime version
         /// </value>
-        internal static string MonoVersion
+        internal string MonoVersion
         {
             get
             {

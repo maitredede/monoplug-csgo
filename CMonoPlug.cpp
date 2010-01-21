@@ -315,21 +315,21 @@ void CMonoPlug::ClientPutInServer(edict_t *pEntity, const char *playername)
 	{
 		avgLatency = net->GetAvgLatency(MAX_FLOWS);
 		timeConnected = net->GetTimeConnected();
-		address = MONO_STRING(g_Domain, net->GetAddress());
+		address = CMonoHelpers::MONO_STRING(g_Domain, net->GetAddress());
 	}
 	else
 	{
-		address = MONO_STRING(g_Domain, NULL);
+		address = CMonoHelpers::MONO_STRING(g_Domain, NULL);
 	}
 	int pfrag = pi->GetFragCount();
 	int pdeath = pi->GetDeathCount();
 
 	mono_field_set_value(player, this->m_Field_ClsPlayer_id, &playerId);
-	mono_field_set_value(player, this->m_Field_ClsPlayer_name, MONO_STRING(g_Domain, pi->GetName()));
+	mono_field_set_value(player, this->m_Field_ClsPlayer_name, CMonoHelpers::MONO_STRING(g_Domain, pi->GetName()));
 	mono_field_set_value(player, this->m_Field_ClsPlayer_frag, &pfrag);
 	mono_field_set_value(player, this->m_Field_ClsPlayer_death, &pdeath);
 	mono_field_set_value(player, this->m_Field_ClsPlayer_ip, address);
-	mono_field_set_value(player, this->m_Field_ClsPlayer_language, MONO_STRING(g_Domain, this->m_Engine->GetClientConVarValue(playerId, "cl_language")));
+	mono_field_set_value(player, this->m_Field_ClsPlayer_language, CMonoHelpers::MONO_STRING(g_Domain, this->m_Engine->GetClientConVarValue(playerId, "cl_language")));
 	mono_field_set_value(player, this->m_Field_ClsPlayer_avgLatency, &avgLatency);
 	mono_field_set_value(player, this->m_Field_ClsPlayer_timeConnected, &timeConnected);
 

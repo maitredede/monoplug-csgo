@@ -53,7 +53,7 @@ namespace MonoPlug
 
                 //TODO : reinit host
                 string hostName = Dns.GetHostName();
-                Uri netTcpUri = new Uri(string.Format("net.tcp://{0}:{1}", hostName, this._wcfconsole_port.GetString()));
+                Uri netTcpUri = new Uri(string.Format("net.tcp://{0}:{1}", hostName, this._wcfconsole_port.ValueString));
                 this._host = new ServiceHost(this, netTcpUri);
                 this._host.AddServiceEndpoint(typeof(IConsoleServer), this._netTcp, "WCFConsole");
 

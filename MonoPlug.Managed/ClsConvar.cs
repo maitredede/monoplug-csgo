@@ -7,15 +7,25 @@ namespace MonoPlug
     /// <summary>
     /// A Convar used by managed code
     /// </summary>
-    public class ClsConvar : ClsConCommandBase
+    //[Obsolete("Temporary, for rewriting...", true)]
+    public class ClsConvar : MarshalByRefObject /* ClsConCommandBase */
     {
-        internal readonly ClsMain _main;
+        internal readonly ClsConvarMain _remoteMain;
 
-        internal ClsConvar(ClsMain main, UInt64 nativeId, string name, string description, FCVAR flags)
-            : base(nativeId, name, description, flags)
+        internal ClsConvar(ClsConvarMain main)
         {
-            this._main = main;
+            this._remoteMain = main;
         }
+
+        internal ClsConvarMain ConvarMain { get { return this._remoteMain; } }
+
+        //internal readonly ClsMain _main;
+
+        //internal ClsConvar(ClsMain main, UInt64 nativeId, string name, string description, FCVAR flags)
+        //    : base(nativeId, name, description, flags)
+        //{
+        //    this._main = main;
+        //}
 
         /// <summary>
         /// Raised when the value has changed
@@ -31,53 +41,33 @@ namespace MonoPlug
         }
 
         /// <summary>
-        /// Get the Convar value as string
+        /// Convar value as string
         /// </summary>
-        /// <returns>Convar value as string</returns>
-        public string GetString()
+        public string ValueString
         {
-            return this._main.InterThreadCall<string, object>(this.GetStringCall, null);
-        }
-
-        private string GetStringCall(object state)
-        {
-            return NativeMethods.Mono_Convar_GetString(this.NativeID);
+            get
+            {
+                return this._remoteMain.GetString();
+            }
+            set
+            {
+                this._remoteMain.SetValue(value);
+            }
         }
 
         /// <summary>
-        /// Set Convar value as string
+        /// Convar value as boolean
         /// </summary>
-        /// <param name="value">Value</param>
-        public void SetValue(string value)
+        public bool ValueBoolean
         {
-            this._main.InterThreadCall<object, string>(this.SetStringCall, value);
-        }
-
-        private object SetStringCall(string value)
-        {
-            NativeMethods.Mono_Convar_SetString(this.NativeID, value);
-            return null;
-        }
-
-        public bool GetBoolean()
-        {
-            return this._main.InterThreadCall<bool, object>(this.GetBooleanCall, null);
-        }
-
-        private bool GetBooleanCall(object state)
-        {
-            return NativeMethods.Mono_Convar_GetBoolean(this.NativeID);
-        }
-
-        public void SetValue(bool value)
-        {
-            this._main.InterThreadCall<object, bool>(this.SetBooleanCall, value);
-        }
-
-        private object SetBooleanCall(bool value)
-        {
-            NativeMethods.Mono_Convar_SetBoolean(this.NativeID, value);
-            return null;
+            get
+            {
+                return this._remoteMain.GetBoolean();
+            }
+            set
+            {
+                this._remoteMain.SetValue(value);
+            }
         }
     }
 }

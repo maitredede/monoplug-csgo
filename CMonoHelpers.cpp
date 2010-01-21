@@ -5,6 +5,18 @@
 //	return CMonoHelpers::MONO_CALL_ARGS(target, methodHandle, NULL);
 //}
 
+MonoString* CMonoHelpers::MONO_STRING(MonoDomain* domain, const char* string)
+{
+	if(string == NULL)
+	{
+		return NULL;
+	}
+	else
+	{
+		return mono_string_new(domain, string);
+	}
+}
+
 MonoObject* CMonoHelpers::MONO_CALL(void* target, MonoMethod* methodHandle, void** args)
 {
 	MonoObject* exception = NULL;

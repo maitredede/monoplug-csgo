@@ -18,12 +18,12 @@ void CMonoCommand::Dispatch(const CCommand &command)
 	mono_array_size_t max = (mono_array_size_t)command.ArgC();
 	for(mono_array_size_t i = 0; i<max; i++)
 	{
-		MonoString* str = MONO_STRING(g_Domain, command.ArgV()[i]);
+		MonoString* str = CMonoHelpers::MONO_STRING(g_Domain, command.ArgV()[i]);
 		mono_array_set(arr, MonoString*, i, str);
 	}
 
 	void* args[2]; 
-	args[0] = MONO_STRING(g_Domain, command.ArgS());
+	args[0] = CMonoHelpers::MONO_STRING(g_Domain, command.ArgS());
 	args[1] = arr;
 
 	//META_CONPRINTF("Dispatch command BEGIN : %s\n", command.GetCommandString());
@@ -34,7 +34,7 @@ void CMonoCommand::Dispatch(const CCommand &command)
 int CMonoCommand::AutoCompleteSuggest( const char *partial, CUtlVector< CUtlString > &commands )
 {
 	void* args[1];
-	args[0] = MONO_STRING(g_Domain, partial);
+	args[0] = CMonoHelpers::MONO_STRING(g_Domain, partial);
 	MonoObject* ret = CMonoHelpers::MONO_DELEGATE_CALL(this->m_complete, args);
 	if(ret)
 	{

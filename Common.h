@@ -30,8 +30,6 @@ extern MonoDomain* g_Domain;
 
 PLUGIN_GLOBALVARS();
 
-#define MONO_STRING(domain, str) ((str == NULL) ? NULL : mono_string_new(domain, str))
-
 #define MONOPLUG_DLLFILE "%s/addons/MonoPlug.Managed.dll"
 
 #define MONO_GET_CLASS(assemblyImage, classPtr, classNamespace, className, errstr, maxstr) \

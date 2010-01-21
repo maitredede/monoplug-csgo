@@ -38,10 +38,13 @@
   <ItemGroup>
     <Compile Include="Check.cs" />
     <Compile Include="ClsConvar.cs" />
+    <Compile Include="ClsConvarMain.cs" />
     <Compile Include="ClsMain\ClsMain - Events Client Connection.cs" />
     <Compile Include="ClsMain\ClsMain - Events ConMessage.cs" />
     <Compile Include="ClsMain\ClsMain - Events LevelShutdown.cs" />
     <Compile Include="ClsMain\ClsMain - Events ClientCommand.cs" />
+    <Compile Include="ClsPluginBase\ClsPluginBase - ConCommand.cs" />
+    <Compile Include="ClsPluginBase\ClsPluginBase - Convar.cs" />
     <Compile Include="ClsPluginBase\ClsPluginBase - DialogMessage.cs" />
     <Compile Include="ClsPluginBase\ClsPluginBase - EVT ClientDisconnect.cs" />
     <Compile Include="ClsPluginBase\ClsPluginBase - EVT ClientPutInServer.cs" />

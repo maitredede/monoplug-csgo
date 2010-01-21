@@ -29,6 +29,6 @@ void CMonoConsole::MonoPrint(bool hasColor, bool debug, int r, int g, int b, int
 	args[3] = &g;
 	args[4] = &b;
 	args[5] = &a;
-	args[6] = MONO_STRING(g_Domain, msg);
+	args[6] = CMonoHelpers::MONO_STRING(g_Domain, msg);
 	CMonoHelpers::MONO_CALL(this->m_plug->m_main, this->m_plug->m_ClsMain_ConPrint, args);
 }

@@ -8,6 +8,34 @@ namespace MonoPlug
 {
     partial class ClsMain
     {
+        private string GetAssemblyDirectory()
+        {
+            return Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
+        }
+
+        private AppDomain CreateAppDomain(string name, out ClsMain proxy)
+        {
+            //AppDomainSetup setup = new AppDomainSetup();
+            //setup.DisallowCodeDownload = true;
+            //setup.ShadowCopyFiles = true.ToString();
+            //AppDomain dom = AppDomain.CreateDomain(name, null, this.GetAssemblyDirectory(), string.Empty, true, null, null);
+            AppDomain dom = AppDomain.CreateDomain(name);
+#if DEBUG
+            this.Msg("DBG: Created domain {0}\n", name);
+#endif
+            dom.AssemblyLoad += this.CurrentDomain_AssemblyLoad;
+            dom.AssemblyResolve += this.CurrentDomain_AssemblyResolve;
+
+#if DEBUG
+            this.Msg("DBG: Creating proxy for domain {0}\n", name);
+#endif
+            proxy = (ClsMain)dom.CreateInstanceAndUnwrap(Assembly.GetExecutingAssembly().FullName, typeof(ClsMain).FullName);
+#if DEBUG
+            this.Msg("DBG: Created proxy for domain {0}\n", name);
+#endif
+            return dom;
+        }
+
         private ClsMain _remote_owner;
 
         private ClsPluginBase Remote_CreatePlugin(ClsMain owner, PluginDefinition desc)
@@ -15,10 +43,10 @@ namespace MonoPlug
             this._remote_owner = owner;
             try
             {
-                DumpCurrentDomainAssemblies(owner);
+                //DumpCurrentDomainAssemblies(owner);
 
-                AppDomain.CurrentDomain.AssemblyResolve += this.CurrentDomain_AssemblyResolve;
-                AppDomain.CurrentDomain.AssemblyLoad += this.CurrentDomain_AssemblyLoad;
+                //AppDomain.CurrentDomain.AssemblyResolve += this.CurrentDomain_AssemblyResolve;
+                //AppDomain.CurrentDomain.AssemblyLoad += this.CurrentDomain_AssemblyLoad;
 
                 Assembly asm = Assembly.LoadFile(desc.File);
                 Type t = asm.GetType(desc.Type, true);

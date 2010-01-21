@@ -30,7 +30,8 @@ namespace MonoPlug
         private PluginDefinition[] _pluginCache = null;
 
         //Internal commands and vars
-        private ClsConvar _clr_mono_version = null;
+        private ClsConvarMain _clr_mono_version = null;
+        private ClsConvarMain _clr_plugin_directory = null;
         private ClsConCommand _clr_plugin_list = null;
         private ClsConCommand _clr_plugin_refresh = null;
         private ClsConCommand _clr_plugin_load = null;
@@ -39,6 +40,8 @@ namespace MonoPlug
 
         public ClsMain()
         {
+            AppDomain.CurrentDomain.AssemblyLoad += this.CurrentDomain_AssemblyLoad;
+            AppDomain.CurrentDomain.AssemblyResolve += this.CurrentDomain_AssemblyResolve;
         }
     }
 }

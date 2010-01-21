@@ -13,42 +13,52 @@ namespace MonoPlug
         {
             ClsPluginBase plugin = null;
             //Search if plugin is not already loaded
-            this._lckPlugins.AcquireWriterLock(Timeout.Infinite);
+            this._lckPlugins.AcquireReaderLock(Timeout.Infinite);
             try
             {
                 foreach (AppDomain dom in this._plugins.Keys)
                 {
                     if (this._plugins[dom].Name.Equals(line, StringComparison.InvariantCultureIgnoreCase))
                     {
-                        Msg("Plugin already loaded\n");
+                        this.Msg("Plugin already loaded\n");
                         return;
                     }
                 }
 
                 //Plugin not loaded, searching from cache
-                foreach (PluginDefinition plug in this._pluginCache)
+                foreach (PluginDefinition pluginDef in this._pluginCache)
                 {
-                    if (plug.Name.Equals(line, StringComparison.InvariantCultureIgnoreCase))
+                    if (pluginDef.Name.Equals(line, StringComparison.InvariantCultureIgnoreCase))
                     {
                         AppDomain dom = null;
                         try
                         {
-                            dom = AppDomain.CreateDomain(plug.Name);
-                            Msg("  Assembly location : {0}\n", Assembly.GetExecutingAssembly().Location);
-                            Msg("  Type fullname location : {0}\n", typeof(ClsMain).FullName);
-                            ClsMain main = (ClsMain)dom.CreateInstanceFromAndUnwrap(Assembly.GetExecutingAssembly().Location, typeof(ClsMain).FullName);
-                            plugin = main.Remote_CreatePlugin(this, plug);
-                            this.Msg("  Remote .ctor OK\n");
+                            ClsMain remoteProxy;
+                            dom = this.CreateAppDomain(pluginDef.Name, out remoteProxy);
+                            plugin = remoteProxy.Remote_CreatePlugin(this, pluginDef);
+                            this.Msg("Plugin init...\n");
                             plugin.Init(this);
-                            Msg("Plugin '{0}' loaded\n", plug.Name);
-                            this._plugins.Add(dom, plugin);
+
+                            this.Msg("Plugin '{0}' loaded\n", pluginDef.Name);
+                            LockCookie cookie = this._lckPlugins.UpgradeToWriterLock(Timeout.Infinite);
+                            try
+                            {
+                                this._plugins.Add(dom, plugin);
+                            }
+                            finally
+                            {
+                                this._lckPlugins.DowngradeFromWriterLock(ref cookie);
+                            }
                         }
                         catch (NullReferenceException ex)
                         {
-                            Msg("Can't load plugin (NullReferenceException) '{0}' : {1}\n", line, ex.Message);
-                            Msg("{0}\n", ex.StackTrace);
+                            this.Msg("Can't load plugin (NullReferenceException) '{0}' : {1}\n", line, ex.Message);
+                            this.Msg("{0}\n", ex.StackTrace);
+                            this.UnloadPlugin(dom, plugin);
                             if (dom != null)
+                            {
                                 AppDomain.Unload(dom);
+                            }
                             plugin = null;
                         }
                         catch (FileNotFoundException ex)
@@ -56,8 +66,11 @@ namespace MonoPlug
                             this.Msg("Can't load plugin (FileNotFoundException) '{0}' : {1}\n", line, ex.Message);
                             this.Msg("{0}\n", ex.StackTrace);
                             this.Msg("File was : {0}\n", ex.FileName);
+                            this.UnloadPlugin(dom, plugin);
                             if (dom != null)
+                            {
                                 AppDomain.Unload(dom);
+                            }
                             plugin = null;
                         }
                         catch (Exception ex)
@@ -68,8 +81,11 @@ namespace MonoPlug
                                 this.Msg("{0}\n", ex.StackTrace);
                                 ex = ex.InnerException;
                             }
+                            this.UnloadPlugin(dom, plugin);
                             if (dom != null)
+                            {
                                 AppDomain.Unload(dom);
+                            }
                             plugin = null;
                         }
                         break;
@@ -78,7 +94,7 @@ namespace MonoPlug
             }
             finally
             {
-                this._lckPlugins.ReleaseWriterLock();
+                this._lckPlugins.ReleaseReaderLock();
             }
         }
 

@@ -7,7 +7,7 @@ namespace MonoPlug
 {
     partial class ClsMain
     {
-        internal ClsConvar RegisterConvar(ClsPluginBase plugin, string name, string help, FCVAR flags, string defaultValue)
+        internal ClsConvarMain RegisterConvar(ClsPluginBase plugin, string name, string help, FCVAR flags, string defaultValue)
         {
             Check.NonNullOrEmpty("name", name);
             Check.NonNullOrEmpty("help", help);
@@ -25,13 +25,15 @@ namespace MonoPlug
                 UInt64 nativeID = this.InterThreadCall<UInt64, ConvarRegisterData>(this.RegisterConvar_Call, data);
                 if (nativeID > 0)
                 {
-                    ClsConvar var = new ClsConvar(this, nativeID, name, help, flags);
+                    //ClsConvarMain var = new ClsConvarMain(this, nativeID, name, help, flags);
+                    ClsConvarMain var = new ClsConvarMain(this, nativeID);
                     ConVarEntry entry = new ConVarEntry(plugin, var, data);
                     this._convars.Add(nativeID, entry);
                     return var;
                 }
                 else
                 {
+                    this.Msg("Can't register var {0} for plugin {1}\n", name, plugin ?? (object)"<main>");
                     return null;
                 }
             }
@@ -69,7 +71,7 @@ namespace MonoPlug
             entry.Var.RaiseValueChanged();
         }
 
-        internal bool UnregisterConvar(ClsPluginBase plugin, ClsConvar var)
+        internal bool UnregisterConvar(ClsPluginBase plugin, ClsConvarMain var)
         {
             if (var == null) throw new ArgumentNullException("var");
 
@@ -91,100 +93,5 @@ namespace MonoPlug
         {
             return NativeMethods.Mono_UnregisterConvar(nativeID);
         }
-        //        [Obsolete("Rewriting", true)]
-        //        internal ClsConVarStrings RegisterConVarString(ClsPluginBase plugin, string name, string description, FCVAR flags, string defaultValue)
-        //        {
-        //            if (string.IsNullOrEmpty(name)) throw new ArgumentNullException("name");
-        //            if (string.IsNullOrEmpty(description)) throw new ArgumentNullException("description");
-        //            ValidateFlags(flags, "flags");
-
-        //            lock (this._ConVarString)
-        //            {
-        //                //Check if var exists
-        //                if (this.VarStringExists(name)) return null;
-
-        //                //Register native var
-        //                UInt64 nativeId = 0;
-        //                this.InterThreadCall(() =>
-        //                {
-        //                    nativeId = NativeMethods.Mono_RegisterConvarString(name, description, (int)flags, defaultValue);
-        //                });
-
-        //                Msg("M: RegisterConVarString '{0}' NativeId is {1}\n", name, nativeId);
-        //                if (nativeId > 0)
-        //                {
-        //                    ConVarEntry entry = new ConVarEntry(plugin,var,);
-        //                    entry.Plugin = plugin;
-        //                    entry.Var = new ClsConVarStrings(this, nativeId, name, description, flags);
-        //                    this._ConVarString.Add(nativeId, entry);
-        //                    return entry.Var;
-        //                }
-        //                else
-        //                {
-        //                    return null;
-        //                }
-        //            }
-        //        }
-
-        //        [Obsolete("Rewriting", true)]
-        //        private bool VarStringExists(string name)
-        //        {
-        //            foreach (UInt64 key in this._ConVarString.Keys)
-        //            {
-        //                if (this._ConVarString[key].Var.Name.Equals(name, StringComparison.InvariantCultureIgnoreCase))
-        //                {
-        //                    return true;
-        //                }
-        //            }
-        //            return false;
-        //        }
-
-        //        /// <summary>
-        //        /// Callback when an internal convar value has changed;
-        //        /// </summary>
-        //        /// <param name="nativeId"></param>
-        //        [Obsolete("Rewriting", true)]
-        //        internal void _ConVarStringChanged(UInt64 nativeId)
-        //        {
-        //#if DEBUG
-        //            Msg("ClsMain::_ConVarStringChanged({0})", nativeId);
-        //#endif
-        //            if (this._ConVarString.ContainsKey(nativeId))
-        //            {
-        //                ThreadPool.QueueUserWorkItem((object o) =>
-        //                {
-        //                    this._ConVarString[nativeId].Var.RaiseValueChanged();
-        //                });
-        //            }
-        //        }
-
-        //        [Obsolete("Rewriting", true)]
-        //        internal void UnregisterConVarString(ClsPluginBase plugin, ClsConVarStrings convar)
-        //        {
-        //            if (convar == null) throw new ArgumentNullException("convar");
-
-        //            lock (this._ConVarString)
-        //            {
-        //                if (this._ConVarString.ContainsKey(convar.NativeID))
-        //                {
-        //                    this.InterThreadCall(() =>
-        //                    {
-        //                        NativeMethods.Mono_UnregisterConVarString(convar.NativeID);
-        //                    });
-        //                    this._ConVarString.Remove(convar.NativeID);
-        //                }
-        //            }
-        //        }
-
-        //        [Obsolete("Rewriting", true)]
-        //        internal string GetConvarStringValue(string name)
-        //        {
-        //            string value = null;
-        //            this.InterThreadCall(() =>
-        //                {
-        //                    value = NativeMethods.Mono_Convar_GetValue_String(name);
-        //                });
-        //            return value;
-        //        }
     }
 }

@@ -10,24 +10,27 @@ namespace MonoPlug
     {
         public void clr_plugin_refresh(string line, string[] arguments)
         {
-            NativeMethods.Mono_Msg("CB: clr_plugin_refresh Enter\n");
             AppDomain dom = null;
             try
             {
-                //Create another domain to gather plugin data
-                dom = AppDomain.CreateDomain("GetPlugins");
-                string path = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
+                string path = this.GetAssemblyDirectory();
                 this.Msg("CLR: Assembly path is : {0}\n", path);
 
-                //Instanciate the remote wrapper
-                ClsMain main = (ClsMain)dom.CreateInstanceFromAndUnwrap(Assembly.GetExecutingAssembly().CodeBase, typeof(ClsMain).FullName);
-                this._pluginCache = main.Remote_GetPluginsFromDirectory(this, path);
+                //Create another domain to gather plugin data
+                ClsMain proxy;
+                dom = this.CreateAppDomain(typeof(ClsMain).FullName, out proxy);
+                this._pluginCache = proxy.Remote_GetPluginsFromDirectory(this, path);
             }
             catch (Exception ex)
             {
                 this._pluginCache = new PluginDefinition[] { };
-                this.Msg("GetPlugins Error : {0}\n", ex.Message);
-                this.Msg("GetPlugins Error : {0}\n", ex.StackTrace);
+                while (ex != null)
+                {
+                    this.Msg("GetPlugins Error : {0}\n", ex.GetType().FullName);
+                    this.Msg("GetPlugins Error : {0}\n", ex.Message);
+                    this.Msg("GetPlugins Error : {0}\n", ex.StackTrace);
+                    ex = ex.InnerException;
+                }
             }
             finally
             {
