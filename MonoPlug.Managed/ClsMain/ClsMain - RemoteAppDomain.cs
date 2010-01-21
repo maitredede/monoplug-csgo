@@ -19,26 +19,31 @@ namespace MonoPlug
             setup.ApplicationBase = this.GetAssemblyDirectory();
             //setup.ShadowCopyFiles = true.ToString();
 
-#if DEBUG
-            this.Msg("DBG: Creatin domain {0}\n", name);
-#endif
+            //#if DEBUG
+            //            this.Msg("DBG: Creatin domain {0}\n", name);
+            //#endif
             AppDomain dom = AppDomain.CreateDomain(name, null, setup);
-#if DEBUG
-            this.Msg("DBG: Get assembly mscore for domain {0}\n", name);
-#endif
+            //#if DEBUG
+            //            this.Msg("DBG: Get assembly mscore for domain {0}\n", name);
+            //#endif
             Assembly system = dom.Load(typeof(Assembly).Assembly.FullName);
-#if DEBUG
-            this.Msg("DBG: Get System.Reflection.Assembly type for domain {0}\n", name);
-#endif
+            //#if DEBUG
+            //            this.Msg("DBG: Get System.Reflection.Assembly type for domain {0}\n", name);
+            //#endif
             Type asmType = system.GetType(typeof(Assembly).FullName);
-#if DEBUG
-            this.Msg("DBG: Loading MonoPlug main assembly in domain {0}\n", name);
-#endif
+            //#if DEBUG
+            //            this.Msg("DBG: Loading MonoPlug main assembly in domain {0}\n", name);
+            //#endif
             Assembly remoteMain = (Assembly)asmType.InvokeMember("LoadFile", BindingFlags.Public | BindingFlags.Static | BindingFlags.InvokeMethod, null, null, new object[] { Assembly.GetExecutingAssembly().Location });
+#if DEBUG
+            this.Msg("DBG: Getting ClsMain type for domain {0}\n", name);
+#endif
+            Type TClsMain = remoteMain.GetType(typeof(ClsMain).FullName);
 #if DEBUG
             this.Msg("DBG: Creating proxy for domain {0}\n", name);
 #endif
-            proxy = (ClsMain)dom.CreateInstanceAndUnwrap(Assembly.GetExecutingAssembly().Location, typeof(ClsMain).FullName);
+            proxy = (ClsMain)TClsMain.GetConstructor(Type.EmptyTypes).Invoke(null);
+            //proxy = (ClsMain)dom.CreateInstanceAndUnwrap(Assembly.GetExecutingAssembly().Location, typeof(ClsMain).FullName);
 #if DEBUG
             this.Msg("DBG: Created proxy for domain {0}\n", name);
 #endif
