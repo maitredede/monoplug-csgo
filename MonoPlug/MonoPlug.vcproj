@@ -517,7 +517,7 @@
 				Name="VCCLCompilerTool"
 				AdditionalOptions="/D SE_EPISODEONE=1 /D SE_DARKMESSIAH=2 /D SE_ORANGEBOX=3 /D SE_ORANGEBOXVALVE=4 /D SE_LEFT4DEAD=5 /D SE_LEFT4DEAD2=6"
 				Optimization="0"
-				AdditionalIncludeDirectories="&quot;$(MMSOURCE18)\core&quot;;&quot;$(MMSOURCE18)\core\sourcehook&quot;;&quot;$(HL2SDKOBVALVE)\public&quot;;&quot;$(HL2SDKOBVALVE)\public\engine&quot;;&quot;$(HL2SDKOBVALVE)\public\game\server&quot;;&quot;$(HL2SDKOBVALVE)\public\tier0&quot;;&quot;$(HL2SDKOBVALVE)\public\tier1&quot;;&quot;$(HL2SDKOBVALVE)\public\vstdlib&quot;;&quot;C:\Program Files\Mono-2.4.3\include\mono-1.0&quot;;&quot;C:\Program Files\Mono-2.4.3\include\glib-2.0&quot;;&quot;C:\Program Files\Mono-2.4.3\lib\glib-2.0\include&quot;;&quot;C:\Program Files\Mono-2.4.3\include&quot;"
+				AdditionalIncludeDirectories="&quot;$(MMSOURCE18)\core&quot;;&quot;$(MMSOURCE18)\core\sourcehook&quot;;&quot;$(HL2SDKOBVALVE)\public&quot;;&quot;$(HL2SDKOBVALVE)\public\engine&quot;;&quot;$(HL2SDKOBVALVE)\public\game\server&quot;;&quot;$(HL2SDKOBVALVE)\public\tier0&quot;;&quot;$(HL2SDKOBVALVE)\public\tier1&quot;;&quot;$(HL2SDKOBVALVE)\public\vstdlib&quot;;&quot;C:\Program Files\Mono-2.6.1\include\mono-1.0&quot;;&quot;C:\Program Files\Mono-2.6.1\include\glib-2.0&quot;;&quot;C:\Program Files\Mono-2.6.1\lib\glib-2.0\include&quot;;&quot;C:\Program Files\Mono-2.6.1\include&quot;"
 				PreprocessorDefinitions="WIN32;_DEBUG;_WINDOWS;_USRDLL;SAMPLE_MM_EXPORTS;SOURCE_ENGINE=4"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
