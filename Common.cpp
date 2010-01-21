@@ -62,3 +62,4 @@ int UTIL_FindOffset(const char *ClassName, const char *PropertyName)
 
 	return 0;
 };
+
