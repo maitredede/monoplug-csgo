@@ -22,10 +22,10 @@ namespace MonoPlug
                 //Register base commands and vars
                 this._clr_mono_version = this.RegisterConvar(null, "clr_mono_version", "Get current Mono runtime version", FCVAR.FCVAR_SPONLY | FCVAR.FCVAR_CHEAT | FCVAR.FCVAR_PRINTABLEONLY, this.MonoVersion);
                 this._clr_plugin_directory = this.RegisterConvar(null, "clr_plugin_directory", "Assembly plugin search path", FCVAR.FCVAR_SPONLY | FCVAR.FCVAR_CHEAT | FCVAR.FCVAR_PRINTABLEONLY, this.GetAssemblyDirectory());
-#if DEBUG
-                object o = null;
-                Console.WriteLine(o.ToString());
-#endif
+                //#if DEBUG
+                //                object o = null;
+                //                Console.WriteLine(o.ToString());
+                //#endif
 
                 //Refresh plugin cache
                 this.clr_plugin_refresh(string.Empty, null);
