@@ -75,6 +75,9 @@ namespace MonoPlug
                         this.DevMsg("Queueing event raise\n");
 #endif
                         ThreadPool.QueueUserWorkItem(this.ConvarChangedRaise, entry);
+#if DEBUG
+                        this.DevMsg("Queued event raise\n");
+#endif
                     }
 #if DEBUG
                     else
