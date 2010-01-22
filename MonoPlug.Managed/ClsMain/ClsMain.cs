@@ -25,7 +25,7 @@ namespace MonoPlug
         private readonly ReaderWriterLock _lckConvars = new ReaderWriterLock();
         private readonly Dictionary<string, ConCommandEntry> _concommands = new Dictionary<string, ConCommandEntry>();
 
-        private readonly MaitreDede.Threading.ThreadPoolBase _pool;
+        private readonly ClsThreadPool _pool;
 
         /// <summary>
         /// Available plugin cache list 
@@ -43,13 +43,7 @@ namespace MonoPlug
 
         public ClsMain()
         {
-#if DEBUG
-            NativeMethods.Mono_DevMsg(string.Format("Environement proc count : {0}\n", Environment.ProcessorCount));
-#endif
-            this._pool = new MaitreDede.Threading.ThreadPool_2(10);
-#if DEBUG
-            NativeMethods.Mono_DevMsg(string.Format("DBG: ThreadPool is type {0}\n", this._pool.GetType().Name));
-#endif
+            this._pool = new ClsThreadPool(this);
         }
     }
 }

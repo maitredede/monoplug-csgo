@@ -36,18 +36,6 @@
   </PropertyGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>
-    <Compile Include="..\Externals\MaitreDede.Threading\ThreadPoolBase.cs">
-      <Link>ThreadPool\ThreadPoolBase.cs</Link>
-    </Compile>
-    <Compile Include="..\Externals\MaitreDede.Threading\ThreadPoolItem.cs">
-      <Link>ThreadPool\ThreadPoolItem.cs</Link>
-    </Compile>
-    <Compile Include="..\Externals\MaitreDede.Threading\ThreadPool_2.cs">
-      <Link>ThreadPool\ThreadPool_2.cs</Link>
-    </Compile>
-    <Compile Include="..\Externals\MaitreDede.Threading\ThreadPool_3.cs">
-      <Link>ThreadPool\ThreadPool_3.cs</Link>
-    </Compile>
     <Compile Include="Check.cs" />
     <Compile Include="ClsConvar.cs" />
     <Compile Include="ClsConvarMain.cs" />
@@ -62,6 +50,7 @@
     <Compile Include="ClsPluginBase\ClsPluginBase - EVT ClientPutInServer.cs" />
     <Compile Include="ClsPluginBase\ClsPluginBase - EVT ConMessage.cs" />
     <Compile Include="ClsRemote.cs" />
+    <Compile Include="ClsThreadPool.cs" />
     <Compile Include="EventArgs\ClientEventArgs.cs" />
     <Compile Include="EventArgs\ConMessageEventArgs.cs" />
     <Compile Include="ConvarRegisterData.cs" />
