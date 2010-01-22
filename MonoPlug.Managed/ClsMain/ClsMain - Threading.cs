@@ -34,6 +34,9 @@ namespace MonoPlug
             {
                 try
                 {
+#if DEBUG
+                    NativeMethods.Mono_DevMsg("ClsThreadItem::Execute()\n");
+#endif
                     this._return = this._code.DynamicInvoke(this._param);
                 }
                 finally
@@ -56,12 +59,7 @@ namespace MonoPlug
             //Same thread, direct call
             if (Thread.CurrentThread.ManagedThreadId == this._mainThreadId)
             {
-                NativeMethods.Mono_DevMsg("ITH: DirectCall\n");
                 return d.Invoke(parameter);
-            }
-            else
-            {
-                Console.WriteLine("ITH: dom={0} cur={1} main={2}", AppDomain.CurrentDomain.FriendlyName, Thread.CurrentThread.ManagedThreadId, this._mainThreadId);
             }
 
             using (ClsThreadItem item = new ClsThreadItem(d, parameter))
@@ -69,19 +67,14 @@ namespace MonoPlug
                 this._lckThreadQueue.AcquireWriterLock(Timeout.Infinite);
                 try
                 {
-                    Console.WriteLine("ITH: Enqueuing");
                     this._threadQueue.Enqueue(item);
                 }
                 finally
                 {
-                    Console.WriteLine("ITH: Enqueued");
                     this._lckThreadQueue.ReleaseWriterLock();
                 }
 
-                Console.WriteLine("ITH: Wait");
-                Console.WriteLine(Environment.StackTrace);
                 item.WaitOne();
-                Console.WriteLine("ITH: Exit");
                 return (TRet)item.ReturnValue;
             }
         }

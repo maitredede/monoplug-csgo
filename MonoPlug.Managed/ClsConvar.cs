@@ -11,21 +11,19 @@ namespace MonoPlug
     public class ClsConvar : MarshalByRefObject /* ClsConCommandBase */
     {
         internal readonly ClsConvarMain _remoteMain;
+        internal readonly IMessage _msg;
 
-        internal ClsConvar(ClsConvarMain main)
+        internal ClsConvar(ClsConvarMain main, IMessage msg)
         {
             this._remoteMain = main;
+            this._msg = msg;
+
+#if DEBUG
+            this._msg.DevMsg("ClsConvar::new() in [{0}]\n", AppDomain.CurrentDomain.FriendlyName);
+#endif
         }
 
         internal ClsConvarMain ConvarMain { get { return this._remoteMain; } }
-
-        //internal readonly ClsMain _main;
-
-        //internal ClsConvar(ClsMain main, UInt64 nativeId, string name, string description, FCVAR flags)
-        //    : base(nativeId, name, description, flags)
-        //{
-        //    this._main = main;
-        //}
 
         /// <summary>
         /// Raised when the value has changed

@@ -83,22 +83,22 @@ bool Mono_UnregisterConvar(uint64 nativeID)
 
 void Mono_ConvarValueChanged(IConVar *var, const char *pOldValue, float flOldValue)
 {
-	DevMsg("Native: Mono_ConvarValueChanged %s\n", "A");
+	//DevMsg("Native: Mono_ConvarValueChanged %s\n", "A");
 	ConVar* v = (ConVar*)var;
 	unsigned short i = g_MonoPlug.m_convars->Find(v);
-	DevMsg("Native: Mono_ConvarValueChanged %s %d\n", "B", i);
+	//DevMsg("Native: Mono_ConvarValueChanged %s %d\n", "B", i);
 	if(i!=g_MonoPlug.m_convars->InvalidIndex())
 	{
 		uint64 nativeID = g_MonoPlug.m_convars->Element(i);
-		DevMsg("Native: Mono_ConvarValueChanged %s%d\n", "C", nativeID);
+		//DevMsg("Native: Mono_ConvarValueChanged %s %d\n", "C", nativeID);
 
 		gpointer args[1];
 		args[0] = &nativeID;
-		DevMsg("Native: Mono_ConvarValueChanged %s\n", "D");
+		//DevMsg("Native: Mono_ConvarValueChanged %s\n", "D");
 		CMonoHelpers::MONO_CALL(g_MonoPlug.m_main, g_MonoPlug.m_ClsMain_ConvarChanged, args);
-		DevMsg("Native: Mono_ConvarValueChanged %s\n", "E");
+		//DevMsg("Native: Mono_ConvarValueChanged %s\n", "E");
 	}
-	DevMsg("Native: Mono_ConvarValueChanged %s\n", "X");
+	//DevMsg("Native: Mono_ConvarValueChanged %s\n", "X");
 };
 
 MonoString* Mono_Convar_GetString(uint64 nativeID)

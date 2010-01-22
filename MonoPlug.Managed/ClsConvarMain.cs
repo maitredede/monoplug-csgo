@@ -9,22 +9,18 @@ namespace MonoPlug
     {
         private readonly ClsMain _main;
         private readonly UInt64 _nativeId;
-        //private readonly string _name;
-        //private readonly string _help;
-        //private readonly FCVAR _flags;
 
         internal UInt64 NativeID { get { return this._nativeId; } }
 
         private ClsConvar _remote = null;
 
-        //internal ClsConvarMain(ClsMain main, UInt64 nativeId, string name, string help, FCVAR flags)
         internal ClsConvarMain(ClsMain main, UInt64 nativeId)
         {
+#if DEBUG
+            main.DevMsg("ClsConvarMain::new() in [{0}]\n", AppDomain.CurrentDomain.FriendlyName);
+#endif
             this._main = main;
             this._nativeId = nativeId;
-            //this._name = name;
-            //this._help = help;
-            //this._flags = flags;
         }
 
         internal void SetRemoteVar(ClsConvar remote)

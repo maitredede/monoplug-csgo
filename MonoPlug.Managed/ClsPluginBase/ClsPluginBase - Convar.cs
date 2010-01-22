@@ -17,10 +17,14 @@ namespace MonoPlug
         /// <returns>Convar instance if success, else null.</returns>
         public ClsConvar RegisterConvar(string name, string help, FCVAR flags, string defaultValue)
         {
+#if DEBUG
+            this._main.DevMsg("ClsConvar::RegisterConvar() in [{0}]\n", AppDomain.CurrentDomain.FriendlyName);
+#endif
+
             ClsConvarMain varMain = this._main.RegisterConvar(this, name, help, flags, defaultValue);
             if (varMain != null)
             {
-                ClsConvar var = new ClsConvar(varMain);
+                ClsConvar var = new ClsConvar(varMain, this._main);
                 varMain.SetRemoteVar(var);
                 return var;
             }
