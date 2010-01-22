@@ -43,9 +43,12 @@ namespace MonoPlug
 
         public ClsMain()
         {
+#if DEBUG
+            NativeMethods.Mono_DevMsg(string.Format("Environement proc count : {0}\n", Environment.ProcessorCount));
+#endif
             this._pool = new MaitreDede.Threading.ThreadPool_2(10);
 #if DEBUG
-            this.DevMsg("DBG: ThreadPool is type {0}\n", this._pool.GetType().Name);
+            NativeMethods.Mono_DevMsg(string.Format("DBG: ThreadPool is type {0}\n", this._pool.GetType().Name));
 #endif
         }
     }
