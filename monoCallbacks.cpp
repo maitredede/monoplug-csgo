@@ -1,5 +1,10 @@
 #include "monoCallbacks.h"
 
+bool LessFunc_uint64(uint64 const& k1, uint64 const& k2)
+{
+	return k1 < k2;
+}
+
 void Mono_Msg(MonoString* msg)
 {
 	META_CONPRINT(mono_string_to_utf8(msg));
@@ -25,31 +30,29 @@ void Mono_Error(MonoString* msg)
 	Error(mono_string_to_utf8(msg));
 };
 
-uint64 Mono_RegisterConvar(MonoString* name, MonoString* help, int flags, MonoString* defaultValue)
+uint64 Mono_RegisterConvar(MonoString* name, MonoString* help, int flags, MonoString* defaultValue, MonoDelegate* changeCallback)
 {
 	char* n_name = mono_string_to_utf8(name);
-	ConVar* var = g_MonoPlug.m_icvar->FindVar(n_name);
-	if(var)
 	{
-		return 0;
+		ConVar* var = g_MonoPlug.m_icvar->FindVar(n_name);
+		if(var)
+		{
+			return 0;
+		}
 	}
-	else
 	{
 		uint64 nativeID = ++g_MonoPlug.m_convarNextId;
-		var = new ConVar(
-			n_name,
-			mono_string_to_utf8(defaultValue),
-			flags,
-			mono_string_to_utf8(help),
-			Mono_ConvarValueChanged
-			);
-		if(META_REGCVAR(var))
+		CMonoConvar* mvar = new CMonoConvar(nativeID, n_name, mono_string_to_utf8(defaultValue), flags, mono_string_to_utf8(help), changeCallback);
+		//var = new ConVar(n_name, mono_string_to_utf8(defaultValue), flags, mono_string_to_utf8(help));
+		mvar->InstallChangeCallback(Mono_CMonoConvar_ValueChanged);
+		if(META_REGCVAR(mvar))
 		{
-			g_MonoPlug.m_convars->Insert(var, nativeID);
+			g_MonoPlug.m_convars->Insert(nativeID, mvar);
 			return nativeID;
 		}
 		else
 		{
+			delete mvar;
 			return 0;
 		}
 	}
@@ -57,106 +60,102 @@ uint64 Mono_RegisterConvar(MonoString* name, MonoString* help, int flags, MonoSt
 
 bool Mono_UnregisterConvar(uint64 nativeID)
 {
-	ConVar* var = NULL;
+	//ConVar* var = NULL;
 
-	unsigned short i = g_MonoPlug.m_convars->FirstInorder();
-	while(i != g_MonoPlug.m_convars->InvalidIndex())
+	unsigned short i = g_MonoPlug.m_convars->Find(nativeID);
+	if(i != g_MonoPlug.m_convars->InvalidIndex())
 	{
-		if(g_MonoPlug.m_convars->Element(i) == nativeID)
-		{
-			var = g_MonoPlug.m_convars->Key(i);
-			break;
-		}
-	}
-
-	if(var)
-	{
-		META_UNREGCVAR(var);
+		CMonoConvar* mvar = g_MonoPlug.m_convars->Element(i);
+		g_MonoPlug.m_convars->Remove(i);
+		META_UNREGCVAR(mvar);
+		delete mvar;
 		return true;
 	}
-	else
-	{
-		return false;
-	}
+	return false;
+
+	//while(i != g_MonoPlug.m_convars->InvalidIndex())
+	//{
+	//	if(g_MonoPlug.m_convars->Element(i) == nativeID)
+	//	{
+	//		var = g_MonoPlug.m_convars->Key(i);
+	//		break;
+	//	}
+	//}
+
+	//if(var)
+	//{
+	//	META_UNREGCVAR(var);
+	//	return true;
+	//}
+	//else
+	//{
+	//	return false;
+	//}
 
 };
 
-void Mono_ConvarValueChanged(IConVar *var, const char *pOldValue, float flOldValue)
+void Mono_CMonoConvar_ValueChanged(IConVar *var, const char *pOldValue, float flOldValue)
 {
 	DevMsg("Native: Mono_ConvarValueChanged %s\n", "Enter...");
-	ConVar* v = (ConVar*)var;
-	unsigned short i = g_MonoPlug.m_convars->Find(v);
-	//DevMsg("Native: Mono_ConvarValueChanged %s %d\n", "B", i);
-	if(i!=g_MonoPlug.m_convars->InvalidIndex())
-	{
-		uint64 nativeID = g_MonoPlug.m_convars->Element(i);
-		//DevMsg("Native: Mono_ConvarValueChanged %s %d\n", "C", nativeID);
-
-		gpointer args[1];
-		args[0] = &nativeID;
-		//DevMsg("Native: Mono_ConvarValueChanged %s\n", "D");
-		CMonoHelpers::MONO_CALL(g_MonoPlug.m_main, g_MonoPlug.m_ClsMain_ConvarChanged, args);
-		//DevMsg("Native: Mono_ConvarValueChanged %s\n", "E");
-	}
+	CMonoConvar* v = (CMonoConvar*)var;
+	v->Changed(var, pOldValue, flOldValue);
 	DevMsg("Native: Mono_ConvarValueChanged %s\n", "Exit...");
 };
 
 MonoString* Mono_Convar_GetString(uint64 nativeID)
 {
-	unsigned short i = g_MonoPlug.m_convars->FirstInorder();
-	do
+	unsigned short i = g_MonoPlug.m_convars->Find(nativeID);
+	if(i != g_MonoPlug.m_convars->InvalidIndex())
 	{
-		if(g_MonoPlug.m_convars->Element(i) == nativeID)
-		{
-			ConVar* var = g_MonoPlug.m_convars->Key(i);
-			return CMonoHelpers::MONO_STRING(g_Domain, var->GetString());
-		}
+		CMonoConvar* var = g_MonoPlug.m_convars->Element(i);
+		return CMonoHelpers::MONO_STRING(g_Domain, var->GetString());
 	}
-	while((i=g_MonoPlug.m_convars->NextInorder(i))!=g_MonoPlug.m_convars->InvalidIndex());
-	return NULL;
+	else
+	{
+		return NULL;
+	}
+
+	//do
+	//{
+	//	if(g_MonoPlug.m_convars->Element(i) == nativeID)
+	//	{
+	//		ConVar* var = g_MonoPlug.m_convars->Key(i);
+	//		return CMonoHelpers::MONO_STRING(g_Domain, var->GetString());
+	//	}
+	//}
+	//while((i=g_MonoPlug.m_convars->NextInorder(i))!=g_MonoPlug.m_convars->InvalidIndex());
+	//return NULL;
 };
 
 void Mono_Convar_SetString(uint64 nativeID, MonoString* value)
 {
-	unsigned short i = g_MonoPlug.m_convars->FirstInorder();
-	while(i++ != g_MonoPlug.m_convars->InvalidIndex())
+	unsigned short i = g_MonoPlug.m_convars->Find(nativeID);
+	if(i != g_MonoPlug.m_convars->InvalidIndex())
 	{
-		if(g_MonoPlug.m_convars->Element(i) == nativeID)
-		{
-			ConVar* var = g_MonoPlug.m_convars->Key(i);
-			char* c_value = mono_string_to_utf8(value);
-			var->SetValue(c_value);
-			break;
-		}
+		CMonoConvar* var = g_MonoPlug.m_convars->Element(i);
+		char* c_value = mono_string_to_utf8(value);
+		var->SetValue(c_value);
 	}
 };
 
 bool Mono_Convar_GetBoolean(uint64 nativeID)
 {
-	unsigned short i = g_MonoPlug.m_convars->FirstInorder();
-	do
+	unsigned short i = g_MonoPlug.m_convars->Find(nativeID);
+	if(i != g_MonoPlug.m_convars->InvalidIndex())
 	{
-		if(g_MonoPlug.m_convars->Element(i) == nativeID)
-		{
-			ConVar* var = g_MonoPlug.m_convars->Key(i);
+			CMonoConvar* var = g_MonoPlug.m_convars->Element(i);
 			return var->GetBool();
-		}
 	}
-	while((i=g_MonoPlug.m_convars->NextInorder(i))!=g_MonoPlug.m_convars->InvalidIndex());
 	return FALSE;
 };
 
 void Mono_Convar_SetBoolean(uint64 nativeID, bool value)
 {
-	unsigned short i = g_MonoPlug.m_convars->FirstInorder();
-	while(i++ != g_MonoPlug.m_convars->InvalidIndex())
+	unsigned short i = g_MonoPlug.m_convars->Find(nativeID);
+	if(i != g_MonoPlug.m_convars->InvalidIndex())
 	{
-		if(g_MonoPlug.m_convars->Element(i) == nativeID)
-		{
-			ConVar* var = g_MonoPlug.m_convars->Key(i);
-			var->SetValue(value);
-			break;
-		}
+			CMonoConvar* var = g_MonoPlug.m_convars->Element(i);
+			return var->SetValue(value);
 	}
 };
 

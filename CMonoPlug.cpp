@@ -144,8 +144,8 @@ bool CMonoPlug::Load(PluginId id, ISmmAPI *ismm, char *error, size_t maxlen, boo
 
 	//All object creation is OK, init internal ararys
 	this->m_convarNextId = 0;
-	this->m_convars = new CUtlMap<ConVar*, uint64>();
-	this->m_convars->SetLessFunc(LessFunc_CMonoCommand);
+	this->m_convars = new CUtlMap<uint64, CMonoConvar*>();
+	this->m_convars->SetLessFunc(LessFunc_uint64);
 	this->m_commands = new CUtlVector<CMonoCommand*>();
 
 
@@ -209,6 +209,11 @@ bool CMonoPlug::Load(PluginId id, ISmmAPI *ismm, char *error, size_t maxlen, boo
 	g_SMAPI->AddListener(g_PLAPI, this);
 
 	MonoObject* r = CMonoHelpers::MONO_CALL(this->m_main, this->m_ClsMain_Init, NULL);
+	if(NULL == r)
+	{
+		Q_snprintf(error, maxlen, "Unhandled managed exception in ClsMain::Init()");
+		return false;
+	}
 	bool ret = *(bool*)mono_object_unbox(r);
 
 	return ret;
@@ -231,7 +236,7 @@ void CMonoPlug::GameFrame(bool simulating)
 	//don't log this, it just pumps stuff to the screen ;]
 	//META_LOG(g_PLAPI, "GameFrame() called: simulating=%d", simulating);
 	CMonoHelpers::MONO_CALL(this->m_main, this->m_ClsMain_EVT_GameFrame);
-	RETURN_META(MRES_IGNORED);
+	//RETURN_META(MRES_IGNORED);
 }
 
 void CMonoPlug::FireGameEvent( IGameEvent *event )

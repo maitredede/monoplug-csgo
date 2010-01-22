@@ -496,7 +496,6 @@
 			IntermediateDirectory="$(ConfigurationName)"
 			ConfigurationType="2"
 			CharacterSet="2"
-			EnableManagedIncrementalBuild="0"
 			>
 			<Tool
 				Name="VCPreBuildEventTool"
@@ -540,7 +539,6 @@
 				Name="VCLinkerTool"
 				AdditionalDependencies="&quot;$(HL2SDKOBVALVE)\lib\public\tier0.lib&quot; &quot;$(HL2SDKOBVALVE)\lib\public\tier1.lib&quot; &quot;$(HL2SDKOBVALVE)\lib\public\vstdlib.lib&quot; ..\mono.lib"
 				OutputFile="$(OutDir)\monoplug_mm.dll"
-				LinkIncremental="1"
 				IgnoreDefaultLibraryNames="LIBC;LIBCD;LIBCMT"
 				GenerateDebugInformation="true"
 				SubSystem="2"
@@ -983,6 +981,10 @@
 				>
 			</File>
 			<File
+				RelativePath="..\CMonoConvar.cpp"
+				>
+			</File>
+			<File
 				RelativePath="..\CMonoHelpers.cpp"
 				>
 			</File>
@@ -1021,6 +1023,10 @@
 				>
 			</File>
 			<File
+				RelativePath="..\CMonoConvar.h"
+				>
+			</File>
+			<File
 				RelativePath="..\CMonoHelpers.h"
 				>
 			</File>
@@ -1044,12 +1050,6 @@
 				RelativePath="..\monoCallbacks.h"
 				>
 			</File>
-		</Filter>
-		<Filter
-			Name="Resource Files"
-			Filter="rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav"
-			UniqueIdentifier="{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}"
-			>
 		</Filter>
 	</Files>
 	<Globals>

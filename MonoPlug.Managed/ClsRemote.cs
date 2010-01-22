@@ -64,54 +64,81 @@ namespace MonoPlug
 
         public PluginDefinition[] GetPluginsFromDirectory(IMessage msg, string path)
         {
-            List<PluginDefinition> lst = new List<PluginDefinition>();
-            string[] files = Directory.GetFiles(path, "*.dll");
-            foreach (string file in files)
+#if DEBUG
+            msg.DevMsg("GetPluginsFromDirectory: Scanning path {0}\n", path);
+            try
             {
-
-                try
+#endif
+                List<PluginDefinition> lst = new List<PluginDefinition>();
+                string[] files = Directory.GetFiles(path, "*.dll", SearchOption.TopDirectoryOnly);
+#if DEBUG
+                msg.DevMsg("   Files count : {0}\n", files.Length);
+#endif
+                foreach (string file in files)
                 {
-                    string filename = Path.Combine(path, file);
-                    Assembly asm = Assembly.LoadFile(filename);
-                    foreach (Type t in asm.GetTypes())
+#if DEBUG
+                    msg.DevMsg("   Scanning file {0}\n", file);
+#endif
+                    try
                     {
-                        try
+                        string filename = Path.Combine(path, file);
+#if DEBUG
+                        msg.DevMsg("   Filename is  {0}\n", filename);
+#endif
+                        Assembly asm = Assembly.LoadFile(filename);
+                        foreach (Type t in asm.GetTypes())
                         {
-                            if (!t.IsAbstract && t.IsSubclassOf(typeof(ClsPluginBase)) && t.IsPublic)
+                            try
                             {
-                                ConstructorInfo ctor = t.GetConstructor(Type.EmptyTypes);
-                                if (ctor != null)
+                                if (!t.IsAbstract && t.IsSubclassOf(typeof(ClsPluginBase)) && t.IsPublic)
                                 {
-                                    ClsPluginBase plugin = (ClsPluginBase)ctor.Invoke(null);
-                                    PluginDefinition definition = new PluginDefinition();
-                                    definition.File = Path.GetFileName(filename);
-                                    definition.Name = plugin.Name;
-                                    definition.Type = plugin.GetType().FullName;
-                                    definition.Description = plugin.Description;
-                                    lst.Add(definition);
+#if DEBUG
+                                    msg.DevMsg("   Type is ClsPluginBase {0}\n", t.FullName);
+#endif
+                                    ConstructorInfo ctor = t.GetConstructor(Type.EmptyTypes);
+                                    if (ctor != null)
+                                    {
+                                        ClsPluginBase plugin = (ClsPluginBase)ctor.Invoke(null);
+                                        PluginDefinition definition = new PluginDefinition();
+                                        definition.File = Path.GetFileName(filename);
+                                        definition.Name = plugin.Name;
+                                        definition.Type = plugin.GetType().FullName;
+                                        definition.Description = plugin.Description;
+#if DEBUG
+                                        msg.DevMsg("   Found Plugin {0}\n", plugin.Name);
+#endif
+                                        lst.Add(definition);
+                                    }
                                 }
                             }
-                        }
-                        catch (Exception ex)
-                        {
-                            msg.Error("Can't create type : {0}\n", t.FullName);
+                            catch (Exception ex)
+                            {
+                                msg.Warning("Can't create type : {0}\n", t.FullName);
 #if DEBUG
-                            msg.Error(ex);
+                                msg.Warning(ex);
 #endif
+                            }
                         }
                     }
-                }
-                catch (Exception ex)
-                {
-                    msg.Warning("Can't load file : {0}\n", file);
+                    catch (Exception ex)
+                    {
+                        msg.Warning("Can't load file : {0}\n", file);
 #if DEBUG
-                    msg.Error(ex);
+                        msg.Warning(ex);
 #endif
+                    }
                 }
+                return lst.ToArray();
+#if DEBUG
             }
-            return lst.ToArray();
+            finally
+            {
+                msg.DevMsg("GetPluginsFromDirectory: exit\n");
+            }
+#endif
         }
 
+#if DEBUG
         internal static void DumpDomainAssemblies(IMessage msg)
         {
             Assembly[] arr = AppDomain.CurrentDomain.GetAssemblies();
@@ -122,5 +149,6 @@ namespace MonoPlug
             }
             msg.DevMsg("DumpCurrentDomainAssemblies : End\n");
         }
+#endif
     }
 }

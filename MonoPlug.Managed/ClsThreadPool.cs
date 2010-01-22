@@ -79,7 +79,7 @@ namespace MonoPlug
             }
             catch (Exception ex)
             {
-                this._msg.Error(ex);
+                this._msg.Warning(ex);
                 throw ex;
             }
         }

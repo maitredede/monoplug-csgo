@@ -29,17 +29,24 @@ namespace MonoPlug
 
         public void Error(Exception ex)
         {
+            this.Error(this.GetExceptionText(ex));
+        }
+
+        private string GetExceptionText(Exception ex)
+        {
+            StringBuilder sb = new StringBuilder();
             while (ex != null)
             {
-                this.Error("-- {0} --\n", ex.GetType().FullName);
-                this.Error("{0}\n", ex.Message);
-                this.Error("{0}\n", ex.StackTrace);
+                sb.AppendFormat("-- {0} --\n", ex.GetType().FullName);
+                sb.AppendFormat("{0}\n", ex.Message);
+                sb.AppendFormat("{0}\n", ex.StackTrace);
                 ex = ex.InnerException;
                 if (ex == null)
                 {
-                    this.Error("---------------\n");
+                    sb.AppendFormat("---------------\n");
                 }
             }
+            return sb.ToString();
         }
 
         public void Error(string format, params object[] elements)
@@ -60,6 +67,11 @@ namespace MonoPlug
         {
             NativeMethods.Mono_Error(msg);
             return null;
+        }
+
+        public void Warning(Exception ex)
+        {
+            this.Warning(this.GetExceptionText(ex));
         }
 
         public void Warning(string format, params object[] elements)

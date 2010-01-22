@@ -44,7 +44,7 @@ namespace MonoPlug
             }
             catch (Exception ex)
             {
-                this._remoteMain.Msg.Error(ex);
+                this._remoteMain.Msg.Warning(ex);
             }
             finally
             {

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 using System.Runtime.CompilerServices;
+using System.Threading;
 
 namespace MonoPlug
 {
@@ -19,7 +20,7 @@ namespace MonoPlug
         internal static extern void Mono_Error(string msg);
 
         [MethodImpl(MethodImplOptions.InternalCall)]
-        internal static extern UInt64 Mono_RegisterConvar(string name, string description, int flags, string defaultValue);
+        internal static extern UInt64 Mono_RegisterConvar(string name, string description, int flags, string defaultValue, ThreadStart changeDelegate);
         [MethodImpl(MethodImplOptions.InternalCall)]
         internal static extern bool Mono_UnregisterConvar(UInt64 nativeID);
 

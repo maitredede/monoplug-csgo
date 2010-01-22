@@ -34,7 +34,7 @@ namespace MonoPlug
         private void _enabled_ValueChanged(object sender, EventArgs e)
         {
 #if DEBUG
-            this.DevMsg("ConClock::EnabledValueChanged enter...");
+            this.DevMsg("ConClock::EnabledValueChanged enter...\n");
             try
             {
 #endif
@@ -57,7 +57,7 @@ namespace MonoPlug
             }
             finally
             {
-                this.DevMsg("ConClock::EnabledValueChanged Exit...");
+                this.DevMsg("ConClock::EnabledValueChanged Exit...\n");
             }
 #endif
         }

@@ -11,28 +11,15 @@ namespace MonoPlug
         /// </summary>
         internal bool Init()
         {
-            //get current thread Id to check for interthread calls
-            this._mainThreadId = System.Threading.Thread.CurrentThread.ManagedThreadId;
-
 #if DEBUG
-            this.DevMsg("DBG: ClsMain::Init (enter)\n");
+            NativeMethods.Mono_DevMsg("DBG: ClsMain::Init (enter)\n");
             try
             {
-#endif
-                //Register base commands and vars
-                this._clr_mono_version = this.RegisterConvar(null, "clr_mono_version", "Get current Mono runtime version", FCVAR.FCVAR_SPONLY | FCVAR.FCVAR_CHEAT | FCVAR.FCVAR_PRINTABLEONLY, this.MonoVersion);
-                this._clr_plugin_directory = this.RegisterConvar(null, "clr_plugin_directory", "Assembly plugin search path", FCVAR.FCVAR_SPONLY | FCVAR.FCVAR_CHEAT | FCVAR.FCVAR_PRINTABLEONLY, this.GetAssemblyDirectory());
+                //get current thread Id to check for interthread calls
+                this._mainThreadId = System.Threading.Thread.CurrentThread.ManagedThreadId;
 
-                this._clr_plugin_list = this.RegisterConCommand(null, "clr_plugin_list", "List available plugins and loaded plugins", this.clr_plugin_list, FCVAR.FCVAR_NONE, null);
-                this._clr_plugin_refresh = this.RegisterConCommand(null, "clr_plugin_refresh", "Refresh internal list of plugins", this.clr_plugin_refresh, FCVAR.FCVAR_NONE, null);
-                this._clr_plugin_load = this.RegisterConCommand(null, "clr_plugin_load", "Load and start a CLR plugin", this.clr_plugin_load, FCVAR.FCVAR_NONE, this.clr_plugin_load_complete);
-                this._clr_plugin_unload = this.RegisterConCommand(null, "clr_plugin_unload", "Unload a CLR plugin", this.clr_plugin_unload, FCVAR.FCVAR_NONE, this.clr_plugin_load_complete);
-#if DEBUG
-                this._clr_test = this.RegisterConCommand(null, "clr_test", "for developpement purposes only", this.clr_test, FCVAR.FCVAR_NONE, null);
+                NativeMethods.Mono_DevMsg(string.Format("DBG: ClsMain::Init main thread id = {0}\n", this._mainThreadId));
 #endif
-                //Refresh plugin cache
-                this.clr_plugin_refresh(string.Empty, null);
-
                 this.DevMsg("DBG: ClsMain::Init (C)\n");
                 try
                 {
@@ -47,8 +34,22 @@ namespace MonoPlug
                 }
                 catch (Exception ex)
                 {
-                    this.Error(ex);
+                    this.Warning(ex);
                 }
+
+                //Register base commands and vars
+                this._clr_mono_version = this.RegisterConvar(null, "clr_mono_version", "Get current Mono runtime version", FCVAR.FCVAR_SPONLY | FCVAR.FCVAR_CHEAT | FCVAR.FCVAR_PRINTABLEONLY, this.MonoVersion);
+                this._clr_plugin_directory = this.RegisterConvar(null, "clr_plugin_directory", "Assembly plugin search path", FCVAR.FCVAR_SPONLY | FCVAR.FCVAR_CHEAT | FCVAR.FCVAR_PRINTABLEONLY, this.GetAssemblyDirectory());
+
+                this._clr_plugin_list = this.RegisterConCommand(null, "clr_plugin_list", "List available plugins and loaded plugins", this.clr_plugin_list, FCVAR.FCVAR_NONE, null);
+                this._clr_plugin_refresh = this.RegisterConCommand(null, "clr_plugin_refresh", "Refresh internal list of plugins", this.clr_plugin_refresh, FCVAR.FCVAR_NONE, null);
+                this._clr_plugin_load = this.RegisterConCommand(null, "clr_plugin_load", "Load and start a CLR plugin", this.clr_plugin_load, FCVAR.FCVAR_NONE, this.clr_plugin_load_complete);
+                this._clr_plugin_unload = this.RegisterConCommand(null, "clr_plugin_unload", "Unload a CLR plugin", this.clr_plugin_unload, FCVAR.FCVAR_NONE, this.clr_plugin_load_complete);
+#if DEBUG
+                this._clr_test = this.RegisterConCommand(null, "clr_test", "for developpement purposes only", this.clr_test, FCVAR.FCVAR_NONE, null);
+#endif
+                //Refresh plugin cache
+                this.clr_plugin_refresh(string.Empty, null);
 
                 this.DevMsg("DBG: ClsMain::Init (D)\n");
                 return true;
@@ -56,7 +57,7 @@ namespace MonoPlug
             }
             catch (Exception ex)
             {
-                this.Error(ex);
+                this.Warning(ex);
                 return false;
             }
             finally

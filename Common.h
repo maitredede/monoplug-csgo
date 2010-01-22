@@ -4,6 +4,7 @@
 //Mono
 #include <glib-2.0/glib.h>
 #include <mono/jit/jit.h>
+#include <mono/metadata/class.h>
 #include <mono/metadata/mono-config.h>
 #include <mono/metadata/assembly.h>
 #include <mono/metadata/debug-helpers.h>

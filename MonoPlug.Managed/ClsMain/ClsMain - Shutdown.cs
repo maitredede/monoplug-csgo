@@ -32,7 +32,7 @@ namespace MonoPlug
             }
             catch (Exception ex)
             {
-                this.Error(ex);
+                this.Warning(ex);
             }
 
             //Remove internals

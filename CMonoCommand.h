@@ -19,6 +19,4 @@ private:
 	MonoDelegate* m_complete;
 };
 
-bool LessFunc_CMonoCommand(ConVar* const& key1, ConVar* const&  key2);
-
 #endif //_MONOCOMMAND_H_

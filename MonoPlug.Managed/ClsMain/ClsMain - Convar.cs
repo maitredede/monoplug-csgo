@@ -36,14 +36,14 @@ namespace MonoPlug
                 }
                 else
                 {
-                    this.Error("Can't register var {0} for plugin {1}\n", name, plugin ?? (object)"<main>");
+                    this.Warning("Can't register var {0} for plugin {1}\n", name, plugin ?? (object)"<main>");
                     return null;
                 }
             }
 #if DEBUG
             catch (Exception ex)
             {
-                this.Error(ex);
+                this.Warning(ex);
                 return null;
             }
 #endif
@@ -95,7 +95,7 @@ namespace MonoPlug
             }
             catch (Exception ex)
             {
-                this.Error(ex);
+                this.Warning(ex);
             }
             finally
             {
@@ -117,7 +117,7 @@ namespace MonoPlug
             }
             catch (Exception ex)
             {
-                this.Error(ex);
+                this.Warning(ex);
             }
             finally
             {

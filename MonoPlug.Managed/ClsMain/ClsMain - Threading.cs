@@ -104,6 +104,12 @@ namespace MonoPlug
                     }
                 }
             }
+#if DEBUG
+            catch (Exception ex)
+            {
+                this.Warning(ex);
+            }
+#endif
             finally
             {
                 this._lckThreadQueue.ReleaseReaderLock();

@@ -20,8 +20,8 @@ namespace MonoPlug
             }
             catch (Exception ex)
             {
-                this.Error("Plugin UnInit() error\n");
-                this.Error(ex);
+                this.Warning("Plugin UnInit() error\n");
+                this.Warning(ex);
             }
 
             //Clean commands
@@ -45,8 +45,8 @@ namespace MonoPlug
             }
             catch (Exception ex)
             {
-                this.Error("Plugin ConCommandClean error\n");
-                this.Error(ex);
+                this.Warning("Plugin ConCommandClean error\n");
+                this.Warning(ex);
             }
 
             //Clean convars
@@ -136,7 +136,7 @@ namespace MonoPlug
             }
             catch (Exception ex)
             {
-                this.Error(ex);
+                this.Warning(ex);
             }
         }
     }

@@ -4,6 +4,7 @@
 //Mono
 #include "Common.h"
 #include "CMonoCommand.h"
+#include "CMonoConvar.h"
 #include "CMonoPlugAccessor.h"
 #include "CMonoPlugListener.h"
 #include "CMonoConsole.h"
@@ -157,7 +158,7 @@ public:
 	CUtlVector<CMonoCommand*>* m_commands;
 
 	uint64 m_convarNextId;
-	CUtlMap<ConVar*, uint64>* m_convars;
+	CUtlMap<uint64, CMonoConvar*>* m_convars;
 public:
 	int m_EdictCount;
 	int m_MaxPlayers;

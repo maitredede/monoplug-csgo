@@ -62,8 +62,8 @@ namespace MonoPlug
                             }
                             catch (NullReferenceException ex)
                             {
-                                this.Error("Can't load plugin (NullReferenceException) '{0}'\n", line);
-                                this.Error(ex);
+                                this.Warning("Can't load plugin (NullReferenceException) '{0}'\n", line);
+                                this.Warning(ex);
                                 this.UnloadPlugin(dom, plugin);
                                 if (dom != null)
                                 {
@@ -73,9 +73,9 @@ namespace MonoPlug
                             }
                             catch (FileNotFoundException ex)
                             {
-                                this.Error("Can't load plugin (FileNotFoundException) '{0}'\n", line);
-                                this.Error("File was : {0}\n", ex.FileName);
-                                this.Error(ex);
+                                this.Warning("Can't load plugin (FileNotFoundException) '{0}'\n", line);
+                                this.Warning("File was : {0}\n", ex.FileName);
+                                this.Warning(ex);
                                 this.UnloadPlugin(dom, plugin);
                                 if (dom != null)
                                 {
@@ -85,7 +85,7 @@ namespace MonoPlug
                             }
                             catch (Exception ex)
                             {
-                                this.Error(ex);
+                                this.Warning(ex);
                                 this.UnloadPlugin(dom, plugin);
                                 if (dom != null)
                                 {

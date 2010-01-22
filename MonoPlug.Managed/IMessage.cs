@@ -29,6 +29,11 @@ namespace MonoPlug
         /// <param name="elements"></param>
         void Warning(string format, params object[] elements);
         /// <summary>
+        /// Warning
+        /// </summary>
+        /// <param name="ex"></param>
+        void Warning(Exception ex);
+        /// <summary>
         /// Error
         /// </summary>
         /// <param name="format"></param>

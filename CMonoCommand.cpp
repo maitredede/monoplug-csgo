@@ -1,10 +1,5 @@
 #include "CMonoCommand.h"
 
-bool LessFunc_CMonoCommand(ConVar* const& key1, ConVar* const& key2)
-{
-	return (strcmpi(key1->GetName(), key2->GetName()) < 0);
-};
-
 CMonoCommand::CMonoCommand(char* name, char* description, MonoDelegate* code, int flags,MonoDelegate* complete)
 : ConCommand(name, (FnCommandCallback_t)NULL, description, flags, (FnCommandCompletionCallback)NULL)
 {
