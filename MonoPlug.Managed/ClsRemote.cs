@@ -18,67 +18,6 @@ namespace MonoPlug
             this._current = AppDomain.CurrentDomain;
         }
 
-        //        public ClsPluginBase CreatePlugin(IMessage msg, PluginDefinition desc)
-        //        {
-        //#if DEBUG
-        //            msg.DevMsg("DBG: Entering Remote::CreatePlugin in [{0}]...\n", this.AppDomainName);
-        //#endif
-        //            try
-        //            {
-        //                return this.CreateClass<ClsPluginBase>(msg, this._current, desc.Type);
-        //            }
-        //            catch (Exception ex)
-        //            {
-        //                msg.Error("RM: Plugin creation error error\n");
-        //                msg.Error(ex);
-        //                throw ex;
-        //            }
-        //#if DEBUG
-        //            finally
-        //            {
-        //                msg.DevMsg("DBG: Exiting Remote_CreatePlugin...\n");
-        //            }
-        //#endif
-        //        }
-
-        //        private T CreateClass<T>(ClsMain owner, AppDomain dom) where T : class
-        //        {
-        //            return this.CreateClass<T>(owner, dom, typeof(T).FullName);
-        //        }
-        //        private T CreateClass<T>(ClsMain owner, AppDomain dom, string typeName) where T : class
-        //        {
-        //#if DEBUG
-        //            owner.DevMsg("Entering RemoteCreateClass in [{0}] for [{1}]...\n", AppDomain.CurrentDomain.FriendlyName, dom.FriendlyName);
-        //            try
-        //            {
-        //#endif
-        //                Assembly remoteSystemAssemnly = dom.Load(typeof(Assembly).Assembly.FullName);
-        //#if DEBUG
-        //                owner.DevMsg("  RemoteCreateClass A in [{0}] for [{1}]...\n", AppDomain.CurrentDomain.FriendlyName, dom.FriendlyName);
-        //#endif
-        //                Type remoteAssemblyType = remoteSystemAssemnly.GetType(typeof(Assembly).FullName);
-        //#if DEBUG
-        //                owner.DevMsg("  RemoteCreateClass B in [{0}] for [{1}]...\n", AppDomain.CurrentDomain.FriendlyName, dom.FriendlyName);
-        //#endif
-        //                Assembly remoteAssembly = (Assembly)remoteAssemblyType.InvokeMember("LoadFile", BindingFlags.Public | BindingFlags.Static | BindingFlags.InvokeMethod, null, null, new object[] { typeof(T).Assembly.Location });
-        //#if DEBUG
-        //                owner.DevMsg("  RemoteCreateClass C in [{0}] for [{1}]...\n", AppDomain.CurrentDomain.FriendlyName, dom.FriendlyName);
-        //#endif
-        //                T item = (T)dom.CreateInstanceAndUnwrap(remoteAssembly.FullName, typeName);
-
-        //#if DEBUG
-        //                owner.DevMsg("  RemoteCreateClass OK in [{0}] for [{1}]...\n", AppDomain.CurrentDomain.FriendlyName, dom.FriendlyName);
-        //#endif
-        //                return item;
-        //#if DEBUG
-        //            }
-        //            finally
-        //            {
-        //                owner.DevMsg("Exiting RemoteCreateClass...\n");
-        //            }
-        //#endif
-        //        }
-
         public ClsPluginBase CreatePluginClass(IMessage msg, string assemblyBaseDir, PluginDefinition plugin)
         {
             return (ClsPluginBase)CreateInDomain(this._current, msg, Path.Combine(assemblyBaseDir, plugin.File), plugin.Type);
