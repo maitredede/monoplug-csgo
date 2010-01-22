@@ -25,6 +25,8 @@ namespace MonoPlug
         private readonly ReaderWriterLock _lckConvars = new ReaderWriterLock();
         private readonly Dictionary<string, ConCommandEntry> _concommands = new Dictionary<string, ConCommandEntry>();
 
+        private readonly MaitreDede.Threading.ThreadPoolBase _pool = new MaitreDede.Threading.ThreadPool_3();
+
         /// <summary>
         /// Available plugin cache list 
         /// </summary>
@@ -41,9 +43,6 @@ namespace MonoPlug
 
         public ClsMain()
         {
-            NativeMethods.Mono_DevMsg("DBG: New Main in domain " + AppDomain.CurrentDomain.FriendlyName + "\n");
-            NativeMethods.Mono_DevMsg("DBG: BaseDirectory=" + AppDomain.CurrentDomain.BaseDirectory + "\n");
-            NativeMethods.Mono_DevMsg("DBG: RelativeSearchPath=" + AppDomain.CurrentDomain.RelativeSearchPath + "\n");
         }
     }
 }

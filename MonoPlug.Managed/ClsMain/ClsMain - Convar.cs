@@ -74,7 +74,7 @@ namespace MonoPlug
 #if DEBUG
                         this.DevMsg("Queueing event raise\n");
 #endif
-                        ThreadPool.QueueUserWorkItem(this.ConvarChangedRaise, entry);
+                        this._pool.QueueUserWorkItem(this.ConvarChangedRaise, entry);
 #if DEBUG
                         this.DevMsg("Queued event raise\n");
 #endif
@@ -103,14 +103,14 @@ namespace MonoPlug
 #endif
         }
 
-        private void ConvarChangedRaise(object state)
+        private void ConvarChangedRaise(ConVarEntry entry)
         {
 #if DEBUG
             this.DevMsg("Threaded ConvarChangedRaise enter...\n");
             try
             {
 #endif
-                ConVarEntry entry = (ConVarEntry)state;
+                //ConVarEntry entry = (ConVarEntry)state;
                 entry.Var.RaiseValueChanged();
 #if DEBUG
             }

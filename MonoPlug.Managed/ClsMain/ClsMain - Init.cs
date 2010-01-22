@@ -34,6 +34,23 @@ namespace MonoPlug
                 this.clr_plugin_refresh(string.Empty, null);
 
                 this.DevMsg("DBG: ClsMain::Init (C)\n");
+                try
+                {
+                    int wrkTh;
+                    int compTh;
+                    System.Threading.ThreadPool.GetAvailableThreads(out wrkTh, out compTh);
+                    this.DevMsg("ThreadPool Available : wrk={0} cmp={0}\n");
+                    System.Threading.ThreadPool.GetMinThreads(out wrkTh, out compTh);
+                    this.DevMsg("ThreadPool Minimum  : wrk={0} cmp={0}\n");
+                    System.Threading.ThreadPool.GetMaxThreads(out wrkTh, out compTh);
+                    this.DevMsg("ThreadPool Maximum  : wrk={0} cmp={0}\n");
+                }
+                catch (Exception ex)
+                {
+                    this.Error(ex);
+                }
+
+                this.DevMsg("DBG: ClsMain::Init (D)\n");
                 return true;
 #if DEBUG
             }
