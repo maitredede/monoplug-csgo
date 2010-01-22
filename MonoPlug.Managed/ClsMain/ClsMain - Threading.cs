@@ -61,27 +61,27 @@ namespace MonoPlug
             }
             else
             {
-                Console.WriteLine("ITH: dom={0} cur={1} main={2}\n", AppDomain.CurrentDomain.FriendlyName, Thread.CurrentThread.ManagedThreadId, this._mainThreadId);
+                Console.WriteLine("ITH: dom={0} cur={1} main={2}", AppDomain.CurrentDomain.FriendlyName, Thread.CurrentThread.ManagedThreadId, this._mainThreadId);
             }
 
             using (ClsThreadItem item = new ClsThreadItem(d, parameter))
             {
-
                 this._lckThreadQueue.AcquireWriterLock(Timeout.Infinite);
                 try
                 {
-                    Console.WriteLine("ITH: Enqueuing\n");
+                    Console.WriteLine("ITH: Enqueuing");
                     this._threadQueue.Enqueue(item);
                 }
                 finally
                 {
-                    Console.WriteLine("ITH: Enqueued\n");
+                    Console.WriteLine("ITH: Enqueued");
                     this._lckThreadQueue.ReleaseWriterLock();
                 }
 
-                Console.WriteLine("ITH: Wait\n");
+                Console.WriteLine("ITH: Wait");
+                Console.WriteLine(Environment.StackTrace);
                 item.WaitOne();
-                Console.WriteLine("ITH: Exit\n");
+                Console.WriteLine("ITH: Exit");
                 return (TRet)item.ReturnValue;
             }
         }
