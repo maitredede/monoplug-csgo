@@ -39,11 +39,11 @@ namespace MonoPlug
                     int wrkTh;
                     int compTh;
                     System.Threading.ThreadPool.GetAvailableThreads(out wrkTh, out compTh);
-                    this.DevMsg("ThreadPool Available : wrk={0} cmp={0}\n");
+                    this.DevMsg("ThreadPool Available : wrk={0} cmp={0}\n", wrkTh, compTh);
                     System.Threading.ThreadPool.GetMinThreads(out wrkTh, out compTh);
-                    this.DevMsg("ThreadPool Minimum  : wrk={0} cmp={0}\n");
+                    this.DevMsg("ThreadPool Minimum  : wrk={0} cmp={0}\n", wrkTh, compTh);
                     System.Threading.ThreadPool.GetMaxThreads(out wrkTh, out compTh);
-                    this.DevMsg("ThreadPool Maximum  : wrk={0} cmp={0}\n");
+                    this.DevMsg("ThreadPool Maximum  : wrk={0} cmp={0}\n", wrkTh, compTh);
                 }
                 catch (Exception ex)
                 {
