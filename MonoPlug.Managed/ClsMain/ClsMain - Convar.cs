@@ -47,22 +47,33 @@ namespace MonoPlug
         internal void ConvarChanged(UInt64 nativeID)
         {
 #if DEBUG
-            NativeMethods.Mono_DevMsg(string.Format("ConvarChanged({0}) A", nativeID));
-#endif
-            lock (this._convars)
+            this.DevMsg("ConvarChanged({0}) Enter\n", nativeID);
+            try
             {
-                NativeMethods.Mono_DevMsg(string.Format("ConvarChanged({0}) B", nativeID));
-                if (this._convars.ContainsKey(nativeID))
+#endif
+                lock (this._convars)
                 {
-                    NativeMethods.Mono_DevMsg(string.Format("ConvarChanged({0}) C", nativeID));
-                    ConVarEntry entry = this._convars[nativeID];
-                    NativeMethods.Mono_DevMsg(string.Format("ConvarChanged({0}) D", nativeID));
-                    ThreadPool.QueueUserWorkItem(this.ConvarChangedRaise, entry);
-                    NativeMethods.Mono_DevMsg(string.Format("ConvarChanged({0}) E", nativeID));
+                    NativeMethods.Mono_DevMsg(string.Format("ConvarChanged({0}) B", nativeID));
+                    if (this._convars.ContainsKey(nativeID))
+                    {
+                        NativeMethods.Mono_DevMsg(string.Format("ConvarChanged({0}) C", nativeID));
+                        ConVarEntry entry = this._convars[nativeID];
+                        NativeMethods.Mono_DevMsg(string.Format("ConvarChanged({0}) D", nativeID));
+                        ThreadPool.QueueUserWorkItem(this.ConvarChangedRaise, entry);
+                        NativeMethods.Mono_DevMsg(string.Format("ConvarChanged({0}) E", nativeID));
+                    }
                 }
+#if DEBUG
             }
-
-            NativeMethods.Mono_DevMsg(string.Format("ConvarChanged({0}) F", nativeID));
+            catch (Exception ex)
+            {
+                this.Error(ex);
+            }
+            finally
+            {
+                this.DevMsg(string.Format("ConvarChanged({0}) Exit", nativeID));
+            }
+#endif
         }
 
         private void ConvarChangedRaise(object state)
