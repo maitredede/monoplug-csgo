@@ -21,7 +21,8 @@ namespace MonoPlug
         private readonly Dictionary<AppDomain, ClsPluginBase> _plugins = new Dictionary<AppDomain, ClsPluginBase>();
         private readonly ReaderWriterLock _lckPlugins = new ReaderWriterLock();
 
-        private readonly Dictionary<UInt64, ConVarEntry> _convars = new Dictionary<UInt64, ConVarEntry>();
+        private readonly Dictionary<UInt64, ConVarEntry> _convarsList = new Dictionary<UInt64, ConVarEntry>();
+        private readonly ReaderWriterLock _lckConvars = new ReaderWriterLock();
         private readonly Dictionary<string, ConCommandEntry> _concommands = new Dictionary<string, ConCommandEntry>();
 
         /// <summary>

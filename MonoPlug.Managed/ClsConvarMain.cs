@@ -11,6 +11,7 @@ namespace MonoPlug
         private readonly UInt64 _nativeId;
 
         internal UInt64 NativeID { get { return this._nativeId; } }
+        internal IMessage Msg { get { return this._main; } }
 
         private ClsConvar _remote = null;
 

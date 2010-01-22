@@ -24,7 +24,7 @@ namespace MonoPlug
             ClsConvarMain varMain = this._main.RegisterConvar(this, name, help, flags, defaultValue);
             if (varMain != null)
             {
-                ClsConvar var = new ClsConvar(varMain, this._main);
+                ClsConvar var = new ClsConvar(varMain);
                 varMain.SetRemoteVar(var);
                 return var;
             }

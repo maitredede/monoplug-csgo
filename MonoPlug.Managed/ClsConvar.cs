@@ -8,22 +8,21 @@ namespace MonoPlug
     /// A Convar used by managed code
     /// </summary>
     //[Obsolete("Temporary, for rewriting...", true)]
-    public class ClsConvar : MarshalByRefObject /* ClsConCommandBase */
+    public sealed class ClsConvar : MarshalByRefObject /* ClsConCommandBase */
     {
         internal readonly ClsConvarMain _remoteMain;
-        internal readonly IMessage _msg;
 
-        internal ClsConvar(ClsConvarMain main, IMessage msg)
+        internal ClsConvarMain ConvarMain { get { return this._remoteMain; } }
+
+        internal ClsConvar(ClsConvarMain main)
         {
             this._remoteMain = main;
-            this._msg = msg;
 
 #if DEBUG
-            this._msg.DevMsg("ClsConvar::new() in [{0}]\n", AppDomain.CurrentDomain.FriendlyName);
+            this._remoteMain.Msg.DevMsg("ClsConvar::new() in [{0}]\n", AppDomain.CurrentDomain.FriendlyName);
 #endif
         }
 
-        internal ClsConvarMain ConvarMain { get { return this._remoteMain; } }
 
         /// <summary>
         /// Raised when the value has changed
@@ -32,10 +31,26 @@ namespace MonoPlug
 
         internal void RaiseValueChanged()
         {
-            if (this.ValueChanged != null)
+#if DEBUG
+            this._remoteMain.Msg.DevMsg("ClsConvar::RaiseValueChanged() enter in [{0}]\n", AppDomain.CurrentDomain.FriendlyName);
+            try
             {
-                this.ValueChanged(this, EventArgs.Empty);
+#endif
+                if (this.ValueChanged != null)
+                {
+                    this.ValueChanged(this, EventArgs.Empty);
+                }
+#if DEBUG
             }
+            catch (Exception ex)
+            {
+                this._remoteMain.Msg.Error(ex);
+            }
+            finally
+            {
+                this._remoteMain.Msg.DevMsg("ClsConvar::RaiseValueChanged() Exit \n");
+            }
+#endif
         }
 
         /// <summary>

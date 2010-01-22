@@ -50,21 +50,43 @@ namespace MonoPlug
             }
 
             //Clean convars
-            List<ClsConvarMain> lstVars = new List<ClsConvarMain>();
-            lock (this._convars)
+            //List<ClsConvarMain> lstVars = new List<ClsConvarMain>();
+            this._lckConvars.AcquireWriterLock(Timeout.Infinite);
+            try
             {
-                foreach (ulong id in this._convars.Keys)
+                List<ulong> lst = new List<ulong>();
+                foreach (ulong id in this._convarsList.Keys)
                 {
-                    if (this._convars[id].Plugin == plugin)
+                    ConVarEntry entry = this._convarsList[id];
+                    if (entry.Plugin == plugin)
                     {
-                        lstVars.Add(this._convars[id].Var);
+                        this.InterThreadCall<bool, ulong>(this.UnregisterConvar_Call, entry.Var.NativeID);
+                        lst.Add(id);
                     }
                 }
+                foreach (ulong id in lst)
+                {
+                    this._convarsList.Remove(id);
+                }
             }
-            foreach (ClsConvarMain convar in lstVars)
+            finally
             {
-                this.UnregisterConvar(plugin, convar);
+                this._lckConvars.ReleaseWriterLock();
             }
+            //lock (this._convars)
+            //{
+            //    foreach (ulong id in this._convarsList.Keys)
+            //    {
+            //        if (this._convarsList[id].Plugin == plugin)
+            //        {
+            //            lstVars.Add(this._convarsList[id].Var);
+            //        }
+            //    }
+            //}
+            //foreach (ClsConvarMain convar in lstVars)
+            //{
+            //    this.UnregisterConvar(plugin, convar);
+            //}
         }
 
         private void clr_plugin_unload(string line, string[] arguments)
