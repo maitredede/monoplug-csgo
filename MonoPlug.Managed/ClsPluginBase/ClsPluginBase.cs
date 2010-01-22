@@ -1,7 +1,7 @@
-
 using System;
 using System.Collections.Generic;
 using System.Reflection;
+using System.ComponentModel;
 
 namespace MonoPlug
 {
@@ -10,7 +10,16 @@ namespace MonoPlug
     /// </summary>
     public abstract partial class ClsPluginBase : MarshalByRefObject
     {
+        private readonly EventHandlerList _events = new EventHandlerList();
         private ClsMain _main;
+
+        /// <summary>
+        /// Default constructor
+        /// </summary>
+        public ClsPluginBase()
+        {
+            this._main = null;
+        }
 
         internal void Init(ClsMain main)
         {
@@ -59,13 +68,6 @@ namespace MonoPlug
         /// Get plugin description
         /// </summary>
         public abstract string Description { get; }
-
-        /// <summary>
-        /// Default constructor
-        /// </summary>
-        public ClsPluginBase()
-        {
-        }
 
         /// <summary>
         /// Write a message to the console

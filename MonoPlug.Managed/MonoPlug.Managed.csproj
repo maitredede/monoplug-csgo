@@ -73,7 +73,6 @@
     <Compile Include="ClsMain\ClsMain - Shutdown.cs" />
     <Compile Include="ClsMain\ClsMain.cs" />
     <Compile Include="ClsPlayer.cs" />
-    <Compile Include="ClsPluginBase\ClsPluginBase - Events.cs" />
     <Compile Include="ClsPluginBase\ClsPluginBase - EVT ClientCommand.cs" />
     <Compile Include="ClsPluginBase\ClsPluginBase - EVT LevelShutdown.cs" />
     <Compile Include="ConCommandEntry.cs" />
