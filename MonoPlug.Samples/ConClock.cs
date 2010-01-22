@@ -33,21 +33,33 @@ namespace MonoPlug
 
         private void _enabled_ValueChanged(object sender, EventArgs e)
         {
-            if (this._enabled.ValueBoolean)
+#if DEBUG
+            this.DevMsg("ConClock::EnabledValueChanged enter...");
+            try
             {
-                if (this._t == null)
+#endif
+                if (this._enabled.ValueBoolean)
                 {
-                    this._t = new Timer(this.Tick, null, 1000, 1000);
+                    if (this._t == null)
+                    {
+                        this._t = new Timer(this.Tick, null, 1000, 1000);
+                    }
                 }
+                else
+                {
+                    if (this._t != null)
+                    {
+                        this._t.Dispose();
+                        this._t = null;
+                    }
+                }
+#if DEBUG
             }
-            else
+            finally
             {
-                if (this._t != null)
-                {
-                    this._t.Dispose();
-                    this._t = null;
-                }
+                this.DevMsg("ConClock::EnabledValueChanged Exit...");
             }
+#endif
         }
 
         protected override void Unload()

@@ -33,10 +33,22 @@ namespace MonoPlug
 
         internal void RaiseValueChanged()
         {
-            if (this._remote != null)
+#if DEBUG
+            this._main.DevMsg("Entering {0}.RaiseValueChanged()\n", this.GetType().Name);
+            try
             {
-                this._remote.RaiseValueChanged();
+#endif
+                if (this._remote != null)
+                {
+                    this._remote.RaiseValueChanged();
+                }
+#if DEBUG
             }
+            finally
+            {
+                this._main.DevMsg("Exiting {0}.RaiseValueChanged()\n", this.GetType().Name);
+            }
+#endif
         }
 
         /// <summary>
@@ -70,7 +82,19 @@ namespace MonoPlug
 
         internal bool GetBoolean()
         {
-            return this._main.InterThreadCall<bool, object>(this.GetBooleanCall, null);
+#if DEBUG
+            this._main.DevMsg("Entering {0}.GetBoolean()\n", this.GetType().Name);
+            try
+            {
+#endif
+                return this._main.InterThreadCall<bool, object>(this.GetBooleanCall, null);
+#if DEBUG
+            }
+            finally
+            {
+                this._main.DevMsg("Exiting {0}.GetBoolean()\n", this.GetType().Name);
+            }
+#endif
         }
 
         private bool GetBooleanCall(object state)
