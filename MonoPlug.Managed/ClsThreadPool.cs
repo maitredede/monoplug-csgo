@@ -43,7 +43,7 @@ namespace MonoPlug
             this._msg = message;
         }
 
-        public void QueueUserWorkItem<T>(Action<T> work, T item)
+        public void QueueUserWorkItem<T>(InternalAction<T> work, T item)
         {
             WaitCallback wcb = delegate(object state)
             {
