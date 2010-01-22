@@ -104,7 +104,7 @@ void Mono_ConvarValueChanged(IConVar *var, const char *pOldValue, float flOldVal
 MonoString* Mono_Convar_GetString(uint64 nativeID)
 {
 	unsigned short i = g_MonoPlug.m_convars->FirstInorder();
-	while(i != g_MonoPlug.m_convars->InvalidIndex())
+	do
 	{
 		if(g_MonoPlug.m_convars->Element(i) == nativeID)
 		{
@@ -112,6 +112,7 @@ MonoString* Mono_Convar_GetString(uint64 nativeID)
 			return CMonoHelpers::MONO_STRING(g_Domain, var->GetString());
 		}
 	}
+	while((i=g_MonoPlug.m_convars->NextInorder(i))!=g_MonoPlug.m_convars->InvalidIndex());
 	return NULL;
 };
 
@@ -133,7 +134,7 @@ void Mono_Convar_SetString(uint64 nativeID, MonoString* value)
 bool Mono_Convar_GetBoolean(uint64 nativeID)
 {
 	unsigned short i = g_MonoPlug.m_convars->FirstInorder();
-	while(i != g_MonoPlug.m_convars->InvalidIndex())
+	do
 	{
 		if(g_MonoPlug.m_convars->Element(i) == nativeID)
 		{
@@ -141,6 +142,7 @@ bool Mono_Convar_GetBoolean(uint64 nativeID)
 			return var->GetBool();
 		}
 	}
+	while((i=g_MonoPlug.m_convars->NextInorder(i))!=g_MonoPlug.m_convars->InvalidIndex());
 	return FALSE;
 };
 
