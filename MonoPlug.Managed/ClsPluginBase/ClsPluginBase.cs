@@ -25,7 +25,7 @@ namespace MonoPlug
         {
 #if DEBUG
             main.DevMsg("ClsPluginBase:: Init in AppDomain '{0}'\n", AppDomain.CurrentDomain.FriendlyName);
-            ClsMain.DumpCurrentDomainAssemblies(main);
+            ClsRemote.DumpDomainAssemblies(main);
 #endif
             this._main = main;
 #if DEBUG
@@ -33,7 +33,6 @@ namespace MonoPlug
 #endif
             this.Load();
 #if DEBUG
-            ClsMain.DumpCurrentDomainAssemblies(main);
             main.DevMsg("ClsPluginBase:: Loaded...\n");
 #endif
         }

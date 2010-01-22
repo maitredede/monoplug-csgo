@@ -15,14 +15,14 @@ namespace MonoPlug
             {
                 string path = this.GetAssemblyDirectory();
                 //Create another domain to gather plugin data
-                ClsMain proxy;
+                ClsRemote proxy;
                 dom = this.CreateAppDomain(typeof(ClsMain).FullName, out proxy);
-                this._pluginCache = proxy.Remote_GetPluginsFromDirectory(this, path);
+                this._pluginCache = proxy.GetPluginsFromDirectory(this, path);
             }
             catch (Exception ex)
             {
                 this._pluginCache = new PluginDefinition[] { };
-                this.Msg(ex);
+                this.Error(ex);
             }
             finally
             {

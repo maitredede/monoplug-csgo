@@ -39,7 +39,6 @@
     <Compile Include="Check.cs" />
     <Compile Include="ClsConvar.cs" />
     <Compile Include="ClsConvarMain.cs" />
-    <Compile Include="ClsMain\ClsMain - Debug.cs" />
     <Compile Include="ClsMain\ClsMain - Events Client Connection.cs" />
     <Compile Include="ClsMain\ClsMain - Events ConMessage.cs" />
     <Compile Include="ClsMain\ClsMain - Events LevelShutdown.cs" />
@@ -50,6 +49,7 @@
     <Compile Include="ClsPluginBase\ClsPluginBase - EVT ClientDisconnect.cs" />
     <Compile Include="ClsPluginBase\ClsPluginBase - EVT ClientPutInServer.cs" />
     <Compile Include="ClsPluginBase\ClsPluginBase - EVT ConMessage.cs" />
+    <Compile Include="ClsRemote.cs" />
     <Compile Include="EventArgs\ClientEventArgs.cs" />
     <Compile Include="EventArgs\ConMessageEventArgs.cs" />
     <Compile Include="ConvarRegisterData.cs" />
@@ -79,6 +79,7 @@
     <Compile Include="ConVarEntry.cs" />
     <Compile Include="FCVAR.cs" />
     <Compile Include="DialogMessage.cs" />
+    <Compile Include="IMessage.cs" />
     <Compile Include="InterThreadCallDelegate.cs" />
     <Compile Include="NativeMethods.cs" />
     <Compile Include="PluginDefinition.cs" />

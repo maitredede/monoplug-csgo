@@ -13,6 +13,10 @@ namespace MonoPlug
         internal static extern void Mono_Log(string msg);
         [MethodImpl(MethodImplOptions.InternalCall)]
         internal static extern void Mono_DevMsg(string msg);
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        internal static extern void Mono_Warning(string msg);
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        internal static extern void Mono_Error(string msg);
 
         [MethodImpl(MethodImplOptions.InternalCall)]
         internal static extern UInt64 Mono_RegisterConvar(string name, string description, int flags, string defaultValue);

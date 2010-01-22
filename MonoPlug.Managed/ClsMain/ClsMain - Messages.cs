@@ -7,22 +7,82 @@ namespace MonoPlug
 {
     partial class ClsMain
     {
-        internal void Msg(Exception ex)
+        public void DevMsg(string format, params object[] elements)
+        {
+            string msg;
+            if (elements != null && elements.Length > 0)
+            {
+                msg = string.Format(format, elements);
+            }
+            else
+            {
+                msg = format;
+            }
+            this.InterThreadCall<object, string>(this.DevMsg_CALL, msg);
+        }
+
+        private object DevMsg_CALL(string msg)
+        {
+            NativeMethods.Mono_Msg(msg);
+            return null;
+        }
+
+        public void Error(Exception ex)
         {
             while (ex != null)
             {
-                this.Msg("-- {0} --\n", ex.GetType().FullName);
-                this.Msg("{0}\n", ex.Message);
-                this.Msg("{0}\n", ex.StackTrace);
+                this.Error("-- {0} --\n", ex.GetType().FullName);
+                this.Error("{0}\n", ex.Message);
+                this.Error("{0}\n", ex.StackTrace);
                 ex = ex.InnerException;
                 if (ex == null)
                 {
-                    this.Msg("---------------\n");
+                    this.Error("---------------\n");
                 }
             }
         }
 
-        internal void Msg(string format, params object[] vals)
+        public void Error(string format, params object[] elements)
+        {
+            string msg;
+            if (elements != null && elements.Length > 0)
+            {
+                msg = string.Format(format, elements);
+            }
+            else
+            {
+                msg = format;
+            }
+            this.InterThreadCall<object, string>(this.Error_CALL, msg);
+        }
+
+        private object Error_CALL(string msg)
+        {
+            NativeMethods.Mono_Error(msg);
+            return null;
+        }
+
+        public void Warning(string format, params object[] elements)
+        {
+            string msg;
+            if (elements != null && elements.Length > 0)
+            {
+                msg = string.Format(format, elements);
+            }
+            else
+            {
+                msg = format;
+            }
+            this.InterThreadCall<object, string>(this.Warning_CALL, msg);
+        }
+
+        private object Warning_CALL(string msg)
+        {
+            NativeMethods.Mono_Warning(msg);
+            return null;
+        }
+
+        public void Msg(string format, params object[] vals)
         {
             string msg;
             if (vals == null || vals.Length == 0)

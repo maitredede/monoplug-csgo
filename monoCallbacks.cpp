@@ -15,6 +15,16 @@ void Mono_DevMsg(MonoString* msg)
 	DevMsg(mono_string_to_utf8(msg));
 };
 
+void Mono_Warning(MonoString* msg)
+{
+	Warning(mono_string_to_utf8(msg));
+};
+
+void Mono_Error(MonoString* msg)
+{
+	Error(mono_string_to_utf8(msg));
+};
+
 uint64 Mono_RegisterConvar(MonoString* name, MonoString* help, int flags, MonoString* defaultValue)
 {
 	char* n_name = mono_string_to_utf8(name);

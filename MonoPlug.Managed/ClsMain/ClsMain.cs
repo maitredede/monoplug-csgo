@@ -12,7 +12,7 @@ namespace MonoPlug
     /// <summary>
     /// Main class that handle everything
     /// </summary>
-    internal sealed partial class ClsMain : MarshalByRefObject
+    internal sealed partial class ClsMain : MarshalByRefObject, IMessage
     {
         #region Private fields
         /// <summary>

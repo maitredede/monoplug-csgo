@@ -25,7 +25,7 @@ namespace MonoPlug
                     {
                         if (this._plugins[dom].Name.Equals(line, StringComparison.InvariantCultureIgnoreCase))
                         {
-                            this.Msg("Plugin already loaded\n");
+                            this.Warning("Plugin already loaded\n");
                             return;
                         }
                     }
@@ -38,18 +38,18 @@ namespace MonoPlug
                             AppDomain dom = null;
                             try
                             {
-                                ClsMain remoteProxy;
+                                ClsRemote remoteProxy;
                                 dom = this.CreateAppDomain(pluginDef.Name, out remoteProxy);
 #if DEBUG
                                 this.DevMsg("DBG: Calling Remote_CreatePlugin() in [{0}] for [{1}]...\n", AppDomain.CurrentDomain, dom.FriendlyName);
 #endif
-                                plugin = remoteProxy.Remote_CreatePlugin(this, pluginDef);
+                                plugin = remoteProxy.CreatePluginClass(this, this.GetAssemblyDirectory(), pluginDef);
 #if DEBUG
                                 this.DevMsg("DBG: Calling plugin.init() ...\n");
 #endif
                                 plugin.Init(this);
 
-                                this.Msg("Plugin '{0}' loaded\n", pluginDef.Name);
+                                this.Msg("Plugin '{0}' loaded\n", plugin.Name);
                                 LockCookie cookie = this._lckPlugins.UpgradeToWriterLock(Timeout.Infinite);
                                 try
                                 {
@@ -62,8 +62,8 @@ namespace MonoPlug
                             }
                             catch (NullReferenceException ex)
                             {
-                                this.Msg("Can't load plugin (NullReferenceException) '{0}'\n", line);
-                                this.Msg(ex);
+                                this.Error("Can't load plugin (NullReferenceException) '{0}'\n", line);
+                                this.Error(ex);
                                 this.UnloadPlugin(dom, plugin);
                                 if (dom != null)
                                 {
@@ -73,9 +73,9 @@ namespace MonoPlug
                             }
                             catch (FileNotFoundException ex)
                             {
-                                this.Msg("Can't load plugin (FileNotFoundException) '{0}'\n", line);
-                                this.Msg("File was : {0}\n", ex.FileName);
-                                this.Msg(ex);
+                                this.Error("Can't load plugin (FileNotFoundException) '{0}'\n", line);
+                                this.Error("File was : {0}\n", ex.FileName);
+                                this.Error(ex);
                                 this.UnloadPlugin(dom, plugin);
                                 if (dom != null)
                                 {
@@ -85,7 +85,7 @@ namespace MonoPlug
                             }
                             catch (Exception ex)
                             {
-                                this.Msg(ex);
+                                this.Error(ex);
                                 this.UnloadPlugin(dom, plugin);
                                 if (dom != null)
                                 {

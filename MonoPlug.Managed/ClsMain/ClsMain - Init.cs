@@ -39,7 +39,7 @@ namespace MonoPlug
             }
             catch (Exception ex)
             {
-                this.Msg(ex);
+                this.Error(ex);
                 return false;
             }
             finally
