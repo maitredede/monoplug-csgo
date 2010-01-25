@@ -14,25 +14,22 @@ namespace MonoPlug
             Check.NonNull("defaultValue", defaultValue);
             Check.ValidFlags(flags, "flags");
 
-            ConvarRegisterData data = new ConvarRegisterData();
-            data.Name = name;
-            data.Help = help;
-            data.Flags = flags;
-            data.DefaultValue = defaultValue;
+            ClsConvarMain cvMain = new ClsConvarMain(this, name, help, flags, defaultValue);
 
             this._lckConvars.AcquireReaderLock(Timeout.Infinite);
             try
             {
-                UInt64 nativeID = this.InterThreadCall<UInt64, ConvarRegisterData>(this.RegisterConvar_Call, data);
+                UInt64 nativeID = this.InterThreadCall<UInt64, ClsConvarMain>(this.RegisterConvar_Call, cvMain);
                 if (nativeID > 0)
                 {
-                    ClsConvarMain var = new ClsConvarMain(this, nativeID);
-                    ConVarEntry entry = new ConVarEntry(plugin, var, data);
+                    cvMain.Init(nativeID);
+                    //ClsConvarMain var = new ClsConvarMain(this, nativeID);
+                    ConVarEntry entry = new ConVarEntry(plugin, cvMain);
                     this._convarsList.Add(nativeID, entry);
 #if DEBUG
                     this.DevMsg("Registeted convar '{0}' for plugin '{1}'\n", name, plugin ?? (object)"<main>");
 #endif
-                    return var;
+                    return cvMain;
                 }
                 else
                 {
@@ -53,56 +50,56 @@ namespace MonoPlug
             }
         }
 
-        private UInt64 RegisterConvar_Call(ConvarRegisterData data)
+        private UInt64 RegisterConvar_Call(ClsConvarMain data)
         {
-            return NativeMethods.Mono_RegisterConvar(data.Name, data.Help, (int)data.Flags, data.DefaultValue);
+            return NativeMethods.Mono_RegisterConvar(data.Name, data.Help, (int)data.Flags, data.DefaultValue, data.RaiseValueChanged);
         }
 
-        internal void ConvarChanged(UInt64 nativeID)
-        {
-#if DEBUG
-            this.DevMsg("ConvarChanged({0}) Enter\n", nativeID);
-            try
-            {
-#endif
-                this._lckConvars.AcquireReaderLock(Timeout.Infinite);
-                try
-                {
-                    if (this._convarsList.ContainsKey(nativeID))
-                    {
-                        ConVarEntry entry = this._convarsList[nativeID];
-#if DEBUG
-                        this.DevMsg("Queueing event raise\n");
-#endif
-                        //this._pool.QueueUserWorkItem(this.ConvarChangedRaise, entry);
-                        this.ConvarChangedRaise(entry);
-#if DEBUG
-                        this.DevMsg("Queued event raise\n");
-#endif
-                    }
-#if DEBUG
-                    else
-                    {
-                        this.DevMsg("ConvarChanged: Can't find var with id={0}\n", nativeID);
-                    }
-#endif
-                }
-                finally
-                {
-                    this._lckConvars.ReleaseReaderLock();
-                }
-#if DEBUG
-            }
-            catch (Exception ex)
-            {
-                this.Warning(ex);
-            }
-            finally
-            {
-                this.DevMsg("ConvarChanged({0}) Exit\n", nativeID);
-            }
-#endif
-        }
+        //        internal void ConvarChanged(UInt64 nativeID)
+        //        {
+        //#if DEBUG
+        //            this.DevMsg("ConvarChanged({0}) Enter\n", nativeID);
+        //            try
+        //            {
+        //#endif
+        //                this._lckConvars.AcquireReaderLock(Timeout.Infinite);
+        //                try
+        //                {
+        //                    if (this._convarsList.ContainsKey(nativeID))
+        //                    {
+        //                        ConVarEntry entry = this._convarsList[nativeID];
+        //#if DEBUG
+        //                        this.DevMsg("Queueing event raise\n");
+        //#endif
+        //                        //this._pool.QueueUserWorkItem(this.ConvarChangedRaise, entry);
+        //                        this.ConvarChangedRaise(entry);
+        //#if DEBUG
+        //                        this.DevMsg("Queued event raise\n");
+        //#endif
+        //                    }
+        //#if DEBUG
+        //                    else
+        //                    {
+        //                        this.DevMsg("ConvarChanged: Can't find var with id={0}\n", nativeID);
+        //                    }
+        //#endif
+        //                }
+        //                finally
+        //                {
+        //                    this._lckConvars.ReleaseReaderLock();
+        //                }
+        //#if DEBUG
+        //            }
+        //            catch (Exception ex)
+        //            {
+        //                this.Warning(ex);
+        //            }
+        //            finally
+        //            {
+        //                this.DevMsg("ConvarChanged({0}) Exit\n", nativeID);
+        //            }
+        //#endif
+        //        }
 
         private void ConvarChangedRaise(ConVarEntry entry)
         {

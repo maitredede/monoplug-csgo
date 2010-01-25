@@ -1,5 +1,3 @@
-class MonoCommand;
-
 #ifndef _MONOCOMMAND_H_
 #define _MONOCOMMAND_H_
 

@@ -25,7 +25,7 @@ namespace MonoPlug
             if (varMain != null)
             {
                 ClsConvar var = new ClsConvar(varMain);
-                varMain.SetRemoteVar(var);
+                varMain.Init(var);
                 return var;
             }
             return null;

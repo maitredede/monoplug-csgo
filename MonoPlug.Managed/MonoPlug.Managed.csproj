@@ -50,6 +50,7 @@
     <Compile Include="ClsPluginBase\ClsPluginBase - EVT ClientPutInServer.cs" />
     <Compile Include="ClsPluginBase\ClsPluginBase - EVT ConMessage.cs" />
     <Compile Include="ClsRemote.cs" />
+    <Compile Include="ClsThreadItem.cs" />
     <Compile Include="ClsThreadPool.cs" />
     <Compile Include="EventArgs\ClientEventArgs.cs" />
     <Compile Include="EventArgs\ConMessageEventArgs.cs" />
@@ -80,6 +81,7 @@
     <Compile Include="ConVarEntry.cs" />
     <Compile Include="FCVAR.cs" />
     <Compile Include="DialogMessage.cs" />
+    <Compile Include="IExecute.cs" />
     <Compile Include="IMessage.cs" />
     <Compile Include="InterThreadCallDelegate.cs" />
     <Compile Include="NativeMethods.cs" />

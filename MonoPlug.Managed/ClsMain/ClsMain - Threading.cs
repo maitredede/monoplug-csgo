@@ -9,50 +9,8 @@ namespace MonoPlug
     {
         private int _mainThreadId = 0;
 
-        private sealed class ClsThreadItem : IDisposable
-        {
-            private readonly ManualResetEvent _latch;
-            private readonly Delegate _code;
-            private readonly object _param;
-            private object _return = null;
-
-            public ClsThreadItem(Delegate code, object param)
-            {
-                this._latch = new ManualResetEvent(false);
-                this._code = code;
-                this._param = param;
-            }
-
-            public void WaitOne()
-            {
-                this._latch.WaitOne();
-            }
-
-            public object ReturnValue { get { return this._return; } }
-
-            public void Execute()
-            {
-                try
-                {
-#if DEBUG
-                    NativeMethods.Mono_DevMsg("ClsThreadItem::Execute()\n");
-#endif
-                    this._return = this._code.DynamicInvoke(this._param);
-                }
-                finally
-                {
-                    this._latch.Set();
-                }
-            }
-
-            void IDisposable.Dispose()
-            {
-                ((IDisposable)this._latch).Dispose();
-            }
-        }
-
         private readonly ReaderWriterLock _lckThreadQueue = new ReaderWriterLock();
-        private readonly Queue<ClsThreadItem> _threadQueue = new Queue<ClsThreadItem>();
+        private readonly Queue<IExecute> _threadQueue = new Queue<IExecute>();
 
         internal TRet InterThreadCall<TRet, TParam>(InterThreadCallDelegate<TRet, TParam> d, TParam parameter)
         {
@@ -62,7 +20,7 @@ namespace MonoPlug
                 return d.Invoke(parameter);
             }
 
-            using (ClsThreadItem item = new ClsThreadItem(d, parameter))
+            ClsThreadItem<TRet, TParam> item = new ClsThreadItem<TRet, TParam>(d, parameter);
             {
                 this._lckThreadQueue.AcquireWriterLock(Timeout.Infinite);
                 try
@@ -81,7 +39,13 @@ namespace MonoPlug
 
         internal void GameFrame()
         {
+            //#if DEBUG
+            //            NativeMethods.Mono_DevMsg("GameFrame Enter\n");
+            //#endif
             this._lckThreadQueue.AcquireReaderLock(Timeout.Infinite);
+            //#if DEBUG
+            //            NativeMethods.Mono_DevMsg("  GF: Reader locked\n");
+            //#endif
             try
             {
                 if (this._threadQueue.Count > 0)
@@ -92,7 +56,7 @@ namespace MonoPlug
                     {
                         while (this._threadQueue.Count > 0)
                         {
-                            ClsThreadItem item = this._threadQueue.Dequeue();
+                            IExecute item = this._threadQueue.Dequeue();
                             NativeMethods.Mono_DevMsg("ITH: Dequeue\n");
                             item.Execute();
                         }
@@ -112,6 +76,9 @@ namespace MonoPlug
 #endif
             finally
             {
+                //#if DEBUG
+                //                NativeMethods.Mono_DevMsg("GameFrame : Exit\n");
+                //#endif
                 this._lckThreadQueue.ReleaseReaderLock();
             }
         }

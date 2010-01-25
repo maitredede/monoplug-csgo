@@ -10,24 +10,35 @@
 #include <mono/metadata/debug-helpers.h>
 
 #include <ISmmPlugin.h>
-#include <sourcehook/sourcehook.h>
+//#include <sourcehook/sourcehook.h>
 #include <igameevents.h>
 #include <iplayerinfo.h>
 #include <sh_vector.h>
 #include <utlmap.h>
 #include <filesystem.h>
-
+#include <convar.h>
 #include <inetchannelinfo.h>
 
 class CMonoPlug;
-class CMonoHelpers;
 class CMonoPlugListener;
 class CMonoCommand;
 class CMonoConsole;
 
 extern CMonoPlug g_MonoPlug;
 extern CMonoPlugListener g_Listener;
-extern MonoDomain* g_Domain;
+
+extern MonoDomain *g_Domain;
+
+extern IGameEventManager2 *g_GameEventManager;	
+extern IVEngineServer *g_Engine;
+extern IServerGameDLL *g_ServerDll;
+extern IServerGameClients *g_ServerClients;
+extern IPlayerInfoManager *g_playerinfomanager;
+extern IServerPluginHelpers *g_helpers;
+extern IServerPluginCallbacks *g_vsp_callbacks;
+extern ICvar *icvar;
+extern CGlobalVars *g_Globals;
+extern IFileSystem *g_filesystem;
 
 PLUGIN_GLOBALVARS();
 
@@ -65,6 +76,8 @@ PLUGIN_GLOBALVARS();
 		return false; \
 	} \
 };
+
+//#define ENGINE_CALL(func) SH_CALL(engine, &IVEngineServer::func)
 
 edict_t *EdictOfUserId( int UserId );
 int UTIL_FindOffset(const char *ClassName, const char *PropertyName);

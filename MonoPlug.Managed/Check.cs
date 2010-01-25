@@ -63,5 +63,10 @@ namespace MonoPlug
         {
             if (value < min || value > max) throw new ArgumentOutOfRangeException(name);
         }
+
+        internal static void InRange(string name, ulong value, ulong min, ulong max)
+        {
+            if (value < min || value > max) throw new ArgumentOutOfRangeException(name);
+        }
     }
 }

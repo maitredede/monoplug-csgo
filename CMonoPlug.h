@@ -8,18 +8,20 @@
 #include "CMonoPlugAccessor.h"
 #include "CMonoPlugListener.h"
 #include "CMonoConsole.h"
-#include "monoCallbacks.h"
+#include "funcs.h"
+
+#include <igameevents.h>
 
 #if defined WIN32 && !defined snprintf
 #define snprintf _snprintf
 #endif
 
-class CMonoPlug : public ISmmPlugin, public IMetamodListener, public IGameEventListener2, public IConCommandBaseAccessor
+class CMonoPlug : public ISmmPlugin, public IGameEventListener2
 {
 public:
 	bool Load(PluginId id, ISmmAPI *ismm, char *error, size_t maxlen, bool late);
 	bool Unload(char *error, size_t maxlen);
-	//void AllPluginsLoaded();
+	void AllPluginsLoaded();
 	bool Pause(char *error, size_t maxlen)
 	{
 		return true;
@@ -63,8 +65,8 @@ public:
 	{
 		return "MONOPLUG";
 	}
-public: // IConCommandBaseAccessor
-	virtual bool RegisterConCommandBase(ConCommandBase *pVar);
+//public: // IConCommandBaseAccessor
+//	virtual bool RegisterConCommandBase(ConCommandBase *pVar);
 public: //IMetamodListener stuff
 	void OnVSPListening(IServerPluginCallbacks *iface);
 public:
@@ -114,19 +116,19 @@ public:
 	// game event listener
 	void FireGameEvent( IGameEvent *event );
 
-public:
-	IGameEventManager2 *m_GameEventManager;	
-	IVEngineServer *m_Engine;
-	IServerGameDLL *m_ServerDll;
-	IServerGameClients *m_ServerClients;
-	ICvar *m_icvar;
-	IPlayerInfoManager *m_playerinfomanager;
-	IServerPluginHelpers *m_helpers;
-	IServerPluginCallbacks *m_vsp_callbacks;
+//public:
+	//SourceHook::CallClass<IVEngineServer> *m_Engine_CC;
 
-	SourceHook::CallClass<IVEngineServer> *m_Engine_CC;
-
-	IFileSystem* m_filesystem;
+	//IGameEventManager2 *m_GameEventManager;	
+	//IVEngineServer *m_Engine;
+	//IServerGameDLL *m_ServerDll;
+	//IServerGameClients *m_ServerClients;
+	//IPlayerInfoManager *m_playerinfomanager;
+	//IServerPluginHelpers *m_helpers;
+	//IServerPluginCallbacks *m_vsp_callbacks;
+	//ICvar *m_icvar;
+	//CGlobalVars *m_Globals;
+	//IFileSystem* m_filesystem;
 public:
 	MonoAssembly* m_assembly;
 	MonoImage* m_image;
@@ -135,7 +137,7 @@ public:
 	MonoMethod* m_ClsMain_Init;
 	MonoMethod* m_ClsMain_Shutdown;
 	MonoMethod* m_ClsMain_EVT_GameFrame;
-	MonoMethod* m_ClsMain_ConvarChanged;
+	//MonoMethod* m_ClsMain_ConvarChanged;
 	MonoMethod* m_ClsMain_ConPrint;
 
 	MonoMethod* m_ClsMain_ClientPutInServer;
@@ -164,12 +166,6 @@ public:
 	int m_MaxPlayers;
 	CMonoConsole* m_console;
 };
-
-//extern CMonoPlug g_MonoPlug;
-//extern MonoDomain* g_Domain;
-//
-//PLUGIN_GLOBALVARS();
-//
 
 #define	FIND_IFACE(func, assn_var, num_var, name, type) \
 	do { \

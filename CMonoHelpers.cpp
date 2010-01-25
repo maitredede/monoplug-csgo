@@ -1,10 +1,5 @@
 #include "CMonoHelpers.h"
 
-//MonoObject* CMonoHelpers::MONO_CALL(void* target, MonoMethod* methodHandle)
-//{
-//	return CMonoHelpers::MONO_CALL_ARGS(target, methodHandle, NULL);
-//}
-
 MonoString* CMonoHelpers::MONO_STRING(MonoDomain* domain, const char* string)
 {
 	if(string == NULL)
@@ -44,22 +39,6 @@ MonoObject* CMonoHelpers::MONO_CALL(void* target, MonoMethod* methodHandle, void
 		return ret;
 	}
 };
-
-//ml_get_prop_string(MonoObject *obj, char *field)
-//{
-//	MonoClass *klass;
-//	MonoProperty *prop;
-//	MonoString *str;
-//	
-//	klass = mono_object_get_class(obj);
-//	
-//	prop = mono_class_get_property_from_name(klass, field);
-//	
-//	str = (MonoString*)mono_property_get_value(prop, obj, NULL, NULL);
-//	
-//	return mono_string_to_utf8(str);
-//}
-
 
 MonoObject* CMonoHelpers::MONO_DELEGATE_CALL(MonoDelegate* delegateObject, void** args)
 {

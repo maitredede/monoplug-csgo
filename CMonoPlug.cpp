@@ -1,14 +1,4 @@
 #include "CMonoPlug.h"
-//#include "cvars.h"
-
-//#include "sh_string.h"
-//#define GAME_DLL 1
-//#include "cbase.h"
-
-
-CMonoPlug g_MonoPlug;
-CMonoPlugListener g_Listener;
-MonoDomain* g_Domain = NULL;
 
 PLUGIN_EXPOSE(CMonoPlug, g_MonoPlug);
 
@@ -35,31 +25,68 @@ bool CMonoPlug::Load(PluginId id, ISmmAPI *ismm, char *error, size_t maxlen, boo
 	char iface_buffer[255];
 	int num=0;
 	strcpy(iface_buffer, INTERFACEVERSION_SERVERGAMEDLL);
-	FIND_IFACE(GetServerFactory, (this->m_ServerDll), num, iface_buffer, IServerGameDLL *)
+	FIND_IFACE(GetServerFactory, g_ServerDll, num, iface_buffer, IServerGameDLL *);
+
 	strcpy(iface_buffer, INTERFACEVERSION_VENGINESERVER);
-	FIND_IFACE(GetEngineFactory, this->m_Engine, num, iface_buffer, IVEngineServer *)
+	FIND_IFACE(GetEngineFactory, g_Engine, num, iface_buffer, IVEngineServer *);
+
 	strcpy(iface_buffer, INTERFACEVERSION_SERVERGAMECLIENTS);
-	FIND_IFACE(GetServerFactory, this->m_ServerClients, num, iface_buffer, IServerGameClients *)
+	FIND_IFACE(GetServerFactory, g_ServerClients, num, iface_buffer, IServerGameClients *);
+
 	strcpy(iface_buffer, INTERFACEVERSION_GAMEEVENTSMANAGER2);
-	FIND_IFACE(GetEngineFactory, this->m_GameEventManager, num, iface_buffer, IGameEventManager2 *);
+	FIND_IFACE(GetEngineFactory, g_GameEventManager, num, iface_buffer, IGameEventManager2 *);
+
 	strcpy(iface_buffer, FILESYSTEM_INTERFACE_VERSION);
-	FIND_IFACE(GetEngineFactory, this->m_filesystem, num, iface_buffer, IFileSystem*);
-	strcpy(iface_buffer, CVAR_INTERFACE_VERSION);
-	FIND_IFACE(GetEngineFactory, this->m_icvar, num, iface_buffer, ICvar *);
+	FIND_IFACE(GetEngineFactory, g_filesystem, num, iface_buffer, IFileSystem*);
+
 	strcpy(iface_buffer, INTERFACEVERSION_PLAYERINFOMANAGER);
-	FIND_IFACE(GetServerFactory, this->m_playerinfomanager, num, iface_buffer, IPlayerInfoManager *);
+	FIND_IFACE(GetServerFactory, g_playerinfomanager, num, iface_buffer, IPlayerInfoManager *);
+
 	strcpy(iface_buffer, INTERFACEVERSION_ISERVERPLUGINHELPERS);
-	FIND_IFACE(GetEngineFactory, this->m_helpers, num, iface_buffer, IServerPluginHelpers *);
+	FIND_IFACE(GetEngineFactory, g_helpers, num, iface_buffer, IServerPluginHelpers *);
+
+	strcpy(iface_buffer, CVAR_INTERFACE_VERSION);
+	FIND_IFACE(GetEngineFactory, icvar, num, iface_buffer, ICvar *);
+	//GET_V_IFACE_CURRENT(GetEngineFactory, icvar, ICvar, CVAR_INTERFACE_VERSION);
+
+	g_Globals = ismm->GetCGlobals();
+
+	/* Load the VSP listener.  This is usually needed for IServerPluginHelpers. */
+	if ((g_vsp_callbacks = ismm->GetVSPInfo(NULL)) == NULL)
+	{
+		ismm->AddListener(this, &g_Listener);
+		ismm->EnableVSPListener();
+	}
+
+	//Hook GameFrame to our function
+	SH_ADD_HOOK_MEMFUNC(IServerGameDLL, GameFrame, g_ServerDll, &g_MonoPlug, &CMonoPlug::GameFrame, true);
+	SH_ADD_HOOK_MEMFUNC(IServerGameDLL, ServerActivate, g_ServerDll, &g_MonoPlug, &CMonoPlug::ServerActivate, true);
+	SH_ADD_HOOK_MEMFUNC(IServerGameClients, ClientActive, g_ServerClients, &g_MonoPlug, &CMonoPlug::ClientActive, true);
+	SH_ADD_HOOK_MEMFUNC(IServerGameClients, ClientDisconnect, g_ServerClients, &g_MonoPlug, &CMonoPlug::ClientDisconnect, true);
+	SH_ADD_HOOK_MEMFUNC(IServerGameClients, ClientPutInServer, g_ServerClients, &g_MonoPlug, &CMonoPlug::ClientPutInServer, true);
+	SH_ADD_HOOK_MEMFUNC(IServerGameClients, ClientConnect, g_ServerClients, &g_MonoPlug, &CMonoPlug::ClientConnect, false);
+
+	g_Engine->LogPrint("All hooks started!\n");
+
+#if SOURCE_ENGINE >= SE_ORANGEBOX
+	g_pCVar = icvar;
+	ConVar_Register(0, &g_Accessor);
+#else
+	ConCommandBaseMgr::OneTimeInit(&s_BaseAccessor);
+#endif
+
+	//g_SMAPI->AddListener(g_PLAPI, this);
 
 	META_LOG(g_PLAPI, "Starting plugin (Mono)\n");
+	
 	//Get game dir
 	char* dir = new char[MAX_PATH];
-	this->m_Engine->GetGameDir(dir, MAX_PATH);
+	g_Engine->GetGameDir(dir, MAX_PATH);
 	char dllPath[MAX_PATH];
 	Q_snprintf( dllPath, sizeof(dllPath), MONOPLUG_DLLFILE, dir); 
 	delete dir;
 	META_LOG(g_PLAPI, "  Managed dll file is : %s", dllPath);
-	if(!this->m_filesystem->FileExists(dllPath))
+	if(!g_filesystem->FileExists(dllPath))
 	{
 		Q_snprintf(error, maxlen, "Can't find managed DLL : %s", dllPath);
 		META_LOG(g_PLAPI, "%s\n", error);
@@ -98,7 +125,7 @@ bool CMonoPlug::Load(PluginId id, ISmmAPI *ismm, char *error, size_t maxlen, boo
 	MONO_ATTACH("MonoPlug.ClsMain:Init()", this->m_ClsMain_Init, this->m_image);
 	MONO_ATTACH("MonoPlug.ClsMain:Shutdown()", this->m_ClsMain_Shutdown, this->m_image);
 	MONO_ATTACH("MonoPlug.ClsMain:GameFrame()", this->m_ClsMain_EVT_GameFrame, this->m_image);
-	MONO_ATTACH("MonoPlug.ClsMain:ConvarChanged(ulong)", this->m_ClsMain_ConvarChanged, this->m_image);
+	//MONO_ATTACH("MonoPlug.ClsMain:ConvarChanged(ulong)", this->m_ClsMain_ConvarChanged, this->m_image);
 
 	MONO_GET_CLASS(this->m_image, this->m_Class_ClsPlayer, "MonoPlug", "ClsPlayer", error, maxlen)
 	MONO_GET_FIELD(this->m_Field_ClsPlayer_id, this->m_Class_ClsPlayer, "_id", error, maxlen)
@@ -150,63 +177,6 @@ bool CMonoPlug::Load(PluginId id, ISmmAPI *ismm, char *error, size_t maxlen, boo
 
 
 	META_LOG(g_PLAPI, "Starting plugin (Remaining)\n");
-	ismm->AddListener(this, &g_Listener);
-
-	/* Load the VSP listener.  This is usually needed for IServerPluginHelpers. */
-	if ((this->m_vsp_callbacks = ismm->GetVSPInfo(NULL)) == NULL)
-	{
-		ismm->AddListener(this, this);
-		ismm->EnableVSPListener();
-	}
-
-
-	//We're hooking the following things as POST, in order to seem like Server Plugins.
-	//However, I don't actually know if Valve has done server plugins as POST or not.
-	//Change the last parameter to 'false' in order to change this to PRE.
-	//SH_ADD_HOOK_MEMFUNC means "SourceHook, Add Hook, Member Function".
-
-	//Hook GameFrame to our function
-	SH_ADD_HOOK_MEMFUNC(IServerGameDLL, GameFrame, m_ServerDll, &g_MonoPlug, &CMonoPlug::GameFrame, true);
-
-	//Hook LevelInit to our function
-	//SH_ADD_HOOK_MEMFUNC(IServerGameDLL, LevelInit, m_ServerDll, &g_MonoPlug, &CMonoPlug::LevelInit, true);
-	//Hook ServerActivate to our function
-	SH_ADD_HOOK_MEMFUNC(IServerGameDLL, ServerActivate, m_ServerDll, &g_MonoPlug, &CMonoPlug::ServerActivate, true);
-	//Hook LevelShutdown to our function -- this makes more sense as pre I guess
-	//SH_ADD_HOOK_MEMFUNC(IServerGameDLL, LevelShutdown, m_ServerDll, &g_MonoPlug, &CMonoPlug::LevelShutdown, false);
-	//Hook ClientActivate to our function
-	SH_ADD_HOOK_MEMFUNC(IServerGameClients, ClientActive, m_ServerClients, &g_MonoPlug, &CMonoPlug::ClientActive, true);
-	//Hook ClientDisconnect to our function
-	SH_ADD_HOOK_MEMFUNC(IServerGameClients, ClientDisconnect, m_ServerClients, &g_MonoPlug, &CMonoPlug::ClientDisconnect, true);
-	//Hook ClientPutInServer to our function
-	SH_ADD_HOOK_MEMFUNC(IServerGameClients, ClientPutInServer, m_ServerClients, &g_MonoPlug, &CMonoPlug::ClientPutInServer, true);
-	//Hook SetCommandClient to our function
-	//SH_ADD_HOOK_MEMFUNC(IServerGameClients, SetCommandClient, m_ServerClients, &g_MonoPlug, &CMonoPlug::SetCommandClient, true);
-	//Hook ClientSettingsChanged to our function
-	//SH_ADD_HOOK_MEMFUNC(IServerGameClients, ClientSettingsChanged, m_ServerClients, &g_MonoPlug, &CMonoPlug::ClientSettingsChanged, true);
-
-	//The following functions are pre handled, because that's how they are in IServerPluginCallbacks
-
-	//Hook ClientConnect to our function
-	SH_ADD_HOOK_MEMFUNC(IServerGameClients, ClientConnect, m_ServerClients, &g_MonoPlug, &CMonoPlug::ClientConnect, false);
-	//Hook ClientCommand to our function
-	//SH_ADD_HOOK_MEMFUNC(IServerGameClients, ClientCommand, m_ServerClients, &g_MonoPlug, &CMonoPlug::ClientCommand, false);
-
-	//Get the call class for IVServerEngine so we can safely call functions without
-	// invoking their hooks (when needed).
-	m_Engine_CC = SH_GET_CALLCLASS(m_Engine);
-
-	SH_CALL(m_Engine_CC, &IVEngineServer::LogPrint)("All hooks started!\n");
-
-	//Init our cvars/concmds
-#if SOURCE_ENGINE >= SE_ORANGEBOX
-	//g_pCVar = icvar;
-	ConVar_Register(0, this);
-#else
-	ConCommandBaseMgr::OneTimeInit(&s_BaseAccessor);
-#endif
-
-	g_SMAPI->AddListener(g_PLAPI, this);
 
 	MonoObject* r = CMonoHelpers::MONO_CALL(this->m_main, this->m_ClsMain_Init, NULL);
 	if(NULL == r)
@@ -219,16 +189,9 @@ bool CMonoPlug::Load(PluginId id, ISmmAPI *ismm, char *error, size_t maxlen, boo
 	return ret;
 }
 
-bool CMonoPlug::RegisterConCommandBase(ConCommandBase *pVar)
-{
-	//this will work on any type of concmd!
-	return META_REGCVAR(pVar);
-}
-
-
 void CMonoPlug::OnVSPListening(IServerPluginCallbacks *iface)
 {
-	this->m_vsp_callbacks = iface;
+	g_vsp_callbacks = iface;
 }
 
 void CMonoPlug::GameFrame(bool simulating)
@@ -284,7 +247,7 @@ bool CMonoPlug::ClientConnect(edict_t *pEntity, const char *pszName, const char 
 
 void CMonoPlug::ClientActive(edict_t *pEntity, bool bLoadGame)
 {
-	META_LOG(g_PLAPI, "Hook_ClientActive(%d, %d)", this->m_Engine->IndexOfEdict(pEntity), bLoadGame);
+	META_LOG(g_PLAPI, "Hook_ClientActive(%d, %d)", g_Engine->IndexOfEdict(pEntity), bLoadGame);
 	RETURN_META(MRES_IGNORED);
 }
 
@@ -297,26 +260,15 @@ void CMonoPlug::ClientPutInServer(edict_t *pEntity, const char *playername)
 	}
 
 	//int index = this->m_Engine->IndexOfEdict(pEntity);
-	IPlayerInfo* pi = this->m_playerinfomanager->GetPlayerInfo(pEntity);
+	IPlayerInfo* pi = g_playerinfomanager->GetPlayerInfo(pEntity);
 
 	MonoObject* player = mono_object_new(g_Domain, this->m_Class_ClsPlayer);
 	mono_runtime_object_init(player);
-	////mono_array_set(this->m_players, MonoObject*, id, player);
-
-	//MonoObject* player = mono_array_get(this->m_players, MonoObject*, id);
-	//mono_field_set_value(player, g_MonoPlug.m_Field_ClsPlayer_ip, MONO_STRING(g_Domain, pszAddress));
-	//if(!player)
-	//{
-	//	//Ugly bot hack
-	//	player = mono_object_new(g_Domain, this->m_Class_ClsPlayer);
-	//	mono_runtime_object_init(player);
-	//}
-		
 
 	//Fill player data
-	int playerId = this->m_Engine->GetPlayerUserId(pEntity);
+	int playerId = g_Engine->GetPlayerUserId(pEntity);
 
-	INetChannelInfo* net = this->m_Engine->GetPlayerNetInfo(playerId);
+	INetChannelInfo* net = g_Engine->GetPlayerNetInfo(playerId);
 	float avgLatency = -1.0;
 	float timeConnected = -1.0;
 	MonoString* address;
@@ -338,7 +290,7 @@ void CMonoPlug::ClientPutInServer(edict_t *pEntity, const char *playername)
 	mono_field_set_value(player, this->m_Field_ClsPlayer_frag, &pfrag);
 	mono_field_set_value(player, this->m_Field_ClsPlayer_death, &pdeath);
 	mono_field_set_value(player, this->m_Field_ClsPlayer_ip, address);
-	mono_field_set_value(player, this->m_Field_ClsPlayer_language, CMonoHelpers::MONO_STRING(g_Domain, this->m_Engine->GetClientConVarValue(playerId, "cl_language")));
+	mono_field_set_value(player, this->m_Field_ClsPlayer_language, CMonoHelpers::MONO_STRING(g_Domain, g_Engine->GetClientConVarValue(playerId, "cl_language")));
 	mono_field_set_value(player, this->m_Field_ClsPlayer_avgLatency, &avgLatency);
 	mono_field_set_value(player, this->m_Field_ClsPlayer_timeConnected, &timeConnected);
 
@@ -355,7 +307,7 @@ void CMonoPlug::ClientDisconnect(edict_t *pEntity)
 	}
 
 	//int index = this->m_Engine->IndexOfEdict(pEntity);
-	int playerId = this->m_Engine->GetPlayerUserId(pEntity);
+	int playerId = g_Engine->GetPlayerUserId(pEntity);
 
 	//MonoObject* player= mono_array_get(this->m_players, MonoObject*, id);
 
@@ -364,4 +316,11 @@ void CMonoPlug::ClientDisconnect(edict_t *pEntity)
 	void* args[1];
 	args[0] = &playerId;
 	CMonoHelpers::MONO_CALL(this->m_main, this->m_ClsMain_ClientDisconnect, args);
+}
+
+void CMonoPlug::AllPluginsLoaded()
+{
+#ifdef _DEBUG
+	g_Engine->ServerCommand("clr_plugin_load ConClock");
+#endif
 }

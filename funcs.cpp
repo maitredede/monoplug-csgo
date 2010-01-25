@@ -1,4 +1,4 @@
-#include "monoCallbacks.h"
+#include "funcs.h"
 
 bool LessFunc_uint64(uint64 const& k1, uint64 const& k2)
 {
@@ -34,7 +34,7 @@ uint64 Mono_RegisterConvar(MonoString* name, MonoString* help, int flags, MonoSt
 {
 	char* n_name = mono_string_to_utf8(name);
 	{
-		ConVar* var = g_MonoPlug.m_icvar->FindVar(n_name);
+		ConVar* var = g_pCVar->FindVar(n_name);
 		if(var)
 		{
 			return 0;
@@ -144,7 +144,8 @@ bool Mono_Convar_GetBoolean(uint64 nativeID)
 	if(i != g_MonoPlug.m_convars->InvalidIndex())
 	{
 			CMonoConvar* var = g_MonoPlug.m_convars->Element(i);
-			return var->GetBool();
+			bool ret = var->GetBool();
+			return ret;
 	}
 	return FALSE;
 };
@@ -162,7 +163,7 @@ void Mono_Convar_SetBoolean(uint64 nativeID, bool value)
 bool Mono_RegisterConCommand(MonoString* name, MonoString* help, MonoDelegate* code, int flags, MonoDelegate* complete)
 {
 	char* n_name = mono_string_to_utf8(name);
-	ConCommand* command = g_MonoPlug.m_icvar->FindCommand(n_name);
+	ConCommand* command = g_pCVar->FindCommand(n_name);
 	if(command)
 	{
 		return false;
@@ -206,12 +207,12 @@ bool Mono_UnregisterConCommand(MonoString* name)
 
 void Attach_ConMessage()
 {
-	g_MonoPlug.m_icvar->InstallConsoleDisplayFunc(g_MonoPlug.m_console);
+	g_pCVar->InstallConsoleDisplayFunc(g_MonoPlug.m_console);
 };
 
 void Detach_ConMessage()
 {
-	g_MonoPlug.m_icvar->RemoveConsoleDisplayFunc(g_MonoPlug.m_console);
+	g_pCVar->RemoveConsoleDisplayFunc(g_MonoPlug.m_console);
 };
 
 void Mono_ClientDialogMessage(int client, MonoString* title, MonoString* message, int a, int r, int g, int b, int level, int time)
@@ -226,7 +227,7 @@ void Mono_ClientDialogMessage(int client, MonoString* title, MonoString* message
 		kv->SetInt( "level", level);
 		kv->SetInt( "time", time);
 
-		g_MonoPlug.m_helpers->CreateMessage(pEntity, DIALOG_MSG, kv, g_MonoPlug.m_vsp_callbacks);
+		g_helpers->CreateMessage(pEntity, DIALOG_MSG, kv, g_vsp_callbacks);
 		kv->deleteThis();
 	}
 };

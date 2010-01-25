@@ -9,9 +9,21 @@ namespace MonoPlug
     /// </summary>
     public abstract class ClsConCommandBase : MarshalByRefObject
     {
+        /// <summary>
+        /// Name of ConCommandBase
+        /// </summary>
         private readonly string _name;
+        /// <summary>
+        /// Help text
+        /// </summary>
         private readonly string _help;
+        /// <summary>
+        /// Native Id
+        /// </summary>
         private readonly UInt64 _nativeId;
+        /// <summary>
+        /// Flags
+        /// </summary>
         private readonly FCVAR _flags;
 
         internal ClsConCommandBase(UInt64 nativeId, string name, string help, FCVAR flags)

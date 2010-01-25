@@ -11,10 +11,10 @@ namespace MonoPlug
             get { return "Write current time to console each seconds, and update a convar with value"; }
         }
 
-        private Timer _t;
+        private Timer _t = null;
 
-        private ClsConvar _theTime;
-        private ClsConvar _enabled;
+        private ClsConvar _theTime = null;
+        private ClsConvar _enabled = null;
 
         public ConClock()
         {
@@ -38,7 +38,9 @@ namespace MonoPlug
             try
             {
 #endif
-                if (this._enabled.ValueBoolean)
+                bool value = this._enabled.ValueBoolean;
+                this.DevMsg("ConClock : Value is {0}\n", value);
+                if (value)
                 {
                     if (this._t == null)
                     {
@@ -75,7 +77,7 @@ namespace MonoPlug
         private void Tick(object state)
         {
             string s = DateTime.Now.ToLongTimeString();
-            this.Msg(s + "\n");
+            this.Msg("{0}\n", s);
             this._theTime.ValueString = s;
         }
     }
