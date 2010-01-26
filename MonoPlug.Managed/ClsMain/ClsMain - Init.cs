@@ -66,5 +66,9 @@ namespace MonoPlug
             }
 #endif
         }
+
+        internal void AllPluginsLoaded()
+        {
+        }
     }
 }
