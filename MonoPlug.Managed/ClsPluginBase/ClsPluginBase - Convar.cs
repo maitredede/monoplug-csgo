@@ -15,29 +15,22 @@ namespace MonoPlug
         /// <param name="flags">Flags of convar</param>
         /// <param name="defaultValue">Default value</param>
         /// <returns>Convar instance if success, else null.</returns>
-        public ClsConvar RegisterConvar(string name, string help, FCVAR flags, string defaultValue)
+        //public ClsConvar RegisterConvar(string name, string help, FCVAR flags, string defaultValue)
+        public ClsConVar RegisterConvar(string name, string help, FCVAR flags, string defaultValue)
         {
 #if DEBUG
             this._main.DevMsg("ClsConvar::RegisterConvar() in [{0}]\n", AppDomain.CurrentDomain.FriendlyName);
 #endif
-
-            ClsConvarMain varMain = this._main.RegisterConvar(this, name, help, flags, defaultValue);
-            if (varMain != null)
-            {
-                ClsConvar var = new ClsConvar(varMain);
-                varMain.Init(var);
-                return var;
-            }
-            return null;
+            return this._main.RegisterConvar(this, name, help, flags, defaultValue);
         }
 
         /// <summary>
         /// Unregister a convar
         /// </summary>
         /// <param name="var">Convar instance</param>
-        public void UnregisterConvar(ClsConvar var)
+        public void UnregisterConvar(ClsConVar var)
         {
-            this._main.UnregisterConvar(this, var.ConvarMain);
+            this._main.UnregisterConvar(this, var);
         }
     }
 }

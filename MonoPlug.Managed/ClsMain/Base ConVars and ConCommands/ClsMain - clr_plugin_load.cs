@@ -47,7 +47,7 @@ namespace MonoPlug
 #if DEBUG
                                 this.DevMsg("DBG: Calling plugin.init() ...\n");
 #endif
-                                plugin.Init(this);
+                                plugin.Init(this, remoteProxy);
 
                                 this.Msg("Plugin '{0}' loaded\n", plugin.Name);
                                 LockCookie cookie = this._lckPlugins.UpgradeToWriterLock(Timeout.Infinite);

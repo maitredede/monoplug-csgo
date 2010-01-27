@@ -12,6 +12,9 @@ namespace MonoPlug
     {
         private readonly EventHandlerList _events = new EventHandlerList();
         private ClsMain _main;
+        private ClsRemote _proxy;
+
+        internal ClsRemote Proxy { get { return this._proxy; } }
 
         /// <summary>
         /// Default constructor
@@ -19,22 +22,24 @@ namespace MonoPlug
         public ClsPluginBase()
         {
             this._main = null;
+            this._proxy = null;
         }
 
-        internal void Init(ClsMain main)
+        internal void Init(ClsMain main, ClsRemote remoteProxy)
         {
-#if DEBUG
-            main.DevMsg("ClsPluginBase:: Init in AppDomain '{0}'\n", AppDomain.CurrentDomain.FriendlyName);
-            ClsRemote.DumpDomainAssemblies(main);
-#endif
+            this._proxy = remoteProxy;
+            //#if DEBUG
+            //            main.DevMsg("ClsPluginBase:: Init in AppDomain '{0}'\n", AppDomain.CurrentDomain.FriendlyName);
+            //            ClsRemote.DumpDomainAssemblies(main);
+            //#endif
             this._main = main;
-#if DEBUG
-            main.DevMsg("ClsPluginBase:: Loading...\n");
-#endif
+            //#if DEBUG
+            //            main.DevMsg("ClsPluginBase:: Loading...\n");
+            //#endif
             this.Load();
-#if DEBUG
-            main.DevMsg("ClsPluginBase:: Loaded...\n");
-#endif
+            //#if DEBUG
+            //            main.DevMsg("ClsPluginBase:: Loaded...\n");
+            //#endif
         }
 
         internal void UnInit()

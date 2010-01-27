@@ -4,6 +4,7 @@ using System.Text;
 
 namespace MonoPlug
 {
+    [Obsolete("", true)]
     internal struct ConVarEntry
     {
         private ClsPluginBase _plugin;

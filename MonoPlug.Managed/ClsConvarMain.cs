@@ -5,6 +5,7 @@ using System.Text;
 
 namespace MonoPlug
 {
+    [Obsolete("", true)]
     internal sealed class ClsConvarMain : MarshalByRefObject
     {
         private readonly ClsMain m_main;

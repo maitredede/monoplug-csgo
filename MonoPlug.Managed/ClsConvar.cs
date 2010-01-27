@@ -7,7 +7,7 @@ namespace MonoPlug
     /// <summary>
     /// A Convar used by managed code
     /// </summary>
-    //[Obsolete("Temporary, for rewriting...", true)]
+    [Obsolete("", true)]
     public sealed class ClsConvar : MarshalByRefObject /* ClsConCommandBase */
     {
         internal readonly ClsConvarMain _remoteMain;

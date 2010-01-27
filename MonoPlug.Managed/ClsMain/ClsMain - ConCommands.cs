@@ -2,69 +2,88 @@
 using System;
 using System.Collections.Generic;
 using System.Reflection;
+using System.Threading;
 
 namespace MonoPlug
 {
     partial class ClsMain
     {
-        internal ClsConCommand RegisterConCommand(ClsPluginBase plugin, string name, string help, ConCommandDelegate code, FCVAR flags, ConCommandCompleteDelegate complete)
+        internal ClsConCommand RegisterConCommand(ClsPluginBase plugin, string name, string help, FCVAR flags, ConCommandDelegate code, ConCommandCompleteDelegate complete)
         {
             Check.NonNull("code", code);
             Check.NonNullOrEmpty("name", name);
             Check.NonNullOrEmpty("help", help);
             Check.ValidFlags(flags, "flags");
 
-            ConCommandEntry entry = new ConCommandEntry();
-            entry.Plugin = plugin;
-            entry.Command = new ClsConCommand(ulong.MinValue, name, help, flags, code, complete);
-
-            lock (this._concommands)
+            this._lckConCommandBase.AcquireReaderLock(Timeout.Infinite);
+            try
             {
-                if (this._concommands.ContainsKey(name))
+                //Check if command exists
+                string nup = name.ToUpperInvariant();
+                foreach (UInt64 id in this._conCommandBase.Keys)
                 {
-                    return null;
-                }
-
-                if (this.InterThreadCall<bool, ConCommandEntry>(this.RegisterConCommand_Call, entry))
-                {
-                    this._concommands.Add(entry.Command.Name, entry);
-                    return entry.Command;
-                }
-                else
-                {
-                    return null;
-                }
-            }
-        }
-
-        private bool RegisterConCommand_Call(ConCommandEntry entry)
-        {
-            return NativeMethods.Mono_RegisterConCommand(entry.Command.Name, entry.Command.Help, entry.Command.Code, (int)entry.Command.Flags, entry.Command.Complete);
-        }
-
-        internal bool UnregisterConCommand(ClsPluginBase plugin, ClsConCommand command)
-        {
-            lock (this._concommands)
-            {
-                if (this._concommands.ContainsKey(command.Name))
-                {
-                    ConCommandEntry entry = this._concommands[command.Name];
-                    if (entry.Plugin == plugin && entry.Command == command)
+                    if (this._conCommandBase[id].Name.Equals(name, StringComparison.InvariantCultureIgnoreCase))
                     {
-                        if (this.InterThreadCall<bool, string>(this.UnregisterConCommand_Call, command.Name))
-                        {
-                            this._concommands.Remove(command.Name);
-                            return true;
-                        }
+                        //Command exists in managed
+                        return null;
                     }
                 }
+
+                ConCommandData cmdData = new ConCommandData(plugin, name, help, flags, code, complete);
+                //Try to create it in native
+                LockCookie cookie = this._lckConCommandBase.UpgradeToWriterLock(Timeout.Infinite);
+                try
+                {
+                    UInt64 nativeId = this.InterThreadCall<UInt64, ConCommandData>(this.RegisterConCommand_Call, cmdData);
+                    if (nativeId > 0)
+                    {
+                        cmdData.NativeID = nativeId;
+                        ClsConCommand cmd = new ClsConCommand(cmdData);
+                        this._conCommandBase.Add(nativeId, cmd);
+                        return cmd;
+                    }
+                    else
+                    {
+                        return null;
+                    }
+                }
+                finally
+                {
+                    this._lckConCommandBase.DowngradeFromWriterLock(ref cookie);
+                }
             }
-            return false;
+            finally
+            {
+                this._lckConCommandBase.ReleaseReaderLock();
+            }
         }
 
-        private bool UnregisterConCommand_Call(string name)
+        private UInt64 RegisterConCommand_Call(ConCommandData entry)
         {
-            return NativeMethods.Mono_UnregisterConCommand(name);
+            return NativeMethods.Mono_RegisterConCommand(entry.Name, entry.Help, (int)entry.Flags, entry.Code, entry.Complete);
+        }
+
+        internal void UnregisterConCommand(ClsPluginBase plugin, ClsConCommand command)
+        {
+            this._lckConCommandBase.AcquireWriterLock(Timeout.Infinite);
+            try
+            {
+                if (this._conCommandBase.ContainsKey(command.NativeID))
+                {
+                    this.InterThreadCall<object, UInt64>(this.UnregisterConCommand_Call, command.NativeID);
+                    this._conCommandBase.Remove(command.NativeID);
+                }
+            }
+            finally
+            {
+                this._lckConCommandBase.ReleaseWriterLock();
+            }
+        }
+
+        private object UnregisterConCommand_Call(UInt64 nativeId)
+        {
+            NativeMethods.Mono_UnregisterConCommand(nativeId);
+            return null;
         }
     }
 }

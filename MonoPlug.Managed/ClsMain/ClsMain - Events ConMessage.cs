@@ -11,12 +11,12 @@ namespace MonoPlug
 
         internal void ConMessage_Add(ClsPluginBase plugin)
         {
-            this.Event_Add(plugin, _evtConMessage, NativeMethods.Attach_ConMessage);
+            this.Event_Add(plugin, _evtConMessage, NativeMethods.Mono_AttachConsole);
         }
 
         internal void ConMessage_Remove(ClsPluginBase plugin)
         {
-            this.Event_Remove(plugin, _evtConMessage, NativeMethods.Detach_ConMessage);
+            this.Event_Remove(plugin, _evtConMessage, NativeMethods.Mono_DetachConsole);
         }
 
         internal void Raise_ConMessage(bool hasColor, bool debug, int r, int g, int b, int a, string msg)

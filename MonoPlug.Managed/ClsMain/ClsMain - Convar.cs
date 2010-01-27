@@ -7,109 +7,84 @@ namespace MonoPlug
 {
     partial class ClsMain
     {
-        internal ClsConvarMain RegisterConvar(ClsPluginBase plugin, string name, string help, FCVAR flags, string defaultValue)
+        internal ClsConVar RegisterConvar(ClsPluginBase plugin, string name, string help, FCVAR flags, string defaultValue)
         {
             Check.NonNullOrEmpty("name", name);
             Check.NonNullOrEmpty("help", help);
-            Check.NonNull("defaultValue", defaultValue);
             Check.ValidFlags(flags, "flags");
+            Check.NonNull("defaultValue", defaultValue);
 
-            ClsConvarMain cvMain = new ClsConvarMain(this, name, help, flags, defaultValue);
-
-            this._lckConvars.AcquireReaderLock(Timeout.Infinite);
+            this._lckConCommandBase.AcquireReaderLock(Timeout.Infinite);
             try
             {
-                UInt64 nativeID = this.InterThreadCall<UInt64, ClsConvarMain>(this.RegisterConvar_Call, cvMain);
-                if (nativeID > 0)
+                //Check if command exists
+                string nup = name.ToUpperInvariant();
+                foreach (UInt64 id in this._conCommandBase.Keys)
                 {
-                    cvMain.Init(nativeID);
-                    //ClsConvarMain var = new ClsConvarMain(this, nativeID);
-                    ConVarEntry entry = new ConVarEntry(plugin, cvMain);
-                    this._convarsList.Add(nativeID, entry);
-#if DEBUG
-                    this.DevMsg("Registeted convar '{0}' for plugin '{1}'\n", name, plugin ?? (object)"<main>");
-#endif
-                    return cvMain;
+                    if (this._conCommandBase[id].Name.Equals(name, StringComparison.InvariantCultureIgnoreCase))
+                    {
+                        //var exists in managed
+                        return null;
+                    }
                 }
-                else
+
+                ConVarData data = new ConVarData(plugin, name, help, flags, defaultValue);
+                LockCookie cookie = this._lckConCommandBase.UpgradeToWriterLock(Timeout.Infinite);
+                try
                 {
-                    this.Warning("Can't register var {0} for plugin {1}\n", name, plugin ?? (object)"<main>");
-                    return null;
+                    UInt64 nativeId = this.InterThreadCall<UInt64, ConVarData>(this.RegisterConvar_Call, data);
+                    if (nativeId > 0)
+                    {
+                        data.NativeID = nativeId;
+                        ClsConVar convar = new ClsConVar(data);
+                        this._conCommandBase.Add(nativeId, convar);
+                        return convar;
+                    }
+                    else
+                    {
+                        return null;
+                    }
+                }
+                finally
+                {
+                    this._lckConCommandBase.DowngradeFromWriterLock(ref cookie);
                 }
             }
-#if DEBUG
-            catch (Exception ex)
-            {
-                this.Warning(ex);
-                return null;
-            }
-#endif
             finally
             {
-                this._lckConvars.ReleaseReaderLock();
+                this._lckConCommandBase.ReleaseReaderLock();
             }
         }
 
-        private UInt64 RegisterConvar_Call(ClsConvarMain data)
+        private UInt64 RegisterConvar_Call(ConVarData data)
         {
-            return NativeMethods.Mono_RegisterConvar(data.Name, data.Help, (int)data.Flags, data.DefaultValue, data.RaiseValueChanged);
+            return NativeMethods.Mono_RegisterConvar(data.Name, data.Help, (int)data.Flags, data.DefaultValue);
         }
 
-        //        internal void ConvarChanged(UInt64 nativeID)
-        //        {
-        //#if DEBUG
-        //            this.DevMsg("ConvarChanged({0}) Enter\n", nativeID);
-        //            try
-        //            {
-        //#endif
-        //                this._lckConvars.AcquireReaderLock(Timeout.Infinite);
-        //                try
-        //                {
-        //                    if (this._convarsList.ContainsKey(nativeID))
-        //                    {
-        //                        ConVarEntry entry = this._convarsList[nativeID];
-        //#if DEBUG
-        //                        this.DevMsg("Queueing event raise\n");
-        //#endif
-        //                        //this._pool.QueueUserWorkItem(this.ConvarChangedRaise, entry);
-        //                        this.ConvarChangedRaise(entry);
-        //#if DEBUG
-        //                        this.DevMsg("Queued event raise\n");
-        //#endif
-        //                    }
-        //#if DEBUG
-        //                    else
-        //                    {
-        //                        this.DevMsg("ConvarChanged: Can't find var with id={0}\n", nativeID);
-        //                    }
-        //#endif
-        //                }
-        //                finally
-        //                {
-        //                    this._lckConvars.ReleaseReaderLock();
-        //                }
-        //#if DEBUG
-        //            }
-        //            catch (Exception ex)
-        //            {
-        //                this.Warning(ex);
-        //            }
-        //            finally
-        //            {
-        //                this.DevMsg("ConvarChanged({0}) Exit\n", nativeID);
-        //            }
-        //#endif
-        //        }
-
-        private void ConvarChangedRaise(ConVarEntry entry)
+        internal void Raise_ConVarChange(UInt64 nativeID)
         {
 #if DEBUG
             this.DevMsg("Threaded ConvarChangedRaise enter...\n");
             try
             {
 #endif
-                //ConVarEntry entry = (ConVarEntry)state;
-                entry.Var.RaiseValueChanged();
+                this._lckConCommandBase.AcquireReaderLock(Timeout.Infinite);
+                try
+                {
+                    if (this._conCommandBase.ContainsKey(nativeID))
+                    {
+                        ClsConCommandBase item = this._conCommandBase[nativeID];
+                        if (item is ClsConVar)
+                        {
+                            ClsConVar cvar = (ClsConVar)item;
+                            cvar.RaiseValueChanged();
+                        }
+                    }
+                }
+                finally
+                {
+                    this._lckConCommandBase.ReleaseReaderLock();
+                }
 #if DEBUG
             }
             catch (Exception ex)
@@ -123,52 +98,29 @@ namespace MonoPlug
 #endif
         }
 
-        internal bool UnregisterConvar(ClsPluginBase plugin, ClsConvarMain var)
+        internal void UnregisterConvar(ClsPluginBase plugin, ClsConVar var)
         {
             Check.NonNull("var", var);
 
-            this._lckConvars.AcquireReaderLock(Timeout.Infinite);
+            this._lckConCommandBase.AcquireWriterLock(Timeout.Infinite);
             try
             {
-                if (this._convarsList.ContainsKey(var.NativeID))
+                if (this._conCommandBase.ContainsKey(var.NativeID))
                 {
-                    LockCookie cookie = this._lckConvars.UpgradeToWriterLock(Timeout.Infinite);
-                    try
-                    {
-                        if (this.InterThreadCall<bool, UInt64>(this.UnregisterConvar_Call, var.NativeID))
-                        {
-                            this._convarsList.Remove(var.NativeID);
-                            return true;
-                        }
-                    }
-                    finally
-                    {
-                        this._lckConvars.DowngradeFromWriterLock(ref cookie);
-                    }
+                    this.InterThreadCall<object, UInt64>(this.UnregisterConvar_Call, var.NativeID);
+                    this._conCommandBase.Remove(var.NativeID);
                 }
             }
             finally
             {
-                this._lckConvars.ReleaseReaderLock();
+                this._lckConCommandBase.ReleaseWriterLock();
             }
-
-            //lock (this._convars)
-            //{
-            //    if (this._convars.ContainsKey(var.NativeID))
-            //    {
-            //        if (this.InterThreadCall<bool, UInt64>(this.UnregisterConvar_Call, var.NativeID))
-            //        {
-            //            this._convars.Remove(var.NativeID);
-            //            return true;
-            //        }
-            //    }
-            //}
-            return false;
         }
 
-        private bool UnregisterConvar_Call(UInt64 nativeID)
+        private object UnregisterConvar_Call(UInt64 nativeID)
         {
-            return NativeMethods.Mono_UnregisterConvar(nativeID);
+            NativeMethods.Mono_UnregisterConvar(nativeID);
+            return null;
         }
     }
 }

@@ -18,7 +18,7 @@ namespace MonoPlug
         /// <returns>ConCommand instance if success, else null</returns>
         public ClsConCommand RegisterConCommand(string name, string help, FCVAR flags, ConCommandDelegate code, ConCommandCompleteDelegate completion)
         {
-            return this._main.RegisterConCommand(this, name, help, code, flags, completion);
+            return this._main.RegisterConCommand(this, name, help, flags, code, completion);
         }
 
         /// <summary>
@@ -26,9 +26,9 @@ namespace MonoPlug
         /// </summary>
         /// <param name="command">ConCommand instance to unregister</param>
         /// <returns>True if unregister is successfull</returns>
-        public bool UnregisterConCommand(ClsConCommand command)
+        public void UnregisterConCommand(ClsConCommand command)
         {
-            return this._main.UnregisterConCommand(this, command);
+            this._main.UnregisterConCommand(this, command);
         }
     }
 }

@@ -24,69 +24,36 @@ namespace MonoPlug
                 this.Warning(ex);
             }
 
-            //Clean commands
+            //Clean convars and concommands
+            this._lckConCommandBase.AcquireWriterLock(Timeout.Infinite);
             try
             {
-                List<ClsConCommand> lstCommands = new List<ClsConCommand>();
-                lock (this._concommands)
+                List<ClsConCommandBase> lstRemove = new List<ClsConCommandBase>();
+                foreach (UInt64 nativeId in this._conCommandBase.Keys)
                 {
-                    foreach (string name in this._concommands.Keys)
+                    ClsConCommandBase cBase = this._conCommandBase[nativeId];
+                    if (cBase.Plugin == plugin)
                     {
-                        if (this._concommands[name].Plugin == plugin)
-                        {
-                            lstCommands.Add(this._concommands[name].Command);
-                        }
+                        lstRemove.Add(cBase);
                     }
                 }
-                foreach (ClsConCommand cmd in lstCommands)
+                foreach (ClsConCommandBase cBase in lstRemove)
                 {
-                    this.UnregisterConCommand(plugin, cmd);
-                }
-            }
-            catch (Exception ex)
-            {
-                this.Warning("Plugin ConCommandClean error\n");
-                this.Warning(ex);
-            }
-
-            //Clean convars
-            //List<ClsConvarMain> lstVars = new List<ClsConvarMain>();
-            this._lckConvars.AcquireWriterLock(Timeout.Infinite);
-            try
-            {
-                List<ulong> lst = new List<ulong>();
-                foreach (ulong id in this._convarsList.Keys)
-                {
-                    ConVarEntry entry = this._convarsList[id];
-                    if (entry.Plugin == plugin)
+                    if (cBase is ClsConCommand)
                     {
-                        this.InterThreadCall<bool, ulong>(this.UnregisterConvar_Call, entry.Var.NativeID);
-                        lst.Add(id);
+                        this.InterThreadCall<object, UInt64>(this.UnregisterConCommand_Call, cBase.NativeID);
                     }
-                }
-                foreach (ulong id in lst)
-                {
-                    this._convarsList.Remove(id);
+                    if (cBase is ClsConVar)
+                    {
+                        this.InterThreadCall<object, UInt64>(this.UnregisterConvar_Call, cBase.NativeID);
+                    }
+                    this._conCommandBase.Remove(cBase.NativeID);
                 }
             }
             finally
             {
-                this._lckConvars.ReleaseWriterLock();
+                this._lckConCommandBase.ReleaseWriterLock();
             }
-            //lock (this._convars)
-            //{
-            //    foreach (ulong id in this._convarsList.Keys)
-            //    {
-            //        if (this._convarsList[id].Plugin == plugin)
-            //        {
-            //            lstVars.Add(this._convarsList[id].Var);
-            //        }
-            //    }
-            //}
-            //foreach (ClsConvarMain convar in lstVars)
-            //{
-            //    this.UnregisterConvar(plugin, convar);
-            //}
         }
 
         private void clr_plugin_unload(string line, string[] arguments)

@@ -21,9 +21,11 @@ namespace MonoPlug
         private readonly Dictionary<AppDomain, ClsPluginBase> _plugins = new Dictionary<AppDomain, ClsPluginBase>();
         private readonly ReaderWriterLock _lckPlugins = new ReaderWriterLock();
 
-        private readonly Dictionary<UInt64, ConVarEntry> _convarsList = new Dictionary<UInt64, ConVarEntry>();
-        private readonly ReaderWriterLock _lckConvars = new ReaderWriterLock();
-        private readonly Dictionary<string, ConCommandEntry> _concommands = new Dictionary<string, ConCommandEntry>();
+        private readonly ReaderWriterLock _lckConCommandBase = new ReaderWriterLock();
+        private readonly Dictionary<UInt64, ClsConCommandBase> _conCommandBase = new Dictionary<ulong, ClsConCommandBase>();
+        //private readonly Dictionary<UInt64, ConVarEntry> _convarsList = new Dictionary<UInt64, ConVarEntry>();
+        //private readonly ReaderWriterLock _lckConvars = new ReaderWriterLock();
+        //private readonly Dictionary<string, ConCommandEntry> _concommands = new Dictionary<string, ConCommandEntry>();
 
         private readonly ClsThreadPool _pool;
 
@@ -33,8 +35,8 @@ namespace MonoPlug
         private PluginDefinition[] _pluginCache = null;
 
         //Internal commands and vars
-        private ClsConvarMain _clr_mono_version = null;
-        private ClsConvarMain _clr_plugin_directory = null;
+        private ClsConVar _clr_mono_version = null;
+        private ClsConVar _clr_plugin_directory = null;
         private ClsConCommand _clr_plugin_list = null;
         private ClsConCommand _clr_plugin_refresh = null;
         private ClsConCommand _clr_plugin_load = null;
