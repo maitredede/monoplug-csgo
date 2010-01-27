@@ -1,53 +1,33 @@
 #include "CMonoPlugin.h"
 #include "convar.h"
+#include "pluginterfaces.h"
 
-//Hooks declaration
-SH_DECL_HOOK3_void(IServerGameDLL, ServerActivate, SH_NOATTRIB, 0, edict_t *, int, int);
-
-void Test_Change(IConVar *var, const char *pOldValue, float flOldValue)
+bool MonoPlugin::CMonoPlugin::Less_uint64(const uint64 & k1, const uint64 & k2)
 {
-	META_CONPRINTF("Var has changed : %s\n", var->GetName());
-}
-
-//ConVar clr_test("clr_test", "42", FCVAR_CHEAT, "Help test", Test_Change);
-
-ICvar* MonoPlugin::CMonoPlugin::GetICVar()
-{
-#if SOURCE_ENGINE >= SE_ORANGEBOX
-	return (ICvar *)((g_SMAPI->GetEngineFactory())(CVAR_INTERFACE_VERSION, NULL));
-#else
-	return (ICvar *)((g_SMAPI->GetEngineFactory())(VENGINE_CVAR_INTERFACE_VERSION, NULL));
-#endif
-}
+	return k1 < k2;
+};
 
 bool MonoPlugin::CMonoPlugin::Load(PluginId id, ISmmAPI *ismm, char *error, size_t maxlen, bool late)
 {
+	//Init vars
 	PLUGIN_SAVEVARS();
+	this->m_console = NULL;
 
 	//Get engine interfaces
 	GET_V_IFACE_ANY(GetServerFactory, g_iserver, IServerGameDLL, INTERFACEVERSION_SERVERGAMEDLL);
 	GET_V_IFACE_ANY(GetEngineFactory, g_filesystem, IFileSystem, FILESYSTEM_INTERFACE_VERSION);
 	GET_V_IFACE_ANY(GetEngineFactory, g_engine, IVEngineServer, INTERFACEVERSION_VENGINESERVER);
 	GET_V_IFACE_ANY(GetEngineFactory, icvar, ICvar, CVAR_INTERFACE_VERSION);
-	GET_V_IFACE_CURRENT(GetEngineFactory, g_Helpers, IServerPluginHelpers, INTERFACEVERSION_ISERVERPLUGINHELPERS);
+	GET_V_IFACE_CURRENT(GetEngineFactory, g_helpers, IServerPluginHelpers, INTERFACEVERSION_ISERVERPLUGINHELPERS);
 
 	gpGlobals = ismm->GetCGlobals();
 
 	/* Load the VSP listener.  This is usually needed for IServerPluginHelpers. */
-	if ((vsp_callbacks = ismm->GetVSPInfo(NULL)) == NULL)
+	if ((g_vsp_callbacks = ismm->GetVSPInfo(NULL)) == NULL)
 	{
 		ismm->AddListener(this, this);
 		ismm->EnableVSPListener();
 	}
-
-	this->AddHooks();
-
-#if SOURCE_ENGINE >= SE_ORANGEBOX
-	g_pCVar = this->GetICVar();
-	ConVar_Register(0, &s_BaseAccessor);
-#else
-	ConCommandBaseMgr::OneTimeInit(&s_BaseAccessor);
-#endif
 
 	//Get game dir
 	char dllPath[MAX_PATH];
@@ -69,11 +49,18 @@ bool MonoPlugin::CMonoPlugin::Load(PluginId id, ISmmAPI *ismm, char *error, size
 		return false;
 	}
 
-	this->m_test = new ConVar("clr_test", "42", FCVAR_CHEAT, "Help test", Test_Change);
-	if(!META_REGCVAR(this->m_test))
-	{
-		META_LOG(g_PLAPI, "Can't register test var");
-	}
+	this->m_nextConbaseId = 0;
+	this->m_conbase = new CUtlMap<uint64, ConCommandBase*>();
+	this->m_conbase->SetLessFunc(CMonoPlugin::Less_uint64);
+
+	this->AddHooks();
+
+#if SOURCE_ENGINE >= SE_ORANGEBOX
+	g_pCVar = icvar;
+	ConVar_Register(0, &s_BaseAccessor);
+#else
+	ConCommandBaseMgr::OneTimeInit(&s_BaseAccessor);
+#endif
 
 	if(!this->StartMono(error, maxlen))
 	{
@@ -98,4 +85,5 @@ void MonoPlugin::CMonoPlugin::AllPluginsLoaded()
 	/* This is where we'd do stuff that relies on the mod or other plugins
 	 * being initialized (for example, cvars added and events registered).
 	 */
+	CMonoHelpers::CallMethod(this->m_main, this->m_ClsMain_AllPluginsLoaded, NULL);
 }

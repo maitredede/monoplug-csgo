@@ -1,6 +1,7 @@
 #include "CMonoPlugin.h"
+#include "pluginterfaces.h"
 
 void MonoPlugin::CMonoPlugin::OnVSPListening(IServerPluginCallbacks *iface)
 {
-	vsp_callbacks = iface;
+	g_vsp_callbacks = iface;
 }

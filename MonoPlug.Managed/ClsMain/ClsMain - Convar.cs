@@ -36,7 +36,7 @@ namespace MonoPlug
                     if (nativeId > 0)
                     {
                         data.NativeID = nativeId;
-                        ClsConVar convar = new ClsConVar(data);
+                        ClsConVar convar = new ClsConVar(this, data);
                         this._conCommandBase.Add(nativeId, convar);
                         return convar;
                     }
@@ -58,7 +58,7 @@ namespace MonoPlug
 
         private UInt64 RegisterConvar_Call(ConVarData data)
         {
-            return NativeMethods.Mono_RegisterConvar(data.Name, data.Help, (int)data.Flags, data.DefaultValue);
+            return NativeMethods.Mono_RegisterConVar(data.Name, data.Help, (int)data.Flags, data.DefaultValue);
         }
 
         internal void Raise_ConVarChange(UInt64 nativeID)
@@ -119,7 +119,7 @@ namespace MonoPlug
 
         private object UnregisterConvar_Call(UInt64 nativeID)
         {
-            NativeMethods.Mono_UnregisterConvar(nativeID);
+            NativeMethods.Mono_UnregisterConVar(nativeID);
             return null;
         }
     }

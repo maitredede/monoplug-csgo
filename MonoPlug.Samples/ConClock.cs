@@ -13,8 +13,8 @@ namespace MonoPlug
 
         private Timer _t = null;
 
-        private ClsConvar _theTime = null;
-        private ClsConvar _enabled = null;
+        private ClsConVar _theTime = null;
+        private ClsConVar _enabled = null;
 
         public ConClock()
         {

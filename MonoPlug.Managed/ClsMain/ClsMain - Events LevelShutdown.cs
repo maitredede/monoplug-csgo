@@ -11,12 +11,12 @@ namespace MonoPlug
 
         internal void LevelShutdown_Add(ClsPluginBase plugin)
         {
-            this.Event_Add(plugin, _evtLevelShutdown, NativeMethods.Attach_LevelShutdown);
+            this.Event_Add(plugin, _evtLevelShutdown, NativeMethods.Mono_EventAttach_LevelShutdown);
         }
 
         internal void LevelShutdown_Remove(ClsPluginBase plugin)
         {
-            this.Event_Remove(plugin, _evtLevelShutdown, NativeMethods.Detach_LevelShutdown);
+            this.Event_Remove(plugin, _evtLevelShutdown, NativeMethods.Mono_EventDetach_LevelShutdown);
         }
 
         internal void Raise_LevelShutdown()

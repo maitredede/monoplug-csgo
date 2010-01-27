@@ -2,13 +2,17 @@
 #define _CMONOPLUGIN_H_
 
 #include "monoBase.h"
-#include "pluginterfaces.h"
 #include "CMonoHelpers.h"
 #include "CBaseAccessor.h"
 #include "sourcehook.h"
+#include "CMonoConsole.h"
+#include "CMonoCommand.h"
+#include "utlmap.h"
 
 namespace MonoPlugin
 {
+	class CMonoConsole;
+
 	class CMonoPlugin : public ISmmPlugin, public IMetamodListener
 	{
 	public:
@@ -31,22 +35,32 @@ namespace MonoPlugin
 		bool StartMono(char *error, size_t maxlen);
 		void AddHooks();
 		void RemoveHooks();
+		static bool Less_uint64(const uint64 &, const uint64 & );
+		void Hook_ServerActivate(edict_t *pEdictList, int edictCount, int clientMax);
 	public:
 		MonoAssembly* m_assembly;
 		MonoImage* m_image;
 
 		MonoClass* m_class_ClsMain;
 		MonoMethod* m_ClsMain_Init;
+		MonoMethod* m_ClsMain_AllPluginsLoaded;
+
+		MonoMethod* m_ClsMain_Shutdown;
 		MonoMethod* m_ClsMain_GameFrame;
+		MonoMethod* m_ClsMain_ConPrint;
+
+		MonoMethod* m_ClsMain_Raise_ConVarChange;
+		MonoMethod* m_ClsMain_Raise_LevelShutdown;
 
 		MonoObject* m_main;
-
-		ConVar* m_test;
+		CMonoConsole* m_console;
+		uint64 m_nextConbaseId;
+		CUtlMap<uint64, ConCommandBase*>* m_conbase;
+		int m_EdictCount;
 	public: //IMetamodListener stuff
 		void OnVSPListening(IServerPluginCallbacks *iface);
 	public:
 		void Hook_GameFrame(bool simulating);
-		ICvar *GetICVar();
 #if SOURCE_ENGINE >= SE_ORANGEBOX == 1
 	int GetApiVersion() { return METAMOD_PLAPI_VERSION; }
 #endif

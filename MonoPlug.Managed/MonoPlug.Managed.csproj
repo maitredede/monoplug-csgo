@@ -37,8 +37,6 @@
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>
     <Compile Include="Check.cs" />
-    <Compile Include="ClsConvar.cs" />
-    <Compile Include="ClsConvarMain.cs" />
     <Compile Include="ClsMain\ClsMain - Events Client Connection.cs" />
     <Compile Include="ClsMain\ClsMain - Events ConMessage.cs" />
     <Compile Include="ClsMain\ClsMain - Events LevelShutdown.cs" />
@@ -58,7 +56,6 @@
     <Compile Include="ConCommandBase\ConVarData.cs" />
     <Compile Include="EventArgs\ClientEventArgs.cs" />
     <Compile Include="EventArgs\ConMessageEventArgs.cs" />
-    <Compile Include="ConvarRegisterData.cs" />
     <Compile Include="EventArgs\ClientCommandEventArgs.cs" />
     <Compile Include="EventArgs\ClientConnectEventArgs.cs" />
     <Compile Include="ConCommandBase\ClsConCommandBase.cs" />
@@ -81,8 +78,6 @@
     <Compile Include="ClsPlayer.cs" />
     <Compile Include="ClsPluginBase\ClsPluginBase - EVT ClientCommand.cs" />
     <Compile Include="ClsPluginBase\ClsPluginBase - EVT LevelShutdown.cs" />
-    <Compile Include="ConCommandEntry.cs" />
-    <Compile Include="ConVarEntry.cs" />
     <Compile Include="FCVAR.cs" />
     <Compile Include="DialogMessage.cs" />
     <Compile Include="IExecute.cs" />

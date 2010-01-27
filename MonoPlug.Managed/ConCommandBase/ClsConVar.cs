@@ -8,11 +8,13 @@ namespace MonoPlug
 {
     public sealed class ClsConVar : ClsConCommandBase
     {
+        private readonly ClsMain _main;
         private readonly ConVarData _data;
 
-        internal ClsConVar(ConVarData data)
+        internal ClsConVar(ClsMain main, ConVarData data)
             : base(data)
         {
+            this._main = main;
             this._data = data;
         }
 
@@ -50,6 +52,38 @@ namespace MonoPlug
             {
                 d(this, EventArgs.Empty);
             }
+        }
+
+        public bool ValueBoolean
+        {
+            get { return this._main.InterThreadCall<bool, object>(this.ValueBoolean_Get, null); }
+            set { this._main.InterThreadCall<object, bool>(this.ValueBoolean_Set, value); }
+        }
+
+        private bool ValueBoolean_Get(object unused)
+        {
+            return NativeMethods.Mono_Convar_GetBoolean(this._data.NativeID);
+        }
+        private object ValueBoolean_Set(bool value)
+        {
+            NativeMethods.Mono_Convar_SetBoolean(this._data.NativeID, value);
+            return null;
+        }
+
+        public string ValueString
+        {
+            get { return this._main.InterThreadCall<string, object>(this.ValueString_Get, null); }
+            set { this._main.InterThreadCall<object, string>(this.ValueString_Set, value); }
+        }
+
+        private string ValueString_Get(object unused)
+        {
+            return NativeMethods.Mono_Convar_GetString(this._data.NativeID);
+        }
+        private object ValueString_Set(string value)
+        {
+            NativeMethods.Mono_Convar_SetString(this._data.NativeID, value);
+            return null;
         }
     }
 }

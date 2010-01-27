@@ -16,7 +16,8 @@ extern MonoDomain *g_Domain;
 
 extern CGlobalVars *gpGlobals;
 extern ICvar *icvar;
-extern IServerPluginCallbacks *vsp_callbacks;
-extern IServerPluginHelpers *g_Helpers;
+extern IServerPluginHelpers *g_helpers;
+extern IServerPluginCallbacks *g_vsp_callbacks;
+
 
 #endif //_GAMEINTERFACES_H_

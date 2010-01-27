@@ -14,22 +14,30 @@ namespace MonoPlugin
 	void Mono_Warning(MonoString* msg);
 	void Mono_Error(MonoString* msg);
 
-	//Convars
-	//uint64 Mono_RegisterConvar(MonoString* name, MonoString* help, int flags, MonoString* defaultValue, MonoDelegate* changeCallback);
-	//bool Mono_UnregisterConvar(uint64 nativeID);
-	//void Mono_CMonoConvar_ValueChanged(IConVar *var, const char *pOldValue, float flOldValue);
+	//Console
+	void Mono_AttachConsole();
+	void Mono_DetachConsole();
 
-	//MonoString* Mono_Convar_GetString(uint64 nativeID);
-	//void Mono_Convar_SetString(uint64 nativeID, MonoString* value);
+	//ConCommands
+	uint64 Mono_RegisterConCommand(MonoString* name, MonoString* help, int flags, MonoDelegate* code, MonoDelegate* complete);
+	void Mono_UnregisterConCommand(uint64 nativeId);
 
-	//bool Mono_Convar_GetBoolean(uint64 nativeID);
-	//void Mono_Convar_SetBoolean(uint64 nativeID, bool value);
+	//ConVars
+	uint64 Mono_RegisterConVar(MonoString* name, MonoString* help, int flags, MonoString* defaultValue);
+	void Mono_UnregisterConVar(uint64 nativeId);
+	void Mono_RaiseConVarChange(IConVar *var, const char *pOldValue, float flOldValue);
 
-	//bool Mono_RegisterConCommand(MonoString* name, MonoString* help, MonoDelegate* code, int flags, MonoDelegate* complete);
-	//bool Mono_UnregisterConCommand(MonoString* name);
+	MonoString* Mono_Convar_GetString(uint64 nativeID);
+	void Mono_Convar_SetString(uint64 nativeID, MonoString* value);
+	bool Mono_Convar_GetBoolean(uint64 nativeID);
+	void Mono_Convar_SetBoolean(uint64 nativeID, bool value);
 
-	//void Mono_ClientDialogMessage(int client, MonoString* title, MonoString* message, int a, int r, int g, int b, int level, int time);
-	//void Mono_ShowMOTD(int index, char *title, char *msg, int type, char *cmd);
+	//LevelShutdown
+	void Mono_EventAttach_LevelShutdown();
+	void Mono_EventDetach_LevelShutdown();
+
+	//Various
+	void Mono_ClientDialogMessage(int client, MonoString* title, MonoString* message, int a, int r, int g, int b, int level, int time);
 }
 
 #endif //_MONOCALLBACKS_H_

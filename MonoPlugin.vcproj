@@ -978,19 +978,15 @@
 				>
 			</File>
 			<File
+				RelativePath=".\CMonoCommand.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\CMonoConsole.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\CMonoHelpers.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\CMonoPlugin - Hooks.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\CMonoPlugin - Mono.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\CMonoPlugin - PluginBase.cpp"
 				>
 			</File>
 			<File
@@ -1002,7 +998,19 @@
 				>
 			</File>
 			<File
+				RelativePath=".\CMonoPlugin_Hooks.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\CMonoPlugin_IMetamodListener.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\CMonoPlugin_Mono.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\CMonoPlugin_PluginBase.cpp"
 				>
 			</File>
 			<File
@@ -1013,6 +1021,10 @@
 				RelativePath=".\pluginterfaces.cpp"
 				>
 			</File>
+			<File
+				RelativePath=".\tools.cpp"
+				>
+			</File>
 		</Filter>
 		<Filter
 			Name="Header Files"
@@ -1021,6 +1033,14 @@
 			>
 			<File
 				RelativePath=".\CBaseAccessor.h"
+				>
+			</File>
+			<File
+				RelativePath=".\CMonoCommand.h"
+				>
+			</File>
+			<File
+				RelativePath=".\CMonoConsole.h"
 				>
 			</File>
 			<File
@@ -1041,6 +1061,10 @@
 			</File>
 			<File
 				RelativePath=".\pluginterfaces.h"
+				>
+			</File>
+			<File
+				RelativePath=".\tools.h"
 				>
 			</File>
 		</Filter>

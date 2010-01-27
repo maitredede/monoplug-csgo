@@ -9,5 +9,5 @@ MonoDomain *g_Domain = NULL;
 
 CGlobalVars *gpGlobals = NULL;
 ICvar *icvar = NULL;
-IServerPluginCallbacks *vsp_callbacks = NULL;
-IServerPluginHelpers *g_Helpers = NULL;
+IServerPluginCallbacks* g_vsp_callbacks = NULL;
+IServerPluginHelpers* g_helpers = NULL;
