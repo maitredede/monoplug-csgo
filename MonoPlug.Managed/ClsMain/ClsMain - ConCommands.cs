@@ -19,7 +19,6 @@ namespace MonoPlug
             try
             {
                 //Check if command exists
-                string nup = name.ToUpperInvariant();
                 foreach (UInt64 id in this._conCommandBase.Keys)
                 {
                     if (this._conCommandBase[id].Name.Equals(name, StringComparison.InvariantCultureIgnoreCase))

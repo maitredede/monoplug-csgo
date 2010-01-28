@@ -82,5 +82,10 @@ namespace MonoPlug
                 this._lckThreadQueue.ReleaseReaderLock();
             }
         }
+
+        internal void QueueUserWorkItem(WaitCallback callback, object state)
+        {
+            this._pool.QueueUserWorkItem(callback, state);
+        }
     }
 }
