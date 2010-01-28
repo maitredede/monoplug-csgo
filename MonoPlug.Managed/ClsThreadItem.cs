@@ -12,11 +12,13 @@ namespace MonoPlug
         private readonly InterThreadCallDelegate<TRet, TParam> _code;
         private readonly TParam _param;
         private TRet _return;
+        private readonly IMessage _msg;
 
-        internal ClsThreadItem(InterThreadCallDelegate<TRet, TParam> code, TParam param)
+        internal ClsThreadItem(IMessage msg, InterThreadCallDelegate<TRet, TParam> code, TParam param)
         {
             this._code = code;
             this._param = param;
+            this._msg = msg;
         }
 
         public void WaitOne()
@@ -28,15 +30,32 @@ namespace MonoPlug
 
         public void Execute()
         {
+#if DEBUG
+            //NativeMethods.Mono_DevMsg(string.Format("ClsThreadItem::Execute() in [{0}]\n", AppDomain.CurrentDomain.FriendlyName));
             try
             {
-#if DEBUG
-                NativeMethods.Mono_DevMsg(string.Format("ClsThreadItem::Execute() in [{0}]\n", AppDomain.CurrentDomain.FriendlyName));
+                //NativeMethods.Mono_DevMsg(string.Format("  Target method is {0} in {1}\n", this._code.Method.Name, this._code.Method.DeclaringType.AssemblyQualifiedName));
+            }
+            catch
+            {
+            }
 #endif
+            try
+            {
                 this._return = this._code(this._param);
             }
+#if DEBUG
+            catch (Exception ex)
+            {
+                this._msg.Warning(ex);
+                throw ex;
+            }
+#endif
             finally
             {
+#if DEBUG
+                //NativeMethods.Mono_DevMsg(string.Format("ClsThreadItem::Execute() in [{0}] Done.\n", AppDomain.CurrentDomain.FriendlyName));
+#endif
                 this._latch.Set();
             }
         }

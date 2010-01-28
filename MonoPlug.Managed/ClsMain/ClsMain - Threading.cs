@@ -20,7 +20,7 @@ namespace MonoPlug
                 return d.Invoke(parameter);
             }
 
-            ClsThreadItem<TRet, TParam> item = new ClsThreadItem<TRet, TParam>(d, parameter);
+            ClsThreadItem<TRet, TParam> item = new ClsThreadItem<TRet, TParam>(this, d, parameter);
             {
                 this._lckThreadQueue.AcquireWriterLock(Timeout.Infinite);
                 try
@@ -39,33 +39,60 @@ namespace MonoPlug
 
         internal void GameFrame()
         {
-            //#if DEBUG
-            //            NativeMethods.Mono_DevMsg("GameFrame Enter\n");
-            //#endif
             this._lckThreadQueue.AcquireReaderLock(Timeout.Infinite);
-            //#if DEBUG
-            //            NativeMethods.Mono_DevMsg("  GF: Reader locked\n");
-            //#endif
             try
             {
                 if (this._threadQueue.Count > 0)
                 {
+#if DEBUG
                     NativeMethods.Mono_DevMsg(string.Format("ITH: GameFrame {0} jobs\n", this._threadQueue.Count));
+#endif
+                    List<IExecute> lstToExec = new List<IExecute>();
+
                     LockCookie cookie = this._lckThreadQueue.UpgradeToWriterLock(Timeout.Infinite);
                     try
                     {
                         while (this._threadQueue.Count > 0)
                         {
-                            IExecute item = this._threadQueue.Dequeue();
+                            lstToExec.Add(this._threadQueue.Dequeue());
                             NativeMethods.Mono_DevMsg("ITH: Dequeue\n");
-                            item.Execute();
                         }
+                    }
+#if DEBUG
+                    catch (Exception ex)
+                    {
+                        this.Warning(ex);
+                    }
+#endif
+                    finally
+                    {
+                        this._lckThreadQueue.DowngradeFromWriterLock(ref cookie);
+                        NativeMethods.Mono_DevMsg("ITH: loop exit\n");
+                    }
+
+#if DEBUG
+                    try
+                    {
+#endif
+                        for (int i = 0; i < lstToExec.Count; i++)
+                        {
+                            IExecute item = lstToExec[i];
+                            try
+                            {
+                                item.Execute();
+                            }
+                            catch (Exception ex)
+                            {
+                                this.Warning(ex);
+                            }
+                        }
+#if DEBUG
                     }
                     finally
                     {
-                        NativeMethods.Mono_DevMsg("ITH: loop exit\n");
-                        this._lckThreadQueue.DowngradeFromWriterLock(ref cookie);
+                        NativeMethods.Mono_DevMsg("ITH: Done\n");
                     }
+#endif
                 }
             }
 #if DEBUG
@@ -76,9 +103,6 @@ namespace MonoPlug
 #endif
             finally
             {
-                //#if DEBUG
-                //                NativeMethods.Mono_DevMsg("GameFrame : Exit\n");
-                //#endif
                 this._lckThreadQueue.ReleaseReaderLock();
             }
         }

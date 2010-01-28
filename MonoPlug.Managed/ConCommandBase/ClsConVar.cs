@@ -54,6 +54,9 @@ namespace MonoPlug
             }
         }
 
+        /// <summary>
+        /// Get or set the ConVar value as a boolean
+        /// </summary>
         public bool ValueBoolean
         {
             get { return this._main.InterThreadCall<bool, object>(this.ValueBoolean_Get, null); }
@@ -70,6 +73,9 @@ namespace MonoPlug
             return null;
         }
 
+        /// <summary>
+        /// Get or set the ConVar value as a string
+        /// </summary>
         public string ValueString
         {
             get { return this._main.InterThreadCall<string, object>(this.ValueString_Get, null); }
@@ -82,8 +88,20 @@ namespace MonoPlug
         }
         private object ValueString_Set(string value)
         {
-            NativeMethods.Mono_Convar_SetString(this._data.NativeID, value);
-            return null;
+#if DEBUG
+            NativeMethods.Mono_DevMsg("ValueString_Set (enter)\n");
+            try
+            {
+#endif
+                NativeMethods.Mono_Convar_SetString(this._data.NativeID, value);
+                return null;
+#if DEBUG
+            }
+            finally
+            {
+                NativeMethods.Mono_DevMsg("ValueString_Set (exit)\n");
+            }
+#endif
         }
     }
 }
