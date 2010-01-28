@@ -92,8 +92,7 @@ namespace MonoPlugin
 			ConCommandBase* item = g_MonoPlugin.m_conbase->Element(i);
 			if(!item->IsCommand())
 			{
-				IConVar* itemVar = (IConVar*)item;
-				if(itemVar == var)
+				if(((ConVar*)item) == ((ConVar*)var))
 				{
 					uint64 nativeId = g_MonoPlugin.m_conbase->Key(i);
 					void* args[1];
@@ -178,6 +177,7 @@ namespace MonoPlugin
 	{
 		char* n_name = mono_string_to_utf8(name);
 		ConCommandBase* command = g_pCVar->FindCommandBase(n_name);
+
 		if(command)
 			return false;
 
