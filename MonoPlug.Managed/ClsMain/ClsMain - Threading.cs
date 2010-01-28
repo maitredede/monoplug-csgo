@@ -18,34 +18,52 @@ namespace MonoPlug
 
         internal TRet InterThreadCall<TRet, TParam>(InterThreadCallDelegate<TRet, TParam> d, TParam parameter)
         {
+#if DEBUG
             if (_Verbose) Console.WriteLine("ITC: th={0}, main={1}", Thread.CurrentThread.ManagedThreadId == this._mainThreadId);
+#endif
             //Same thread, direct call
             if (Thread.CurrentThread.ManagedThreadId == this._mainThreadId)
             {
+#if DEBUG
                 if (_Verbose) Console.WriteLine("ITC: direct call");
+#endif
                 return d.Invoke(parameter);
             }
 
+#if DEBUG
             if (_Verbose) Console.WriteLine("ITC: new item");
+#endif
             ClsThreadItem<TRet, TParam> item = new ClsThreadItem<TRet, TParam>(this, d, parameter);
 
+#if DEBUG
             if (_Verbose) Console.WriteLine("ITC: writer lock");
+#endif
             this._lckThreadQueue.AcquireWriterLock(Timeout.Infinite);
             try
             {
+#if DEBUG
                 if (_Verbose) Console.WriteLine("ITC: enqueue");
+#endif
                 this._threadQueue.Enqueue(item);
+#if DEBUG
                 if (_Verbose) Console.WriteLine("ITC: enqueue OK");
+#endif
             }
             finally
             {
+#if DEBUG
                 if (_Verbose) Console.WriteLine("ITC: release writer");
+#endif
                 this._lckThreadQueue.ReleaseWriterLock();
             }
 
+#if DEBUG
             if (_Verbose) Console.WriteLine("ITC: item wait");
+#endif
             item.WaitOne();
+#if DEBUG
             if (_Verbose) Console.WriteLine("ITC: item return");
+#endif
             return (TRet)item.ReturnValue;
         }
 
@@ -153,18 +171,18 @@ namespace MonoPlug
                     try
                     {
 #endif
-                        for (int i = 0; i < lstToExec.Count; i++)
+                    for (int i = 0; i < lstToExec.Count; i++)
+                    {
+                        IExecute item = lstToExec[i];
+                        try
                         {
-                            IExecute item = lstToExec[i];
-                            try
-                            {
-                                item.Execute();
-                            }
-                            catch (Exception ex)
-                            {
-                                this.Warning(ex);
-                            }
+                            item.Execute();
                         }
+                        catch (Exception ex)
+                        {
+                            this.Warning(ex);
+                        }
+                    }
 #if DEBUG
                     }
                     finally

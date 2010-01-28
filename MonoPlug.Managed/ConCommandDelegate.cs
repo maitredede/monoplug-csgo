@@ -6,7 +6,8 @@ namespace MonoPlug
     /// <summary>
     /// Delegate for managed ConCommands
     /// </summary>
-    /// <param name="args">Arguments of command</param>
+    /// <param name="line">Full command line</param>
+    /// <param name="arguments">Tockenized command line</param>
     public delegate void ConCommandDelegate(string line, string[] arguments);
 
     /// <summary>

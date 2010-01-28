@@ -6,6 +6,9 @@ using System.ComponentModel;
 
 namespace MonoPlug
 {
+    /// <summary>
+    /// A Console Variable
+    /// </summary>
     public sealed class ClsConVar : ClsConCommandBase
     {
         private readonly IConVarValue _val;
@@ -18,11 +21,17 @@ namespace MonoPlug
             this._data = data;
         }
 
+        /// <summary>
+        /// Get the default value
+        /// </summary>
         public string DefaultValue { get { return this._data.DefaultValue; } }
 
         private static readonly object EvtValueChanged = new object();
         private readonly EventHandlerList _lstHandlers = new EventHandlerList();
 
+        /// <summary>
+        /// Raised when the convar value has changed
+        /// </summary>
         public event EventHandler ValueChanged
         {
             add

@@ -7,6 +7,15 @@ namespace MonoPlug
 {
     partial class ClsPluginBase
     {
+        /// <summary>
+        /// Send a DialogMessage to the client
+        /// </summary>
+        /// <param name="client">Target client</param>
+        /// <param name="title">Dialog title</param>
+        /// <param name="message">Dialog message</param>
+        /// <param name="color">Text color</param>
+        /// <param name="level">Text level</param>
+        /// <param name="time">Duration or message</param>
         protected void ClientDialogMessage(ClsPlayer client, string title, string message, Color color, int level, int time)
         {
             Check.NonNull("client", client);

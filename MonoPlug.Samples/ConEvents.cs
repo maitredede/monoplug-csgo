@@ -6,10 +6,16 @@ using System.Threading;
 
 namespace MonoPlug
 {
+    /// <summary>
+    /// Attach all possible raised events
+    /// </summary>
     public sealed class ConEvents : ClsPluginBase
     {
         delegate void DT(EventHandler d);
 
+        /// <summary>
+        /// Load the plugin
+        /// </summary>
         protected override void Load()
         {
             try
@@ -23,16 +29,13 @@ namespace MonoPlug
             }
             catch (Exception ex)
             {
-                while (ex != null)
-                {
-                    Msg(ex.GetType().FullName + "\n");
-                    Msg(ex.Message + "\n");
-                    Msg(ex.StackTrace + "\n");
-                    ex = ex.InnerException;
-                }
+                this.Warning(ex);
             }
         }
 
+        /// <summary>
+        /// Unload the plugin
+        /// </summary>
         protected override void Unload()
         {
             try
@@ -47,21 +50,21 @@ namespace MonoPlug
             }
             catch (Exception ex)
             {
-                while (ex != null)
-                {
-                    Msg(ex.GetType().FullName + "\n");
-                    Msg(ex.Message + "\n");
-                    Msg(ex.StackTrace + "\n");
-                    ex = ex.InnerException;
-                }
+                this.Warning(ex);
             }
         }
 
+        /// <summary>
+        /// Get plugin name
+        /// </summary>
         public override string Name
         {
             get { return "ConEvents"; }
         }
 
+        /// <summary>
+        /// Get plugin description
+        /// </summary>
         public override string Description
         {
             get { return "Dump to console all events that managed code can handle."; }

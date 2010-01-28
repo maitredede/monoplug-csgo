@@ -40,7 +40,7 @@ namespace MonoPlugin
 
 	void Mono_DetachConsole()
 	{
-		if(!g_MonoPlugin.m_console)
+		if(g_MonoPlugin.m_console)
 		{
 			g_pCVar->RemoveConsoleDisplayFunc(g_MonoPlugin.m_console);
 			delete g_MonoPlugin.m_console;

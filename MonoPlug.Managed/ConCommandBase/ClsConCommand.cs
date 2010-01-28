@@ -22,12 +22,7 @@ namespace MonoPlug
         /// <summary>
         /// Create a managed wrapper for a ConCommand
         /// </summary>
-        /// <param name="nativeId"></param>
-        /// <param name="name"></param>
-        /// <param name="description"></param>
-        /// <param name="flags"></param>
-        /// <param name="code"></param>
-        /// <param name="complete"></param>
+        /// <param name="data"></param>
         internal ClsConCommand(ConCommandData data)
             : base(data)
         {

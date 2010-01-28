@@ -1340,6 +1340,7 @@ Global
 		{F7D47743-73B3-49B5-9D76-2333C5DFD565}.Dédé_Débug|Win32.Build.0 = Debug - Dark Messiah|Win32
 		{F7D47743-73B3-49B5-9D76-2333C5DFD565}.Dédé_Release|Any CPU.ActiveCfg = Release - Orange Box Valve|Win32
 		{F7D47743-73B3-49B5-9D76-2333C5DFD565}.Dédé_Release|Mixed Platforms.ActiveCfg = Release - Orange Box Valve|Win32
+		{F7D47743-73B3-49B5-9D76-2333C5DFD565}.Dédé_Release|Mixed Platforms.Build.0 = Release - Orange Box Valve|Win32
 		{F7D47743-73B3-49B5-9D76-2333C5DFD565}.Dédé_Release|Win32.ActiveCfg = Debug - Dark Messiah|Win32
 		{F7D47743-73B3-49B5-9D76-2333C5DFD565}.Dédé_Release|Win32.Build.0 = Debug - Dark Messiah|Win32
 		{F7D47743-73B3-49B5-9D76-2333C5DFD565}.Release - Dark Messiah|Any CPU.ActiveCfg = Release - Dark Messiah|Win32
@@ -1479,6 +1480,7 @@ Global
 		{B8EBE5D8-739A-4ED4-83F7-E68CDED09F90}.Dédé_Débug|Win32.Build.0 = Debug|Win32
 		{B8EBE5D8-739A-4ED4-83F7-E68CDED09F90}.Dédé_Release|Any CPU.ActiveCfg = Release|Win32
 		{B8EBE5D8-739A-4ED4-83F7-E68CDED09F90}.Dédé_Release|Mixed Platforms.ActiveCfg = Release|Win32
+		{B8EBE5D8-739A-4ED4-83F7-E68CDED09F90}.Dédé_Release|Mixed Platforms.Build.0 = Release|Win32
 		{B8EBE5D8-739A-4ED4-83F7-E68CDED09F90}.Dédé_Release|Win32.ActiveCfg = Release|Win32
 		{B8EBE5D8-739A-4ED4-83F7-E68CDED09F90}.Dédé_Release|Win32.Build.0 = Release|Win32
 		{B8EBE5D8-739A-4ED4-83F7-E68CDED09F90}.Release - Dark Messiah|Any CPU.ActiveCfg = Release|Win32
@@ -1613,10 +1615,12 @@ Global
 		{B3E797CF-4E77-4C9D-B8A8-7589B6902206}.Debug|Win32.Build.0 = Debug|Win32
 		{B3E797CF-4E77-4C9D-B8A8-7589B6902206}.Dédé_Débug|Any CPU.ActiveCfg = Debug|Win32
 		{B3E797CF-4E77-4C9D-B8A8-7589B6902206}.Dédé_Débug|Mixed Platforms.ActiveCfg = Debug|Win32
+		{B3E797CF-4E77-4C9D-B8A8-7589B6902206}.Dédé_Débug|Mixed Platforms.Build.0 = Debug|Win32
 		{B3E797CF-4E77-4C9D-B8A8-7589B6902206}.Dédé_Débug|Win32.ActiveCfg = Debug|Win32
 		{B3E797CF-4E77-4C9D-B8A8-7589B6902206}.Dédé_Débug|Win32.Build.0 = Debug|Win32
 		{B3E797CF-4E77-4C9D-B8A8-7589B6902206}.Dédé_Release|Any CPU.ActiveCfg = Release|Win32
 		{B3E797CF-4E77-4C9D-B8A8-7589B6902206}.Dédé_Release|Mixed Platforms.ActiveCfg = Release|Win32
+		{B3E797CF-4E77-4C9D-B8A8-7589B6902206}.Dédé_Release|Mixed Platforms.Build.0 = Release|Win32
 		{B3E797CF-4E77-4C9D-B8A8-7589B6902206}.Dédé_Release|Win32.ActiveCfg = Release|Win32
 		{B3E797CF-4E77-4C9D-B8A8-7589B6902206}.Dédé_Release|Win32.Build.0 = Release|Win32
 		{B3E797CF-4E77-4C9D-B8A8-7589B6902206}.Release - Dark Messiah|Any CPU.ActiveCfg = Release|Win32
@@ -1751,10 +1755,12 @@ Global
 		{E39527CD-7CAB-4420-97CC-DA1B93B260BC}.Debug|Win32.Build.0 = Debug - Left 4 Dead 2|Win32
 		{E39527CD-7CAB-4420-97CC-DA1B93B260BC}.Dédé_Débug|Any CPU.ActiveCfg = Debug - Orange Box Valve|Win32
 		{E39527CD-7CAB-4420-97CC-DA1B93B260BC}.Dédé_Débug|Mixed Platforms.ActiveCfg = Debug - Orange Box Valve|Win32
+		{E39527CD-7CAB-4420-97CC-DA1B93B260BC}.Dédé_Débug|Mixed Platforms.Build.0 = Debug - Orange Box Valve|Win32
 		{E39527CD-7CAB-4420-97CC-DA1B93B260BC}.Dédé_Débug|Win32.ActiveCfg = Debug - Left 4 Dead 2|Win32
 		{E39527CD-7CAB-4420-97CC-DA1B93B260BC}.Dédé_Débug|Win32.Build.0 = Debug - Left 4 Dead 2|Win32
 		{E39527CD-7CAB-4420-97CC-DA1B93B260BC}.Dédé_Release|Any CPU.ActiveCfg = Release - Orange Box Valve|Win32
-		{E39527CD-7CAB-4420-97CC-DA1B93B260BC}.Dédé_Release|Mixed Platforms.ActiveCfg = Debug - Orange Box Valve|Win32
+		{E39527CD-7CAB-4420-97CC-DA1B93B260BC}.Dédé_Release|Mixed Platforms.ActiveCfg = Release - Orange Box Valve|Win32
+		{E39527CD-7CAB-4420-97CC-DA1B93B260BC}.Dédé_Release|Mixed Platforms.Build.0 = Release - Orange Box Valve|Win32
 		{E39527CD-7CAB-4420-97CC-DA1B93B260BC}.Dédé_Release|Win32.ActiveCfg = Debug - Left 4 Dead 2|Win32
 		{E39527CD-7CAB-4420-97CC-DA1B93B260BC}.Dédé_Release|Win32.Build.0 = Debug - Left 4 Dead 2|Win32
 		{E39527CD-7CAB-4420-97CC-DA1B93B260BC}.Release - Dark Messiah|Any CPU.ActiveCfg = Release - Dark Messiah|Win32

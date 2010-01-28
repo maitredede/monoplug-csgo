@@ -34,6 +34,13 @@ namespace MonoPlug
         /// </summary>
         public Color Color { get { return this._color; } }
 
+        /// <summary>
+        /// Create a new ConMessageEventArgs
+        /// </summary>
+        /// <param name="hasColor">Message has color information</param>
+        /// <param name="isDebug">Debug message</param>
+        /// <param name="color">Message color</param>
+        /// <param name="msg">Message text</param>
         public ConMessageEventArgs(bool hasColor, bool isDebug, Color color, string msg)
         {
             this._hasColor = hasColor;

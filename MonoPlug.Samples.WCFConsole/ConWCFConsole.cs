@@ -9,6 +9,9 @@ using System.ServiceModel.Description;
 
 namespace MonoPlug
 {
+    /// <summary>
+    /// WCFConsole plugin
+    /// </summary>
     [ServiceBehavior(InstanceContextMode = InstanceContextMode.Single, ConcurrencyMode = ConcurrencyMode.Multiple, Name = "ConWCFConsole")]
     public sealed class ConWCFConsole : ClsPluginBase, IConsoleServer
     {
@@ -20,25 +23,39 @@ namespace MonoPlug
         private ServiceHost _host;
         private readonly object _lckHost = new object();
 
+        /// <summary>
+        /// Get plugin name
+        /// </summary>
         public override string Name
         {
             get { return "WCFConsole"; }
         }
 
+        /// <summary>
+        /// Get plugin description
+        /// </summary>
         public override string Description
         {
             get { return "Remote console over a WCF service"; }
         }
 
+        /// <summary>
+        /// Load the plugin
+        /// </summary>
         protected override void Load()
         {
             this._wcfconsole_port = this.RegisterConvar("wcfconsole_port", "WCF Console listen port", FCVAR.FCVAR_NONE, "28000");
             this._wcfconsole_port.ValueChanged += this._wcfconsole_port_ValueChanged;
-
+#if DEBUG
+            this.DevMsg("WCFConsole: Console Attaching\n");
+#endif
             this.ConMessage += this.ConWCFConsole_ConMessage;
 
-            //TODO : Init Host
-            this._wcfconsole_port_ValueChanged(null, EventArgs.Empty);
+#if DEBUG
+            this.DevMsg("WCFConsole: Console Attached\n");
+#endif
+
+            this.InitHost();
         }
 
         private void _wcfconsole_port_ValueChanged(object sender, EventArgs e)
@@ -51,30 +68,54 @@ namespace MonoPlug
                         this._host.Close();
                 }
 
-                //TODO : reinit host
-                string hostName = Dns.GetHostName();
-                Uri netTcpUri = new Uri(string.Format("net.tcp://{0}:{1}", hostName, this._wcfconsole_port.ValueString));
-                this._host = new ServiceHost(this, netTcpUri);
-                this._host.AddServiceEndpoint(typeof(IConsoleServer), this._netTcp, "WCFConsole");
+                this.InitHost();
+            }
+        }
+
+        private void InitHost()
+        {
+#if DEBUG
+            this.DevMsg("WCFConsole::InitHost ({0})\n", "enter");
+            try
+            {
+#endif
+            //TODO : reinit host
+            string hostName = Dns.GetHostName();
+            Uri netTcpUri = new Uri(string.Format("net.tcp://{0}:{1}", hostName, this._wcfconsole_port.ValueString));
+            this._host = new ServiceHost(this, netTcpUri);
+            this._host.AddServiceEndpoint(typeof(IConsoleServer), this._netTcp, "WCFConsole");
 
 #if DEBUG
                 this.Msg("WCF : Open host");
                 this.DumpHost("TCP", this._host);
 #endif
-                this._host.Open();
+            this._host.Open();
+#if DEBUG
             }
+            catch (Exception ex)
+            {
+                this.Warning(ex);
+            }
+            finally
+            {
+                this.DevMsg("WCFConsole::InitHost ({0})\n", "exit");
+            }
+#endif
         }
 
+        /// <summary>
+        /// Unload the plugin
+        /// </summary>
         protected override void Unload()
         {
+            this.ConMessage -= this.ConWCFConsole_ConMessage;
+
+            this.UnregisterConvar(this._wcfconsole_port);
+
             if (this._host != null)
             {
                 this._host.Close();
             }
-
-            this.ConMessage -= this.ConWCFConsole_ConMessage;
-
-            this.UnregisterConvar(this._wcfconsole_port);
         }
 
         private void ConWCFConsole_ConMessage(object sender, ConMessageEventArgs e)
@@ -84,7 +125,8 @@ namespace MonoPlug
             {
                 foreach (IConsoleClient client in this._clients)
                 {
-                    ThreadPool.QueueUserWorkItem(this.SendMessage, new Data(client, e));
+                    client.BeginConsoleMessage(e.HasColor, e.IsDebug, e.Color, e.Message, this.End_ConMessage, client);
+                    //ThreadPool.QueueUserWorkItem(this.SendMessage, new Data(client, e));
                 }
             }
             finally
@@ -93,32 +135,23 @@ namespace MonoPlug
             }
         }
 
-        private struct Data
+        private void End_ConMessage(IAsyncResult ar)
         {
-            public IConsoleClient Client;
-            public ConMessageEventArgs ConsoleMessage;
-            public Data(IConsoleClient client, ConMessageEventArgs e)
-            {
-                this.Client = client;
-                this.ConsoleMessage = e;
-            }
-        }
-
-        private void SendMessage(object state)
-        {
-            Data data = (Data)state;
+            IConsoleClient client = (IConsoleClient)ar.AsyncState;
             try
             {
-                data.Client.ConsoleMessage(data.ConsoleMessage.HasColor, data.ConsoleMessage.IsDebug, data.ConsoleMessage.Color, data.ConsoleMessage.Message);
+                client.EndConsoleMessage(ar);
             }
-            catch
+            catch (Exception ex)
             {
+                this.Warning("WCFConsole: Client connection error\n");
+                this.Warning(ex);
                 this._lck.AcquireWriterLock(Timeout.Infinite);
                 try
                 {
-                    if (this._clients.Contains(data.Client))
+                    if (this._clients.Contains(client))
                     {
-                        this._clients.Remove(data.Client);
+                        this._clients.Remove(client);
                     }
                 }
                 finally
@@ -127,6 +160,41 @@ namespace MonoPlug
                 }
             }
         }
+
+        //private struct Data
+        //{
+        //    public IConsoleClient Client;
+        //    public ConMessageEventArgs ConsoleMessage;
+        //    public Data(IConsoleClient client, ConMessageEventArgs e)
+        //    {
+        //        this.Client = client;
+        //        this.ConsoleMessage = e;
+        //    }
+        //}
+
+        //private void SendMessage(object state)
+        //{
+        //    Data data = (Data)state;
+        //    try
+        //    {
+        //        data.Client.ConsoleMessage(data.ConsoleMessage.HasColor, data.ConsoleMessage.IsDebug, data.ConsoleMessage.Color, data.ConsoleMessage.Message);
+        //    }
+        //    catch
+        //    {
+        //        this._lck.AcquireWriterLock(Timeout.Infinite);
+        //        try
+        //        {
+        //            if (this._clients.Contains(data.Client))
+        //            {
+        //                this._clients.Remove(data.Client);
+        //            }
+        //        }
+        //        finally
+        //        {
+        //            this._lck.ReleaseWriterLock();
+        //        }
+        //    }
+        //}
 
         void IConsoleServer.Ping()
         {
@@ -182,7 +250,7 @@ namespace MonoPlug
 
         private void WriteLine(string type, string name, string value)
         {
-            this.Msg("{0}: {1}: {2}", type, name, value);
+            this.Msg("{0}: {1}: {2}\n", type, name, value);
         }
 #endif
 

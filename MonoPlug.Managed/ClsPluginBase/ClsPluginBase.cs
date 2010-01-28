@@ -94,6 +94,25 @@ namespace MonoPlug
         }
 
         /// <summary>
+        /// Write a warning to the console
+        /// </summary>
+        /// <param name="format">Message format</param>
+        /// <param name="args">Arguments of format</param>
+        public void Warning(string format, params object[] args)
+        {
+            this._main.Warning(format, args);
+        }
+
+        /// <summary>
+        /// Write exception dump to console as warning
+        /// </summary>
+        /// <param name="ex">Exception to dump</param>
+        public void Warning(Exception ex)
+        {
+            this._main.Warning(ex);
+        }
+
+        /// <summary>
         /// Get players on server
         /// </summary>
         /// <returns>Players array</returns>
@@ -102,6 +121,9 @@ namespace MonoPlug
             return this._main.GetPlayers();
         }
 
+        /// <summary>
+        /// Get the current mono runtime version
+        /// </summary>
         public string MonoVersion { get { return this._main.MonoVersion; } }
     }
 }

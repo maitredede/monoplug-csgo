@@ -45,19 +45,19 @@ namespace MonoPlug
             {
                 msg.DevMsg("  Calling {0}.LoadFile()\n", typeof(Assembly).FullName);
 #endif
-                Assembly remoteSystemAssemnly = domain.Load(typeof(Assembly).Assembly.FullName);
-                Type remoteAssemblyType = remoteSystemAssemnly.GetType(typeof(Assembly).FullName);
-                Assembly remoteAssembly = (Assembly)remoteAssemblyType.InvokeMember("LoadFile", BindingFlags.Public | BindingFlags.Static | BindingFlags.InvokeMethod, null, null, new object[] { assemblyFile });
+            Assembly remoteSystemAssemnly = domain.Load(typeof(Assembly).Assembly.FullName);
+            Type remoteAssemblyType = remoteSystemAssemnly.GetType(typeof(Assembly).FullName);
+            Assembly remoteAssembly = (Assembly)remoteAssemblyType.InvokeMember("LoadFile", BindingFlags.Public | BindingFlags.Static | BindingFlags.InvokeMethod, null, null, new object[] { assemblyFile });
 
 #if DEBUG
                 msg.DevMsg("  Creating object instance...\n");
 #endif
-                object item = domain.CreateInstanceAndUnwrap(remoteAssembly.FullName, typeName);
+            object item = domain.CreateInstanceAndUnwrap(remoteAssembly.FullName, typeName);
 
 #if DEBUG
                 msg.DevMsg("  Creating object instance OK !\n");
 #endif
-                return item;
+            return item;
 #if DEBUG
             }
             finally
@@ -74,66 +74,70 @@ namespace MonoPlug
             try
             {
 #endif
-                List<PluginDefinition> lst = new List<PluginDefinition>();
-                string[] files = Directory.GetFiles(path, "*.dll", SearchOption.TopDirectoryOnly);
+            List<PluginDefinition> lst = new List<PluginDefinition>();
+            string[] files = Directory.GetFiles(path, "*.dll", SearchOption.TopDirectoryOnly);
 #if DEBUG
                 msg.DevMsg("   Files count : {0}\n", files.Length);
 #endif
-                foreach (string file in files)
-                {
+            foreach (string file in files)
+            {
 #if DEBUG
                     msg.DevMsg("   Scanning file {0}\n", file);
 #endif
-                    try
-                    {
-                        string filename = Path.Combine(path, file);
+                try
+                {
+                    string filename = Path.Combine(path, file);
 #if DEBUG
                         msg.DevMsg("   Filename is  {0}\n", filename);
 #endif
-                        Assembly asm = Assembly.LoadFile(filename);
-                        foreach (Type t in asm.GetTypes())
+                    Assembly asm = Assembly.LoadFile(filename);
+                    foreach (Type t in asm.GetTypes())
+                    {
+                        try
                         {
-                            try
+                            if (!t.IsAbstract && t.IsSubclassOf(typeof(ClsPluginBase)) && t.IsPublic)
                             {
-                                if (!t.IsAbstract && t.IsSubclassOf(typeof(ClsPluginBase)) && t.IsPublic)
-                                {
 #if DEBUG
                                     msg.DevMsg("   Type is ClsPluginBase {0}\n", t.FullName);
 #endif
-                                    ConstructorInfo ctor = t.GetConstructor(Type.EmptyTypes);
-                                    if (ctor != null)
-                                    {
-                                        ClsPluginBase plugin = (ClsPluginBase)ctor.Invoke(null);
-                                        PluginDefinition definition = new PluginDefinition();
-                                        definition.File = Path.GetFileName(filename);
-                                        definition.Name = plugin.Name;
-                                        definition.Type = plugin.GetType().FullName;
-                                        definition.Description = plugin.Description;
+                                ConstructorInfo ctor = t.GetConstructor(Type.EmptyTypes);
+                                if (ctor != null)
+                                {
+                                    ClsPluginBase plugin = (ClsPluginBase)ctor.Invoke(null);
+                                    PluginDefinition definition = new PluginDefinition();
+                                    definition.File = Path.GetFileName(filename);
+                                    definition.Name = plugin.Name;
+                                    definition.Type = plugin.GetType().FullName;
+                                    definition.Description = plugin.Description;
 #if DEBUG
                                         msg.DevMsg("   Found Plugin {0}\n", plugin.Name);
 #endif
-                                        lst.Add(definition);
-                                    }
+                                    lst.Add(definition);
                                 }
                             }
-                            catch (Exception ex)
-                            {
-                                msg.Warning("Can't create type : {0}\n", t.FullName);
+                        }
+                        catch (Exception ex)
+                        {
+                            msg.Warning("Can't create type : '{0}' : {1}\n", t.FullName, ex.Message);
 #if DEBUG
                                 msg.Warning(ex);
 #endif
-                            }
                         }
                     }
-                    catch (Exception ex)
-                    {
-                        msg.Warning("Can't load file : {0}\n", file);
+                }
+                catch (BadImageFormatException)
+                {
+                    msg.Warning("Can't load file : '{0}', not a valid assembly\n", file);
+                }
+                catch (Exception ex)
+                {
+                    msg.Warning("Can't load file : '{0}', {1}\n", file, ex.Message);
 #if DEBUG
                         msg.Warning(ex);
 #endif
-                    }
                 }
-                return lst.ToArray();
+            }
+            return lst.ToArray();
 #if DEBUG
             }
             finally

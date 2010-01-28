@@ -595,7 +595,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				AdditionalOptions="/D SE_EPISODEONE=1 /D SE_DARKMESSIAH=2 /D SE_ORANGEBOX=3 /D SE_ORANGEBOXVALVE=4 /D SE_LEFT4DEAD=5 /D SE_LEFT4DEAD2=6"
-				AdditionalIncludeDirectories="&quot;$(MMSOURCE18)\core&quot;;&quot;$(MMSOURCE18)\core\sourcehook&quot;;&quot;$(HL2SDKOBVALVE)\public&quot;;&quot;$(HL2SDKOBVALVE)\public\engine&quot;;&quot;$(HL2SDKOBVALVE)\public\game\server&quot;;&quot;$(HL2SDKOBVALVE)\public\tier0&quot;;&quot;$(HL2SDKOBVALVE)\public\tier1&quot;;&quot;$(HL2SDKOBVALVE)\public\vstdlib&quot;"
+				AdditionalIncludeDirectories="&quot;$(ProgramFiles)\Mono-2.6.1\lib\glib-2.0\include&quot;;&quot;$(ProgramFiles)\Mono-2.6.1\include\mono-1.0&quot;;&quot;$(ProgramFiles)\Mono-2.6.1\include\glib-2.0&quot;;&quot;$(ProgramFiles)\Mono-2.6.1\include&quot;;&quot;$(MMSOURCE18)\core&quot;;&quot;$(MMSOURCE18)\core\sourcehook&quot;;&quot;$(HL2SDKOBVALVE)\public&quot;;&quot;$(HL2SDKOBVALVE)\public\engine&quot;;&quot;$(HL2SDKOBVALVE)\public\game\server&quot;;&quot;$(HL2SDKOBVALVE)\public\tier0&quot;;&quot;$(HL2SDKOBVALVE)\public\tier1&quot;;&quot;$(HL2SDKOBVALVE)\public\vstdlib&quot;"
 				PreprocessorDefinitions="WIN32;NDEBUG;_WINDOWS;_USRDLL;STUB_MM_EXPORTS;SOURCE_ENGINE=4"
 				RuntimeLibrary="0"
 				UsePrecompiledHeader="0"
@@ -614,7 +614,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="&quot;$(HL2SDKOBVALVE)\lib\public\tier0.lib&quot; &quot;$(HL2SDKOBVALVE)\lib\public\tier1.lib&quot; &quot;$(HL2SDKOBVALVE)\lib\public\vstdlib.lib&quot;"
+				AdditionalDependencies="&quot;$(HL2SDKOBVALVE)\lib\public\tier0.lib&quot; &quot;$(HL2SDKOBVALVE)\lib\public\tier1.lib&quot; &quot;$(HL2SDKOBVALVE)\lib\public\vstdlib.lib&quot; mono.lib"
 				OutputFile="$(OutDir)\monoplugin_mm.dll"
 				LinkIncremental="1"
 				IgnoreDefaultLibraryNames="LIBC;LIBCD;LIBCMTD"

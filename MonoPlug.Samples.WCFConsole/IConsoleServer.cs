@@ -6,10 +6,16 @@ using System.ServiceModel;
 
 namespace MonoPlug
 {
+    /// <summary>
+    /// WCFConsole server interface
+    /// </summary>
     [ServiceContract(CallbackContract = typeof(IConsoleClient), Name = "WCFConsole")]
     public interface IConsoleServer
     {
-        [OperationContract(IsOneWay = true)]
+        /// <summary>
+        /// Ping the server
+        /// </summary>
+        [OperationContract]
         void Ping();
     }
 }

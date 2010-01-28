@@ -19,7 +19,7 @@ namespace MonoPlug.Samples.WCFConsole.Client
 
         private void Form1_Shown(object sender, EventArgs e)
         {
-            this.remoteConsole.Connect("localhost", 28000);
+            this.remoteConsole.Connect("ddoffice", 28001);
         }
 
         private void remoteConsole_ConsoleMessage(object sender, MonoPlug.ConMessageEventArgs e)
