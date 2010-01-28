@@ -18,8 +18,11 @@ SRCDS_BASE = $(BASE_DIR)/srcds
 ### EDIT BELOW FOR OTHER PROJECTS ###
 #####################################
 
-OBJECTS = CMonoCommand.cpp CMonoConsole.cpp CMonoHelpers.cpp CMonoPlug.cpp CMonoPlugAccessor.cpp
-OBJECTS += CMonoPlugListener.cpp funcs.cpp Common.cpp CMonoConvar.cpp
+OBJECTS = CBaseAccessor.cpp CMonoCommand.cpp CMonoConsole.cpp CMonoHelpers.cpp CMonoPlugin.cpp
+OBJECTS += CMonoPlugin_GameFrame.cpp CMonoPlugin_Hooks.cpp CMonoPlugin_IMetamodListener.cpp
+OBJECTS += CMonoPlugin_Mono.cpp CMonoPlugin_PluginBase.cpp monoCallbacks.cpp
+OBJECTS += pluginterfaces.cpp tools.cpp
+
 BINARY = monoplug_i486.so
 CSPROJECT = MonoPlug.Managed/MonoPlug.Managed.csproj MonoPlug.Samples/MonoPlug.Samples.csproj
 
