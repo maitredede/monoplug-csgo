@@ -46,7 +46,7 @@ namespace MonoPlug
             EventHandler d;
             lock (this._lstHandlers)
             {
-                d = this._lstHandlers[EvtValueChanged] as EventHandler;
+                d = (EventHandler)this._lstHandlers[EvtValueChanged];
             }
             if (d != null)
             {
