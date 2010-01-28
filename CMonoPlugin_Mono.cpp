@@ -57,6 +57,9 @@ namespace MonoPlugin
 		//Various
 		mono_add_internal_call ("MonoPlug.NativeMethods::Mono_ClientDialogMessage", (const void*)Mono_ClientDialogMessage);
 
+		//Create main instance
+		this->m_main = CMonoHelpers::ClassNew(g_Domain, this->m_class_ClsMain);
+
 		return true;
 	}
 

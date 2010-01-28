@@ -5,6 +5,9 @@ using System.Text;
 
 namespace MonoPlug
 {
+    /// <summary>
+    /// ConVar Data (MarshalByRef)
+    /// </summary>
     internal sealed class ConVarData : ConCommandBaseData
     {
         private readonly string _defValue;

@@ -16,7 +16,7 @@ namespace MonoPlug
         private readonly List<IConsoleClient> _clients = new List<IConsoleClient>();
         private readonly NetTcpBinding _netTcp = new NetTcpBinding(SecurityMode.None, false);
 
-        private ClsConvar _wcfconsole_port;
+        private ClsConVar _wcfconsole_port;
         private ServiceHost _host;
         private readonly object _lckHost = new object();
 

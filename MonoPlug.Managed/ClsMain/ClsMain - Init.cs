@@ -12,7 +12,7 @@ namespace MonoPlug
         internal bool Init()
         {
 #if DEBUG
-            //NativeMethods.Mono_DevMsg("DBG: ClsMain::Init (enter)\n");
+            Console.Write("DBG: ClsMain::Init (enter)\n");
             try
             {
 
@@ -49,18 +49,26 @@ namespace MonoPlug
                 this._clr_test = this.RegisterConCommand(null, "clr_test", "for developpement purposes only", FCVAR.FCVAR_NONE, this.clr_test, null);
 #endif
 
-                //this.DevMsg("DBG: ClsMain::Init (D)\n");
+                this.DevMsg("DBG: ClsMain::Init (OK)\n");
                 return true;
 #if DEBUG
             }
             catch (Exception ex)
             {
+                do
+                {
+                    Console.WriteLine(ex.GetType().FullName);
+                    Console.WriteLine(ex.Message);
+                    Console.WriteLine(ex.StackTrace);
+                }
+                while ((ex = ex.InnerException) != null);
+
                 this.Warning(ex);
                 return false;
             }
             finally
             {
-                //this.DevMsg("DBG: ClsMain::Init (exit)\n");
+                Console.Write("DBG: ClsMain::Init (exit)\n");
             }
 #endif
         }

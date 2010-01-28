@@ -36,7 +36,7 @@ namespace MonoPlug
                     if (nativeId > 0)
                     {
                         data.NativeID = nativeId;
-                        ClsConVar convar = new ClsConVar(this, data);
+                        ClsConVar convar = plugin.Proxy.CreateConVar(this, data);
                         this._conCommandBase.Add(nativeId, convar);
                         return convar;
                     }

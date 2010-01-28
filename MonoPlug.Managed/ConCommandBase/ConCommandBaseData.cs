@@ -5,7 +5,7 @@ using System.Text;
 
 namespace MonoPlug
 {
-    internal abstract class ConCommandBaseData
+    internal abstract class ConCommandBaseData : MarshalByRefObject
     {
         protected ConCommandBaseData(ClsPluginBase plugin, string name, string help, FCVAR flags)
         {

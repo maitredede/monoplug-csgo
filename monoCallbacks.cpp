@@ -58,7 +58,7 @@ namespace MonoPlugin
 		uint64 nativeId = g_MonoPlugin.m_nextConbaseId++;
 		CMonoCommand* cmd = new CMonoCommand(n_name, mono_string_to_utf8(help), code, flags, complete);
 		unsigned int id = g_MonoPlugin.m_conbase->Insert(nativeId, cmd);
-		if(id != g_MonoPlugin.m_conbase->InvalidIndex())
+		if(g_MonoPlugin.m_conbase->IsValidIndex(id))
 		{
 			return nativeId;
 		}
@@ -183,11 +183,12 @@ namespace MonoPlugin
 
 		uint64 nativeId = g_MonoPlugin.m_nextConbaseId++;
 		ConVar* var = new ConVar(n_name, mono_string_to_utf8(defaultValue), flags, mono_string_to_utf8(help));
-		var->InstallChangeCallback(Mono_RaiseConVarChange);
-
+		
 		unsigned int id = g_MonoPlugin.m_conbase->Insert(nativeId, var);
-		if(id != g_MonoPlugin.m_conbase->InvalidIndex())
+		
+		if(g_MonoPlugin.m_conbase->IsValidIndex(id))
 		{
+			var->InstallChangeCallback(Mono_RaiseConVarChange);
 			return nativeId;
 		}
 		else

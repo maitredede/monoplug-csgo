@@ -49,7 +49,7 @@ bool MonoPlugin::CMonoPlugin::Load(PluginId id, ISmmAPI *ismm, char *error, size
 		return false;
 	}
 
-	this->m_nextConbaseId = 0;
+	this->m_nextConbaseId = 1;
 	this->m_conbase = new CUtlMap<uint64, ConCommandBase*>();
 	this->m_conbase->SetLessFunc(CMonoPlugin::Less_uint64);
 

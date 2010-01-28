@@ -23,6 +23,11 @@ namespace MonoPlug
             return (ClsPluginBase)CreateInDomain(this._current, msg, Path.Combine(assemblyBaseDir, plugin.File), plugin.Type);
         }
 
+        public ClsConVar CreateConVar(ClsMain main, ConVarData data)
+        {
+            return new ClsConVar(main, data);
+        }
+
         public static T CreateInDomain<T>(AppDomain domain, IMessage msg) where T : MarshalByRefObject
         {
             return CreateInDomain<T>(domain, msg, typeof(T).FullName);
