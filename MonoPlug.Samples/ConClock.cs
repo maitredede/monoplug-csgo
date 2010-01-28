@@ -76,9 +76,21 @@ namespace MonoPlug
 
         private void Tick(object state)
         {
-            string s = DateTime.Now.ToLongTimeString();
-            this.Msg("{0}\n", s);
-            this._theTime.ValueString = s;
+#if DEBUG
+            this.DevMsg("ConClock : Tick (enter)\n");
+            try
+            {
+#endif
+                string s = DateTime.Now.ToLongTimeString();
+                this.Msg("{0}\n", s);
+                this._theTime.ValueString = s;
+#if DEBUG
+            }
+            finally
+            {
+                this.DevMsg("ConClock : Tick (exit)\n");
+            }
+#endif
         }
     }
 }
