@@ -67,7 +67,7 @@ namespace MonoPlug
                     if (this._running < this._size)
                     {
                         Thread th = new Thread(new ParameterizedThreadStart(this.Run));
-                        th.Name = "Pool";
+                        //th.Name = "Pool";
                         this._running++;
                         th.Start(item);
                     }

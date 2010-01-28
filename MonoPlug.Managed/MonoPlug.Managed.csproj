@@ -54,6 +54,7 @@
     <Compile Include="ConCommandBase\ConCommandBaseData.cs" />
     <Compile Include="ConCommandBase\ConCommandData.cs" />
     <Compile Include="ConCommandBase\ConVarData.cs" />
+    <Compile Include="CTuple.cs" />
     <Compile Include="EventArgs\ClientEventArgs.cs" />
     <Compile Include="EventArgs\ConMessageEventArgs.cs" />
     <Compile Include="EventArgs\ClientCommandEventArgs.cs" />
@@ -80,6 +81,7 @@
     <Compile Include="ClsPluginBase\ClsPluginBase - EVT LevelShutdown.cs" />
     <Compile Include="FCVAR.cs" />
     <Compile Include="DialogMessage.cs" />
+    <Compile Include="IConVarValue.cs" />
     <Compile Include="IExecute.cs" />
     <Compile Include="IMessage.cs" />
     <Compile Include="InterThreadCallDelegate.cs" />

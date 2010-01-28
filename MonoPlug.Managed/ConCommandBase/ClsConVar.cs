@@ -8,13 +8,13 @@ namespace MonoPlug
 {
     public sealed class ClsConVar : ClsConCommandBase
     {
-        private readonly ClsMain _main;
+        private readonly IConVarValue _val;
         private readonly ConVarData _data;
 
-        internal ClsConVar(ClsMain main, ConVarData data)
+        internal ClsConVar(IConVarValue val, ConVarData data)
             : base(data)
         {
-            this._main = main;
+            this._val = val;
             this._data = data;
         }
 
@@ -59,18 +59,8 @@ namespace MonoPlug
         /// </summary>
         public bool ValueBoolean
         {
-            get { return this._main.InterThreadCall<bool, object>(this.ValueBoolean_Get, null); }
-            set { this._main.InterThreadCall<object, bool>(this.ValueBoolean_Set, value); }
-        }
-
-        private bool ValueBoolean_Get(object unused)
-        {
-            return NativeMethods.Mono_Convar_GetBoolean(this._data.NativeID);
-        }
-        private object ValueBoolean_Set(bool value)
-        {
-            NativeMethods.Mono_Convar_SetBoolean(this._data.NativeID, value);
-            return null;
+            get { return this._val.GetValueBool(this.NativeID); }
+            set { this._val.SetValueBool(this.NativeID, value); }
         }
 
         /// <summary>
@@ -78,30 +68,8 @@ namespace MonoPlug
         /// </summary>
         public string ValueString
         {
-            get { return this._main.InterThreadCall<string, object>(this.ValueString_Get, null); }
-            set { this._main.InterThreadCall<object, string>(this.ValueString_Set, value); }
-        }
-
-        private string ValueString_Get(object unused)
-        {
-            return NativeMethods.Mono_Convar_GetString(this._data.NativeID);
-        }
-        private object ValueString_Set(string value)
-        {
-#if DEBUG
-            NativeMethods.Mono_DevMsg("ValueString_Set (enter)\n");
-            try
-            {
-#endif
-                NativeMethods.Mono_Convar_SetString(this._data.NativeID, value);
-                return null;
-#if DEBUG
-            }
-            finally
-            {
-                NativeMethods.Mono_DevMsg("ValueString_Set (exit)\n");
-            }
-#endif
+            get { return this._val.GetValueString(this.NativeID); }
+            set { this._val.SetValueString(this.NativeID, value); }
         }
     }
 }

@@ -7,6 +7,10 @@ namespace MonoPlug
 {
     partial class ClsMain
     {
+#if DEBUG
+        private bool _Verbose = false;
+        public bool Verbose { get { return this._Verbose; } set { this._Verbose = value; } }
+#endif
         private int _mainThreadId = 0;
 
         private readonly ReaderWriterLock _lckThreadQueue = new ReaderWriterLock();
@@ -14,30 +18,105 @@ namespace MonoPlug
 
         internal TRet InterThreadCall<TRet, TParam>(InterThreadCallDelegate<TRet, TParam> d, TParam parameter)
         {
+            if (_Verbose) Console.WriteLine("ITC: th={0}, main={1}", Thread.CurrentThread.ManagedThreadId == this._mainThreadId);
             //Same thread, direct call
             if (Thread.CurrentThread.ManagedThreadId == this._mainThreadId)
             {
+                if (_Verbose) Console.WriteLine("ITC: direct call");
                 return d.Invoke(parameter);
             }
 
+            if (_Verbose) Console.WriteLine("ITC: new item");
             ClsThreadItem<TRet, TParam> item = new ClsThreadItem<TRet, TParam>(this, d, parameter);
-            {
-                this._lckThreadQueue.AcquireWriterLock(Timeout.Infinite);
-                try
-                {
-                    this._threadQueue.Enqueue(item);
-                }
-                finally
-                {
-                    this._lckThreadQueue.ReleaseWriterLock();
-                }
 
-                item.WaitOne();
-                return (TRet)item.ReturnValue;
+            if (_Verbose) Console.WriteLine("ITC: writer lock");
+            this._lckThreadQueue.AcquireWriterLock(Timeout.Infinite);
+            try
+            {
+                if (_Verbose) Console.WriteLine("ITC: enqueue");
+                this._threadQueue.Enqueue(item);
+                if (_Verbose) Console.WriteLine("ITC: enqueue OK");
             }
+            finally
+            {
+                if (_Verbose) Console.WriteLine("ITC: release writer");
+                this._lckThreadQueue.ReleaseWriterLock();
+            }
+
+            if (_Verbose) Console.WriteLine("ITC: item wait");
+            item.WaitOne();
+            if (_Verbose) Console.WriteLine("ITC: item return");
+            return (TRet)item.ReturnValue;
         }
 
         internal void GameFrame()
+        {
+            try
+            {
+                this._lckThreadQueue.AcquireReaderLock(Timeout.Infinite);
+                int count;
+                List<IExecute> lst = null;
+                try
+                {
+                    count = this._threadQueue.Count;
+                    if (count > 0)
+                    {
+                        lst = new List<IExecute>();
+                        LockCookie cookie = this._lckThreadQueue.UpgradeToWriterLock(Timeout.Infinite);
+                        try
+                        {
+                            while (this._threadQueue.Count > 0)
+                            {
+                                lst.Add(this._threadQueue.Dequeue());
+                            }
+                        }
+                        finally
+                        {
+                            this._lckThreadQueue.DowngradeFromWriterLock(ref cookie);
+                        }
+                    }
+                }
+                finally
+                {
+                    this._lckThreadQueue.ReleaseReaderLock();
+                }
+
+                if (count > 0)
+                {
+                    for (int i = 0; i < lst.Count; i++)
+                    {
+                        try
+                        {
+                            lst[i].Execute();
+                        }
+                        catch
+                        {
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                try
+                {
+                    this.Warning(ex);
+                }
+                catch
+                {
+                    Exception err = ex;
+                    do
+                    {
+                        Console.WriteLine("GameFrame : {0}", ex.GetType().FullName);
+                        Console.WriteLine("GameFrame : {0}", ex.Message);
+                        Console.WriteLine("GameFrame : {0}", ex.StackTrace);
+                    }
+                    while ((err = ex.InnerException) != null);
+                }
+                throw ex;
+            }
+        }
+
+        internal void GameFrame_Old()
         {
             this._lckThreadQueue.AcquireReaderLock(Timeout.Infinite);
             try

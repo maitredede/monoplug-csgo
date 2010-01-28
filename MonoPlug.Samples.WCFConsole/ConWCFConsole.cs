@@ -67,7 +67,10 @@ namespace MonoPlug
 
         protected override void Unload()
         {
-            this._host.Close();
+            if (this._host != null)
+            {
+                this._host.Close();
+            }
 
             this.ConMessage -= this.ConWCFConsole_ConMessage;
 

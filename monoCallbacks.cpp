@@ -76,7 +76,7 @@ namespace MonoPlugin
 		{
 			CMonoCommand* com = (CMonoCommand*)g_MonoPlugin.m_conbase->Element(i);
 			META_UNREGCVAR(com);
-			g_MonoPlugin.m_conbase->Remove(i);
+			g_MonoPlugin.m_conbase->RemoveAt(i);
 		}
 		else
 		{
@@ -205,7 +205,7 @@ namespace MonoPlugin
 		{
 			ConVar* var = (ConVar*)g_MonoPlugin.m_conbase->Element(i);
 			META_UNREGCVAR(var);
-			g_MonoPlugin.m_conbase->Remove(i);
+			g_MonoPlugin.m_conbase->RemoveAt(i);
 		}
 		else
 		{
