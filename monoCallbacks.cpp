@@ -160,7 +160,7 @@ namespace MonoPlugin
 		}
 		else
 		{
-			return NULL;
+			return FALSE;
 		}
 	};
 
