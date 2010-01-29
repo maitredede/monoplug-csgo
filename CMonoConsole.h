@@ -16,9 +16,9 @@ namespace MonoPlugin
 		void MonoPrint(bool hasColor, bool debug, int r, int g, int b, int a, const char * msg);
 	public:
 		CMonoConsole(CMonoPlugin* plug);
-		void ColorPrint( const Color& clr, const char *pMessage );
-		void Print( const char *pMessage );
-		void DPrint( const char *pMessage );
+		virtual void ColorPrint( const Color& clr, const char *pMessage );
+		virtual void Print( const char *pMessage );
+		virtual void DPrint( const char *pMessage );
 	};
 }
 

@@ -8,6 +8,7 @@ using System.Drawing;
 using System.ServiceModel;
 using System.Threading;
 using System.Reflection;
+using System.ServiceModel.Description;
 
 namespace MonoPlug
 {
@@ -16,7 +17,7 @@ namespace MonoPlug
     /// </summary>
     public partial class ClsWCFConsoleClient : Component, IConsoleClient
     {
-        private readonly DuplexChannelFactory<IConsoleServer> _channelFactory;
+        private DuplexChannelFactory<IConsoleServer> _channelFactory = null;
         private IConsoleServer _server = null;
 
         /// <summary>
@@ -35,8 +36,6 @@ namespace MonoPlug
         public ClsWCFConsoleClient()
         {
             InitializeComponent();
-
-            this._channelFactory = new DuplexChannelFactory<IConsoleServer>(this);
         }
 
         /// <summary>
@@ -159,8 +158,14 @@ namespace MonoPlug
         /// <param name="port">Server port</param>
         public void Connect(string host, int port)
         {
+            this.Disconnect();
+
             string s = string.Format("net.tcp://{0}:{1}/WCFConsole", host, port);
             Uri url = new Uri(s);
+
+            NetTcpBinding tcp = new NetTcpBinding();
+            EndpointAddress addr = new EndpointAddress(url);
+            this._channelFactory = new DuplexChannelFactory<IConsoleServer>(this, tcp, addr);
             this._channelFactory.Open();
             this._server = this._channelFactory.CreateChannel();
             this.timerPing.Enabled = true;
@@ -177,10 +182,15 @@ namespace MonoPlug
                 {
                     this._channelFactory.Close();
                 }
+                catch (Exception ex)
+                {
+                    throw ex;
+                }
                 finally
                 {
                     this._server = null;
                     this.timerPing.Enabled = false;
+                    this._channelFactory = null;
                 }
             }
         }

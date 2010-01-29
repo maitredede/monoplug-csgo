@@ -44,7 +44,7 @@ namespace MonoPlug
         /// </summary>
         protected override void Load()
         {
-            this._wcfconsole_port = this.RegisterConvar("wcfconsole_port", "WCF Console listen port", FCVAR.FCVAR_NONE, "28000");
+            this._wcfconsole_port = this.RegisterConvar("wcfconsole_port", "WCF Console listen port", FCVAR.FCVAR_NONE, "28001");
             this._wcfconsole_port.ValueChanged += this._wcfconsole_port_ValueChanged;
 #if DEBUG
             this.DevMsg("WCFConsole: Console Attaching\n");
@@ -79,17 +79,17 @@ namespace MonoPlug
             try
             {
 #endif
-            //TODO : reinit host
-            string hostName = Dns.GetHostName();
-            Uri netTcpUri = new Uri(string.Format("net.tcp://{0}:{1}", hostName, this._wcfconsole_port.ValueString));
-            this._host = new ServiceHost(this, netTcpUri);
-            this._host.AddServiceEndpoint(typeof(IConsoleServer), this._netTcp, "WCFConsole");
+                //TODO : reinit host
+                string hostName = Dns.GetHostName();
+                Uri netTcpUri = new Uri(string.Format("net.tcp://{0}:{1}", hostName, this._wcfconsole_port.ValueString));
+                this._host = new ServiceHost(this, netTcpUri);
+                this._host.AddServiceEndpoint(typeof(IConsoleServer), this._netTcp, "WCFConsole");
 
 #if DEBUG
                 this.Msg("WCF : Open host");
                 this.DumpHost("TCP", this._host);
 #endif
-            this._host.Open();
+                this._host.Open();
 #if DEBUG
             }
             catch (Exception ex)
