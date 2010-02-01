@@ -7,7 +7,6 @@ namespace MonoPlug
     partial class ClsPluginBase
     {
         private int _EventCounter_ClientPutInServer = 0;
-        private static readonly object _EventToken_ClientPutInServer = new object();
 
         /// <summary>
         /// Event raised when a client has been put in server
@@ -18,10 +17,10 @@ namespace MonoPlug
             {
                 lock (this._events)
                 {
-                    this._events.AddHandler(_EventToken_ClientPutInServer, value);
+                    this._events.AddHandler(Events.ClientPutInServer, value);
                     if (this._EventCounter_ClientPutInServer++ == 0)
                     {
-                        this._main.ClientPutInServer_Add(this);
+                        this._engine.ClientPutInServer_Add(this);
                     }
                 }
             }
@@ -29,10 +28,10 @@ namespace MonoPlug
             {
                 lock (this._events)
                 {
-                    this._events.RemoveHandler(_EventToken_ClientPutInServer, value);
+                    this._events.RemoveHandler(Events.ClientPutInServer, value);
                     if (--this._EventCounter_ClientPutInServer == 0)
                     {
-                        this._main.ClientPutInServer_Remove(this);
+                        this._engine.ClientPutInServer_Remove(this);
                     }
                 }
             }
@@ -43,7 +42,7 @@ namespace MonoPlug
             EventHandler<ClientEventArgs> d;
             lock (this._events)
             {
-                d = (EventHandler<ClientEventArgs>)this._events[_EventToken_ClientPutInServer];
+                d = (EventHandler<ClientEventArgs>)this._events[Events.ClientPutInServer];
             }
             if (d != null)
             {

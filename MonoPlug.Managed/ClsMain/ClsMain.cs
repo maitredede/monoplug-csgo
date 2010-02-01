@@ -12,27 +12,36 @@ namespace MonoPlug
     /// <summary>
     /// Main class that handle everything
     /// </summary>
-    internal sealed partial class ClsMain : MarshalByRefObject, IMessage, IConVarValue
+    internal sealed partial class ClsMain : MarshalByRefObject
     {
         #region Private fields
         /// <summary>
         /// Plugin instanciated and running 
         /// </summary>
         private readonly Dictionary<AppDomain, ClsPluginBase> _plugins = new Dictionary<AppDomain, ClsPluginBase>();
+        /// <summary>
+        /// Plugin dictionnary lock
+        /// </summary>
         private readonly ReaderWriterLock _lckPlugins = new ReaderWriterLock();
 
+        /// <summary>
+        /// ConCommandBase lock
+        /// </summary>
         private readonly ReaderWriterLock _lckConCommandBase = new ReaderWriterLock();
+        /// <summary>
+        /// Convars and concommands
+        /// </summary>
         private readonly Dictionary<UInt64, ClsConCommandBase> _conCommandBase = new Dictionary<ulong, ClsConCommandBase>();
-        //private readonly Dictionary<UInt64, ConVarEntry> _convarsList = new Dictionary<UInt64, ConVarEntry>();
-        //private readonly ReaderWriterLock _lckConvars = new ReaderWriterLock();
-        //private readonly Dictionary<string, ConCommandEntry> _concommands = new Dictionary<string, ConCommandEntry>();
 
-        private readonly ClsThreadPool _pool;
 
         /// <summary>
         /// Available plugin cache list 
         /// </summary>
         private PluginDefinition[] _pluginCache = null;
+
+        private readonly ReaderWriterLock _lckConfig = new ReaderWriterLock();
+        private ClsConfig _config;
+        private bool _configLoadedOK;
 
         //Internal commands and vars
         private ClsConVar _clr_mono_version = null;
@@ -41,11 +50,21 @@ namespace MonoPlug
         private ClsConCommand _clr_plugin_refresh = null;
         private ClsConCommand _clr_plugin_load = null;
         private ClsConCommand _clr_plugin_unload = null;
+        private ClsConCommand _clr_reload_config = null;
         #endregion
+
+        /// <summary>
+        /// Thread pool engine
+        /// </summary>
+        private readonly ClsThreadPool _thPool;
+        private readonly ClsMessage _msg;
+        private readonly ClsConvarValue _cvarValue;
 
         public ClsMain()
         {
-            this._pool = new ClsThreadPool(this);
+            this._msg = new ClsMessage(this);
+            this._thPool = new ClsThreadPool(this._msg);
+            this._cvarValue = new ClsConvarValue(this);
         }
     }
 }

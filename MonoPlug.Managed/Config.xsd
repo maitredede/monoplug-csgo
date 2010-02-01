@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- edited with XMLSpy v2009 (http://www.altova.com) by Dédé (EMBRACE) -->
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified" attributeFormDefault="unqualified">
+	<xs:element name="config" type="TConfig">
+		<xs:annotation>
+			<xs:documentation>Comment describing your root element</xs:documentation>
+		</xs:annotation>
+	</xs:element>
+	<xs:complexType name="TConfig">
+		<xs:sequence>
+			<xs:element name="mysql" type="TMySQL" minOccurs="0"/>
+			<xs:element name="plugin" type="TPlugin" minOccurs="0" maxOccurs="unbounded"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="TPlugin">
+		<xs:attribute name="name" type="xs:string" use="required"/>
+		<xs:attribute name="loaded" type="xs:boolean" use="required"/>
+	</xs:complexType>
+	<xs:complexType name="TExecute" abstract="true">
+		<xs:simpleContent>
+			<xs:extension base="xs:string"/>
+		</xs:simpleContent>
+	</xs:complexType>
+	<xs:complexType name="TExecuteLine">
+		<xs:simpleContent>
+			<xs:restriction base="TExecute"/>
+		</xs:simpleContent>
+	</xs:complexType>
+	<xs:complexType name="TExecuteFile">
+		<xs:simpleContent>
+			<xs:restriction base="TExecute"/>
+		</xs:simpleContent>
+	</xs:complexType>
+	<xs:complexType name="TMySQL">
+		<xs:attribute name="host" type="xs:string"/>
+		<xs:attribute name="port" type="xs:int" default="3306"/>
+		<xs:attribute name="user" type="xs:string"/>
+		<xs:attribute name="pass" type="xs:string"/>
+		<xs:attribute name="base" type="xs:string"/>
+	</xs:complexType>
+</xs:schema>

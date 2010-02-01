@@ -36,11 +36,80 @@
   </PropertyGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>
+    <Compile Include="ClsConvarValue.cs" />
+    <Compile Include="CsvReader\CsvReader.cs" />
+    <Compile Include="CsvReader\CsvReader.DataReaderValidations.cs" />
+    <Compile Include="CsvReader\CsvReader.RecordEnumerator.cs" />
+    <Compile Include="CsvReader\Events\ParseErrorEventArgs.cs" />
+    <Compile Include="CsvReader\Exceptions\MalformedCsvException.cs" />
+    <Compile Include="CsvReader\Exceptions\MissingFieldCsvException.cs" />
+    <Compile Include="CsvReader\MissingFieldAction.cs" />
+    <Compile Include="CsvReader\ParseErrorAction.cs" />
+    <Compile Include="CsvReader\Resources\ExceptionMessage.Designer.cs">
+      <DependentUpon>ExceptionMessage.resx</DependentUpon>
+    </Compile>
+    <Compile Include="Events.cs" />
     <Compile Include="Check.cs" />
-    <Compile Include="ClsMain\ClsMain - Events Client Connection.cs" />
+    <Compile Include="ClsInstallTools.cs" />
+    <Compile Include="ClsMain\Base ConVars and ConCommands\ClsMain - clr_reload_config.cs" />
+    <Compile Include="ClsMain\ClsMain - AllPluginsLoaded.cs" />
+    <Compile Include="ClsMain\ClsMain - Config.cs" />
+    <Compile Include="ClsMain\ClsMain - MySQL.cs" />
+    <Compile Include="ClsMessage.cs" />
+    <Compile Include="ClsPluginBase\ClsPluginBase - MySQL.cs" />
+    <Compile Include="ClsPluginConItem.cs" />
+    <Compile Include="ClsPluginMessage.cs" />
+    <Compile Include="Config\ClsConfig.cs" />
+    <Compile Include="Config\ClsConfigMySQL.cs" />
+    <Compile Include="Config\ClsConfigPlugin.cs" />
+    <Compile Include="IDatabase.cs" />
+    <Compile Include="IConItem.cs" />
+    <Compile Include="IEngine.cs" />
+    <Compile Include="IThreadPool.cs" />
+    <Compile Include="SharpZipLib\Checksums\Adler32.cs" />
+    <Compile Include="SharpZipLib\Checksums\CRC32.cs" />
+    <Compile Include="SharpZipLib\Checksums\IChecksum.cs" />
+    <Compile Include="SharpZipLib\Checksums\StrangeCRC.cs" />
+    <Compile Include="SharpZipLib\Core\FileSystemScanner.cs" />
+    <Compile Include="SharpZipLib\Core\INameTransform.cs" />
+    <Compile Include="SharpZipLib\Core\IScanFilter.cs" />
+    <Compile Include="SharpZipLib\Core\NameFilter.cs" />
+    <Compile Include="SharpZipLib\Core\PathFilter.cs" />
+    <Compile Include="SharpZipLib\Core\StreamUtils.cs" />
+    <Compile Include="SharpZipLib\Core\WindowsPathUtils.cs" />
+    <Compile Include="SharpZipLib\Encryption\PkzipClassic.cs" />
+    <Compile Include="SharpZipLib\SharpZipBaseException.cs" />
+    <Compile Include="SharpZipLib\Zip\Compression\Deflater.cs" />
+    <Compile Include="SharpZipLib\Zip\Compression\DeflaterConstants.cs" />
+    <Compile Include="SharpZipLib\Zip\Compression\DeflaterEngine.cs" />
+    <Compile Include="SharpZipLib\Zip\Compression\DeflaterHuffman.cs" />
+    <Compile Include="SharpZipLib\Zip\Compression\DeflaterPending.cs" />
+    <Compile Include="SharpZipLib\Zip\Compression\Inflater.cs" />
+    <Compile Include="SharpZipLib\Zip\Compression\InflaterDynHeader.cs" />
+    <Compile Include="SharpZipLib\Zip\Compression\InflaterHuffmanTree.cs" />
+    <Compile Include="SharpZipLib\Zip\Compression\PendingBuffer.cs" />
+    <Compile Include="SharpZipLib\Zip\Compression\Streams\DeflaterOutputStream.cs" />
+    <Compile Include="SharpZipLib\Zip\Compression\Streams\InflaterInputStream.cs" />
+    <Compile Include="SharpZipLib\Zip\Compression\Streams\OutputWindow.cs" />
+    <Compile Include="SharpZipLib\Zip\Compression\Streams\StreamManipulator.cs" />
+    <Compile Include="SharpZipLib\Zip\FastZip.cs" />
+    <Compile Include="SharpZipLib\Zip\IEntryFactory.cs" />
+    <Compile Include="SharpZipLib\Zip\WindowsNameTransform.cs" />
+    <Compile Include="SharpZipLib\Zip\ZipConstants.cs" />
+    <Compile Include="SharpZipLib\Zip\ZipEntry.cs" />
+    <Compile Include="SharpZipLib\Zip\ZipEntryFactory.cs" />
+    <Compile Include="SharpZipLib\Zip\ZipException.cs" />
+    <Compile Include="SharpZipLib\Zip\ZipExtraData.cs" />
+    <Compile Include="SharpZipLib\Zip\ZipFile.cs" />
+    <Compile Include="SharpZipLib\Zip\ZipHelperStream.cs" />
+    <Compile Include="SharpZipLib\Zip\ZipInputStream.cs" />
+    <Compile Include="SharpZipLib\Zip\ZipNameTransform.cs" />
+    <Compile Include="SharpZipLib\Zip\ZipOutputStream.cs" />
+    <Compile Include="ThreadAction.cs" />
+    <Compile Include="Todo\ClsMain - Events Client Connection.cs" />
     <Compile Include="ClsMain\ClsMain - Events ConMessage.cs" />
-    <Compile Include="ClsMain\ClsMain - Events LevelShutdown.cs" />
-    <Compile Include="ClsMain\ClsMain - Events ClientCommand.cs" />
+    <Compile Include="Todo\ClsMain - Events LevelShutdown.cs" />
+    <Compile Include="Todo\ClsMain - Events ClientCommand.cs" />
     <Compile Include="ClsPluginBase\ClsPluginBase - ConCommand.cs" />
     <Compile Include="ClsPluginBase\ClsPluginBase - Convar.cs" />
     <Compile Include="ClsPluginBase\ClsPluginBase - DialogMessage.cs" />
@@ -51,9 +120,6 @@
     <Compile Include="ClsThreadItem.cs" />
     <Compile Include="ClsThreadPool.cs" />
     <Compile Include="ConCommandBase\ClsConVar.cs" />
-    <Compile Include="ConCommandBase\ConCommandBaseData.cs" />
-    <Compile Include="ConCommandBase\ConCommandData.cs" />
-    <Compile Include="ConCommandBase\ConVarData.cs" />
     <Compile Include="CTuple.cs" />
     <Compile Include="EventArgs\ClientEventArgs.cs" />
     <Compile Include="EventArgs\ConMessageEventArgs.cs" />
@@ -93,6 +159,9 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
+    <Reference Include="MySql.Data, Version=6.2.0.0, Culture=neutral, PublicKeyToken=c5687fc88969c44d, processorArchitecture=MSIL">
+      <Private>True</Private>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core">
       <RequiredTargetFramework>3.5</RequiredTargetFramework>
@@ -100,5 +169,18 @@
     <Reference Include="System.Data" />
     <Reference Include="System.Drawing" />
     <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Config.xsd">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Config.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="CsvReader\Resources\ExceptionMessage.resx" />
   </ItemGroup>
 </Project>

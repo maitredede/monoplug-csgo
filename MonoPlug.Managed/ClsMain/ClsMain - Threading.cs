@@ -5,7 +5,7 @@ using System.Threading;
 
 namespace MonoPlug
 {
-    partial class ClsMain
+    partial class ClsMain : IThreadPool
     {
 #if DEBUG
         private bool _Verbose = false;
@@ -33,7 +33,7 @@ namespace MonoPlug
 #if DEBUG
             if (_Verbose) Console.WriteLine("ITC: new item");
 #endif
-            ClsThreadItem<TRet, TParam> item = new ClsThreadItem<TRet, TParam>(this, d, parameter);
+            ClsThreadItem<TRet, TParam> item = new ClsThreadItem<TRet, TParam>(this._msg, d, parameter);
 
 #if DEBUG
             if (_Verbose) Console.WriteLine("ITC: writer lock");
@@ -117,7 +117,7 @@ namespace MonoPlug
             {
                 try
                 {
-                    this.Warning(ex);
+                    this._msg.Warning(ex);
                 }
                 catch
                 {
@@ -134,79 +134,19 @@ namespace MonoPlug
             }
         }
 
-        internal void GameFrame_Old()
+        void IThreadPool.QueueUserWorkItem<T>(ThreadAction<T> work, T item)
         {
-            this._lckThreadQueue.AcquireReaderLock(Timeout.Infinite);
-            try
-            {
-                if (this._threadQueue.Count > 0)
-                {
-#if DEBUG
-                    NativeMethods.Mono_DevMsg(string.Format("ITH: GameFrame {0} jobs\n", this._threadQueue.Count));
-#endif
-                    List<IExecute> lstToExec = new List<IExecute>();
-
-                    LockCookie cookie = this._lckThreadQueue.UpgradeToWriterLock(Timeout.Infinite);
-                    try
-                    {
-                        while (this._threadQueue.Count > 0)
-                        {
-                            lstToExec.Add(this._threadQueue.Dequeue());
-                            NativeMethods.Mono_DevMsg("ITH: Dequeue\n");
-                        }
-                    }
-#if DEBUG
-                    catch (Exception ex)
-                    {
-                        this.Warning(ex);
-                    }
-#endif
-                    finally
-                    {
-                        this._lckThreadQueue.DowngradeFromWriterLock(ref cookie);
-                        NativeMethods.Mono_DevMsg("ITH: loop exit\n");
-                    }
-
-#if DEBUG
-                    try
-                    {
-#endif
-                    for (int i = 0; i < lstToExec.Count; i++)
-                    {
-                        IExecute item = lstToExec[i];
-                        try
-                        {
-                            item.Execute();
-                        }
-                        catch (Exception ex)
-                        {
-                            this.Warning(ex);
-                        }
-                    }
-#if DEBUG
-                    }
-                    finally
-                    {
-                        NativeMethods.Mono_DevMsg("ITH: Done\n");
-                    }
-#endif
-                }
-            }
-#if DEBUG
-            catch (Exception ex)
-            {
-                this.Warning(ex);
-            }
-#endif
-            finally
-            {
-                this._lckThreadQueue.ReleaseReaderLock();
-            }
+            this._thPool.QueueUserWorkItem<T>(work, item);
         }
 
-        internal void QueueUserWorkItem(WaitCallback callback, object state)
+        void IThreadPool.QueueUserWorkItem<T1, T2>(ThreadAction<T1, T2> work, T1 item1, T2 item2)
         {
-            this._pool.QueueUserWorkItem(callback, state);
+            this._thPool.QueueUserWorkItem<T1, T2>(work, item1, item2);
+        }
+
+        void IThreadPool.QueueUserWorkItem(WaitCallback callback, object state)
+        {
+            this._thPool.QueueUserWorkItem(callback, state);
         }
     }
 }

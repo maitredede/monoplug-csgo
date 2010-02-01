@@ -7,7 +7,7 @@ using System.Threading;
 
 namespace MonoPlug
 {
-    partial class ClsMain
+    partial class ClsMain : IEngine
     {
         private readonly Dictionary<object, List<ClsPluginBase>> _events = new Dictionary<object, List<ClsPluginBase>>();
 
@@ -65,5 +65,6 @@ namespace MonoPlug
             detach.Invoke();
             return null;
         }
+
     }
 }

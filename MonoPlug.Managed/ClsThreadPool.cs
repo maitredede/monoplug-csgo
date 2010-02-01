@@ -6,7 +6,7 @@ using System.Threading;
 
 namespace MonoPlug
 {
-    internal sealed class ClsThreadPool
+    internal sealed class ClsThreadPool : MarshalByRefObject, IThreadPool
     {
         internal sealed class ThreadPoolItem
         {
@@ -43,13 +43,22 @@ namespace MonoPlug
             this._msg = message;
         }
 
-        public void QueueUserWorkItem<T>(InternalAction<T> work, T item)
+        public void QueueUserWorkItem<T>(ThreadAction<T> work, T item)
         {
             WaitCallback wcb = delegate(object state)
             {
-                work((T)state);
+                work(item);
             };
-            this.QueueUserWorkItem(wcb, item);
+            this.QueueUserWorkItem(wcb, null);
+        }
+
+        public void QueueUserWorkItem<T1, T2>(ThreadAction<T1, T2> work, T1 item1, T2 item2)
+        {
+            WaitCallback wcb = delegate(object state)
+            {
+                work(item1, item2);
+            };
+            this.QueueUserWorkItem(wcb, null);
         }
 
         public int GetMaxWorkerThread()

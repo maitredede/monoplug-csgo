@@ -44,5 +44,6 @@ namespace MonoPlug
         /// </summary>
         /// <param name="ex"></param>
         void Error(Exception ex);
+        void Log(string format, params object[] elements);
     }
 }

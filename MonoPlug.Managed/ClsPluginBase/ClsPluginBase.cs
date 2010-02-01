@@ -11,35 +11,48 @@ namespace MonoPlug
     public abstract partial class ClsPluginBase : MarshalByRefObject
     {
         private readonly EventHandlerList _events = new EventHandlerList();
-        private ClsMain _main;
+        //private ClsMain _main;
         private ClsRemote _proxy;
+        private IMessage _msg;
+        private IThreadPool _thPool;
+        private IDatabase _db;
+        private IConItem _conItem;
+        private IEngine _engine;
 
         internal ClsRemote Proxy { get { return this._proxy; } }
+        public IMessage Message { get { return this._msg; } }
+        public IThreadPool ThreadPool { get { return this._thPool; } }
+        public IDatabase Database { get { return this._db; } }
+        public IConItem ConItem { get { return this._conItem; } }
 
         /// <summary>
         /// Default constructor
         /// </summary>
         public ClsPluginBase()
         {
-            this._main = null;
             this._proxy = null;
+            this._msg = null;
+            this._thPool = null;
         }
 
-        internal void Init(ClsMain main, ClsRemote remoteProxy)
+        internal void Init(ClsRemote remoteProxy, IMessage msg, IThreadPool thPool, IDatabase database, IConItem conItem, IEngine engine)
         {
+#if DEBUG
+            msg.DevMsg("ClsPluginBase:: Loading init...\n");
+#endif
             this._proxy = remoteProxy;
-            //#if DEBUG
-            //            main.DevMsg("ClsPluginBase:: Init in AppDomain '{0}'\n", AppDomain.CurrentDomain.FriendlyName);
-            //            ClsRemote.DumpDomainAssemblies(main);
-            //#endif
-            this._main = main;
-            //#if DEBUG
-            //            main.DevMsg("ClsPluginBase:: Loading...\n");
-            //#endif
+            this._msg = msg;
+            this._thPool = thPool;
+            this._db = database;
+            this._conItem = conItem;
+            this._engine = engine;
+#if DEBUG
+            this._msg.DevMsg("ClsPluginBase:: Loading code...\n");
+#endif
             this.Load();
-            //#if DEBUG
-            //            main.DevMsg("ClsPluginBase:: Loaded...\n");
-            //#endif
+#if DEBUG
+            this._msg.DevMsg("ClsPluginBase:: Loaded...\n");
+#endif
         }
 
         internal void UnInit()
@@ -73,57 +86,18 @@ namespace MonoPlug
         /// </summary>
         public abstract string Description { get; }
 
-        /// <summary>
-        /// Write a message to the console
-        /// </summary>
-        /// <param name="format">Message format</param>
-        /// <param name="args">Arguments of format</param>
-        public void Msg(string format, params object[] args)
-        {
-            this._main.Msg(format, args);
-        }
-
-        /// <summary>
-        /// Write a message to the developper console
-        /// </summary>
-        /// <param name="format">Message format</param>
-        /// <param name="args">Arguments of format</param>
-        public void DevMsg(string format, params object[] args)
-        {
-            this._main.DevMsg(format, args);
-        }
-
-        /// <summary>
-        /// Write a warning to the console
-        /// </summary>
-        /// <param name="format">Message format</param>
-        /// <param name="args">Arguments of format</param>
-        public void Warning(string format, params object[] args)
-        {
-            this._main.Warning(format, args);
-        }
-
-        /// <summary>
-        /// Write exception dump to console as warning
-        /// </summary>
-        /// <param name="ex">Exception to dump</param>
-        public void Warning(Exception ex)
-        {
-            this._main.Warning(ex);
-        }
-
-        /// <summary>
-        /// Get players on server
-        /// </summary>
-        /// <returns>Players array</returns>
-        public IList<ClsPlayer> GetPlayers()
-        {
-            return this._main.GetPlayers();
-        }
+        ///// <summary>
+        ///// Get players on server
+        ///// </summary>
+        ///// <returns>Players array</returns>
+        //public IList<ClsPlayer> GetPlayers()
+        //{
+        //    return this._main.GetPlayers();
+        //}
 
         /// <summary>
         /// Get the current mono runtime version
         /// </summary>
-        public string MonoVersion { get { return this._main.MonoVersion; } }
+        public string MonoVersion { get { return ClsMain.GetMonoVersion(); } }
     }
 }

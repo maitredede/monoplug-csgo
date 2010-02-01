@@ -20,8 +20,8 @@ namespace MonoPlug
             }
             catch (Exception ex)
             {
-                this.Warning("Plugin UnInit() error\n");
-                this.Warning(ex);
+                this._msg.Warning("Plugin UnInit() error\n");
+                this._msg.Warning(ex);
             }
 
             //Clean convars and concommands
@@ -58,10 +58,8 @@ namespace MonoPlug
 
         private void clr_plugin_unload(string line, string[] arguments)
         {
-            NativeMethods.Mono_DevMsg("M: clr_plugin_unload 0\n");
             try
             {
-                this.DevMsg("M: clr_plugin_unload A\n");
                 //Find if plugin is loaded
                 bool found = false;
                 this._lckPlugins.AcquireWriterLock(Timeout.Infinite);
@@ -69,25 +67,20 @@ namespace MonoPlug
                 {
                     foreach (AppDomain dom in this._plugins.Keys)
                     {
-                        this.DevMsg("M: clr_plugin_unload B\n");
                         ClsPluginBase plugin = this._plugins[dom];
-                        this.DevMsg("M: clr_plugin_unload C {0}\n", plugin.Name);
                         if (plugin.Name.Equals(line, StringComparison.InvariantCultureIgnoreCase))
                         {
                             found = true;
-                            this.DevMsg("M: clr_plugin_unload D\n");
 
                             this.UnloadPlugin(dom, plugin);
 
-                            this.DevMsg("M: clr_plugin_unload I\n");
                             //Clean plugin
                             string plugname = plugin.Name;
                             this._plugins.Remove(dom);
-                            this.DevMsg("M: clr_plugin_unload J\n");
                             this._plugins.Remove(dom);
                             AppDomain.Unload(dom);
 
-                            this.Msg("Plugin '{0}' unloaded\n", plugname);
+                            this._msg.Msg("Plugin '{0}' unloaded\n", plugname);
                             break;
                         }
                     }
@@ -98,12 +91,12 @@ namespace MonoPlug
                 }
                 if (!found)
                 {
-                    this.Msg("Plugin '{0}' not found or loaded\n", line);
+                    this._msg.Msg("Plugin '{0}' not found or loaded\n", line);
                 }
             }
             catch (Exception ex)
             {
-                this.Warning(ex);
+                this._msg.Warning(ex);
             }
         }
     }

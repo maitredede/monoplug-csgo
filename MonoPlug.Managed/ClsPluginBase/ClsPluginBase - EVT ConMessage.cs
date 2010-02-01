@@ -7,7 +7,7 @@ namespace MonoPlug
     partial class ClsPluginBase
     {
         private int _EventCounter_ConMessage = 0;
-        private static readonly object _EventToken_ConMessage = new object();
+        //private static readonly object _EventToken_ConMessage = new object();
 
         /// <summary>
         /// Event raised when a console message has been printed
@@ -18,10 +18,10 @@ namespace MonoPlug
             {
                 lock (this._events)
                 {
-                    this._events.AddHandler(_EventToken_ConMessage, value);
+                    this._events.AddHandler(Events.ConsoleMessage, value);
                     if (this._EventCounter_ConMessage++ == 0)
                     {
-                        this._main.ConMessage_Add(this);
+                        this._engine.ConMessage_Add(this);
                     }
                 }
             }
@@ -29,10 +29,10 @@ namespace MonoPlug
             {
                 lock (this._events)
                 {
-                    this._events.RemoveHandler(_EventToken_ConMessage, value);
+                    this._events.RemoveHandler(Events.ConsoleMessage, value);
                     if (--this._EventCounter_ConMessage == 0)
                     {
-                        this._main.ConMessage_Remove(this);
+                        this._engine.ConMessage_Remove(this);
                     }
                 }
             }
@@ -44,7 +44,7 @@ namespace MonoPlug
             EventHandler d;
             lock (this._events)
             {
-                d = (EventHandler)this._events[_EventToken_ConMessage];
+                d = (EventHandler)this._events[Events.ConsoleMessage];
             }
             if (d != null)
             {

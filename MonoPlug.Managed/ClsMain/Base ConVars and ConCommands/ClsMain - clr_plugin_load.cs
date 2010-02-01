@@ -11,108 +11,46 @@ namespace MonoPlug
     {
         private void clr_plugin_load(string line, string[] arguments)
         {
-#if DEBUG
+            ClsPluginBase plugin;
+            bool loaded = this.LoadPlugin(line, out plugin);
+            this._lckConfig.AcquireWriterLock(Timeout.Infinite);
             try
             {
-                this.DevMsg("DBG: Entering '{0}' in domain [{1}]...\n", "clr_plugin_load", AppDomain.CurrentDomain.FriendlyName);
-#endif
-                ClsPluginBase plugin = null;
-                //Search if plugin is not already loaded
-                this._lckPlugins.AcquireReaderLock(Timeout.Infinite);
-                try
+                if (this._configLoadedOK)
                 {
-                    foreach (AppDomain dom in this._plugins.Keys)
+                    bool found = false;
+                    if (this._config != null && this._config.Plugin != null)
                     {
-                        if (this._plugins[dom].Name.Equals(line, StringComparison.InvariantCultureIgnoreCase))
+                        foreach (ClsConfigPlugin conf in this._config.Plugin)
                         {
-                            this.Warning("Plugin already loaded\n");
-                            return;
+                            if (conf.Name.Equals(plugin.Name, StringComparison.InvariantCultureIgnoreCase))
+                            {
+                                conf.Loaded = loaded;
+                                found = true;
+                                break;
+                            }
                         }
                     }
-
-                    //Plugin not loaded, searching from cache
-                    foreach (PluginDefinition pluginDef in this._pluginCache)
+                    if (!found && loaded)
                     {
-                        if (pluginDef.Name.Equals(line, StringComparison.InvariantCultureIgnoreCase))
-                        {
-                            AppDomain dom = null;
-                            try
-                            {
-                                ClsRemote remoteProxy;
-                                dom = this.CreateAppDomain(pluginDef.Name, out remoteProxy);
-#if DEBUG
-                                this.DevMsg("DBG: Calling Remote_CreatePlugin() in [{0}] for [{1}]...\n", AppDomain.CurrentDomain, dom.FriendlyName);
-#endif
-                                plugin = remoteProxy.CreatePluginClass(this, this.GetAssemblyDirectory(), pluginDef);
-#if DEBUG
-                                this.DevMsg("DBG: Calling plugin.init() ...\n");
-#endif
-                                plugin.Init(this, remoteProxy);
-
-                                this.Msg("Plugin '{0}' loaded\n", plugin.Name);
-                                LockCookie cookie = this._lckPlugins.UpgradeToWriterLock(Timeout.Infinite);
-                                try
-                                {
-                                    this._plugins.Add(dom, plugin);
-                                }
-                                finally
-                                {
-                                    this._lckPlugins.DowngradeFromWriterLock(ref cookie);
-                                }
-                            }
-                            catch (NullReferenceException ex)
-                            {
-                                this.Warning("Can't load plugin (NullReferenceException) '{0}'\n", line);
-                                this.Warning(ex);
-                                this.UnloadPlugin(dom, plugin);
-                                if (dom != null)
-                                {
-                                    AppDomain.Unload(dom);
-                                }
-                                plugin = null;
-                            }
-                            catch (FileNotFoundException ex)
-                            {
-                                this.Warning("Can't load plugin (FileNotFoundException) '{0}'\n", line);
-                                this.Warning("File was : {0}\n", ex.FileName);
-                                this.Warning(ex);
-                                this.UnloadPlugin(dom, plugin);
-                                if (dom != null)
-                                {
-                                    AppDomain.Unload(dom);
-                                }
-                                plugin = null;
-                            }
-                            catch (Exception ex)
-                            {
-                                this.Warning(ex);
-                                this.UnloadPlugin(dom, plugin);
-                                if (dom != null)
-                                {
-                                    AppDomain.Unload(dom);
-                                }
-                                plugin = null;
-                            }
-                            break;
-                        }
+                        if (this._config == null) this._config = new ClsConfig();
+                        if (this._config.Plugin == null) this._config.Plugin = new List<ClsConfigPlugin>();
+                        ClsConfigPlugin conf = new ClsConfigPlugin();
+                        conf.Name = plugin.Name;
+                        conf.Loaded = true;
+                        this._config.Plugin.Add(conf);
                     }
+                    this.SaveConfigNoLock(this._config);
                 }
-                finally
-                {
-                    this._lckPlugins.ReleaseReaderLock();
-                }
-#if DEBUG
             }
             finally
             {
-                this.DevMsg("DBG: Exiting '{0}'...\n", "clr_plugin_load");
+                this._lckConfig.ReleaseWriterLock();
             }
-#endif
         }
 
         private string[] clr_plugin_load_complete(string partial)
         {
-            //Msg("clr_plugin_load_complete : {0}\n", partial);
             if (this._pluginCache == null)
                 this._pluginCache = new PluginDefinition[] { };
             List<string> lst = new List<string>();
@@ -139,6 +77,122 @@ namespace MonoPlug
                 }
             }
             return lst.ToArray();
+        }
+
+        /// <summary>
+        /// Load a plugin
+        /// </summary>
+        /// <param name="name">plugin name</param>
+        /// <returns>True if plugin is already loaded, or if loaded successfully</returns>
+        private bool LoadPlugin(string name, out ClsPluginBase plugin)
+        {
+            //Search if plugin is not already loaded
+            this._lckPlugins.AcquireReaderLock(Timeout.Infinite);
+            try
+            {
+                foreach (AppDomain dom in this._plugins.Keys)
+                {
+                    if (this._plugins[dom].Name.Equals(name, StringComparison.InvariantCultureIgnoreCase))
+                    {
+                        this._msg.Warning("Plugin already loaded\n");
+                        plugin = this._plugins[dom];
+                        return true;
+                    }
+                }
+
+                //Plugin not loaded, searching from cache
+                bool found = false;
+                PluginDefinition def = new PluginDefinition();
+                foreach (PluginDefinition pluginDef in this._pluginCache)
+                {
+                    if (pluginDef.Name.Equals(name, StringComparison.InvariantCultureIgnoreCase))
+                    {
+                        found = true;
+                        def = pluginDef;
+                        break;
+                    }
+                }
+
+                if (found)
+                {
+                    bool ok = false;
+                    AppDomain dom = null;
+                    plugin = null;
+                    try
+                    {
+                        ClsRemote remoteProxy;
+                        dom = this.CreateAppDomain(def.Name, out remoteProxy);
+                        plugin = remoteProxy.CreatePluginClass(this._msg, this.GetAssemblyDirectory(), def);
+                        IMessage plugMsg = new ClsPluginMessage(this._msg, plugin);
+                        IConItem plugConItem = new ClsPluginConItem(this, plugin);
+#if DEBUG
+                        this._msg.DevMsg("ClsMain::LoadPlugin BeforeInit...\n");
+#endif
+                        plugin.Init(remoteProxy, plugMsg, this._thPool, this, plugConItem, this);
+#if DEBUG
+                        this._msg.DevMsg("ClsMain::LoadPlugin AfterInit...\n");
+#endif
+
+                        this._msg.Msg("Plugin '{0}' loaded\n", plugin.Name);
+                        LockCookie cookie = this._lckPlugins.UpgradeToWriterLock(Timeout.Infinite);
+                        try
+                        {
+                            this._plugins.Add(dom, plugin);
+                            ok = true;
+                        }
+                        finally
+                        {
+                            this._lckPlugins.DowngradeFromWriterLock(ref cookie);
+                        }
+                    }
+                    catch (NullReferenceException ex)
+                    {
+                        this._msg.Warning("Can't load plugin (NullReferenceException) '{0}'\n", name);
+                        this._msg.Warning(ex);
+                        this.UnloadPlugin(dom, plugin);
+                        if (dom != null)
+                        {
+                            AppDomain.Unload(dom);
+                        }
+                        plugin = null;
+                        ok = false;
+                    }
+                    catch (FileNotFoundException ex)
+                    {
+                        this._msg.Warning("Can't load plugin (FileNotFoundException) '{0}'\n", name);
+                        this._msg.Warning("File was : {0}\n", ex.FileName);
+                        this._msg.Warning(ex);
+                        this.UnloadPlugin(dom, plugin);
+                        if (dom != null)
+                        {
+                            AppDomain.Unload(dom);
+                        }
+                        plugin = null;
+                        ok = false;
+                    }
+                    catch (Exception ex)
+                    {
+                        this._msg.Warning(ex);
+                        this.UnloadPlugin(dom, plugin);
+                        if (dom != null)
+                        {
+                            AppDomain.Unload(dom);
+                        }
+                        plugin = null;
+                        ok = false;
+                    }
+                    return ok;
+                }
+                else
+                {
+                    plugin = null;
+                    return false;
+                }
+            }
+            finally
+            {
+                this._lckPlugins.ReleaseReaderLock();
+            }
         }
     }
 }

@@ -8,7 +8,7 @@ namespace MonoPlug
     partial class ClsPluginBase
     {
         private int _EventCounter_LevelShutdown = 0;
-        private static readonly object _EventToken_LevelShutdown = new object();
+        //private static readonly object _EventToken_LevelShutdown = new object();
 
         /// <summary>
         /// Event LevelShutdown
@@ -19,10 +19,10 @@ namespace MonoPlug
             {
                 lock (this._events)
                 {
-                    this._events.AddHandler(_EventToken_LevelShutdown, value);
+                    this._events.AddHandler(Events.LevelShutdown, value);
                     if (this._EventCounter_LevelShutdown++ == 0)
                     {
-                        this._main.LevelShutdown_Add(this);
+                        this._engine.LevelShutdown_Add(this);
                     }
                 }
             }
@@ -30,10 +30,10 @@ namespace MonoPlug
             {
                 lock (this._events)
                 {
-                    this._events.RemoveHandler(_EventToken_LevelShutdown, value);
+                    this._events.RemoveHandler(Events.LevelShutdown, value);
                     if (--this._EventCounter_LevelShutdown == 0)
                     {
-                        this._main.LevelShutdown_Remove(this);
+                        this._engine.LevelShutdown_Remove(this);
                     }
                 }
             }
@@ -44,7 +44,7 @@ namespace MonoPlug
             EventHandler d;
             lock (this._events)
             {
-                d = (EventHandler)this._events[_EventToken_LevelShutdown];
+                d = (EventHandler)this._events[Events.LevelShutdown];
             }
             if (d != null)
             {

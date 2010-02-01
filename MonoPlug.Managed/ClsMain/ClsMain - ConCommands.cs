@@ -8,12 +8,14 @@ namespace MonoPlug
 {
     partial class ClsMain
     {
-        internal ClsConCommand RegisterConCommand(ClsPluginBase plugin, string name, string help, FCVAR flags, ConCommandDelegate code, ConCommandCompleteDelegate complete)
+        internal ClsConCommand RegisterConCommand(ClsPluginBase plugin, string name, string help, FCVAR flags, ConCommandDelegate code, ConCommandCompleteDelegate complete, bool async)
         {
+#if DEBUG
             Check.NonNull("code", code);
             Check.NonNullOrEmpty("name", name);
             Check.NonNullOrEmpty("help", help);
             Check.ValidFlags(flags, "flags");
+#endif
 
             this._lckConCommandBase.AcquireReaderLock(Timeout.Infinite);
             try
@@ -28,16 +30,23 @@ namespace MonoPlug
                     }
                 }
 
-                ConCommandData cmdData = new ConCommandData(plugin, name, help, flags, code, complete);
+                ClsConCommand cmd;
+                if (plugin == null)
+                {
+                    cmd = new ClsConCommand(this._msg, this._thPool, plugin, name, help, flags, code, complete, async);
+                }
+                else
+                {
+                    cmd = plugin.Proxy.CreateCommand(this._msg, this._thPool, plugin, name, help, flags, code, complete, async);
+                }
                 //Try to create it in native
                 LockCookie cookie = this._lckConCommandBase.UpgradeToWriterLock(Timeout.Infinite);
                 try
                 {
-                    UInt64 nativeId = this.InterThreadCall<UInt64, ConCommandData>(this.RegisterConCommand_Call, cmdData);
+                    UInt64 nativeId = this.InterThreadCall<UInt64, ClsConCommand>(this.RegisterConCommand_Call, cmd);
                     if (nativeId > 0)
                     {
-                        cmdData.NativeID = nativeId;
-                        ClsConCommand cmd = new ClsConCommand(cmdData);
+                        cmd.SetId(nativeId);
                         this._conCommandBase.Add(nativeId, cmd);
                         return cmd;
                     }
@@ -57,13 +66,16 @@ namespace MonoPlug
             }
         }
 
-        private UInt64 RegisterConCommand_Call(ConCommandData entry)
+        private UInt64 RegisterConCommand_Call(ClsConCommand cmd)
         {
-            return NativeMethods.Mono_RegisterConCommand(entry.Name, entry.Help, (int)entry.Flags, entry.Code, entry.Complete);
+            return NativeMethods.Mono_RegisterConCommand(cmd.Name, cmd.Help, (int)cmd.Flags, cmd.Execute, cmd.Complete);
         }
 
         internal void UnregisterConCommand(ClsPluginBase plugin, ClsConCommand command)
         {
+#if DEBUG
+            Check.NonNull("command", command);
+#endif
             this._lckConCommandBase.AcquireWriterLock(Timeout.Infinite);
             try
             {

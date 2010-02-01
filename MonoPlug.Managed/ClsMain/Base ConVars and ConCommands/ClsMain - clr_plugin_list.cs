@@ -11,20 +11,20 @@ namespace MonoPlug
         {
             if (this._pluginCache == null)
                 this._pluginCache = new PluginDefinition[] { };
-            this.Msg("Assembly path : {0}\n", this.GetAssemblyDirectory());
-            this.Msg("Available     : {0} plugins\n", this._pluginCache.Length);
+            this._msg.Msg("Assembly path : {0}\n", this.GetAssemblyDirectory());
+            this._msg.Msg("Available     : {0} plugins\n", this._pluginCache.Length);
             foreach (PluginDefinition desc in this._pluginCache)
             {
-                this.Msg("  {0}\n", desc);
+                this._msg.Msg("  {0}\n", desc);
             }
 
             this._lckPlugins.AcquireReaderLock(Timeout.Infinite);
             try
             {
-                this.Msg("Loaded : {0} plugins\n", this._plugins.Count);
+                this._msg.Msg("Loaded : {0} plugins\n", this._plugins.Count);
                 foreach (AppDomain dom in this._plugins.Keys)
                 {
-                    this.Msg("  {0}\n", this._plugins[dom].Name);
+                    this._msg.Msg("  {0}\n", this._plugins[dom].Name);
                 }
             }
             finally

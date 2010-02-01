@@ -44,15 +44,15 @@ namespace MonoPlug
         /// </summary>
         protected override void Load()
         {
-            this._wcfconsole_port = this.RegisterConvar("wcfconsole_port", "WCF Console listen port", FCVAR.FCVAR_NONE, "28001");
+            this._wcfconsole_port = this.ConItem.RegisterConvar("wcfconsole_port", "WCF Console listen port", FCVAR.FCVAR_NONE, "28001");
             this._wcfconsole_port.ValueChanged += this._wcfconsole_port_ValueChanged;
 #if DEBUG
-            this.DevMsg("WCFConsole: Console Attaching\n");
+            this.Message.DevMsg("WCFConsole: Console Attaching\n");
 #endif
             this.ConMessage += this.ConWCFConsole_ConMessage;
 
 #if DEBUG
-            this.DevMsg("WCFConsole: Console Attached\n");
+            this.Message.DevMsg("WCFConsole: Console Attached\n");
 #endif
 
             this.InitHost();
@@ -75,7 +75,7 @@ namespace MonoPlug
         private void InitHost()
         {
 #if DEBUG
-            this.DevMsg("WCFConsole::InitHost ({0})\n", "enter");
+            this.Message.DevMsg("WCFConsole::InitHost ({0})\n", "enter");
             try
             {
 #endif
@@ -86,7 +86,7 @@ namespace MonoPlug
                 this._host.AddServiceEndpoint(typeof(IConsoleServer), this._netTcp, "WCFConsole");
 
 #if DEBUG
-                this.Msg("WCF : Open host");
+                this.Message.Msg("WCF : Open host");
                 this.DumpHost("TCP", this._host);
 #endif
                 this._host.Open();
@@ -94,11 +94,11 @@ namespace MonoPlug
             }
             catch (Exception ex)
             {
-                this.Warning(ex);
+                this.Message.Warning(ex);
             }
             finally
             {
-                this.DevMsg("WCFConsole::InitHost ({0})\n", "exit");
+                this.Message.DevMsg("WCFConsole::InitHost ({0})\n", "exit");
             }
 #endif
         }
@@ -110,7 +110,7 @@ namespace MonoPlug
         {
             this.ConMessage -= this.ConWCFConsole_ConMessage;
 
-            this.UnregisterConvar(this._wcfconsole_port);
+            this.ConItem.UnregisterConvar(this._wcfconsole_port);
 
             if (this._host != null)
             {
@@ -144,8 +144,8 @@ namespace MonoPlug
             }
             catch (Exception ex)
             {
-                this.Warning("WCFConsole: Client connection error\n");
-                this.Warning(ex);
+                this.Message.Warning("WCFConsole: Client connection error\n");
+                this.Message.Warning(ex);
                 this._lck.AcquireWriterLock(Timeout.Infinite);
                 try
                 {
@@ -250,7 +250,7 @@ namespace MonoPlug
 
         private void WriteLine(string type, string name, string value)
         {
-            this.Msg("{0}: {1}: {2}\n", type, name, value);
+            this.Message.Msg("{0}: {1}: {2}\n", type, name, value);
         }
 #endif
 

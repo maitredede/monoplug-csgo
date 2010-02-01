@@ -40,6 +40,7 @@
       <RequiredTargetFramework>3.5</RequiredTargetFramework>
     </Reference>
     <Reference Include="System.Data" />
+    <Reference Include="System.Drawing" />
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
@@ -52,7 +53,7 @@
   <ItemGroup>
     <Compile Include="ConClock.cs" />
     <Compile Include="ConEvents.cs" />
-    <Compile Include="ConSample.cs" />
+    <Compile Include="mm_sample.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
 </Project>

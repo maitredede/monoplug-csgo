@@ -31,9 +31,9 @@ namespace MonoPlug
         protected override void Load()
         {
             //this.DevMsg("ConClock:{0}\n", "A");
-            this._theTime = this.RegisterConvar("clr_sample_thetime", "Sample convar containing the time", FCVAR.FCVAR_SPONLY | FCVAR.FCVAR_PRINTABLEONLY, DateTime.MinValue.ToLongTimeString());
+            this._theTime = this.ConItem.RegisterConvar("clr_sample_thetime", "Sample convar containing the time", FCVAR.FCVAR_SPONLY | FCVAR.FCVAR_PRINTABLEONLY, DateTime.MinValue.ToLongTimeString());
             //this.DevMsg("ConClock:{0}\n", "B");
-            this._enabled = this.RegisterConvar("clr_sample_thetime_enabled", "Enable or disable the ConClock plugin", FCVAR.FCVAR_NONE, "0");
+            this._enabled = this.ConItem.RegisterConvar("clr_sample_thetime_enabled", "Enable or disable the ConClock plugin", FCVAR.FCVAR_NONE, "0");
             //this.DevMsg("ConClock:{0}\n", "C");
             this._enabled.ValueChanged += this._enabled_ValueChanged;
             //this.DevMsg("ConClock:{0}\n", "D");
@@ -42,38 +42,38 @@ namespace MonoPlug
 
         private void _theTime_ValueChanged(object sender, EventArgs e)
         {
-            this.Msg("ConClock : {0}\n", this._theTime.ValueString);
+            this.Message.Msg("ConClock : {0}\n", this._theTime.ValueString);
         }
 
         private void _enabled_ValueChanged(object sender, EventArgs e)
         {
 #if DEBUG
-            this.DevMsg("ConClock::EnabledValueChanged enter...\n");
+            this.Message.DevMsg("ConClock::EnabledValueChanged enter...\n");
             try
             {
 #endif
-            bool value = this._enabled.ValueBoolean;
-            //this.DevMsg("ConClock : Value is {0}\n", value);
-            if (value)
-            {
-                if (this._t == null)
+                bool value = this._enabled.ValueBoolean;
+                //this.DevMsg("ConClock : Value is {0}\n", value);
+                if (value)
                 {
-                    this._t = new Timer(this.Tick, null, 1000, 1000);
+                    if (this._t == null)
+                    {
+                        this._t = new Timer(this.Tick, null, 1000, 1000);
+                    }
                 }
-            }
-            else
-            {
-                if (this._t != null)
+                else
                 {
-                    this._t.Dispose();
-                    this._t = null;
+                    if (this._t != null)
+                    {
+                        this._t.Dispose();
+                        this._t = null;
+                    }
                 }
-            }
 #if DEBUG
             }
             finally
             {
-                this.DevMsg("ConClock::EnabledValueChanged Exit...\n");
+                this.Message.DevMsg("ConClock::EnabledValueChanged Exit...\n");
             }
 #endif
         }
@@ -87,25 +87,25 @@ namespace MonoPlug
             this._enabled.ValueChanged -= this._enabled_ValueChanged;
             this._theTime.ValueChanged -= this._theTime_ValueChanged;
 
-            this.UnregisterConvar(this._enabled);
+            this.ConItem.UnregisterConvar(this._enabled);
             this._enabled = null;
-            this.UnregisterConvar(this._theTime);
+            this.ConItem.UnregisterConvar(this._theTime);
             this._theTime = null;
         }
 
         private void Tick(object state)
         {
 #if DEBUG
-            this.DevMsg("ConClock : Tick (enter)\n");
+            this.Message.DevMsg("ConClock : Tick (enter)\n");
             try
             {
 #endif
-            this._theTime.ValueString = DateTime.Now.ToLongTimeString();
+                this._theTime.ValueString = DateTime.Now.ToLongTimeString();
 #if DEBUG
             }
             finally
             {
-                this.DevMsg("ConClock : Tick (exit)\n");
+                this.Message.DevMsg("ConClock : Tick (exit)\n");
             }
 #endif
         }

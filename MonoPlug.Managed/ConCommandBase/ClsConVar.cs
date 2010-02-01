@@ -12,21 +12,20 @@ namespace MonoPlug
     public sealed class ClsConVar : ClsConCommandBase
     {
         private readonly IConVarValue _val;
-        private readonly ConVarData _data;
+        private readonly string _defaultValue;
 
-        internal ClsConVar(IConVarValue val, ConVarData data)
-            : base(data)
+        internal ClsConVar(IMessage msg, IThreadPool pool, ClsPluginBase plugin, string name, string help, FCVAR flags, IConVarValue val, string defaultValue)
+            : base(msg, pool, plugin, name, help, flags)
         {
             this._val = val;
-            this._data = data;
+            this._defaultValue = defaultValue;
         }
 
         /// <summary>
         /// Get the default value
         /// </summary>
-        public string DefaultValue { get { return this._data.DefaultValue; } }
+        public string DefaultValue { get { return this._defaultValue; } }
 
-        private static readonly object EvtValueChanged = new object();
         private readonly EventHandlerList _lstHandlers = new EventHandlerList();
 
         /// <summary>
@@ -38,14 +37,14 @@ namespace MonoPlug
             {
                 lock (this._lstHandlers)
                 {
-                    this._lstHandlers.AddHandler(EvtValueChanged, value);
+                    this._lstHandlers.AddHandler(Events.ConvarValueChanged, value);
                 }
             }
             remove
             {
                 lock (this._lstHandlers)
                 {
-                    this._lstHandlers.RemoveHandler(EvtValueChanged, value);
+                    this._lstHandlers.RemoveHandler(Events.ConvarValueChanged, value);
                 }
             }
         }
@@ -55,8 +54,16 @@ namespace MonoPlug
             EventHandler d;
             lock (this._lstHandlers)
             {
-                d = (EventHandler)this._lstHandlers[EvtValueChanged];
+                d = (EventHandler)this._lstHandlers[Events.ConvarValueChanged];
             }
+            if (d != null)
+            {
+                this.ThreadPool.QueueUserWorkItem<EventHandler>(this.RaiseValueChanged, d); //d(this, EventArgs.Empty);
+            }
+        }
+
+        private void RaiseValueChanged(EventHandler d)
+        {
             if (d != null)
             {
                 d(this, EventArgs.Empty);

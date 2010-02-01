@@ -5,7 +5,7 @@ using System.Text;
 
 namespace MonoPlug
 {
-    internal interface IConVarValue : IMessage
+    internal interface IConVarValue
     {
         string GetValueString(UInt64 nativeID);
         void SetValueString(UInt64 nativeID, string value);

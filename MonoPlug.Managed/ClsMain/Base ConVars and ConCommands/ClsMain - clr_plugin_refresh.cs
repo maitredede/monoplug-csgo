@@ -3,49 +3,46 @@ using System.Collections.Generic;
 using System.Text;
 using System.IO;
 using System.Reflection;
+using System.Threading;
+using System.Xml.Serialization;
 
 namespace MonoPlug
 {
     partial class ClsMain
     {
-        public void clr_plugin_refresh(string line, string[] arguments)
+        private void clr_plugin_refresh(string line, string[] arguments)
         {
-#if DEBUG
-            this.DevMsg("Entering clr_plugin_refresh...\n");
+            this.RefreshPluginCache();
+        }
+
+        private bool RefreshPluginCache()
+        {
+            bool ok = false;
+            AppDomain dom = null;
             try
             {
-#endif
-                AppDomain dom = null;
-                try
-                {
-                    string path = this.GetAssemblyDirectory();
-                    //Create another domain to gather plugin data
-                    ClsRemote proxy;
-                    dom = this.CreateAppDomain("MonoPlug_ScanPlugins", out proxy);
-                    this._pluginCache = proxy.GetPluginsFromDirectory(this, path);
-                }
-                catch (Exception ex)
-                {
-                    this._pluginCache = new PluginDefinition[] { };
-                    this.Warning(ex);
-                }
-                finally
-                {
-                    if (dom != null)
-                    {
-                        //Destroy remote domain
-                        AppDomain.Unload(dom);
-                    }
-                }
-                this.Msg("Refreshed {0} plugins\n", this._pluginCache.Length);
-#if DEBUG
+                string path = this.GetAssemblyDirectory();
+                //Create another domain to gather plugin data
+                ClsRemote proxy;
+                dom = this.CreateAppDomain("MonoPlug_ScanPlugins", out proxy);
+                this._pluginCache = proxy.GetPluginsFromDirectory(this._msg, path);
+                ok = true;
+            }
+            catch (Exception ex)
+            {
+                ok = false;
+                this._pluginCache = new PluginDefinition[] { };
+                this._msg.Warning(ex);
             }
             finally
             {
-                this.Msg("Refreshed {0} plugins\n", this._pluginCache.Length);
-                this.DevMsg("Exiting clr_plugin_refresh...");
+                if (dom != null)
+                {
+                    //Destroy remote domain
+                    AppDomain.Unload(dom);
+                }
             }
-#endif
+            return ok;
         }
     }
 }

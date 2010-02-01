@@ -7,7 +7,7 @@ namespace MonoPlug
     partial class ClsPluginBase
     {
         //private int _EventCounter_ClientDisconnect = 0;
-        private static readonly object _EventToken_ClientDisconnect = new object();
+        //private static readonly object _EventToken_ClientDisconnect = new object();
 
         /// <summary>
         /// Event raised when a client has been put in server
@@ -18,7 +18,7 @@ namespace MonoPlug
             {
                 lock (this._events)
                 {
-                    this._events.AddHandler(_EventToken_ClientDisconnect, value);
+                    this._events.AddHandler(Events.ClientDisconnect, value);
                     //if (this._EventCounter_ClientDisconnect++ == 0)
                     //{
                     //    this._main.ClientDisconnect_Add(this);
@@ -29,7 +29,7 @@ namespace MonoPlug
             {
                 lock (this._events)
                 {
-                    this._events.RemoveHandler(_EventToken_ClientDisconnect, value);
+                    this._events.RemoveHandler(Events.ClientDisconnect, value);
                     //if (--this._EventCounter_ClientDisconnect == 0)
                     //{
                     //    this._main.ClientDisconnect_Remove(this);
@@ -43,7 +43,7 @@ namespace MonoPlug
             EventHandler<ClientEventArgs> d;
             lock (this._events)
             {
-                d = (EventHandler<ClientEventArgs>)this._events[_EventToken_ClientDisconnect];
+                d = (EventHandler<ClientEventArgs>)this._events[Events.ClientDisconnect];
             }
             if (d != null)
             {
