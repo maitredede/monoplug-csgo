@@ -35,15 +35,15 @@ namespace MonoPlug
         {
             //this.ClientCommand += this.ClientCommand_Sample;
             this.Message.Msg("Starting plugin.\n");
-            this._sample_cvar = this.ConItem.RegisterConvar("sample_cvar_clr", "A sample convar", FCVAR.FCVAR_NONE, "42");
+            this._sample_cvar = this.ConItems.RegisterConvar("sample_cvar_clr", "A sample convar", FCVAR.FCVAR_NONE, "42");
 
             //this.LevelInit += this.Sample_LevelInit;
             //this.ServerActivate += this.Sample_ServerActivate;
             //GameFrame is ommited for performance reasons
-            this.LevelShutdown += this.Sample_LevelShutdown;
+            this.Events.LevelShutdown += this.Sample_LevelShutdown;
             //this.ClientActive += this.Sample_ClientActive;
-            this.ClientDisconnect += this.Sample_ClientDisconnect;
-            this.ClientPutInServer += this.Sample_ClientPutInServer;
+            this.Events.ClientDisconnect += this.Sample_ClientDisconnect;
+            this.Events.ClientPutInServer += this.Sample_ClientPutInServer;
             //this.ClientSettingsChanged += this.Sample_ClientSettingsChanged;
             //this.ClientConnect += this.Sample_ClientConnect;
             //this.ClientCommand += this.Sample_ClientCommand;
@@ -72,15 +72,15 @@ namespace MonoPlug
             //this.LevelInit -= this.Sample_LevelInit;
             //this.ServerActivate -= this.Sample_ServerActivate;
             //GameFrame is ommited for performance reasons
-            this.LevelShutdown -= this.Sample_LevelShutdown;
+            this.Events.LevelShutdown -= this.Sample_LevelShutdown;
             //this.ClientActive -= this.Sample_ClientActive;
-            this.ClientDisconnect -= this.Sample_ClientDisconnect;
-            this.ClientPutInServer -= this.Sample_ClientPutInServer;
+            this.Events.ClientDisconnect -= this.Sample_ClientDisconnect;
+            this.Events.ClientPutInServer -= this.Sample_ClientPutInServer;
             //this.ClientSettingsChanged -= this.Sample_ClientSettingsChanged;
             //this.ClientConnect -= this.Sample_ClientConnect;
             //this.ClientCommand -= this.Sample_ClientCommand;
 
-            this.ConItem.UnregisterConvar(this._sample_cvar);
+            this.ConItems.UnregisterConvar(this._sample_cvar);
         }
 
         //private void Sample_LevelShutdown(object sender, EventArgs e)

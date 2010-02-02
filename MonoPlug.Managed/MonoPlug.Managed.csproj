@@ -37,6 +37,25 @@
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>
     <Compile Include="ClsConvarValue.cs" />
+    <Compile Include="ClsPluginBase\New\ClsPluginDatabase.cs" />
+    <Compile Include="ClsPluginBase\New\ClsPluginEvents - ClientDisconnect.cs" />
+    <Compile Include="ClsPluginBase\New\ClsPluginEvents - ClientPutInServer.cs" />
+    <Compile Include="ClsPluginBase\New\ClsPluginThreadPool.cs" />
+    <Compile Include="Config.Designer.cs">
+      <DependentUpon>Config.xsd</DependentUpon>
+    </Compile>
+    <Compile Include="Todo\ClsInstallTools.cs" />
+    <Compile Include="ClsMain\Base ConVars and ConCommands\ClsMain - clr_versions.cs" />
+    <Compile Include="ClsPluginBase\New\ClsPluginEvents - ConsoleMessage.cs" />
+    <Compile Include="ClsPluginBase\New\ClsPluginEvents - LevelShutdown.cs" />
+    <Compile Include="ClsMain\ClsMain - IConItemEntry - ConCommand.cs" />
+    <Compile Include="ClsMain\ClsMain - IEventsAttach.cs" />
+    <Compile Include="ClsMain\ClsMain - IConItemEntry - Convar.cs" />
+    <Compile Include="ClsPluginBase\New\ClsPluginBase.cs" />
+    <Compile Include="ClsPluginBase\New\ClsPluginEvents.cs" />
+    <Compile Include="ConCommandBase\InternalConbase.cs" />
+    <Compile Include="ConCommandBase\InternalConCommand.cs" />
+    <Compile Include="ConCommandBase\InternalConvar.cs" />
     <Compile Include="CsvReader\CsvReader.cs" />
     <Compile Include="CsvReader\CsvReader.DataReaderValidations.cs" />
     <Compile Include="CsvReader\CsvReader.RecordEnumerator.cs" />
@@ -48,74 +67,38 @@
     <Compile Include="CsvReader\Resources\ExceptionMessage.Designer.cs">
       <DependentUpon>ExceptionMessage.resx</DependentUpon>
     </Compile>
+    <Compile Include="DontListPluginAttribute.cs" />
     <Compile Include="Events.cs" />
     <Compile Include="Check.cs" />
-    <Compile Include="ClsInstallTools.cs" />
     <Compile Include="ClsMain\Base ConVars and ConCommands\ClsMain - clr_reload_config.cs" />
     <Compile Include="ClsMain\ClsMain - AllPluginsLoaded.cs" />
     <Compile Include="ClsMain\ClsMain - Config.cs" />
     <Compile Include="ClsMain\ClsMain - MySQL.cs" />
     <Compile Include="ClsMessage.cs" />
-    <Compile Include="ClsPluginBase\ClsPluginBase - MySQL.cs" />
-    <Compile Include="ClsPluginConItem.cs" />
-    <Compile Include="ClsPluginMessage.cs" />
+    <Compile Include="ClsPluginBase\Old\ClsPluginBase - MySQL.cs" />
+    <Compile Include="ClsPluginBase\New\ClsPluginConItem.cs" />
+    <Compile Include="ClsPluginBase\New\ClsPluginMessage.cs" />
     <Compile Include="Config\ClsConfig.cs" />
     <Compile Include="Config\ClsConfigMySQL.cs" />
     <Compile Include="Config\ClsConfigPlugin.cs" />
-    <Compile Include="IDatabase.cs" />
-    <Compile Include="IConItem.cs" />
-    <Compile Include="IEngine.cs" />
-    <Compile Include="IThreadPool.cs" />
-    <Compile Include="SharpZipLib\Checksums\Adler32.cs" />
-    <Compile Include="SharpZipLib\Checksums\CRC32.cs" />
-    <Compile Include="SharpZipLib\Checksums\IChecksum.cs" />
-    <Compile Include="SharpZipLib\Checksums\StrangeCRC.cs" />
-    <Compile Include="SharpZipLib\Core\FileSystemScanner.cs" />
-    <Compile Include="SharpZipLib\Core\INameTransform.cs" />
-    <Compile Include="SharpZipLib\Core\IScanFilter.cs" />
-    <Compile Include="SharpZipLib\Core\NameFilter.cs" />
-    <Compile Include="SharpZipLib\Core\PathFilter.cs" />
-    <Compile Include="SharpZipLib\Core\StreamUtils.cs" />
-    <Compile Include="SharpZipLib\Core\WindowsPathUtils.cs" />
-    <Compile Include="SharpZipLib\Encryption\PkzipClassic.cs" />
-    <Compile Include="SharpZipLib\SharpZipBaseException.cs" />
-    <Compile Include="SharpZipLib\Zip\Compression\Deflater.cs" />
-    <Compile Include="SharpZipLib\Zip\Compression\DeflaterConstants.cs" />
-    <Compile Include="SharpZipLib\Zip\Compression\DeflaterEngine.cs" />
-    <Compile Include="SharpZipLib\Zip\Compression\DeflaterHuffman.cs" />
-    <Compile Include="SharpZipLib\Zip\Compression\DeflaterPending.cs" />
-    <Compile Include="SharpZipLib\Zip\Compression\Inflater.cs" />
-    <Compile Include="SharpZipLib\Zip\Compression\InflaterDynHeader.cs" />
-    <Compile Include="SharpZipLib\Zip\Compression\InflaterHuffmanTree.cs" />
-    <Compile Include="SharpZipLib\Zip\Compression\PendingBuffer.cs" />
-    <Compile Include="SharpZipLib\Zip\Compression\Streams\DeflaterOutputStream.cs" />
-    <Compile Include="SharpZipLib\Zip\Compression\Streams\InflaterInputStream.cs" />
-    <Compile Include="SharpZipLib\Zip\Compression\Streams\OutputWindow.cs" />
-    <Compile Include="SharpZipLib\Zip\Compression\Streams\StreamManipulator.cs" />
-    <Compile Include="SharpZipLib\Zip\FastZip.cs" />
-    <Compile Include="SharpZipLib\Zip\IEntryFactory.cs" />
-    <Compile Include="SharpZipLib\Zip\WindowsNameTransform.cs" />
-    <Compile Include="SharpZipLib\Zip\ZipConstants.cs" />
-    <Compile Include="SharpZipLib\Zip\ZipEntry.cs" />
-    <Compile Include="SharpZipLib\Zip\ZipEntryFactory.cs" />
-    <Compile Include="SharpZipLib\Zip\ZipException.cs" />
-    <Compile Include="SharpZipLib\Zip\ZipExtraData.cs" />
-    <Compile Include="SharpZipLib\Zip\ZipFile.cs" />
-    <Compile Include="SharpZipLib\Zip\ZipHelperStream.cs" />
-    <Compile Include="SharpZipLib\Zip\ZipInputStream.cs" />
-    <Compile Include="SharpZipLib\Zip\ZipNameTransform.cs" />
-    <Compile Include="SharpZipLib\Zip\ZipOutputStream.cs" />
+    <Compile Include="Interfaces\IConItemEntry.cs" />
+    <Compile Include="Interfaces\IDatabase.cs" />
+    <Compile Include="Interfaces\IConItem.cs" />
+    <Compile Include="Interfaces\IEngine.cs" />
+    <Compile Include="Interfaces\IEvents.cs" />
+    <Compile Include="Interfaces\IEventsAttach.cs" />
+    <Compile Include="Interfaces\IThreadPool.cs" />
     <Compile Include="ThreadAction.cs" />
     <Compile Include="Todo\ClsMain - Events Client Connection.cs" />
     <Compile Include="ClsMain\ClsMain - Events ConMessage.cs" />
     <Compile Include="Todo\ClsMain - Events LevelShutdown.cs" />
     <Compile Include="Todo\ClsMain - Events ClientCommand.cs" />
-    <Compile Include="ClsPluginBase\ClsPluginBase - ConCommand.cs" />
-    <Compile Include="ClsPluginBase\ClsPluginBase - Convar.cs" />
-    <Compile Include="ClsPluginBase\ClsPluginBase - DialogMessage.cs" />
-    <Compile Include="ClsPluginBase\ClsPluginBase - EVT ClientDisconnect.cs" />
-    <Compile Include="ClsPluginBase\ClsPluginBase - EVT ClientPutInServer.cs" />
-    <Compile Include="ClsPluginBase\ClsPluginBase - EVT ConMessage.cs" />
+    <Compile Include="ClsPluginBase\Old\ClsPluginBase - ConCommand.cs" />
+    <Compile Include="ClsPluginBase\Old\ClsPluginBase - Convar.cs" />
+    <Compile Include="ClsPluginBase\Old\ClsPluginBase - DialogMessage.cs" />
+    <Compile Include="ClsPluginBase\Old\ClsPluginBase - EVT ClientDisconnect.cs" />
+    <Compile Include="ClsPluginBase\Old\ClsPluginBase - EVT ClientPutInServer.cs" />
+    <Compile Include="ClsPluginBase\Old\ClsPluginBase - EVT ConMessage.cs" />
     <Compile Include="ClsRemote.cs" />
     <Compile Include="ClsThreadItem.cs" />
     <Compile Include="ClsThreadPool.cs" />
@@ -139,27 +122,33 @@
     <Compile Include="ClsMain\ClsMain - Players.cs" />
     <Compile Include="ClsMain\ClsMain - RemoteAppDomain.cs" />
     <Compile Include="ClsMain\ClsMain - Threading.cs" />
-    <Compile Include="ClsMain\ClsMain - Tools.cs" />
+    <Compile Include="ClsMain\ClsMain - GetMonoVersion.cs" />
     <Compile Include="ClsMain\ClsMain - Shutdown.cs" />
     <Compile Include="ClsMain\ClsMain.cs" />
     <Compile Include="ClsPlayer.cs" />
-    <Compile Include="ClsPluginBase\ClsPluginBase - EVT ClientCommand.cs" />
-    <Compile Include="ClsPluginBase\ClsPluginBase - EVT LevelShutdown.cs" />
+    <Compile Include="ClsPluginBase\Old\ClsPluginBase - EVT ClientCommand.cs" />
+    <Compile Include="ClsPluginBase\Old\ClsPluginBase - EVT LevelShutdown.cs" />
     <Compile Include="FCVAR.cs" />
     <Compile Include="DialogMessage.cs" />
-    <Compile Include="IConVarValue.cs" />
-    <Compile Include="IExecute.cs" />
-    <Compile Include="IMessage.cs" />
+    <Compile Include="Interfaces\IConVarValue.cs" />
+    <Compile Include="Interfaces\IExecute.cs" />
+    <Compile Include="Interfaces\IMessage.cs" />
     <Compile Include="InterThreadCallDelegate.cs" />
     <Compile Include="NativeMethods.cs" />
     <Compile Include="PluginDefinition.cs" />
-    <Compile Include="ClsPluginBase\ClsPluginBase.cs" />
+    <Compile Include="ClsPluginBase\Old\ClsPluginBase.cs" />
     <Compile Include="ClsMain\ClsMain - ConCommands.cs" />
     <Compile Include="ConCommandDelegate.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <Reference Include="MySql.Data, Version=6.2.0.0, Culture=neutral, PublicKeyToken=c5687fc88969c44d, processorArchitecture=MSIL">
+    <Reference Include="ICSharpCode.SharpZipLib, Version=0.85.5.452, Culture=neutral, PublicKeyToken=1b03e6acf1164f73, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\Libs\ICSharpCode.SharpZipLib.dll</HintPath>
+    </Reference>
+    <Reference Include="MySql.Data, Version=6.2.2.0, Culture=neutral, PublicKeyToken=c5687fc88969c44d, processorArchitecture=MSIL">
+      <HintPath>..\Libs\MySql.Data.dll</HintPath>
+      <SpecificVersion>False</SpecificVersion>
       <Private>True</Private>
     </Reference>
     <Reference Include="System" />

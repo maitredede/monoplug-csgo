@@ -8,7 +8,7 @@ namespace MonoPlug
     partial class ClsMain
     {
 #if DEBUG
-        private ClsConCommand _clr_test;
+        private InternalConCommand _clr_test;
 
         private void clr_test(string line, string[] arguments)
         {

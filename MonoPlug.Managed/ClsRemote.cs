@@ -11,6 +11,9 @@ namespace MonoPlug
     {
         private readonly AppDomain _current;
 
+        /// <summary>
+        /// Name of AppDomain
+        /// </summary>
         public string AppDomainName { get { return this._current.FriendlyName; } }
 
         public ClsRemote()
@@ -18,20 +21,39 @@ namespace MonoPlug
             this._current = AppDomain.CurrentDomain;
         }
 
+        /// <summary>
+        /// Create a plugin in proxied domain
+        /// </summary>
+        /// <param name="msg">Logger</param>
+        /// <param name="assemblyBaseDir">Base directory for loading assembly</param>
+        /// <param name="plugin">Plugin definition</param>
+        /// <returns>Plugin instance</returns>
         public ClsPluginBase CreatePluginClass(IMessage msg, string assemblyBaseDir, PluginDefinition plugin)
         {
             return (ClsPluginBase)CreateInDomain(this._current, msg, Path.Combine(assemblyBaseDir, plugin.File), plugin.Type);
         }
 
-        public ClsConVar CreateConVar(IMessage msg, IThreadPool pool, ClsPluginBase plugin, string name, string help, FCVAR flags, IConVarValue val, string defaultValue)
+        public IMessage CreatePluginMessage(ClsPluginBase owner, IMessage msg)
         {
-            return new ClsConVar(msg, pool, plugin, name, help, flags, val, defaultValue);
+            return new ClsPluginMessage(owner, msg);
         }
 
-        public ClsConCommand CreateCommand(IMessage msg, IThreadPool pool, ClsPluginBase plugin, string name, string help, FCVAR flags, ConCommandDelegate code, ConCommandCompleteDelegate complete, bool async)
+        public IConItem CreatePluginConItem(ClsPluginBase owner, ClsMain main)
         {
-            return new ClsConCommand(msg, pool, plugin, name, help, flags, code, complete, async);
+            return new ClsPluginConItem(owner, main);
         }
+
+        //[Obsolete("Rewriting", true)]
+        //public ClsConVar CreateConVar(IMessage msg, IThreadPool pool, ClsPluginBase plugin, string name, string help, FCVAR flags, IConVarValue val, string defaultValue)
+        //{
+        //    return new ClsConVar(msg, pool, plugin, name, help, flags, val, defaultValue);
+        //}
+
+        //[Obsolete("Rewriting", true)]
+        //public ClsConCommand CreateCommand(IMessage msg, IThreadPool pool, ClsPluginBase plugin, string name, string help, FCVAR flags, ConCommandDelegate code, ConCommandCompleteDelegate complete, bool async)
+        //{
+        //    return new ClsConCommand(msg, pool, plugin, name, help, flags, code, complete, async);
+        //}
 
         public static T CreateInDomain<T>(AppDomain domain, IMessage msg) where T : MarshalByRefObject
         {

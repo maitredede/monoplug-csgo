@@ -20,14 +20,14 @@ namespace MonoPlug
                 {
                     if (this._config != null)
                     {
-                        if (this._config.MySQL != null)
+                        if (this._config.mysql != null)
                         {
                             MySqlConnectionStringBuilder mcsb = new MySqlConnectionStringBuilder();
-                            mcsb.Server = this._config.MySQL.Host;
-                            mcsb.UserID = this._config.MySQL.User;
-                            mcsb.Password = this._config.MySQL.Pass;
-                            mcsb.Database = this._config.MySQL.Base;
-                            mcsb.Port = (uint)this._config.MySQL.Port;
+                            mcsb.Server = this._config.mysql.host;
+                            mcsb.UserID = this._config.mysql.user;
+                            mcsb.Password = this._config.mysql.pass;
+                            mcsb.Database = this._config.mysql.@base;
+                            mcsb.Port = (uint)this._config.mysql.port;
                             try
                             {
                                 MySqlConnection con = new MySqlConnection(mcsb.ConnectionString);

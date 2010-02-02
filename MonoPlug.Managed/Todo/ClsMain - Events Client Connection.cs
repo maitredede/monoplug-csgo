@@ -9,12 +9,12 @@ namespace MonoPlug
         //private static readonly object _evtToken_ClientPutInServer = new object();
         //private static readonly object _evtToken_ClientDisconnect = new object();
 
-        void IEngine.ClientPutInServer_Add(ClsPluginBase plugin)
+        void IEventsAttach.ClientPutInServer_Add(ClsPluginBase plugin)
         {
             this.Event_Add(plugin, Events.ClientPutInServer, null);
         }
 
-        void IEngine.ClientPutInServer_Remove(ClsPluginBase plugin)
+        void IEventsAttach.ClientPutInServer_Remove(ClsPluginBase plugin)
         {
             this.Event_Remove(plugin, Events.ClientPutInServer, null);
         }
@@ -33,10 +33,9 @@ namespace MonoPlug
             }
             if (lst != null && lst.Count > 0)
             {
-                ClientEventArgs e = new ClientEventArgs(player);
                 foreach (ClsPluginBase plugin in lst)
                 {
-                    plugin.Raise_ClientPutInServer(this, e);
+                    plugin.PluginEvents.Raise_ClientPutInServer(player);
                 }
             }
         }
@@ -56,10 +55,9 @@ namespace MonoPlug
                 }
                 if (lst != null && lst.Count > 0)
                 {
-                    ClientEventArgs e = new ClientEventArgs(player);
                     foreach (ClsPluginBase plugin in lst)
                     {
-                        plugin.Raise_ClientDisconnect(this, e);
+                        plugin.PluginEvents.Raise_ClientDisconnect(player);
                     }
                 }
             }

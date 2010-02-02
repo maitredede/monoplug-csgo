@@ -19,13 +19,13 @@ namespace MonoPlug
                 if (this._configLoadedOK)
                 {
                     bool found = false;
-                    if (this._config != null && this._config.Plugin != null)
+                    if (this._config != null && this._config.plugin != null)
                     {
-                        foreach (ClsConfigPlugin conf in this._config.Plugin)
+                        foreach (TPlugin conf in this._config.plugin)
                         {
-                            if (conf.Name.Equals(plugin.Name, StringComparison.InvariantCultureIgnoreCase))
+                            if (conf.name.Equals(plugin.Name, StringComparison.InvariantCultureIgnoreCase))
                             {
-                                conf.Loaded = loaded;
+                                conf.loaded = loaded;
                                 found = true;
                                 break;
                             }
@@ -33,12 +33,12 @@ namespace MonoPlug
                     }
                     if (!found && loaded)
                     {
-                        if (this._config == null) this._config = new ClsConfig();
-                        if (this._config.Plugin == null) this._config.Plugin = new List<ClsConfigPlugin>();
-                        ClsConfigPlugin conf = new ClsConfigPlugin();
-                        conf.Name = plugin.Name;
-                        conf.Loaded = true;
-                        this._config.Plugin.Add(conf);
+                        if (this._config == null) this._config = new TConfig();
+                        if (this._config.plugin == null) this._config.plugin = new List<TPlugin>();
+                        TPlugin conf = new TPlugin();
+                        conf.name = plugin.Name;
+                        conf.loaded = true;
+                        this._config.plugin.Add(conf);
                     }
                     this.SaveConfigNoLock(this._config);
                 }
@@ -83,6 +83,7 @@ namespace MonoPlug
         /// Load a plugin
         /// </summary>
         /// <param name="name">plugin name</param>
+        /// <param name="plugin">plugin instance</param>
         /// <returns>True if plugin is already loaded, or if loaded successfully</returns>
         private bool LoadPlugin(string name, out ClsPluginBase plugin)
         {
@@ -122,13 +123,19 @@ namespace MonoPlug
                     {
                         ClsRemote remoteProxy;
                         dom = this.CreateAppDomain(def.Name, out remoteProxy);
-                        plugin = remoteProxy.CreatePluginClass(this._msg, this.GetAssemblyDirectory(), def);
-                        IMessage plugMsg = new ClsPluginMessage(this._msg, plugin);
-                        IConItem plugConItem = new ClsPluginConItem(this, plugin);
+                        plugin = remoteProxy.CreatePluginClass(this._msg, this._assemblyPath, def);
+                        //IMessage pluginMessage = remoteProxy.CreatePluginMessage(plugin, this._msg);
+                        //IConItem pluginConItem = remoteProxy.CreatePluginConItem(plugin, this);
 #if DEBUG
                         this._msg.DevMsg("ClsMain::LoadPlugin BeforeInit...\n");
+                        //this._msg.DevMsg("ClsMain::LoadPlugin {0} = {1}\n", "plugin", plugin ?? (object)"<null>");
+                        //this._msg.DevMsg("ClsMain::LoadPlugin {0} = {1}\n", "remoteProxy", remoteProxy ?? (object)"<null>");
+                        //this._msg.DevMsg("ClsMain::LoadPlugin {0} = {1}\n", "msg", pluginMessage ?? (object)"<null>");
+                        //this._msg.DevMsg("ClsMain::LoadPlugin {0} = {1}\n", "database", this ?? (object)"<null>");
+                        //this._msg.DevMsg("ClsMain::LoadPlugin {0} = {1}\n", "conImtem", pluginConItem ?? (object)"<null>");
+                        //this._msg.DevMsg("ClsMain::LoadPlugin {0} = {1}\n", "engine", this ?? (object)"<null>");
 #endif
-                        plugin.Init(remoteProxy, plugMsg, this._thPool, this, plugConItem, this);
+                        plugin.Init(remoteProxy, this._msg, this, this, this._thPool, this);
 #if DEBUG
                         this._msg.DevMsg("ClsMain::LoadPlugin AfterInit...\n");
 #endif

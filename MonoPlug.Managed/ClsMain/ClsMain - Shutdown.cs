@@ -20,7 +20,7 @@ namespace MonoPlug
                     foreach (AppDomain dom in this._plugins.Keys)
                     {
                         ClsPluginBase plugin = this._plugins[dom];
-                        plugin.UnInit();
+                        plugin.Uninit();
                         AppDomain.Unload(dom);
                     }
                     this._plugins.Clear();
@@ -36,15 +36,15 @@ namespace MonoPlug
             }
 
             //Remove internals
-            this.UnregisterConvar(null, this._clr_mono_version);
-            this.UnregisterConvar(null, this._clr_plugin_directory);
+            ((IConItemEntry)this).UnregisterConCommand(this._clr_versions);
+            ((IConItemEntry)this).UnregisterConvar(this._clr_plugin_directory);
 #if DEBUG
-            this.UnregisterConCommand(null, this._clr_test);
+            ((IConItemEntry)this).UnregisterConCommand(this._clr_test);
 #endif
-            this.UnregisterConCommand(null, this._clr_plugin_list);
-            this.UnregisterConCommand(null, this._clr_plugin_refresh);
-            this.UnregisterConCommand(null, this._clr_plugin_load);
-            this.UnregisterConCommand(null, this._clr_plugin_unload);
+            ((IConItemEntry)this).UnregisterConCommand(this._clr_plugin_list);
+            ((IConItemEntry)this).UnregisterConCommand(this._clr_plugin_refresh);
+            ((IConItemEntry)this).UnregisterConCommand(this._clr_plugin_load);
+            ((IConItemEntry)this).UnregisterConCommand(this._clr_plugin_unload);
         }
     }
 }

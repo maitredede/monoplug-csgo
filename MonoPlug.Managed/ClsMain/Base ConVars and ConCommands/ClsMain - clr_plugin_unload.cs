@@ -16,7 +16,7 @@ namespace MonoPlug
             //Deinit plugin
             try
             {
-                plugin.UnInit();
+                plugin.Uninit();
             }
             catch (Exception ex)
             {
@@ -28,22 +28,22 @@ namespace MonoPlug
             this._lckConCommandBase.AcquireWriterLock(Timeout.Infinite);
             try
             {
-                List<ClsConCommandBase> lstRemove = new List<ClsConCommandBase>();
+                List<InternalConbase> lstRemove = new List<InternalConbase>();
                 foreach (UInt64 nativeId in this._conCommandBase.Keys)
                 {
-                    ClsConCommandBase cBase = this._conCommandBase[nativeId];
+                    InternalConbase cBase = this._conCommandBase[nativeId];
                     if (cBase.Plugin == plugin)
                     {
                         lstRemove.Add(cBase);
                     }
                 }
-                foreach (ClsConCommandBase cBase in lstRemove)
+                foreach (InternalConbase cBase in lstRemove)
                 {
-                    if (cBase is ClsConCommand)
+                    if (cBase is InternalConCommand)
                     {
                         this.InterThreadCall<object, UInt64>(this.UnregisterConCommand_Call, cBase.NativeID);
                     }
-                    if (cBase is ClsConVar)
+                    if (cBase is InternalConvar)
                     {
                         this.InterThreadCall<object, UInt64>(this.UnregisterConvar_Call, cBase.NativeID);
                     }

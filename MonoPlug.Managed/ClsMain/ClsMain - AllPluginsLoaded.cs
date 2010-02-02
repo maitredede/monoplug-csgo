@@ -27,20 +27,20 @@ namespace MonoPlug
                     this._configLoadedOK = this.LoadConfigNoLock(out this._config);
                     if (this._configLoadedOK)
                     {
-                        List<ClsConfigPlugin> lstToLoad = new List<ClsConfigPlugin>();
+                        List<TPlugin> lstToLoad = new List<TPlugin>();
 
 #if DEBUG
                         this._msg.DevMsg("APL: ({0})\n", "config loaded");
 #endif
                         //Enlist plugins to load
-                        if (this._config != null && this._config.Plugin != null && this._config.Plugin.Count > 0)
+                        if (this._config != null && this._config.plugin != null && this._config.plugin.Count > 0)
                         {
 #if DEBUG
                             this._msg.DevMsg("APL: ({0})\n", "adding plugin to load");
 #endif
-                            foreach (ClsConfigPlugin confPlug in this._config.Plugin)
+                            foreach (TPlugin confPlug in this._config.plugin)
                             {
-                                if (confPlug.Loaded)
+                                if (confPlug.loaded)
                                 {
                                     lstToLoad.Add(confPlug);
                                 }
@@ -51,16 +51,16 @@ namespace MonoPlug
                         }
 
                         //Do plugin load
-                        foreach (ClsConfigPlugin plug in lstToLoad)
+                        foreach (TPlugin plug in lstToLoad)
                         {
                             ClsPluginBase plugin;
 #if DEBUG
-                            this._msg.DevMsg("APL: ({0})\n", plug.Name);
+                            this._msg.DevMsg("APL: ({0})\n", plug.name);
                             bool ok =
 #endif
- this.LoadPlugin(plug.Name, out plugin);
+ this.LoadPlugin(plug.name, out plugin);
 #if DEBUG
-                            this._msg.DevMsg("APL: ({0} : {1})\n", plug.Name, ok);
+                            this._msg.DevMsg("APL: ({0} : {1})\n", plug.name, ok);
 #endif
                         }
                     }
@@ -70,26 +70,26 @@ namespace MonoPlug
                         this._msg.DevMsg("APL: ({0})\n", "no config");
 #endif
                         //Create default config
-                        this._config = new ClsConfig();
+                        this._config = new TConfig();
                     }
 
 #if DEBUG
                     this._msg.DevMsg("APL: ({0})\n", "add missing");
 #endif
                     //Add file plugins missing from config
-                    if (this._config.Plugin == null)
+                    if (this._config.plugin == null)
                     {
 #if DEBUG
                         this._msg.DevMsg("APL: ({0})\n", "new list");
 #endif
-                        this._config.Plugin = new List<ClsConfigPlugin>();
+                        this._config.plugin = new List<TPlugin>();
                     }
                     foreach (PluginDefinition def in this._pluginCache)
                     {
                         bool exists = false;
-                        foreach (ClsConfigPlugin conf in this._config.Plugin)
+                        foreach (TPlugin conf in this._config.plugin)
                         {
-                            if (conf.Name.Equals(def.Name, StringComparison.InvariantCultureIgnoreCase))
+                            if (conf.name.Equals(def.Name, StringComparison.InvariantCultureIgnoreCase))
                             {
                                 exists = true;
                                 break;
@@ -100,10 +100,10 @@ namespace MonoPlug
 #if DEBUG
                             this._msg.DevMsg("APL: ({0} : {1})\n", "missing", def.Name);
 #endif
-                            ClsConfigPlugin conf = new ClsConfigPlugin();
-                            conf.Name = def.Name;
-                            conf.Loaded = false;
-                            this._config.Plugin.Add(conf);
+                            TPlugin conf = new TPlugin();
+                            conf.name = def.Name;
+                            conf.loaded = false;
+                            this._config.plugin.Add(conf);
                         }
                     }
 #if DEBUG

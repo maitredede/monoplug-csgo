@@ -31,7 +31,7 @@ namespace MonoPlug
         /// <summary>
         /// Convars and concommands
         /// </summary>
-        private readonly Dictionary<UInt64, ClsConCommandBase> _conCommandBase = new Dictionary<ulong, ClsConCommandBase>();
+        private readonly Dictionary<UInt64, InternalConbase> _conCommandBase = new Dictionary<ulong, InternalConbase>();
 
 
         /// <summary>
@@ -40,17 +40,19 @@ namespace MonoPlug
         private PluginDefinition[] _pluginCache = null;
 
         private readonly ReaderWriterLock _lckConfig = new ReaderWriterLock();
-        private ClsConfig _config;
+        private TConfig _config;
         private bool _configLoadedOK;
 
+        private readonly string _assemblyPath;
+
         //Internal commands and vars
-        private ClsConVar _clr_mono_version = null;
-        private ClsConVar _clr_plugin_directory = null;
-        private ClsConCommand _clr_plugin_list = null;
-        private ClsConCommand _clr_plugin_refresh = null;
-        private ClsConCommand _clr_plugin_load = null;
-        private ClsConCommand _clr_plugin_unload = null;
-        private ClsConCommand _clr_reload_config = null;
+        private InternalConvar _clr_plugin_directory = null;
+        private InternalConCommand _clr_versions = null;
+        private InternalConCommand _clr_plugin_list = null;
+        private InternalConCommand _clr_plugin_refresh = null;
+        private InternalConCommand _clr_plugin_load = null;
+        private InternalConCommand _clr_plugin_unload = null;
+        private InternalConCommand _clr_reload_config = null;
         #endregion
 
         /// <summary>
@@ -62,9 +64,44 @@ namespace MonoPlug
 
         public ClsMain()
         {
+            try
+            {
+                AppDomain.CurrentDomain.AssemblyResolve += new ResolveEventHandler(CurrentDomain_AssemblyResolve);
+            }
+            catch (Exception ex)
+            {
+                NativeMethods.Mono_Msg(ex.GetType().FullName + "\n");
+                NativeMethods.Mono_Msg(ex.Message + "\n");
+                NativeMethods.Mono_Msg(ex.StackTrace + "\n");
+            }
+
+            this._assemblyPath = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
+
             this._msg = new ClsMessage(this);
             this._thPool = new ClsThreadPool(this._msg);
             this._cvarValue = new ClsConvarValue(this);
+        }
+
+        Assembly CurrentDomain_AssemblyResolve(object sender, ResolveEventArgs args)
+        {
+            NativeMethods.Mono_Msg("CurrentDomain_AssemblyResolve: " + args.Name + "\n");
+            AssemblyName an = new AssemblyName(args.Name);
+            string codebase = this.GetType().Assembly.Location;
+            string asm = this.GetType().Assembly.GetName(false).Name;
+            int pos = codebase.LastIndexOf(asm);
+            string newCB = codebase.Remove(pos, asm.Length).Insert(pos, an.Name);
+            NativeMethods.Mono_Msg("CurrentDomain_AssemblyResolve: CodeBase=" + newCB + "\n");
+            try
+            {
+                Assembly assembly = Assembly.LoadFrom(newCB);
+                NativeMethods.Mono_Msg("CurrentDomain_AssemblyResolve: Location=" + assembly.Location + "\n");
+                return assembly;
+            }
+            catch (Exception ex)
+            {
+                NativeMethods.Mono_Warning("CurrentDomain_AssemblyResolve: Exception=" + ex.Message + "\n");
+            }
+            return null;
         }
     }
 }

@@ -11,22 +11,24 @@ namespace MonoPlug
     /// </summary>
     public sealed class ClsConVar : ClsConCommandBase
     {
-        private readonly IConVarValue _val;
-        private readonly string _defaultValue;
+        private readonly EventHandlerList _lstHandlers = new EventHandlerList();
+        private readonly InternalConvar _convar;
 
-        internal ClsConVar(IMessage msg, IThreadPool pool, ClsPluginBase plugin, string name, string help, FCVAR flags, IConVarValue val, string defaultValue)
-            : base(msg, pool, plugin, name, help, flags)
+        internal ClsConVar(InternalConvar convar, ClsPluginBase owner)
+            : base(convar, owner)
         {
-            this._val = val;
-            this._defaultValue = defaultValue;
+#if DEBUG
+            Check.NonNull("convar", convar);
+#endif
+            this._convar = convar;
         }
+
+        internal InternalConvar Internal { get { return this._convar; } }
 
         /// <summary>
         /// Get the default value
         /// </summary>
-        public string DefaultValue { get { return this._defaultValue; } }
-
-        private readonly EventHandlerList _lstHandlers = new EventHandlerList();
+        public string DefaultValue { get { return this._convar.DefaultValue; } }
 
         /// <summary>
         /// Raised when the convar value has changed
@@ -58,7 +60,7 @@ namespace MonoPlug
             }
             if (d != null)
             {
-                this.ThreadPool.QueueUserWorkItem<EventHandler>(this.RaiseValueChanged, d); //d(this, EventArgs.Empty);
+                this.Plugin.ThreadPool.QueueUserWorkItem<EventHandler>(this.RaiseValueChanged, d);
             }
         }
 
@@ -75,8 +77,8 @@ namespace MonoPlug
         /// </summary>
         public bool ValueBoolean
         {
-            get { return this._val.GetValueBool(this.NativeID); }
-            set { this._val.SetValueBool(this.NativeID, value); }
+            get { return this._convar.GetValueBool(); }
+            set { this._convar.SetValueBool(value); }
         }
 
         /// <summary>
@@ -84,8 +86,8 @@ namespace MonoPlug
         /// </summary>
         public string ValueString
         {
-            get { return this._val.GetValueString(this.NativeID); }
-            set { this._val.SetValueString(this.NativeID, value); }
+            get { return this._convar.GetValueString(); }
+            set { this._convar.SetValueString(value); }
         }
     }
 }

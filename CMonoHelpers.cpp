@@ -1,6 +1,6 @@
 #include "CMonoHelpers.h"
 
-bool MonoPlugin::CMonoHelpers::GetDomain(const char* file, MonoDomain*& domain, char *error, size_t maxlen)
+bool MonoPlugin::CMonoHelpers::GetDomain(const char* file, const char* rootDir, MonoDomain*& domain, char *error, size_t maxlen)
 {
 	domain = mono_jit_init(file);
 	if(!domain)

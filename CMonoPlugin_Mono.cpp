@@ -3,12 +3,12 @@
 
 namespace MonoPlugin
 {
-	bool CMonoPlugin::InitMono(const char* dllFile, char *error, size_t maxlen)
+	bool CMonoPlugin::InitMono(const char* dllFile, const char* rootDir, char *error, size_t maxlen)
 	{
 		//Init the runtime
 		if(!g_Domain)
 		{
-			if(!CMonoHelpers::GetDomain(dllFile, g_Domain, error, maxlen)) return false;
+			if(!CMonoHelpers::GetDomain(dllFile, rootDir, g_Domain, error, maxlen)) return false;
 		}
 
 		//Load the assembly

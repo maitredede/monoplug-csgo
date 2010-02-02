@@ -21,11 +21,10 @@ namespace MonoPlug
             AppDomain dom = null;
             try
             {
-                string path = this.GetAssemblyDirectory();
                 //Create another domain to gather plugin data
                 ClsRemote proxy;
                 dom = this.CreateAppDomain("MonoPlug_ScanPlugins", out proxy);
-                this._pluginCache = proxy.GetPluginsFromDirectory(this._msg, path);
+                this._pluginCache = proxy.GetPluginsFromDirectory(this._msg, this._assemblyPath);
                 ok = true;
             }
             catch (Exception ex)

@@ -23,12 +23,12 @@ namespace MonoPlug
                     this._configLoadedOK = false;
                     try
                     {
-                        string path = Path.Combine(this.GetAssemblyDirectory(), "config.xml");
+                        string path = Path.Combine(this._assemblyPath, "config.xml");
                         this._msg.Msg("Loading config file : {0}\n", path);
                         using (FileStream fs = File.Open(path, FileMode.Open, FileAccess.Read, FileShare.Read))
                         {
                             XmlTextReader xr = new XmlTextReader(fs);
-                            XmlSerializer xz = new XmlSerializer(typeof(ClsConfig));
+                            XmlSerializer xz = new XmlSerializer(typeof(TConfig));
                             if (!xz.CanDeserialize(xr))
                             {
                                 this._msg.Warning("Can't deserialize file\n");
@@ -36,7 +36,7 @@ namespace MonoPlug
                             else
                             {
                                 fs.Seek(0, SeekOrigin.Begin);
-                                this._config = (ClsConfig)xz.Deserialize(fs);
+                                this._config = (TConfig)xz.Deserialize(fs);
                                 this._configLoadedOK = true;
                             }
                         }
@@ -55,7 +55,7 @@ namespace MonoPlug
 
                 this.clr_plugin_refresh(string.Empty, null);
 
-                if (this._configLoadedOK && this._config != null && this._config.Plugin != null)
+                if (this._configLoadedOK && this._config != null && this._config.plugin != null)
                 {
                     //Restore plugin load state
                     this._lckPlugins.AcquireWriterLock(Timeout.Infinite);
@@ -63,14 +63,14 @@ namespace MonoPlug
                     {
                         //Try to un/load plugins from config
                         List<string> lstHandled = new List<string>();
-                        foreach (ClsConfigPlugin configPlugin in this._config.Plugin)
+                        foreach (TPlugin configPlugin in this._config.plugin)
                         {
                             //Find there is a definition
                             bool found = false;
                             PluginDefinition def = new PluginDefinition();
                             foreach (PluginDefinition definition in this._pluginCache)
                             {
-                                if (definition.Name.Equals(configPlugin.Name, StringComparison.InvariantCultureIgnoreCase))
+                                if (definition.Name.Equals(configPlugin.name, StringComparison.InvariantCultureIgnoreCase))
                                 {
                                     found = true;
                                     def = definition;
@@ -91,20 +91,20 @@ namespace MonoPlug
                                     }
                                 }
 
-                                if (loaded && !configPlugin.Loaded)
+                                if (loaded && !configPlugin.loaded)
                                 {
                                     //Unload plugin
-                                    this._thPool.QueueUserWorkItem<string, string[]>(this.clr_plugin_unload, configPlugin.Name, null);
+                                    this._thPool.QueueUserWorkItem<string, string[]>(this.clr_plugin_unload, configPlugin.name, null);
                                 }
 
-                                if (!loaded && configPlugin.Loaded)
+                                if (!loaded && configPlugin.loaded)
                                 {
                                     //load plugin
-                                    this._thPool.QueueUserWorkItem<string, string[]>(this.clr_plugin_load, configPlugin.Name, null);
+                                    this._thPool.QueueUserWorkItem<string, string[]>(this.clr_plugin_load, configPlugin.name, null);
                                 }
                             }
 
-                            lstHandled.Add(configPlugin.Name);
+                            lstHandled.Add(configPlugin.name);
                         }
 
                         //Unload loaded plugins not in config file

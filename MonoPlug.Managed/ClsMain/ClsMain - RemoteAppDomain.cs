@@ -8,11 +8,6 @@ namespace MonoPlug
 {
     partial class ClsMain
     {
-        private string GetAssemblyDirectory()
-        {
-            return Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
-        }
-
         private AppDomain CreateAppDomain(string name, out ClsRemote proxy)
         {
             return this.CreateAppDomain(name, out proxy, false);
@@ -21,7 +16,7 @@ namespace MonoPlug
         private AppDomain CreateAppDomain(string name, out ClsRemote proxy, bool shadow)
         {
             AppDomainSetup setup = new AppDomainSetup();
-            setup.ApplicationBase = this.GetAssemblyDirectory();
+            setup.ApplicationBase = this._assemblyPath;
             setup.ShadowCopyFiles = shadow.ToString();
             AppDomain dom = AppDomain.CreateDomain(name, null, setup);
             proxy = ClsRemote.CreateInDomain<ClsRemote>(dom, this._msg);

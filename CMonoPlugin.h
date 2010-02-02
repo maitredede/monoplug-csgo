@@ -31,7 +31,7 @@ namespace MonoPlugin
 		const char *GetDate();
 		const char *GetLogTag();
 	private:
-		bool InitMono(const char* dllFile, char *error, size_t maxlen);
+		bool InitMono(const char* dllFile, const char* rootDir, char *error, size_t maxlen);
 		bool StartMono(char *error, size_t maxlen);
 		void AddHooks();
 		void RemoveHooks();
@@ -74,7 +74,8 @@ extern MonoPlugin::CMonoPlugin g_MonoPlugin;
 PLUGIN_GLOBALVARS();
 
 #if defined WIN32 || defined _WIN32
-	#define MONOPLUG_DLLFILE "%s\\addons\\MonoPlug.Managed.dll"
+	#define MONOPLUG_DLLPATH "%s\\addons"
+	#define MONOPLUG_DLLFILE "%s\\MonoPlug.Managed.dll"
 #else
 	#define MONOPLUG_DLLFILE "%s/addons/MonoPlug.Managed.dll"
 #endif

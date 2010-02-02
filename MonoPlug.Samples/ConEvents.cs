@@ -21,11 +21,11 @@ namespace MonoPlug
             try
             {
                 //this.ClientCommand += this.ClientCommand_Sample;
-                this.LevelShutdown += this.Events_LevelShutdown;
-                this.ConMessage += this.Events_ConMessage;
+                this.Events.LevelShutdown += this.Events_LevelShutdown;
+                this.Events.ConsoleMessage += this.Events_ConMessage;
 
-                this.ClientPutInServer += this.Events_ClientPutInServer;
-                this.ClientDisconnect += this.Events_ClientDisconnect;
+                this.Events.ClientPutInServer += this.Events_ClientPutInServer;
+                this.Events.ClientDisconnect += this.Events_ClientDisconnect;
             }
             catch (Exception ex)
             {
@@ -41,11 +41,11 @@ namespace MonoPlug
             try
             {
                 this.Message.Msg("ConEvents::Unload : A\n");
-                this.LevelShutdown -= this.Events_LevelShutdown;
+                this.Events.LevelShutdown -= this.Events_LevelShutdown;
                 //this.ClientCommand -= this.ClientCommand_Sample;
-                this.ConMessage -= this.Events_ConMessage;
-                this.ClientPutInServer -= this.Events_ClientPutInServer;
-                this.ClientDisconnect -= this.Events_ClientDisconnect;
+                this.Events.ConsoleMessage -= this.Events_ConMessage;
+                this.Events.ClientPutInServer -= this.Events_ClientPutInServer;
+                this.Events.ClientDisconnect -= this.Events_ClientDisconnect;
                 this.Message.Msg("ConEvents::Unload : A\n");
             }
             catch (Exception ex)

@@ -8,7 +8,7 @@ namespace MonoPlugin
 	class CMonoHelpers
 	{
 	public:
-		static bool GetDomain(const char* file, MonoDomain*& domain, char *error, size_t maxlen);
+		static bool GetDomain(const char* file, const char* rootDir, MonoDomain*& domain, char *error, size_t maxlen);
 		static bool GetAssembly(const char* file, MonoDomain* domain, MonoAssembly*& assembly, char *error, size_t maxlen);
 		static bool GetImage(const char* file, MonoAssembly* assembly, MonoImage*& image, char *error, size_t maxlen);
 		static bool GetClass(MonoImage* assemblyImage, const char* classNamespace, const char* className, MonoClass*& classPtr, char* error, size_t maxlen);

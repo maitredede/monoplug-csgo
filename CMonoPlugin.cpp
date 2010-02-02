@@ -31,10 +31,12 @@ bool MonoPlugin::CMonoPlugin::Load(PluginId id, ISmmAPI *ismm, char *error, size
 
 	//Get game dir
 	char dllPath[MAX_PATH];
+	char dllDir[MAX_PATH];
 	{
 		char* dir = new char[MAX_PATH];
 		g_engine->GetGameDir(dir, MAX_PATH);
-		g_SMAPI->Format(dllPath, sizeof(dllPath), MONOPLUG_DLLFILE, dir); 
+		g_SMAPI->Format(dllDir, sizeof(dllDir), MONOPLUG_DLLPATH, dir); 
+		g_SMAPI->Format(dllPath, sizeof(dllPath), MONOPLUG_DLLFILE, dllDir); 
 		delete dir;
 		META_LOG(g_PLAPI, "MonoPlugin Managed dll file is : %s", dllPath);
 		if(!g_filesystem->FileExists(dllPath))
@@ -44,7 +46,7 @@ bool MonoPlugin::CMonoPlugin::Load(PluginId id, ISmmAPI *ismm, char *error, size
 		}
 	}
 
-	if(!this->InitMono(dllPath, error, maxlen))
+	if(!this->InitMono(dllPath, dllDir, error, maxlen))
 	{
 		return false;
 	}

@@ -11,7 +11,7 @@ namespace MonoPlug
         {
             if (this._pluginCache == null)
                 this._pluginCache = new PluginDefinition[] { };
-            this._msg.Msg("Assembly path : {0}\n", this.GetAssemblyDirectory());
+            this._msg.Msg("Assembly path : {0}\n", this._assemblyPath);
             this._msg.Msg("Available     : {0} plugins\n", this._pluginCache.Length);
             foreach (PluginDefinition desc in this._pluginCache)
             {

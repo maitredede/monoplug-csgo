@@ -12,9 +12,9 @@ namespace MonoPlug
         #region Config File IO
         private readonly object _lckConfigFileIO = new object();
 
-        private bool LoadConfigNoLock(out ClsConfig conf)
+        private bool LoadConfigNoLock(out TConfig conf)
         {
-            string path = Path.Combine(this.GetAssemblyDirectory(), "config.xml");
+            string path = Path.Combine(this._assemblyPath, "config.xml");
 #if DEBUG
             this._msg.DevMsg("Loading config file {0}\n", path);
 #endif
@@ -25,8 +25,8 @@ namespace MonoPlug
                 {
                     using (FileStream fs = File.Open(path, FileMode.Open, FileAccess.Read, FileShare.Read))
                     {
-                        XmlSerializer xz = new XmlSerializer(typeof(ClsConfig));
-                        conf = (ClsConfig)xz.Deserialize(fs);
+                        XmlSerializer xz = new XmlSerializer(typeof(TConfig));
+                        conf = (TConfig)xz.Deserialize(fs);
                         ok = true;
                     }
                 }
@@ -40,11 +40,11 @@ namespace MonoPlug
             return ok;
         }
 
-        private bool SaveConfigNoLock(ClsConfig conf)
+        private bool SaveConfigNoLock(TConfig conf)
         {
             if (conf == null) return false;
 
-            string path = Path.Combine(this.GetAssemblyDirectory(), "config.xml");
+            string path = Path.Combine(this._assemblyPath, "config.xml");
 #if DEBUG
             this._msg.DevMsg("Saving config file {0}\n", path);
 #endif
@@ -55,7 +55,7 @@ namespace MonoPlug
                 {
                     using (FileStream fs = File.Open(path, FileMode.OpenOrCreate, FileAccess.Write, FileShare.None))
                     {
-                        XmlSerializer xz = new XmlSerializer(typeof(ClsConfig));
+                        XmlSerializer xz = new XmlSerializer(typeof(TConfig));
                         xz.Serialize(fs, conf);
                         ok = true;
                     }
