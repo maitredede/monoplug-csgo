@@ -95,7 +95,7 @@ namespace MonoPlug
             }
         }
 
-        private void Raise(object eventToken, object sender)
+        private void RaiseEmpty(object eventToken, object sender)
         {
             EventHandler d;
             this._lck.AcquireReaderLock(Timeout.Infinite);

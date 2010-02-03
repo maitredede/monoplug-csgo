@@ -20,33 +20,7 @@ namespace MonoPlug
                 LockCookie cookie = this._lckConfig.UpgradeToWriterLock(Timeout.Infinite);
                 try
                 {
-                    this._configLoadedOK = false;
-                    try
-                    {
-                        string path = Path.Combine(this._assemblyPath, "config.xml");
-                        this._msg.Msg("Loading config file : {0}\n", path);
-                        using (FileStream fs = File.Open(path, FileMode.Open, FileAccess.Read, FileShare.Read))
-                        {
-                            XmlTextReader xr = new XmlTextReader(fs);
-                            XmlSerializer xz = new XmlSerializer(typeof(TConfig));
-                            if (!xz.CanDeserialize(xr))
-                            {
-                                this._msg.Warning("Can't deserialize file\n");
-                            }
-                            else
-                            {
-                                fs.Seek(0, SeekOrigin.Begin);
-                                this._config = (TConfig)xz.Deserialize(fs);
-                                this._configLoadedOK = true;
-                            }
-                        }
-                    }
-                    catch (Exception ex)
-                    {
-                        this._msg.Warning(ex);
-                        this._configLoadedOK = false;
-                        this._config = null;
-                    }
+                    this._configLoadedOK = this.LoadConfigNoLock(out this._config);
                 }
                 finally
                 {

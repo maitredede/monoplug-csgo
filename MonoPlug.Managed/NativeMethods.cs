@@ -29,8 +29,6 @@ namespace MonoPlug
         [MethodImpl(MethodImplOptions.InternalCall)]
         internal static extern void Mono_DetachConsole();
 
-        [MethodImpl(MethodImplOptions.InternalCall)]
-        internal static extern void Mono_ClientDialogMessage(int client, string title, string message, int a, int r, int g, int b, int level, int time);
 
         [MethodImpl(MethodImplOptions.InternalCall)]
         internal static extern UInt64 Mono_RegisterConVar(string name, string description, int flags, string defaultValue);
@@ -46,15 +44,27 @@ namespace MonoPlug
         internal static extern void Mono_Convar_SetBoolean(UInt64 nativeID, bool value);
 
         [MethodImpl(MethodImplOptions.InternalCall)]
+        internal static extern void Mono_EventAttach_ServerActivate();
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        internal static extern void Mono_EventDetach_ServerActivate();
+
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        internal static extern void Mono_ClientDialogMessage(int client, string title, string message, int a, int r, int g, int b, int level, int time);
+
+        [MethodImpl(MethodImplOptions.InternalCall)]
         internal static extern void Mono_EventAttach_LevelShutdown();
         [MethodImpl(MethodImplOptions.InternalCall)]
         internal static extern void Mono_EventDetach_LevelShutdown();
-        //Below is not native attached
 
 
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        internal static extern void Mono_EventAttach_ClientDisconnect();
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        internal static extern void Mono_EventDetach_ClientDisconnect();
 
-        //[MethodImpl(MethodImplOptions.InternalCall)]
-        //internal static extern ClsPlayer[] Mono_GetPlayers();
-
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        internal static extern void Mono_EventAttach_ClientPutInServer();
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        internal static extern void Mono_EventDetach_ClientPutInServer();
     }
 }

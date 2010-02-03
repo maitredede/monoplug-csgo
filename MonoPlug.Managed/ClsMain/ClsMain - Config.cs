@@ -53,6 +53,10 @@ namespace MonoPlug
             {
                 lock (this._lckConfigFileIO)
                 {
+                    if (File.Exists(path))
+                    {
+                        File.Delete(path);
+                    }
                     using (FileStream fs = File.Open(path, FileMode.OpenOrCreate, FileAccess.Write, FileShare.None))
                     {
                         XmlSerializer xz = new XmlSerializer(typeof(TConfig));

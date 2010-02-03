@@ -15,5 +15,11 @@ namespace MonoPlug
 
         void ClientPutInServer_Add(ClsPluginBase plugin);
         void ClientPutInServer_Remove(ClsPluginBase plugin);
+
+        void ClientDisconnect_Attach(ClsPluginBase plugin);
+        void ClientDisconnect_Detach(ClsPluginBase plugin);
+
+        void ServerActivate_Attach(ClsPluginBase plugin);
+        void ServerActivate_Detach(ClsPluginBase plugin);
     }
 }

@@ -9,9 +9,9 @@ using MySql.Data.MySqlClient;
 
 namespace MonoPlug
 {
-    partial class ClsMain : IDatabase
+    partial class ClsMain : IDatabaseConfig
     {
-        MySqlConnection IDatabase.GetConnection()
+        string IDatabaseConfig.GetConnectionString()
         {
             this._lckConfig.AcquireReaderLock(Timeout.Infinite);
             try
@@ -28,17 +28,8 @@ namespace MonoPlug
                             mcsb.Password = this._config.mysql.pass;
                             mcsb.Database = this._config.mysql.@base;
                             mcsb.Port = (uint)this._config.mysql.port;
-                            try
-                            {
-                                MySqlConnection con = new MySqlConnection(mcsb.ConnectionString);
-                                con.Open();
-                                return con;
-                            }
-                            catch (Exception ex)
-                            {
-                                this._msg.Warning(ex);
-                                throw new InvalidOperationException("MySQL Connection error", ex);
-                            }
+                            mcsb.IgnorePrepare = false;
+                            return mcsb.ConnectionString;
                         }
                         else
                         {

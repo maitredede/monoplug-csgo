@@ -9,7 +9,7 @@ namespace MonoPlug
     {
         internal void Raise_ClientPutInServer(ClsPlayer player)
         {
-            this.Raise(Events.ClientPutInServer, new ClientEventArgs(player));
+            this.Raise(Events.ClientPutInServer, this, new ClientEventArgs(player));
         }
 
         event EventHandler<ClientEventArgs> IEvents.ClientPutInServer

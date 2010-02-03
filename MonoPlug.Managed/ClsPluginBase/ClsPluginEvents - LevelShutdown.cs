@@ -15,7 +15,7 @@ namespace MonoPlug
 
         internal void Raise_LevelShutdown()
         {
-            this.Raise(Events.LevelShutdown, this._owner);
+            this.RaiseEmpty(Events.LevelShutdown, this._owner);
         }
     }
 }

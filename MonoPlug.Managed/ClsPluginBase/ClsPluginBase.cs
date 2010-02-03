@@ -40,7 +40,7 @@ namespace MonoPlug
         private ClsPluginThreadPool _pool;
         private ClsPluginDatabase _db;
 
-        internal void Init(ClsRemote proxy, IMessage msg, IEventsAttach anchor, IConItemEntry entry, IThreadPool pool, IDatabase db)
+        internal void Init(ClsRemote proxy, IMessage msg, IEventsAttach anchor, IConItemEntry entry, IThreadPool pool, IDatabaseConfig db)
         {
             Check.NonNull("proxy", proxy);
             Check.NonNull("msg", msg);
@@ -54,7 +54,7 @@ namespace MonoPlug
             this._events = new ClsPluginEvents(this, anchor);
             this._entry = new ClsPluginConItem(this, entry);
             this._pool = new ClsPluginThreadPool(this, pool);
-            this._db = new ClsPluginDatabase(this, db);
+            this._db = new ClsPluginDatabase(this, db, this._msg);
             this.Load();
         }
 

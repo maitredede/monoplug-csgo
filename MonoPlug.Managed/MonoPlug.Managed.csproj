@@ -37,36 +37,31 @@
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>
     <Compile Include="ClsConvarValue.cs" />
-    <Compile Include="ClsPluginBase\New\ClsPluginDatabase.cs" />
-    <Compile Include="ClsPluginBase\New\ClsPluginEvents - ClientDisconnect.cs" />
-    <Compile Include="ClsPluginBase\New\ClsPluginEvents - ClientPutInServer.cs" />
-    <Compile Include="ClsPluginBase\New\ClsPluginThreadPool.cs" />
+    <Compile Include="ClsMain\ClsMain - IEventsAttach - LevelShutdown.cs" />
+    <Compile Include="ClsMain\ClsMain - IEventsAttach - ServerActivate.cs" />
+    <Compile Include="ClsMain\ClsMain - IEventsAttach - ClientDisconnect.cs" />
+    <Compile Include="ClsMain\ClsMain - IEventsAttach - ClientPutInServer.cs" />
+    <Compile Include="ClsPluginBase\ClsPluginDatabase.cs" />
+    <Compile Include="ClsPluginBase\ClsPluginEvents - ClientDisconnect.cs" />
+    <Compile Include="ClsPluginBase\ClsPluginEvents - ClientPutInServer.cs" />
+    <Compile Include="ClsPluginBase\ClsPluginThreadPool.cs" />
+    <Compile Include="ClsPluginBase\ClsPluginEvents - ServerActivate.cs" />
     <Compile Include="Config.Designer.cs">
       <DependentUpon>Config.xsd</DependentUpon>
     </Compile>
-    <Compile Include="Todo\ClsInstallTools.cs" />
+    <Compile Include="EventArgs\ServerActivateEventArgs.cs" />
+    <Compile Include="ClsInstallTools.cs" />
     <Compile Include="ClsMain\Base ConVars and ConCommands\ClsMain - clr_versions.cs" />
-    <Compile Include="ClsPluginBase\New\ClsPluginEvents - ConsoleMessage.cs" />
-    <Compile Include="ClsPluginBase\New\ClsPluginEvents - LevelShutdown.cs" />
+    <Compile Include="ClsPluginBase\ClsPluginEvents - ConsoleMessage.cs" />
+    <Compile Include="ClsPluginBase\ClsPluginEvents - LevelShutdown.cs" />
     <Compile Include="ClsMain\ClsMain - IConItemEntry - ConCommand.cs" />
     <Compile Include="ClsMain\ClsMain - IEventsAttach.cs" />
     <Compile Include="ClsMain\ClsMain - IConItemEntry - Convar.cs" />
-    <Compile Include="ClsPluginBase\New\ClsPluginBase.cs" />
-    <Compile Include="ClsPluginBase\New\ClsPluginEvents.cs" />
+    <Compile Include="ClsPluginBase\ClsPluginBase.cs" />
+    <Compile Include="ClsPluginBase\ClsPluginEvents.cs" />
     <Compile Include="ConCommandBase\InternalConbase.cs" />
     <Compile Include="ConCommandBase\InternalConCommand.cs" />
     <Compile Include="ConCommandBase\InternalConvar.cs" />
-    <Compile Include="CsvReader\CsvReader.cs" />
-    <Compile Include="CsvReader\CsvReader.DataReaderValidations.cs" />
-    <Compile Include="CsvReader\CsvReader.RecordEnumerator.cs" />
-    <Compile Include="CsvReader\Events\ParseErrorEventArgs.cs" />
-    <Compile Include="CsvReader\Exceptions\MalformedCsvException.cs" />
-    <Compile Include="CsvReader\Exceptions\MissingFieldCsvException.cs" />
-    <Compile Include="CsvReader\MissingFieldAction.cs" />
-    <Compile Include="CsvReader\ParseErrorAction.cs" />
-    <Compile Include="CsvReader\Resources\ExceptionMessage.Designer.cs">
-      <DependentUpon>ExceptionMessage.resx</DependentUpon>
-    </Compile>
     <Compile Include="DontListPluginAttribute.cs" />
     <Compile Include="Events.cs" />
     <Compile Include="Check.cs" />
@@ -75,30 +70,18 @@
     <Compile Include="ClsMain\ClsMain - Config.cs" />
     <Compile Include="ClsMain\ClsMain - MySQL.cs" />
     <Compile Include="ClsMessage.cs" />
-    <Compile Include="ClsPluginBase\Old\ClsPluginBase - MySQL.cs" />
-    <Compile Include="ClsPluginBase\New\ClsPluginConItem.cs" />
-    <Compile Include="ClsPluginBase\New\ClsPluginMessage.cs" />
-    <Compile Include="Config\ClsConfig.cs" />
-    <Compile Include="Config\ClsConfigMySQL.cs" />
-    <Compile Include="Config\ClsConfigPlugin.cs" />
+    <Compile Include="ClsPluginBase\ClsPluginConItem.cs" />
+    <Compile Include="ClsPluginBase\ClsPluginMessage.cs" />
     <Compile Include="Interfaces\IConItemEntry.cs" />
     <Compile Include="Interfaces\IDatabase.cs" />
     <Compile Include="Interfaces\IConItem.cs" />
+    <Compile Include="Interfaces\IDatabaseConfig.cs" />
     <Compile Include="Interfaces\IEngine.cs" />
     <Compile Include="Interfaces\IEvents.cs" />
     <Compile Include="Interfaces\IEventsAttach.cs" />
     <Compile Include="Interfaces\IThreadPool.cs" />
     <Compile Include="ThreadAction.cs" />
-    <Compile Include="Todo\ClsMain - Events Client Connection.cs" />
-    <Compile Include="ClsMain\ClsMain - Events ConMessage.cs" />
-    <Compile Include="Todo\ClsMain - Events LevelShutdown.cs" />
-    <Compile Include="Todo\ClsMain - Events ClientCommand.cs" />
-    <Compile Include="ClsPluginBase\Old\ClsPluginBase - ConCommand.cs" />
-    <Compile Include="ClsPluginBase\Old\ClsPluginBase - Convar.cs" />
-    <Compile Include="ClsPluginBase\Old\ClsPluginBase - DialogMessage.cs" />
-    <Compile Include="ClsPluginBase\Old\ClsPluginBase - EVT ClientDisconnect.cs" />
-    <Compile Include="ClsPluginBase\Old\ClsPluginBase - EVT ClientPutInServer.cs" />
-    <Compile Include="ClsPluginBase\Old\ClsPluginBase - EVT ConMessage.cs" />
+    <Compile Include="ClsMain\ClsMain - IEventsAttach - ConMessage.cs" />
     <Compile Include="ClsRemote.cs" />
     <Compile Include="ClsThreadItem.cs" />
     <Compile Include="ClsThreadPool.cs" />
@@ -116,7 +99,6 @@
     <Compile Include="ClsMain\Base ConVars and ConCommands\ClsMain - clr_plugin_unload.cs" />
     <Compile Include="ClsMain\Base ConVars and ConCommands\ClsMain - clr_test.cs" />
     <Compile Include="ClsMain\ClsMain - Convar.cs" />
-    <Compile Include="ClsMain\ClsMain - Events.cs" />
     <Compile Include="ClsMain\ClsMain - Init.cs" />
     <Compile Include="ClsMain\ClsMain - Messages.cs" />
     <Compile Include="ClsMain\ClsMain - Players.cs" />
@@ -126,8 +108,6 @@
     <Compile Include="ClsMain\ClsMain - Shutdown.cs" />
     <Compile Include="ClsMain\ClsMain.cs" />
     <Compile Include="ClsPlayer.cs" />
-    <Compile Include="ClsPluginBase\Old\ClsPluginBase - EVT ClientCommand.cs" />
-    <Compile Include="ClsPluginBase\Old\ClsPluginBase - EVT LevelShutdown.cs" />
     <Compile Include="FCVAR.cs" />
     <Compile Include="DialogMessage.cs" />
     <Compile Include="Interfaces\IConVarValue.cs" />
@@ -136,8 +116,6 @@
     <Compile Include="InterThreadCallDelegate.cs" />
     <Compile Include="NativeMethods.cs" />
     <Compile Include="PluginDefinition.cs" />
-    <Compile Include="ClsPluginBase\Old\ClsPluginBase.cs" />
-    <Compile Include="ClsMain\ClsMain - ConCommands.cs" />
     <Compile Include="ConCommandDelegate.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
@@ -168,8 +146,5 @@
     <Content Include="Config.xml">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-  </ItemGroup>
-  <ItemGroup>
-    <EmbeddedResource Include="CsvReader\Resources\ExceptionMessage.resx" />
   </ItemGroup>
 </Project>

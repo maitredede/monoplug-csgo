@@ -30,7 +30,7 @@ namespace MonoPlug
                     }
                 }
 
-                InternalConCommand icmd = new InternalConCommand(name, help, flags, code, complete, async);
+                InternalConCommand icmd = new InternalConCommand(name, help, flags, code, complete, async, this._thPool);
 
                 //Try to create it in native
                 LockCookie cookie = this._lckConCommandBase.UpgradeToWriterLock(Timeout.Infinite);

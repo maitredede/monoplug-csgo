@@ -11,5 +11,6 @@ namespace MonoPlug
         event EventHandler<ConMessageEventArgs> ConsoleMessage;
         event EventHandler<ClientEventArgs> ClientPutInServer;
         event EventHandler<ClientEventArgs> ClientDisconnect;
+        event EventHandler<ServerActivateEventArgs> ServerActivate;
     }
 }

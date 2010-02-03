@@ -9,13 +9,13 @@ namespace MonoPlug
     {
         internal void Raise_ClientDisconnect(ClsPlayer player)
         {
-            this.Raise(Events.ClientDisconnect, new ClientEventArgs(player));
+            this.Raise(Events.ClientDisconnect, this, new ClientEventArgs(player));
         }
 
         event EventHandler<ClientEventArgs> IEvents.ClientDisconnect
         {
-            add { this.Attach(Events.ClientDisconnect, value, this._anchor.ClientPutInServer_Add); }
-            remove { this.Detach(Events.ClientDisconnect, value, this._anchor.ClientPutInServer_Remove); }
+            add { this.Attach(Events.ClientDisconnect, value, this._anchor.ClientDisconnect_Attach); }
+            remove { this.Detach(Events.ClientDisconnect, value, this._anchor.ClientDisconnect_Detach); }
         }
     }
 }
