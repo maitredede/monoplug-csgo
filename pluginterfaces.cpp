@@ -11,3 +11,4 @@ CGlobalVars *gpGlobals = NULL;
 ICvar *icvar = NULL;
 IServerPluginCallbacks* g_vsp_callbacks = NULL;
 IServerPluginHelpers* g_helpers = NULL;
+IServerGameClients* g_ServerClients = NULL;

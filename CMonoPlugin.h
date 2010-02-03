@@ -36,7 +36,22 @@ namespace MonoPlugin
 		void AddHooks();
 		void RemoveHooks();
 		static bool Less_uint64(const uint64 &, const uint64 & );
-		void Hook_ServerActivate(edict_t *pEdictList, int edictCount, int clientMax);
+	public:
+		void Hook_Attach_ServerActivate();
+		void Hook_Detach_ServerActivate();
+		void Hook_Raise_ServerActivate(edict_t *pEdictList, int edictCount, int clientMax);
+
+		void Hook_Attach_LevelShutdown();
+		void Hook_Detach_LevelShutdown();
+		void Hook_Raise_LevelShutdown();
+
+		void Hook_Attach_ClientDisconnect();
+		void Hook_Detach_ClientDisconnect();
+		void Hook_Raise_ClientDisconnect(edict_t *pEntity);
+
+		void Hook_Attach_ClientPutInServer();
+		void Hook_Detach_ClientPutInServer();
+		void Hook_Raise_ClientPutInServer(edict_t *pEntity, char const *playername);
 	public:
 		MonoAssembly* m_assembly;
 		MonoImage* m_image;
@@ -50,7 +65,11 @@ namespace MonoPlugin
 		MonoMethod* m_ClsMain_ConPrint;
 
 		MonoMethod* m_ClsMain_Raise_ConVarChange;
+		MonoMethod* m_ClsMain_Raise_ServerActivate;
 		MonoMethod* m_ClsMain_Raise_LevelShutdown;
+
+		MonoMethod* m_ClsMain_Raise_ClientDisconnect;
+		MonoMethod* m_ClsMain_Raise_ClientPutInServer;
 
 		MonoObject* m_main;
 		CMonoConsole* m_console;

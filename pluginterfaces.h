@@ -10,6 +10,7 @@
 extern IServerGameDLL *g_iserver;
 extern IVEngineServer *g_engine;
 extern IFileSystem *g_filesystem;
+extern IServerGameClients *g_ServerClients;
 
 //Mono
 extern MonoDomain *g_Domain;

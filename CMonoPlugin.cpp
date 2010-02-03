@@ -19,6 +19,7 @@ bool MonoPlugin::CMonoPlugin::Load(PluginId id, ISmmAPI *ismm, char *error, size
 	GET_V_IFACE_ANY(GetEngineFactory, g_engine, IVEngineServer, INTERFACEVERSION_VENGINESERVER);
 	GET_V_IFACE_ANY(GetEngineFactory, icvar, ICvar, CVAR_INTERFACE_VERSION);
 	GET_V_IFACE_CURRENT(GetEngineFactory, g_helpers, IServerPluginHelpers, INTERFACEVERSION_ISERVERPLUGINHELPERS);
+	GET_V_IFACE_ANY(GetServerFactory, g_ServerClients, IServerGameClients, INTERFACEVERSION_SERVERGAMECLIENTS);
 
 	gpGlobals = ismm->GetCGlobals();
 

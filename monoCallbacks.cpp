@@ -213,13 +213,46 @@ namespace MonoPlugin
 		}
 	};
 
-
-
 	void Mono_EventAttach_LevelShutdown()
 	{
+		g_MonoPlugin.Hook_Attach_LevelShutdown();
 	};
 
 	void Mono_EventDetach_LevelShutdown()
 	{
+		g_MonoPlugin.Hook_Detach_LevelShutdown();
 	};
+
+	//ServerActivate
+	void Mono_EventAttach_ServerActivate()
+	{
+		g_MonoPlugin.Hook_Attach_ServerActivate();
+	}
+
+	void Mono_EventDetach_ServerActivate()
+	{
+		g_MonoPlugin.Hook_Detach_ServerActivate();
+	}
+
+	//ClientDisconnect
+	void Mono_EventAttach_ClientDisconnect()
+	{
+		g_MonoPlugin.Hook_Attach_ClientDisconnect();
+	}
+
+	void Mono_EventDetach_ClientDisconnect()
+	{
+		g_MonoPlugin.Hook_Detach_ClientDisconnect();
+	}
+
+	//ClientPutInServer
+	void Mono_EventAttach_ClientPutInServer()
+	{
+		g_MonoPlugin.Hook_Attach_ClientPutInServer();
+	}
+
+	void Mono_EventDetach_ClientPutInServer()
+	{
+		g_MonoPlugin.Hook_Detach_ClientPutInServer();
+	}
 }

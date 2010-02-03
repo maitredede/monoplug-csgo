@@ -32,12 +32,24 @@ namespace MonoPlugin
 	bool Mono_Convar_GetBoolean(uint64 nativeID);
 	void Mono_Convar_SetBoolean(uint64 nativeID, bool value);
 
+	//Various
+	void Mono_ClientDialogMessage(int client, MonoString* title, MonoString* message, int a, int r, int g, int b, int level, int time);
+
 	//LevelShutdown
 	void Mono_EventAttach_LevelShutdown();
 	void Mono_EventDetach_LevelShutdown();
 
-	//Various
-	void Mono_ClientDialogMessage(int client, MonoString* title, MonoString* message, int a, int r, int g, int b, int level, int time);
+	//ServerActivate
+	void Mono_EventAttach_ServerActivate();
+	void Mono_EventDetach_ServerActivate();
+
+	//ClientDisconnect
+	void Mono_EventAttach_ClientDisconnect();
+	void Mono_EventDetach_ClientDisconnect();
+
+	//ClientDisconnect
+	void Mono_EventAttach_ClientPutInServer();
+	void Mono_EventDetach_ClientPutInServer();
 }
 
 #endif //_MONOCALLBACKS_H_

@@ -54,6 +54,25 @@ namespace MonoPlugin
 		mono_add_internal_call ("MonoPlug.NativeMethods::Mono_EventDetach_LevelShutdown", (const void*)Mono_EventDetach_LevelShutdown);
 		if(!CMonoHelpers::GetMethod(this->m_image, "MonoPlug.ClsMain:Raise_LevelShutdown()", this->m_ClsMain_Raise_LevelShutdown, error, maxlen)) return false;
 
+		//ServerActivate
+		mono_add_internal_call ("MonoPlug.NativeMethods::Mono_EventAttach_ServerActivate", (const void*)Mono_EventAttach_ServerActivate);
+		mono_add_internal_call ("MonoPlug.NativeMethods::Mono_EventDetach_ServerActivate", (const void*)Mono_EventDetach_ServerActivate);
+		if(!CMonoHelpers::GetMethod(this->m_image, "MonoPlug.ClsMain:Raise_ServerActivate(int)", this->m_ClsMain_Raise_ServerActivate, error, maxlen)) return false;
+
+
+
+		//ClientDisconnect
+		mono_add_internal_call ("MonoPlug.NativeMethods::Mono_EventAttach_ClientDisconnect", (const void*)Mono_EventAttach_ClientDisconnect);
+		mono_add_internal_call ("MonoPlug.NativeMethods::Mono_EventDetach_ClientDisconnect", (const void*)Mono_EventDetach_ClientDisconnect);
+		if(!CMonoHelpers::GetMethod(this->m_image, "MonoPlug.ClsMain:Raise_ClientDisconnect(MonoPlug.ClsPlayer)", this->m_ClsMain_Raise_ClientDisconnect, error, maxlen)) return false;
+		//ClientPutInServer
+		mono_add_internal_call ("MonoPlug.NativeMethods::Mono_EventAttach_ClientPutInServer", (const void*)Mono_EventAttach_ClientPutInServer);
+		mono_add_internal_call ("MonoPlug.NativeMethods::Mono_EventDetach_ClientPutInServer", (const void*)Mono_EventDetach_ClientPutInServer);
+		if(!CMonoHelpers::GetMethod(this->m_image, "MonoPlug.ClsMain:Raise_ClientPutInServer(MonoPlug.ClsPlayer)", this->m_ClsMain_Raise_ClientPutInServer, error, maxlen)) return false;
+
+
+
+
 		//Various
 		mono_add_internal_call ("MonoPlug.NativeMethods::Mono_ClientDialogMessage", (const void*)Mono_ClientDialogMessage);
 
