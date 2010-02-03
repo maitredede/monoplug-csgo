@@ -55,7 +55,7 @@
     <Compile Include="ClsPluginBase\New\ClsPluginEvents.cs" />
     <Compile Include="ConCommandBase\InternalConbase.cs" />
     <Compile Include="ConCommandBase\InternalConCommand.cs" />
-    <Compile Include="ConCommandBase\InternalConvar.cs" />
+    <Compile Include="ConCommandBase\InternalConvars.cs" />
     <Compile Include="CsvReader\CsvReader.cs" />
     <Compile Include="CsvReader\CsvReader.DataReaderValidations.cs" />
     <Compile Include="CsvReader\CsvReader.RecordEnumerator.cs" />
