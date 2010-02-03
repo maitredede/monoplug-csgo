@@ -1,0 +1,27 @@
+=============================================================
+      TeamSpeak 3 - Software Development Kit Changelog
+             Copyright TeamSpeak Systems GmbH
+                 http://www.teamspeak.com
+=============================================================
+           + Added feature or noticable improvement
+           - Bug fix or something removed
+           * Changed or Information
+           ! Important - Take note!
+=============================================================
+
+=== SDK Release 3.0.0-beta3 27 Jan 2010
+! The beta3 sdk server requires beta3 sdk clients, you cannot connect to a new
+  beta3 sdk server with an older sdk client.
+! Switched channelIDs, logIDs, serverIDs, serverConnectionHandlerIDs, banIDs,
+  offlineMessageIDs from anyID to uint64
+* changed parameters of onTextMessageEvent
++ added new onServerProtocolEvent callback that triggers uppon connect telling
+  you which protocol version the server is running
+- numerous bugfixes and performance improvements
+
+=== SDK Release 3.0.0-beta2 20 Dec 2009
+* CLIENT_OUTPUT_MUTED will now mute both speakers and microphone, if really
+  want to mute the headphones only, use the new CLIENT_OUTPUTONLY_MUTED flag
+
+=== SDK Release 3.0.0-beta1 19 Dec 2009
+* Initial beta release
