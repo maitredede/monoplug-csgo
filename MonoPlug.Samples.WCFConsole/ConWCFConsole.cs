@@ -44,12 +44,12 @@ namespace MonoPlug
         /// </summary>
         protected override void Load()
         {
-            this._wcfconsole_port = this.ConItem.RegisterConvar("wcfconsole_port", "WCF Console listen port", FCVAR.FCVAR_NONE, "28001");
+            this._wcfconsole_port = this.ConItems.RegisterConvar("wcfconsole_port", "WCF Console listen port", FCVAR.FCVAR_NONE, "28001");
             this._wcfconsole_port.ValueChanged += this._wcfconsole_port_ValueChanged;
 #if DEBUG
             this.Message.DevMsg("WCFConsole: Console Attaching\n");
 #endif
-            this.ConMessage += this.ConWCFConsole_ConMessage;
+            this.Events.ConsoleMessage += this.ConWCFConsole_ConMessage;
 
 #if DEBUG
             this.Message.DevMsg("WCFConsole: Console Attached\n");
@@ -108,9 +108,9 @@ namespace MonoPlug
         /// </summary>
         protected override void Unload()
         {
-            this.ConMessage -= this.ConWCFConsole_ConMessage;
+            this.Events.ConsoleMessage -= this.ConWCFConsole_ConMessage;
 
-            this.ConItem.UnregisterConvar(this._wcfconsole_port);
+            this.ConItems.UnregisterConvar(this._wcfconsole_port);
 
             if (this._host != null)
             {

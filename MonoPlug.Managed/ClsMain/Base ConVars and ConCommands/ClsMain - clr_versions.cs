@@ -33,17 +33,25 @@ namespace MonoPlug
         {
             try
             {
-                object[] arr = type.Assembly.GetCustomAttributes(typeof(AssemblyVersionAttribute), true);
-                if (arr != null && arr.Length > 0)
+                AssemblyName asmName = type.Assembly.GetName();
+                if (asmName != null)
                 {
-                    foreach (AssemblyVersionAttribute att in arr)
-                    {
-                        this._msg.Msg(format, att.Version);
-                    }
+                    this._msg.Msg(format, asmName.Version.ToString(4));
                 }
                 else
                 {
-                    this._msg.Msg(format, "no version");
+                    object[] arr = type.Assembly.GetCustomAttributes(typeof(AssemblyVersionAttribute), true);
+                    if (arr != null && arr.Length > 0)
+                    {
+                        foreach (AssemblyVersionAttribute att in arr)
+                        {
+                            this._msg.Msg(format, att.Version);
+                        }
+                    }
+                    else
+                    {
+                        this._msg.Msg(format, "no version");
+                    }
                 }
             }
             catch (Exception ex)
