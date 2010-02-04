@@ -36,7 +36,7 @@
   </PropertyGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>
-    <Compile Include="ClsConvarValue.cs" />
+    <Compile Include="ClsMainConvarValue.cs" />
     <Compile Include="ClsMain\ClsMain - IEventsAttach - LevelShutdown.cs" />
     <Compile Include="ClsMain\ClsMain - IEventsAttach - ServerActivate.cs" />
     <Compile Include="ClsMain\ClsMain - IEventsAttach - ClientDisconnect.cs" />
@@ -69,7 +69,7 @@
     <Compile Include="ClsMain\ClsMain - AllPluginsLoaded.cs" />
     <Compile Include="ClsMain\ClsMain - Config.cs" />
     <Compile Include="ClsMain\ClsMain - MySQL.cs" />
-    <Compile Include="ClsMessage.cs" />
+    <Compile Include="ClsMainMessage.cs" />
     <Compile Include="ClsPluginBase\ClsPluginConItem.cs" />
     <Compile Include="ClsPluginBase\ClsPluginMessage.cs" />
     <Compile Include="Interfaces\IConItemEntry.cs" />
@@ -82,7 +82,7 @@
     <Compile Include="Interfaces\IThreadPool.cs" />
     <Compile Include="ThreadAction.cs" />
     <Compile Include="ClsMain\ClsMain - IEventsAttach - ConMessage.cs" />
-    <Compile Include="ClsRemote.cs" />
+    <Compile Include="ClsProxy.cs" />
     <Compile Include="ClsThreadItem.cs" />
     <Compile Include="ClsThreadPool.cs" />
     <Compile Include="ConCommandBase\ClsConVar.cs" />

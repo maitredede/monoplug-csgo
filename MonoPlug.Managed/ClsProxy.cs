@@ -7,7 +7,7 @@ using System.IO;
 
 namespace MonoPlug
 {
-    internal sealed class ClsRemote : MarshalByRefObject
+    internal sealed class ClsProxy : MarshalByRefObject
     {
         private readonly AppDomain _current;
 
@@ -16,7 +16,7 @@ namespace MonoPlug
         /// </summary>
         public string AppDomainName { get { return this._current.FriendlyName; } }
 
-        public ClsRemote()
+        public ClsProxy()
         {
             this._current = AppDomain.CurrentDomain;
         }

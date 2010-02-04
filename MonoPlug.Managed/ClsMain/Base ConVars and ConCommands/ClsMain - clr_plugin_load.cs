@@ -121,7 +121,7 @@ namespace MonoPlug
                     plugin = null;
                     try
                     {
-                        ClsRemote remoteProxy;
+                        ClsProxy remoteProxy;
                         dom = this.CreateAppDomain(def.Name, out remoteProxy);
                         plugin = remoteProxy.CreatePluginClass(this._msg, this._assemblyPath, def);
                         //IMessage pluginMessage = remoteProxy.CreatePluginMessage(plugin, this._msg);

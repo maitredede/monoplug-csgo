@@ -33,14 +33,14 @@ namespace MonoPlug
         protected abstract void Unload();
         #endregion
 
-        private ClsRemote _proxy;
+        private ClsProxy _proxy;
         private ClsPluginMessage _msg;
         private ClsPluginEvents _events;
         private ClsPluginConItem _entry;
         private ClsPluginThreadPool _pool;
         private ClsPluginDatabase _db;
 
-        internal void Init(ClsRemote proxy, IMessage msg, IEventsAttach anchor, IConItemEntry entry, IThreadPool pool, IDatabaseConfig db)
+        internal void Init(ClsProxy proxy, IMessage msg, IEventsAttach anchor, IConItemEntry entry, IThreadPool pool, IDatabaseConfig db)
         {
             Check.NonNull("proxy", proxy);
             Check.NonNull("msg", msg);
@@ -63,7 +63,7 @@ namespace MonoPlug
         public IConItem ConItems { get { return this._entry; } }
         public IThreadPool ThreadPool { get { return this._pool; } }
         public IDatabase Database { get { return this._db; } }
-        internal ClsRemote Proxy { get { return this._proxy; } }
+        internal ClsProxy Proxy { get { return this._proxy; } }
         internal ClsPluginEvents PluginEvents { get { return this._events; } }
 
         internal void Uninit()

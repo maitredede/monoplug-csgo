@@ -5,11 +5,11 @@ using System.Text;
 
 namespace MonoPlug
 {
-    internal sealed class ClsMessage : MarshalByRefObject, IMessage
+    internal sealed class ClsMainMessage : MarshalByRefObject, IMessage
     {
         private readonly ClsMain _main;
 
-        internal ClsMessage(ClsMain main)
+        internal ClsMainMessage(ClsMain main)
         {
             this._main = main;
         }

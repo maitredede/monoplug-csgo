@@ -5,11 +5,11 @@ using System.Text;
 
 namespace MonoPlug
 {
-    internal sealed class ClsConvarValue : MarshalByRefObject, IConVarValue
+    internal sealed class ClsMainConvarValue : MarshalByRefObject, IConVarValue
     {
         private readonly ClsMain _main;
 
-        public ClsConvarValue(ClsMain main)
+        public ClsMainConvarValue(ClsMain main)
         {
             this._main = main;
         }

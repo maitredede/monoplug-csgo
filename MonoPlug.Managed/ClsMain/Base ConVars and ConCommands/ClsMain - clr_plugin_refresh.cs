@@ -22,7 +22,7 @@ namespace MonoPlug
             try
             {
                 //Create another domain to gather plugin data
-                ClsRemote proxy;
+                ClsProxy proxy;
                 dom = this.CreateAppDomain("MonoPlug_ScanPlugins", out proxy);
                 this._pluginCache = proxy.GetPluginsFromDirectory(this._msg, this._assemblyPath);
                 ok = true;

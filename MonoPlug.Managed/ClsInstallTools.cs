@@ -147,15 +147,13 @@ namespace MonoPlug
 
                     using (MySqlConnection con = this.Database.GetConnection())
                     {
-                        //using (MySqlTransaction tx = con.BeginTransaction())
+                        using (MySqlCommand com = con.CreateCommand())
                         {
-                            using (MySqlCommand com = con.CreateCommand())
-                            {
-                                //com.Transaction = tx;
+                            //com.Transaction = tx;
 
-                                com.CommandText = "DROP TABLE IF EXISTS `geoipcountry`";
-                                com.ExecuteNonQuery();
-                                com.CommandText = @"CREATE TABLE `geoipcountry` (
+                            com.CommandText = "DROP TABLE IF EXISTS `geoipcountry`";
+                            com.ExecuteNonQuery();
+                            com.CommandText = @"CREATE TABLE `geoipcountry` (
   `begin_ip` varchar(15) NOT NULL,
   `end_ip` varchar(15) NOT NULL,
   `begin_num` bigint(20) NOT NULL,
@@ -163,111 +161,79 @@ namespace MonoPlug
   `country` varchar(4) NOT NULL,
   `name` varchar(100) NOT NULL
 ) ENGINE=INNODB DEFAULT CHARSET=utf8";
-                                com.ExecuteNonQuery();
-                                using (MemoryStream ms = new MemoryStream())
+                            com.ExecuteNonQuery();
+                            using (MemoryStream ms = new MemoryStream())
+                            {
+                                using (Stream webstream = response.GetResponseStream())
                                 {
-                                    using (Stream webstream = response.GetResponseStream())
+                                    int read;
+                                    byte[] buffer = new byte[10240];
+                                    while ((read = webstream.Read(buffer, 0, buffer.Length)) > 0)
                                     {
-                                        int read;
-                                        byte[] buffer = new byte[10240];
-                                        while ((read = webstream.Read(buffer, 0, buffer.Length)) > 0)
+                                        ms.Write(buffer, 0, read);
+
+                                        if (length > 0)
                                         {
-                                            ms.Write(buffer, 0, read);
-
-                                            if (length > 0)
-                                            {
-                                                this.Message.DevMsg("Downloading : {0} / {1} ({2:F}%)\n", ms.Length, length, (double)ms.Length / (double)length * (double)100);
-                                            }
-                                            else
-                                            {
-                                                this.Message.DevMsg("Downloading : {0}\n", ms.Length);
-                                            }
-                                        }
-                                    }
-
-                                    ms.Seek(0, SeekOrigin.Begin);
-
-                                    this.Message.DevMsg("Opening zip file...\n");
-                                    using (ZipInputStream zis = new ZipInputStream(ms))
-                                    {
-                                        this.Message.DevMsg("Getting file entry... CanDecompressEntry={0}\n", zis.CanDecompressEntry);
-                                        ZipEntry entry = zis.GetNextEntry();
-                                        if (entry != null)
-                                        {
-                                            //                                            using (StreamReader sr = new StreamReader(zis))
-                                            //                                            {
-                                            //                                                com.CommandText = @"INSERT INTO geoipcountry (`begin_ip`, `end_ip`, `begin_num`, `end_num`, `country`, `name`)
-                                            //                                                    VALUES (@bi, @ei, @bn, @en, @c, @n)";
-                                            //                                                MySqlParameter[] p = new MySqlParameter[6];
-                                            //                                                p[0] = com.Parameters.Add("@bi", MySqlDbType.VarChar);
-                                            //                                                p[1] = com.Parameters.Add("@ei", MySqlDbType.VarChar);
-                                            //                                                p[2] = com.Parameters.Add("@bn", MySqlDbType.Int64);
-                                            //                                                p[3] = com.Parameters.Add("@en", MySqlDbType.Int64);
-                                            //                                                p[4] = com.Parameters.Add("@c", MySqlDbType.VarChar);
-                                            //                                                p[5] = com.Parameters.Add("@n", MySqlDbType.VarChar);
-                                            //                                                com.Prepare();
-
-                                            //                                                this.Message.DevMsg("Adding lines\n");
-
-                                            //                                                using (CsvReader csv = new CsvReader(sr, false))
-                                            //                                                {
-                                            //                                                    int count = 0;
-                                            //                                                    while (csv.ReadNextRecord())
-                                            //                                                    {
-                                            //                                                        for (int i = 0; i < p.Length; i++)
-                                            //                                                        {
-                                            //                                                            p[i].Value = csv[i];
-                                            //                                                        }
-                                            //                                                        count += com.ExecuteNonQuery();
-                                            //                                                    }
-                                            //                                                    this.Message.Msg("Lines added : {0}\n", count);
-                                            //                                                }
-                                            //                                            }
-
-                                            string tmp = Path.GetTempFileName();
-                                            using (FileStream fs = File.Open(tmp, FileMode.OpenOrCreate, FileAccess.ReadWrite, FileShare.None))
-                                            {
-                                                int read;
-                                                byte[] buffer = new byte[10240];
-                                                while ((read = zis.Read(buffer, 0, buffer.Length)) > 0)
-                                                {
-                                                    fs.Write(buffer, 0, read);
-                                                }
-                                                fs.Flush();
-                                            }
-
-                                            MySqlBulkLoader loader = new MySqlBulkLoader(con);
-                                            loader.ConflictOption = MySqlBulkLoaderConflictOption.None;
-                                            loader.FieldQuotationCharacter = '"';
-                                            loader.FieldTerminator = ",";
-                                            loader.FileName = tmp;
-                                            loader.LineTerminator = "\n";
-                                            loader.NumberOfLinesToSkip = 0;
-                                            loader.TableName = "geoipcountry";
-                                            int count = loader.Load();
-                                            this.Message.Msg("Lines added : {0}\n", count);
-
-                                            com.Parameters.Clear();
-
-                                            com.CommandText = "CREATE INDEX `IDX_geoipcountry_begin_num` ON `geoipcountry` (`begin_num`)";
-                                            com.ExecuteNonQuery();
-                                            com.CommandText = "CREATE INDEX `IDX_geoipcountry_end_num` ON `geoipcountry` (`end_num`)";
-                                            com.ExecuteNonQuery();
-
-                                            com.CommandText = "CREATE INDEX `IDX_geoipcountry_begin_ip` ON `geoipcountry` (`begin_ip`)";
-                                            com.ExecuteNonQuery();
-                                            com.CommandText = "CREATE INDEX `IDX_geoipcountry_end_ip` ON `geoipcountry` (`end_ip`)";
-                                            com.ExecuteNonQuery();
+                                            this.Message.DevMsg("Downloading : {0} / {1} ({2:F}%)\n", ms.Length, length, (double)ms.Length / (double)length * (double)100);
                                         }
                                         else
                                         {
-                                            this.Message.Warning("No file to decompress\n");
+                                            this.Message.DevMsg("Downloading : {0}\n", ms.Length);
                                         }
                                     }
                                 }
+
+                                ms.Seek(0, SeekOrigin.Begin);
+
+                                this.Message.DevMsg("Opening zip file...\n");
+                                using (ZipInputStream zis = new ZipInputStream(ms))
+                                {
+                                    this.Message.DevMsg("Getting file entry... CanDecompressEntry={0}\n", zis.CanDecompressEntry);
+                                    ZipEntry entry = zis.GetNextEntry();
+                                    if (entry != null)
+                                    {
+                                        string tmp = Path.GetTempFileName();
+                                        using (FileStream fs = File.Open(tmp, FileMode.OpenOrCreate, FileAccess.ReadWrite, FileShare.None))
+                                        {
+                                            int read;
+                                            byte[] buffer = new byte[10240];
+                                            while ((read = zis.Read(buffer, 0, buffer.Length)) > 0)
+                                            {
+                                                fs.Write(buffer, 0, read);
+                                            }
+                                            fs.Flush();
+                                        }
+
+                                        MySqlBulkLoader loader = new MySqlBulkLoader(con);
+                                        loader.ConflictOption = MySqlBulkLoaderConflictOption.None;
+                                        loader.FieldQuotationCharacter = '"';
+                                        loader.FieldTerminator = ",";
+                                        loader.FileName = tmp;
+                                        loader.LineTerminator = "\n";
+                                        loader.NumberOfLinesToSkip = 0;
+                                        loader.TableName = "geoipcountry";
+                                        int count = loader.Load();
+                                        this.Message.Msg("Lines added : {0}\n", count);
+
+                                        com.Parameters.Clear();
+
+                                        com.CommandText = "CREATE INDEX `IDX_geoipcountry_begin_num` ON `geoipcountry` (`begin_num`)";
+                                        com.ExecuteNonQuery();
+                                        com.CommandText = "CREATE INDEX `IDX_geoipcountry_end_num` ON `geoipcountry` (`end_num`)";
+                                        com.ExecuteNonQuery();
+
+                                        com.CommandText = "CREATE INDEX `IDX_geoipcountry_begin_ip` ON `geoipcountry` (`begin_ip`)";
+                                        com.ExecuteNonQuery();
+                                        com.CommandText = "CREATE INDEX `IDX_geoipcountry_end_ip` ON `geoipcountry` (`end_ip`)";
+                                        com.ExecuteNonQuery();
+                                    }
+                                    else
+                                    {
+                                        this.Message.Warning("No file to decompress\n");
+                                    }
+                                }
                             }
-                            //tx.Commit();
-                        } //using Tx
+                        }
                     }
                 }
                 else

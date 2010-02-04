@@ -8,18 +8,18 @@ namespace MonoPlug
 {
     partial class ClsMain
     {
-        private AppDomain CreateAppDomain(string name, out ClsRemote proxy)
+        private AppDomain CreateAppDomain(string name, out ClsProxy proxy)
         {
             return this.CreateAppDomain(name, out proxy, false);
         }
 
-        private AppDomain CreateAppDomain(string name, out ClsRemote proxy, bool shadow)
+        private AppDomain CreateAppDomain(string name, out ClsProxy proxy, bool shadow)
         {
             AppDomainSetup setup = new AppDomainSetup();
             setup.ApplicationBase = this._assemblyPath;
             setup.ShadowCopyFiles = shadow.ToString();
             AppDomain dom = AppDomain.CreateDomain(name, null, setup);
-            proxy = ClsRemote.CreateInDomain<ClsRemote>(dom, this._msg);
+            proxy = ClsProxy.CreateInDomain<ClsProxy>(dom, this._msg);
             return dom;
         }
     }

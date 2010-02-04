@@ -5,6 +5,9 @@ using System.Text;
 
 namespace MonoPlug
 {
+    /// <summary>
+    /// Arguments of event ServerActivate
+    /// </summary>
     public sealed class ServerActivateEventArgs : EventArgs
     {
         private readonly int _maxclients;
@@ -15,6 +18,9 @@ namespace MonoPlug
             this._maxclients = maxclients;
         }
 
+        /// <summary>
+        /// Max clients
+        /// </summary>
         public int MaxClients { get { return this._maxclients; } }
     }
 }
