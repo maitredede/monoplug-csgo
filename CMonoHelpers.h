@@ -13,6 +13,7 @@ namespace MonoPlugin
 		static bool GetImage(const char* file, MonoAssembly* assembly, MonoImage*& image, char *error, size_t maxlen);
 		static bool GetClass(MonoImage* assemblyImage, const char* classNamespace, const char* className, MonoClass*& classPtr, char* error, size_t maxlen);
 		static bool GetMethod(MonoImage* assemblyImage, const char* methodSig, MonoMethod*& methodptr, char *error, size_t maxlen);
+		static bool GetField(MonoClass* classPtr, MonoClassField*& fieldPtr, const char* fieldName, char *error, size_t maxlen);
 
 		static MonoString* GetString(MonoDomain* domain, const char* str);
 		static MonoObject* CallMethod(void* target, MonoMethod* methodHandle, void** args = NULL);

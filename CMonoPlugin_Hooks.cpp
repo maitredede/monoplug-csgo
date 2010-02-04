@@ -66,8 +66,16 @@ namespace MonoPlugin
 
 	void CMonoPlugin::Hook_Raise_ClientDisconnect(edict_t *pEntity)
 	{
-		//TODO
-		META_CONPRINT("TODO : CMonoPlugin::Hook_Raise_ClientDisconnect\n");
+		if(!pEntity || pEntity->IsFree())
+		{
+			return;
+		}
+
+		MonoObject* player = this->GetPlayer(pEntity);
+
+		void* args[1];
+		args[0] = player;
+		CMonoHelpers::CallMethod(this->m_main, this->m_ClsMain_Raise_ClientDisconnect, args);
 	}
 
 	void CMonoPlugin::Hook_Attach_ClientPutInServer()
@@ -82,7 +90,15 @@ namespace MonoPlugin
 
 	void CMonoPlugin::Hook_Raise_ClientPutInServer(edict_t *pEntity, const char* playername)
 	{
-		//TODO
-		META_CONPRINT("TODO : CMonoPlugin::Hook_Raise_ClientPutInServer\n");
+		if(!pEntity || pEntity->IsFree())
+		{
+			return;
+		}
+
+		MonoObject* player = this->GetPlayer(pEntity);
+
+		void* args[1];
+		args[0] = player;
+		CMonoHelpers::CallMethod(this->m_main, this->m_ClsMain_Raise_ClientPutInServer, args);
 	}
 }

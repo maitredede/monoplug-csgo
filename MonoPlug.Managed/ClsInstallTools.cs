@@ -6,7 +6,6 @@ using MySql.Data.MySqlClient;
 using System.IO;
 using System.Net;
 using ICSharpCode.SharpZipLib.Zip;
-using LumenWorks.Framework.IO.Csv;
 using System.Threading;
 
 namespace MonoPlug
@@ -52,12 +51,6 @@ namespace MonoPlug
 #if DEBUG
             this.Message.DevMsg("{0}: ({1} : {2})\n", this.Name, "loading", "X");
 #endif
-            this.Events.ServerActivate += this.Events_ServerActivate;
-        }
-
-        private void Events_ServerActivate(object sender, ServerActivateEventArgs e)
-        {
-            this.ThreadPool.QueueUserWorkItem<string, string[]>(this.InstallGeoIP, string.Empty, null);
         }
 
         /// <summary>
@@ -65,8 +58,6 @@ namespace MonoPlug
         /// </summary>
         protected override void Unload()
         {
-            this.Events.ServerActivate -= this.Events_ServerActivate;
-
             this.ConItems.UnregisterConCommand(this._geoip_install);
             this.ConItems.UnregisterConCommand(this._test_mysql);
         }

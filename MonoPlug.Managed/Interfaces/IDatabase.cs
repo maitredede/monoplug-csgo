@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using MySql.Data.MySqlClient;
+using System.Net;
 
 namespace MonoPlug
 {
@@ -16,5 +17,12 @@ namespace MonoPlug
         /// </summary>
         /// <returns></returns>
         MySqlConnection GetConnection();
+
+        /// <summary>
+        /// Get a contry code based on ip address
+        /// </summary>
+        /// <param name="address">Address to lookup</param>
+        /// <returns>ISO Country code</returns>
+        string GeoIP_GetCountry(IPAddress address);
     }
 }

@@ -1,5 +1,6 @@
 #include "CMonoPlugin.h"
 #include "monoCallbacks.h"
+#include <inetchannelinfo.h>
 
 namespace MonoPlugin
 {
@@ -21,6 +22,16 @@ namespace MonoPlugin
 		if(!CMonoHelpers::GetMethod(this->m_image, "MonoPlug.ClsMain:Shutdown()", this->m_ClsMain_Shutdown, error, maxlen)) return false;
 		if(!CMonoHelpers::GetMethod(this->m_image, "MonoPlug.ClsMain:GameFrame()", this->m_ClsMain_GameFrame, error, maxlen)) return false;
 		if(!CMonoHelpers::GetMethod(this->m_image, "MonoPlug.ClsMain:AllPluginsLoaded()", this->m_ClsMain_AllPluginsLoaded, error, maxlen)) return false;
+
+		if(!CMonoHelpers::GetClass(this->m_image, "MonoPlug", "ClsPlayer", this->m_Class_ClsPlayer, error, maxlen)) return false;
+		if(!CMonoHelpers::GetField(this->m_Class_ClsPlayer, this->m_Field_ClsPlayer_id, "_id", error, maxlen)) return false;
+		if(!CMonoHelpers::GetField(this->m_Class_ClsPlayer, this->m_Field_ClsPlayer_name, "_name", error, maxlen)) return false;
+		if(!CMonoHelpers::GetField(this->m_Class_ClsPlayer, this->m_Field_ClsPlayer_frag, "_frag", error, maxlen)) return false;
+		if(!CMonoHelpers::GetField(this->m_Class_ClsPlayer, this->m_Field_ClsPlayer_death, "_death", error, maxlen)) return false;
+		if(!CMonoHelpers::GetField(this->m_Class_ClsPlayer, this->m_Field_ClsPlayer_ip, "_ip", error, maxlen)) return false;
+		if(!CMonoHelpers::GetField(this->m_Class_ClsPlayer, this->m_Field_ClsPlayer_language, "_language", error, maxlen)) return false;
+		if(!CMonoHelpers::GetField(this->m_Class_ClsPlayer, this->m_Field_ClsPlayer_avgLatency, "_avgLatency", error, maxlen)) return false;
+		if(!CMonoHelpers::GetField(this->m_Class_ClsPlayer, this->m_Field_ClsPlayer_timeConnected, "_timeConnected", error, maxlen)) return false;
 
 		//Add internal calls
 		mono_add_internal_call ("MonoPlug.NativeMethods::Mono_Msg", (const void*)Mono_Msg);
@@ -94,5 +105,42 @@ namespace MonoPlugin
 		{
 			return false;
 		}
+	}
+
+	MonoObject* CMonoPlugin::GetPlayer(edict_t* pEntity)
+	{
+		MonoObject* player = CMonoHelpers::ClassNew(g_Domain, this->m_Class_ClsPlayer);
+
+		//Fill player data
+		int playerId = g_engine->GetPlayerUserId(pEntity);
+
+		IPlayerInfo* pi = g_PlayerInfoManager->GetPlayerInfo(pEntity);
+		INetChannelInfo* net = g_engine->GetPlayerNetInfo(playerId);
+		float avgLatency = -1.0;
+		float timeConnected = -1.0;
+		MonoString* address;
+		if(net)
+		{
+			avgLatency = net->GetAvgLatency(MAX_FLOWS);
+			timeConnected = net->GetTimeConnected();
+			address = CMonoHelpers::GetString(g_Domain, net->GetAddress());
+		}
+		else
+		{
+			address = CMonoHelpers::GetString(g_Domain, NULL);
+		}
+		int pfrag = pi->GetFragCount();
+		int pdeath = pi->GetDeathCount();
+
+		mono_field_set_value(player, this->m_Field_ClsPlayer_id, &playerId);
+		mono_field_set_value(player, this->m_Field_ClsPlayer_name, CMonoHelpers::GetString(g_Domain, pi->GetName()));
+		mono_field_set_value(player, this->m_Field_ClsPlayer_frag, &pfrag);
+		mono_field_set_value(player, this->m_Field_ClsPlayer_death, &pdeath);
+		mono_field_set_value(player, this->m_Field_ClsPlayer_ip, address);
+		mono_field_set_value(player, this->m_Field_ClsPlayer_language, CMonoHelpers::GetString(g_Domain, g_engine->GetClientConVarValue(playerId, "cl_language")));
+		mono_field_set_value(player, this->m_Field_ClsPlayer_avgLatency, &avgLatency);
+		mono_field_set_value(player, this->m_Field_ClsPlayer_timeConnected, &timeConnected);
+
+		return player;
 	}
 }

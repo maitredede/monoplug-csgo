@@ -37,6 +37,8 @@ namespace MonoPlugin
 		void RemoveHooks();
 		static bool Less_uint64(const uint64 &, const uint64 & );
 	public:
+		MonoObject* GetPlayer(edict_t *pEntity);
+	public:
 		void Hook_Attach_ServerActivate();
 		void Hook_Detach_ServerActivate();
 		void Hook_Raise_ServerActivate(edict_t *pEdictList, int edictCount, int clientMax);
@@ -70,7 +72,17 @@ namespace MonoPlugin
 
 		MonoMethod* m_ClsMain_Raise_ClientDisconnect;
 		MonoMethod* m_ClsMain_Raise_ClientPutInServer;
-
+	public:
+		MonoClass* m_Class_ClsPlayer;
+		MonoClassField* m_Field_ClsPlayer_id;
+		MonoClassField* m_Field_ClsPlayer_name;
+		MonoClassField* m_Field_ClsPlayer_frag;
+		MonoClassField* m_Field_ClsPlayer_death;
+		MonoClassField* m_Field_ClsPlayer_ip;
+		MonoClassField* m_Field_ClsPlayer_language;
+		MonoClassField* m_Field_ClsPlayer_avgLatency;
+		MonoClassField* m_Field_ClsPlayer_timeConnected;
+	public:
 		MonoObject* m_main;
 		CMonoConsole* m_console;
 		uint64 m_nextConbaseId;

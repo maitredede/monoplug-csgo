@@ -19,6 +19,6 @@ extern CGlobalVars *gpGlobals;
 extern ICvar *icvar;
 extern IServerPluginHelpers *g_helpers;
 extern IServerPluginCallbacks *g_vsp_callbacks;
-
+extern IPlayerInfoManager *g_PlayerInfoManager;
 
 #endif //_GAMEINTERFACES_H_
