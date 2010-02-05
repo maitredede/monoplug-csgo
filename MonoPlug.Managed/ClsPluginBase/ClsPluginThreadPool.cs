@@ -10,6 +10,8 @@ namespace MonoPlug
         private readonly IThreadPool _pool;
         private readonly ClsPluginBase _owner;
 
+        internal ClsPluginBase Owner { get { return this._owner; } }
+
         internal ClsPluginThreadPool(ClsPluginBase owner, IThreadPool pool)
         {
 #if DEBUG

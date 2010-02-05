@@ -55,8 +55,9 @@ namespace MonoPlug
         protected override void Unload()
         {
             this.Engine.UnregisterConCommand(this._versions);
+            this.Engine.UnregisterConCommand(this._versions);
             this.Engine.UnregisterConCommand(this._geoip_install);
-            this.Engine.UnregisterConCommand(this._test_mysql);
+            this.Engine.UnregisterConCommand(this._test_all);
         }
 
         private void MySQL_Test(string line, string[] args)

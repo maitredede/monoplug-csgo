@@ -44,6 +44,7 @@ namespace MonoPlug
             ((IEngineWrapper)this).UnregisterConCommand(this._clr_plugin_refresh);
             ((IEngineWrapper)this).UnregisterConCommand(this._clr_plugin_load);
             ((IEngineWrapper)this).UnregisterConCommand(this._clr_plugin_unload);
+            ((IEngineWrapper)this).UnregisterConCommand(this._clr_reload_config);
         }
     }
 }

@@ -13,6 +13,8 @@ namespace MonoPlug
         private readonly ClsPluginBase _owner;
         private readonly IMessage _msg;
 
+        internal ClsPluginBase Owner { get { return this._owner; } }
+
         internal ClsPluginDatabase(ClsPluginBase owner, IDatabaseConfig db, IMessage msg)
         {
 #if DEBUG
