@@ -56,3 +56,4 @@ namespace MonoPlugin
 		CMonoHelpers::CallMethod(g_MonoPlugin.m_main, this->m_method, args);
 	}
 }
+

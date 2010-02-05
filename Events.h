@@ -74,4 +74,5 @@ namespace MonoPlugin
 	//MP_EVENT_DECL(player_say);
 }
 
-#endif _EVENTS_H_
+#endif //_EVENTS_H_
+

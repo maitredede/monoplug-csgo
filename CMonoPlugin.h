@@ -8,7 +8,7 @@
 #include "CMonoConsole.h"
 #include "CMonoCommand.h"
 #include "utlmap.h"
-#include "events.h"
+#include "Events.h"
 
 namespace MonoPlugin
 {
