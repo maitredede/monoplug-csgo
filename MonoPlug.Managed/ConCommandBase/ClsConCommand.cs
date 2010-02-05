@@ -64,5 +64,12 @@ namespace MonoPlug
 #endif
             this.Code(line, args);
         }
+
+#if DEBUG
+        public override string ToString()
+        {
+            return string.Format("ConCommand: {0} {1}", this.Name, this.Async ? "Async" : "Sync");
+        }
+#endif
     }
 }

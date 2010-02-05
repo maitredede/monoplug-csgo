@@ -8,7 +8,7 @@ namespace MonoPlug
 {
     partial class ClsMain
     {
-        InternalConCommand IConItemEntry.RegisterConCommand(string name, string help, FCVAR flags, ConCommandDelegate code, ConCommandCompleteDelegate complete, bool async)
+        InternalConCommand IEngineWrapper.RegisterConCommand(string name, string help, FCVAR flags, ConCommandDelegate code, ConCommandCompleteDelegate complete, bool async)
         {
 #if DEBUG
             Check.NonNull("code", code);
@@ -64,7 +64,7 @@ namespace MonoPlug
             return NativeMethods.Mono_RegisterConCommand(cmd.Name, cmd.Help, (int)cmd.Flags, cmd.Execute, cmd.Complete);
         }
 
-        void IConItemEntry.UnregisterConCommand(InternalConCommand command)
+        void IEngineWrapper.UnregisterConCommand(InternalConCommand command)
         {
 #if DEBUG
             Check.NonNull("command", command);

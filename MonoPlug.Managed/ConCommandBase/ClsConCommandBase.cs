@@ -7,7 +7,7 @@ namespace MonoPlug
     /// <summary>
     /// Base class for Convars and ConCommands
     /// </summary>
-    public abstract class ClsConCommandBase : MarshalByRefObject
+    public abstract class ClsConCommandBase : ObjectBase
     {
         ////private readonly ConCommandBaseData _data;
         //private readonly IMessage _msg;

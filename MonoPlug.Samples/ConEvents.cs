@@ -20,12 +20,15 @@ namespace MonoPlug
         {
             try
             {
-                //this.ClientCommand += this.ClientCommand_Sample;
-                this.Events.LevelShutdown += this.Events_LevelShutdown;
-                this.Events.ConsoleMessage += this.Events_ConMessage;
-
-                this.Events.ClientPutInServer += this.Events_ClientPutInServer;
                 this.Events.ClientDisconnect += this.Events_ClientDisconnect;
+                this.Events.ClientPutInServer += this.Events_ClientPutInServer;
+                this.Events.ConsoleMessage += this.Events_ConMessage;
+                this.Events.LevelShutdown += this.Events_LevelShutdown;
+                this.Events.PlayerConnect += this.Events_PlayerConnect;
+                this.Events.PlayerDisconnect += this.Events_PlayerDisconnect;
+                this.Events.ServerActivate += this.Events_ServerActivate;
+                this.Events.ServerShutdown += this.Events_ServerShutdown;
+                this.Events.ServerSpawn += this.Events_ServerSpawn;
             }
             catch (Exception ex)
             {
@@ -38,20 +41,6 @@ namespace MonoPlug
         /// </summary>
         protected override void Unload()
         {
-            try
-            {
-                this.Message.Msg("ConEvents::Unload : A\n");
-                this.Events.LevelShutdown -= this.Events_LevelShutdown;
-                //this.ClientCommand -= this.ClientCommand_Sample;
-                this.Events.ConsoleMessage -= this.Events_ConMessage;
-                this.Events.ClientPutInServer -= this.Events_ClientPutInServer;
-                this.Events.ClientDisconnect -= this.Events_ClientDisconnect;
-                this.Message.Msg("ConEvents::Unload : A\n");
-            }
-            catch (Exception ex)
-            {
-                this.Message.Warning(ex);
-            }
         }
 
         /// <summary>
@@ -75,33 +64,60 @@ namespace MonoPlug
             this.Message.Msg("ConEvents: LevelShutdown\n");
         }
 
-        private void Events_ClientCommand(object sender, ClientCommandEventArgs e)
-        {
-            string name;
-            if (e.Client == null)
-            {
-                name = "<null>";
-            }
-            else
-            {
-                name = e.Client.Name ?? "<player name is null>";
-            }
-            this.Message.Msg("ConEvents: ClientCommand from {0} {1}\n", name);
-        }
-
         private void Events_ClientDisconnect(object sender, ClientEventArgs e)
         {
-            this.Message.Msg("Client disconnect : {0}\n", e.Client);
+            this.Message.Msg("ConEvents::Events_ClientDisconnect : {0}\n", e.Client);
         }
 
         private void Events_ClientPutInServer(object sender, ClientEventArgs e)
         {
-            this.Message.Msg("Client Put in server : {0}\n", e.Client);
+            try
+            {
+                this.Message.Msg("ConEvents::Events_ClientPutInServer : {0}\n", e.Client.Dump());
+            }
+            catch (Exception ex)
+            {
+                this.Message.Warning(ex);
+            }
+        }
+
+        private void Events_PlayerConnect(object sender, ClientEventArgs e)
+        {
+            string client;
+            if (e.Client == null)
+            {
+                client = "<null>";
+            }
+            else
+            {
+                client = e.Client.Dump();
+            }
+            this.Message.Msg("ConEvents::Events_PlayerConnect : {0}\n", client);
         }
 
         private void Events_ConMessage(object sender, ConMessageEventArgs e)
         {
             //don't msg here, potential loopback
+        }
+
+        private void Events_ServerShutdown(object sender, ReasonEventArgs e)
+        {
+            this.Message.Msg("ConEvents::Events_ServerShutdown : {0}\n", e.Reason);
+        }
+
+        private void Events_ServerActivate(object sender, ServerActivateEventArgs e)
+        {
+            this.Message.Msg("ConEvents::Events_ServerActivate : maxclients={0}\n", e.MaxClients);
+        }
+
+        private void Events_PlayerDisconnect(object sender, PlayerDisconnectEventArgs e)
+        {
+            this.Message.Msg("ConEvents::Events_PlayerDisconnect : {0} reason={1}\n", e.Client, e.Reason);
+        }
+
+        private void Events_ServerSpawn(object sender, ServerSpawnEventArgs e)
+        {
+            this.Message.Msg("ConEvents::Events_ServerSpawn : {0}\n", e.GetFullString());
         }
     }
 }

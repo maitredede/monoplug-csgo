@@ -5,7 +5,7 @@ using System.Text;
 
 namespace MonoPlug
 {
-    internal sealed class ClsPluginMessage : MarshalByRefObject, IMessage
+    internal sealed class ClsPluginMessage : ObjectBase, IMessage
     {
         private readonly IMessage _msg;
         private readonly ClsPluginBase _plugin;

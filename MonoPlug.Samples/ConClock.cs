@@ -31,9 +31,9 @@ namespace MonoPlug
         protected override void Load()
         {
             //this.DevMsg("ConClock:{0}\n", "A");
-            this._theTime = this.ConItems.RegisterConvar("clr_sample_thetime", "Sample convar containing the time", FCVAR.FCVAR_SPONLY | FCVAR.FCVAR_PRINTABLEONLY, DateTime.MinValue.ToLongTimeString());
+            this._theTime = this.Engine.RegisterConvar("clr_sample_thetime", "Sample convar containing the time", FCVAR.FCVAR_SPONLY | FCVAR.FCVAR_PRINTABLEONLY, DateTime.MinValue.ToLongTimeString());
             //this.DevMsg("ConClock:{0}\n", "B");
-            this._enabled = this.ConItems.RegisterConvar("clr_sample_thetime_enabled", "Enable or disable the ConClock plugin", FCVAR.FCVAR_NONE, "0");
+            this._enabled = this.Engine.RegisterConvar("clr_sample_thetime_enabled", "Enable or disable the ConClock plugin", FCVAR.FCVAR_NONE, "0");
             //this.DevMsg("ConClock:{0}\n", "C");
             this._enabled.ValueChanged += this._enabled_ValueChanged;
             //this.DevMsg("ConClock:{0}\n", "D");
@@ -87,9 +87,9 @@ namespace MonoPlug
             this._enabled.ValueChanged -= this._enabled_ValueChanged;
             this._theTime.ValueChanged -= this._theTime_ValueChanged;
 
-            this.ConItems.UnregisterConvar(this._enabled);
+            this.Engine.UnregisterConvar(this._enabled);
             this._enabled = null;
-            this.ConItems.UnregisterConvar(this._theTime);
+            this.Engine.UnregisterConvar(this._theTime);
             this._theTime = null;
         }
 

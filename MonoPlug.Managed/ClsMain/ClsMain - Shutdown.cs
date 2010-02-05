@@ -36,15 +36,14 @@ namespace MonoPlug
             }
 
             //Remove internals
-            ((IConItemEntry)this).UnregisterConCommand(this._clr_versions);
-            ((IConItemEntry)this).UnregisterConvar(this._clr_plugin_directory);
+            ((IEngineWrapper)this).UnregisterConvar(this._clr_plugin_directory);
 #if DEBUG
-            ((IConItemEntry)this).UnregisterConCommand(this._clr_test);
+            ((IEngineWrapper)this).UnregisterConCommand(this._clr_test);
 #endif
-            ((IConItemEntry)this).UnregisterConCommand(this._clr_plugin_list);
-            ((IConItemEntry)this).UnregisterConCommand(this._clr_plugin_refresh);
-            ((IConItemEntry)this).UnregisterConCommand(this._clr_plugin_load);
-            ((IConItemEntry)this).UnregisterConCommand(this._clr_plugin_unload);
+            ((IEngineWrapper)this).UnregisterConCommand(this._clr_plugin_list);
+            ((IEngineWrapper)this).UnregisterConCommand(this._clr_plugin_refresh);
+            ((IEngineWrapper)this).UnregisterConCommand(this._clr_plugin_load);
+            ((IEngineWrapper)this).UnregisterConCommand(this._clr_plugin_unload);
         }
     }
 }

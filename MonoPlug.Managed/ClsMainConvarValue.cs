@@ -5,7 +5,7 @@ using System.Text;
 
 namespace MonoPlug
 {
-    internal sealed class ClsMainConvarValue : MarshalByRefObject, IConVarValue
+    internal sealed class ClsMainConvarValue : ObjectBase, IConVarValue
     {
         private readonly ClsMain _main;
 

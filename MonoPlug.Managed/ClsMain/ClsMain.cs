@@ -12,7 +12,7 @@ namespace MonoPlug
     /// <summary>
     /// Main class that handle everything
     /// </summary>
-    internal sealed partial class ClsMain : MarshalByRefObject
+    internal sealed partial class ClsMain : ObjectBase
     {
         #region Private fields
         /// <summary>
@@ -47,7 +47,6 @@ namespace MonoPlug
 
         //Internal commands and vars
         private InternalConvar _clr_plugin_directory = null;
-        private InternalConCommand _clr_versions = null;
         private InternalConCommand _clr_plugin_list = null;
         private InternalConCommand _clr_plugin_refresh = null;
         private InternalConCommand _clr_plugin_load = null;
@@ -84,24 +83,32 @@ namespace MonoPlug
 
         Assembly CurrentDomain_AssemblyResolve(object sender, ResolveEventArgs args)
         {
+#if DEBUG
             NativeMethods.Mono_Msg("CurrentDomain_AssemblyResolve: " + args.Name + "\n");
+#endif
             AssemblyName an = new AssemblyName(args.Name);
             string codebase = this.GetType().Assembly.Location;
             string asm = this.GetType().Assembly.GetName(false).Name;
             int pos = codebase.LastIndexOf(asm);
             string newCB = codebase.Remove(pos, asm.Length).Insert(pos, an.Name);
+#if DEBUG
             NativeMethods.Mono_Msg("CurrentDomain_AssemblyResolve: CodeBase=" + newCB + "\n");
             try
             {
-                Assembly assembly = Assembly.LoadFrom(newCB);
+#endif
+            Assembly assembly = Assembly.LoadFrom(newCB);
+#if DEBUG
                 NativeMethods.Mono_Msg("CurrentDomain_AssemblyResolve: Location=" + assembly.Location + "\n");
-                return assembly;
+#endif
+            return assembly;
+#if DEBUG
             }
             catch (Exception ex)
             {
                 NativeMethods.Mono_Warning("CurrentDomain_AssemblyResolve: Exception=" + ex.Message + "\n");
             }
             return null;
+#endif
         }
     }
 }

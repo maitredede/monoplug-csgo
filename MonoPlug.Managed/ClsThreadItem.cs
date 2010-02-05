@@ -6,7 +6,7 @@ using System.Threading;
 
 namespace MonoPlug
 {
-    internal sealed class ClsThreadItem<TRet, TParam> : MarshalByRefObject, IExecute
+    internal sealed class ClsThreadItem<TRet, TParam> : ObjectBase, IExecute
     {
         private readonly ManualResetEvent _latch = new ManualResetEvent(false);
         private readonly InterThreadCallDelegate<TRet, TParam> _code;

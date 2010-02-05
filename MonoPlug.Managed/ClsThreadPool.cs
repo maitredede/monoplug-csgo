@@ -6,7 +6,7 @@ using System.Threading;
 
 namespace MonoPlug
 {
-    internal sealed class ClsThreadPool : MarshalByRefObject, IThreadPool
+    internal sealed class ClsThreadPool : ObjectBase, IThreadPool
     {
         internal sealed class ThreadPoolItem
         {

@@ -14,7 +14,9 @@ namespace MonoPlug
     using System.ComponentModel;
     using System.Collections.Generic;
 
-
+    /// <summary>
+    /// Type for config file
+    /// </summary>
     [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "2.0.50727.4927")]
     [System.Diagnostics.DebuggerStepThroughAttribute()]
     [System.Xml.Serialization.XmlRootAttribute("config", Namespace = "", IsNullable = false)]
@@ -35,7 +37,9 @@ namespace MonoPlug
             this.pluginField = new List<TPlugin>();
             this.mysqlField = new TMySQL();
         }
-
+        /// <summary>
+        /// mysql
+        /// </summary>
         public TMySQL mysql
         {
             get
@@ -48,6 +52,9 @@ namespace MonoPlug
             }
         }
 
+        /// <summary>
+        /// plugin
+        /// </summary>
         [System.Xml.Serialization.XmlElementAttribute("plugin")]
         public List<TPlugin> plugin
         {
@@ -62,6 +69,9 @@ namespace MonoPlug
         }
     }
 
+    /// <summary>
+    /// TMySQL
+    /// </summary>
     [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "2.0.50727.4927")]
     [System.Diagnostics.DebuggerStepThroughAttribute()]
     public partial class TMySQL
@@ -82,11 +92,17 @@ namespace MonoPlug
         [EditorBrowsable(EditorBrowsableState.Never)]
         private string baseField;
 
+        /// <summary>
+        /// TMySQL
+        /// </summary>
         public TMySQL()
         {
             this.portField = 3306;
         }
 
+        /// <summary>
+        /// host
+        /// </summary>
         [System.Xml.Serialization.XmlAttributeAttribute()]
         public string host
         {
@@ -99,7 +115,9 @@ namespace MonoPlug
                 this.hostField = value;
             }
         }
-
+        /// <summary>
+        /// 
+        /// </summary>
         [System.Xml.Serialization.XmlAttributeAttribute()]
         [System.ComponentModel.DefaultValueAttribute(3306)]
         public int port
@@ -114,6 +132,9 @@ namespace MonoPlug
             }
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
         [System.Xml.Serialization.XmlAttributeAttribute()]
         public string user
         {
@@ -127,6 +148,9 @@ namespace MonoPlug
             }
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
         [System.Xml.Serialization.XmlAttributeAttribute()]
         public string pass
         {
@@ -140,6 +164,9 @@ namespace MonoPlug
             }
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
         [System.Xml.Serialization.XmlAttributeAttribute()]
         public string @base
         {
@@ -154,6 +181,9 @@ namespace MonoPlug
         }
     }
 
+    /// <summary>
+    /// 
+    /// </summary>
     [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "2.0.50727.4927")]
     [System.Diagnostics.DebuggerStepThroughAttribute()]
     public partial class TPlugin
@@ -165,6 +195,9 @@ namespace MonoPlug
         [EditorBrowsable(EditorBrowsableState.Never)]
         private bool loadedField;
 
+        /// <summary>
+        /// 
+        /// </summary>
         [System.Xml.Serialization.XmlAttributeAttribute()]
         public string name
         {
@@ -178,6 +211,9 @@ namespace MonoPlug
             }
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
         [System.Xml.Serialization.XmlAttributeAttribute()]
         public bool loaded
         {

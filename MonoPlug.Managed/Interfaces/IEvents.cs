@@ -30,5 +30,21 @@ namespace MonoPlug
         /// ServerActivate
         /// </summary>
         event EventHandler<ServerActivateEventArgs> ServerActivate;
+        /// <summary>
+        /// ServerSpawn
+        /// </summary>
+        event EventHandler<ServerSpawnEventArgs> ServerSpawn;
+        /// <summary>
+        /// ServerShutdown
+        /// </summary>
+        event EventHandler<ReasonEventArgs> ServerShutdown;
+        /// <summary>
+        /// PlayerConnect
+        /// </summary>
+        event EventHandler<ClientEventArgs> PlayerConnect;
+        /// <summary>
+        /// PlayerDisconnect
+        /// </summary>
+        event EventHandler<PlayerDisconnectEventArgs> PlayerDisconnect;
     }
 }

@@ -5,7 +5,7 @@ using System.Text;
 
 namespace MonoPlug
 {
-    internal sealed class ClsPluginThreadPool : MarshalByRefObject, IThreadPool
+    internal sealed class ClsPluginThreadPool : ObjectBase, IThreadPool
     {
         private readonly IThreadPool _pool;
         private readonly ClsPluginBase _owner;

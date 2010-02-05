@@ -39,9 +39,19 @@ namespace MonoPlug
             {
                 //ClsPlugin
 #if DEBUG
-                NativeMethods.Mono_DevMsg(string.Format("InternalConCommand::DoExec Plugin async={0}\n", this._async));
+                try
+                {
+                    NativeMethods.Mono_DevMsg(string.Format("InternalConCommand::DoExec Plugin={0} async={1} public={2}\n", this.Plugin.Name, this._async, this.Public ?? (object)"<null>"));
+                    NativeMethods.Mono_DevMsg(string.Format("InternalConCommand::DoExec Plugin={0} async={1}\n", this.Plugin.Name, this._async));
 #endif
-                this.Public.Execute(line, args);
+                    this.Public.Execute(line, args);
+#if DEBUG
+                }
+                finally
+                {
+                    NativeMethods.Mono_DevMsg(string.Format("InternalConCommand::DoExec exit\n"));
+                }
+#endif
             }
             else
             {

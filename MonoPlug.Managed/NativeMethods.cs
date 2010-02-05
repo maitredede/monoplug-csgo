@@ -6,7 +6,7 @@ using System.Threading;
 
 namespace MonoPlug
 {
-    internal static class NativeMethods
+    internal static partial class NativeMethods
     {
         [MethodImpl(MethodImplOptions.InternalCall)]
         internal static extern void Mono_Msg(string msg);
@@ -50,6 +50,11 @@ namespace MonoPlug
 
         [MethodImpl(MethodImplOptions.InternalCall)]
         internal static extern void Mono_ClientDialogMessage(int client, string title, string message, int a, int r, int g, int b, int level, int time);
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        internal static extern void Mono_ServerCommand(string command);
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        internal static extern void Mono_ClientMessage(int userid, string command);
+
 
         [MethodImpl(MethodImplOptions.InternalCall)]
         internal static extern void Mono_EventAttach_LevelShutdown();

@@ -5,7 +5,7 @@ using System.Text;
 
 namespace MonoPlug
 {
-    internal abstract class InternalConbase : MarshalByRefObject
+    internal abstract class InternalConbase : ObjectBase
     {
         private readonly string _name;
         private readonly string _help;
@@ -51,7 +51,14 @@ namespace MonoPlug
 
         internal override ClsPluginBase Plugin
         {
-            get { return this._public.Plugin; }
+            get
+            {
+                if (this._public != null)
+                {
+                    return this._public.Plugin;
+                }
+                return null;
+            }
         }
     }
 }

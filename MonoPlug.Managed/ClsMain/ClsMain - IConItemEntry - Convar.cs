@@ -6,9 +6,9 @@ using System.Threading;
 
 namespace MonoPlug
 {
-    partial class ClsMain : IConItemEntry
+    partial class ClsMain : IEngineWrapper
     {
-        InternalConvar IConItemEntry.RegisterConvar(string name, string help, FCVAR flags, string defaultValue)
+        InternalConvar IEngineWrapper.RegisterConvar(string name, string help, FCVAR flags, string defaultValue)
         {
             Check.NonNullOrEmpty("name", name);
             Check.NonNullOrEmpty("help", help);
@@ -61,7 +61,7 @@ namespace MonoPlug
             return NativeMethods.Mono_RegisterConVar(convar.Name, convar.Help, (int)convar.Flags, convar.DefaultValue);
         }
 
-        void IConItemEntry.UnregisterConvar(InternalConvar var)
+        void IEngineWrapper.UnregisterConvar(InternalConvar var)
         {
             Check.NonNull("var", var);
 

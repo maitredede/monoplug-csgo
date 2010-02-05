@@ -30,9 +30,9 @@ namespace MonoPlugin
 		CMonoHelpers::CallMethod(g_MonoPlugin.m_main, this->m_method, args);
 	}
 
-	MP_EVENT_CODE(player_connect, g_MonoPlugin.m_event_player_connect, g_MonoPlugin.m_ClsMain_event_player_connect)
+	MP_EVENT_CODE_PERMANENT(player_connect, g_MonoPlugin.m_event_player_connect, g_MonoPlugin.m_ClsMain_event_player_connect)
 	{
-		void* args[6];
+		void* args[5];
 		args[0] = CMonoHelpers::GetString(g_Domain, evt->GetString("name"));
 		int index = evt->GetInt("index");
 		args[1] = &index;
@@ -40,11 +40,11 @@ namespace MonoPlugin
 		args[2] = &userid;
 		args[3] = CMonoHelpers::GetString(g_Domain, evt->GetString("networkid"));
 		args[4] = CMonoHelpers::GetString(g_Domain, evt->GetString("address"));
-		args[5] = g_MonoPlugin.GetPlayer(userid);
+		//args[5] = g_MonoPlugin.GetPlayer(userid);
 		CMonoHelpers::CallMethod(g_MonoPlugin.m_main, this->m_method, args);
 	}
 
-	MP_EVENT_CODE(player_disconnect, g_MonoPlugin.m_event_player_disconnect, g_MonoPlugin.m_ClsMain_event_player_disconnect)
+	MP_EVENT_CODE_PERMANENT(player_disconnect, g_MonoPlugin.m_event_player_disconnect, g_MonoPlugin.m_ClsMain_event_player_disconnect)
 	{
 		void* args[5];
 		int userid = evt->GetInt("userid");

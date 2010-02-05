@@ -7,7 +7,7 @@ using System.IO;
 
 namespace MonoPlug
 {
-    internal sealed class ClsProxy : MarshalByRefObject
+    internal sealed class ClsProxy : ObjectBase
     {
         private readonly AppDomain _current;
 
@@ -38,9 +38,9 @@ namespace MonoPlug
             return new ClsPluginMessage(owner, msg);
         }
 
-        public IConItem CreatePluginConItem(ClsPluginBase owner, ClsMain main)
+        public IEngine CreatePluginConItem(ClsPluginBase owner, ClsMain main)
         {
-            return new ClsPluginConItem(owner, main);
+            return new ClsPluginEngine(owner, main);
         }
 
         //[Obsolete("Rewriting", true)]
@@ -55,12 +55,12 @@ namespace MonoPlug
         //    return new ClsConCommand(msg, pool, plugin, name, help, flags, code, complete, async);
         //}
 
-        public static T CreateInDomain<T>(AppDomain domain, IMessage msg) where T : MarshalByRefObject
+        public static T CreateInDomain<T>(AppDomain domain, IMessage msg) where T : ObjectBase
         {
             return CreateInDomain<T>(domain, msg, typeof(T).FullName);
         }
 
-        public static T CreateInDomain<T>(AppDomain domain, IMessage msg, string typeName) where T : MarshalByRefObject
+        public static T CreateInDomain<T>(AppDomain domain, IMessage msg, string typeName) where T : ObjectBase
         {
             return (T)CreateInDomain(domain, msg, typeof(T).Assembly.Location, typeName);
         }

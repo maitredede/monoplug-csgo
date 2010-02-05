@@ -96,12 +96,12 @@ namespace MonoPlugin
 			"MonoPlug.ClsMain:Event_server_shutdown(string)", this->m_ClsMain_event_server_shutdown,
 			"MonoPlug.NativeMethods::Mono_EventAttach_server_shutdown",
 			"MonoPlug.NativeMethods::Mono_EventDetach_server_shutdown");
-		MP_EVENT_INIT(player_connect, this->m_event_player_connect,
-			"MonoPlug.ClsMain:Event_player_connect(string,int,int,string,string,MonoPlug.ClsPlayer)", this->m_ClsMain_event_player_connect,
+
+		MP_EVENT_INIT_PERMANENT(player_connect, this->m_event_player_connect,
+			"MonoPlug.ClsMain:Event_player_connect(string,int,int,string,string)", this->m_ClsMain_event_player_connect,
 			"MonoPlug.NativeMethods::Mono_EventAttach_player_connect",
 			"MonoPlug.NativeMethods::Mono_EventDetach_player_connect");
-
-		MP_EVENT_INIT(player_disconnect, this->m_event_player_disconnect,
+		MP_EVENT_INIT_PERMANENT(player_disconnect, this->m_event_player_disconnect,
 			"MonoPlug.ClsMain:Event_player_disconnect(int,string,string,string,MonoPlug.ClsPlayer)", this->m_ClsMain_event_player_disconnect,
 			"MonoPlug.NativeMethods::Mono_EventAttach_player_disconnect",
 			"MonoPlug.NativeMethods::Mono_EventDetach_player_disconnect");

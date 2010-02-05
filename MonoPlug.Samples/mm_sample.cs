@@ -35,7 +35,7 @@ namespace MonoPlug
         {
             //this.ClientCommand += this.ClientCommand_Sample;
             this.Message.Msg("Starting plugin.\n");
-            this._sample_cvar = this.ConItems.RegisterConvar("sample_cvar_clr", "A sample convar", FCVAR.FCVAR_NONE, "42");
+            this._sample_cvar = this.Engine.RegisterConvar("sample_cvar_clr", "A sample convar", FCVAR.FCVAR_NONE, "42");
 
             //this.LevelInit += this.Sample_LevelInit;
             //this.ServerActivate += this.Sample_ServerActivate;
@@ -80,7 +80,7 @@ namespace MonoPlug
             //this.ClientConnect -= this.Sample_ClientConnect;
             //this.ClientCommand -= this.Sample_ClientCommand;
 
-            this.ConItems.UnregisterConvar(this._sample_cvar);
+            this.Engine.UnregisterConvar(this._sample_cvar);
         }
 
         //private void Sample_LevelShutdown(object sender, EventArgs e)

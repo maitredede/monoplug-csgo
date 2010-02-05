@@ -7,7 +7,7 @@ using System.Net;
 
 namespace MonoPlug
 {
-    internal sealed class ClsPluginDatabase : MarshalByRefObject, IDatabase
+    internal sealed class ClsPluginDatabase : ObjectBase, IDatabase
     {
         private readonly IDatabaseConfig _db;
         private readonly ClsPluginBase _owner;
@@ -74,6 +74,42 @@ namespace MonoPlug
             }
 
             return ret;
+        }
+
+        ClsAdminEntry[] IDatabase.GetAdmins()
+        {
+            List<ClsAdminEntry> lst = new List<ClsAdminEntry>();
+            using (MySqlConnection con = ((IDatabase)this).GetConnection())
+            {
+                using (MySqlCommand com = con.CreateCommand())
+                {
+                    com.CommandText = "SELECT * FROM sm_admins";
+
+                    using (MySqlDataReader dr = com.ExecuteReader())
+                    {
+                        while (dr.Read())
+                        {
+                            ClsAdminEntry entry = new ClsAdminEntry();
+                            entry.Id = dr.GetUInt32("id");
+                            entry.AuthType = (AuthType)Enum.Parse(typeof(AuthType), dr.GetString("authtype"));
+                            entry.Identity = dr.GetString("identity");
+                            if (dr.IsDBNull(dr.GetOrdinal("password")))
+                            {
+                                entry.Password = null;
+                            }
+                            else
+                            {
+                                entry.Password = dr.GetString("password");
+                            }
+                            entry.Flags = dr.GetString("flags");
+                            entry.Name = dr.GetString("name");
+                            entry.Immunity = dr.GetUInt32("immunity");
+                            lst.Add(entry);
+                        }
+                    }
+                }
+            }
+            return lst.ToArray();
         }
     }
 }

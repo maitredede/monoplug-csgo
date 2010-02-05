@@ -6,11 +6,10 @@ using System.Threading;
 
 namespace MonoPlug
 {
-    partial class ClsMain : IEventsAttach
+    partial class ClsMain : IEventsAnchor
     {
         private readonly Dictionary<object, List<ClsPluginBase>> _events = new Dictionary<object, List<ClsPluginBase>>();
 
-        #region internal funcs
         private void Event_Add(ClsPluginBase plugin, object evt, ThreadStart attach)
         {
             lock (this._events)
@@ -65,6 +64,18 @@ namespace MonoPlug
             detach.Invoke();
             return null;
         }
-        #endregion
+
+        private ClsPluginBase[] GetHandlerPlugins(object eventToken)
+        {
+            List<ClsPluginBase> lst = new List<ClsPluginBase>();
+            lock (this._events)
+            {
+                if (this._events.ContainsKey(eventToken))
+                {
+                    lst = new List<ClsPluginBase>(this._events[eventToken]);
+                }
+            }
+            return lst.ToArray();
+        }
     }
 }

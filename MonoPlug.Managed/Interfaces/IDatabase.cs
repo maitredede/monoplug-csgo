@@ -24,5 +24,10 @@ namespace MonoPlug
         /// <param name="address">Address to lookup</param>
         /// <returns>ISO Country code</returns>
         string GeoIP_GetCountry(IPAddress address);
+        /// <summary>
+        /// Get all defined admins
+        /// </summary>
+        /// <returns>Admin list</returns>
+        ClsAdminEntry[] GetAdmins();
     }
 }

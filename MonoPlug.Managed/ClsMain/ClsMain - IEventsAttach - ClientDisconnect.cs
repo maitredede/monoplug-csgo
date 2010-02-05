@@ -7,32 +7,30 @@ namespace MonoPlug
 {
     partial class ClsMain
     {
-        void IEventsAttach.ClientDisconnect_Attach(ClsPluginBase plugin)
+        void IEventsAnchor.ClientDisconnect_Attach(ClsPluginBase plugin)
         {
             this.Event_Add(plugin, Events.ClientDisconnect, NativeMethods.Mono_EventAttach_ClientDisconnect);
         }
 
-        void IEventsAttach.ClientDisconnect_Detach(ClsPluginBase plugin)
+        void IEventsAnchor.ClientDisconnect_Detach(ClsPluginBase plugin)
         {
             this.Event_Remove(plugin, Events.ClientDisconnect, NativeMethods.Mono_EventDetach_ClientDisconnect);
         }
 
         internal void Raise_ClientDisconnect(ClsPlayer player)
         {
-            List<ClsPluginBase> lst = null;
-            lock (this._events)
+            if (player == null)
             {
-                if (this._events.ContainsKey(Events.ClientDisconnect))
-                {
-                    lst = new List<ClsPluginBase>(this._events[Events.ClientDisconnect]);
-                }
+                this._msg.Msg("ClsMain::Raise_ClientDisconnect: player=<null>\n");
             }
-            if (lst != null && lst.Count > 0)
+            else
             {
-                foreach (ClsPluginBase plugin in lst)
-                {
-                    plugin.PluginEvents.Raise_ClientDisconnect(player);
-                }
+                this._msg.Msg("ClsMain::Raise_ClientDisconnect: player={0}\n", player.Dump());
+            }
+            this.RemovePlayer(player);
+            foreach (ClsPluginBase plugin in this.GetHandlerPlugins(Events.ClientDisconnect))
+            {
+                plugin.PluginEvents.Raise_ClientDisconnect(player);
             }
         }
     }
