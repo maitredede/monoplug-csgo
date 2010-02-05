@@ -994,10 +994,6 @@
 				>
 			</File>
 			<File
-				RelativePath=".\CMonoPlugin_Events.cpp"
-				>
-			</File>
-			<File
 				RelativePath=".\CMonoPlugin_GameFrame.cpp"
 				>
 			</File>

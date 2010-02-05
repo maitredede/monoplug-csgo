@@ -20,11 +20,12 @@ SRCDS_BASE = $(BASE_DIR)/srcds
 
 OBJECTS = CBaseAccessor.cpp CMonoCommand.cpp CMonoConsole.cpp CMonoHelpers.cpp CMonoPlugin.cpp
 OBJECTS += CMonoPlugin_GameFrame.cpp CMonoPlugin_Hooks.cpp CMonoPlugin_IMetamodListener.cpp
-OBJECTS += CMonoPlugin_Mono.cpp CMonoPlugin_PluginBase.cpp monoCallbacks.cpp
+OBJECTS += CMonoPlugin_Mono.cpp CMonoPlugin_PluginBase.cpp Events.cpp monoCallbacks.cpp
 OBJECTS += pluginterfaces.cpp tools.cpp
 
 BINARY = monoplug_i486.so
 CSPROJECT = MonoPlug.Managed/MonoPlug.Managed.csproj MonoPlug.Samples/MonoPlug.Samples.csproj
+CSPROJECT += MaitreDede.TnT.AntiBoulet/MaitreDede.TnT.AntiBoulet.csproj
 
 ##############################################
 ### CONFIGURE ANY OTHER FLAGS/OPTIONS HERE ###
