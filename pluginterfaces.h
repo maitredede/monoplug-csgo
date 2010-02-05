@@ -20,5 +20,6 @@ extern ICvar *icvar;
 extern IServerPluginHelpers *g_helpers;
 extern IServerPluginCallbacks *g_vsp_callbacks;
 extern IPlayerInfoManager *g_PlayerInfoManager;
+extern IGameEventManager2 *g_GameEventManager;
 
 #endif //_GAMEINTERFACES_H_

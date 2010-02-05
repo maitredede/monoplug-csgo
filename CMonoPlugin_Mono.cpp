@@ -1,5 +1,6 @@
 #include "CMonoPlugin.h"
 #include "monoCallbacks.h"
+#include "tools.h"
 #include <inetchannelinfo.h>
 
 namespace MonoPlugin
@@ -81,11 +82,29 @@ namespace MonoPlugin
 		mono_add_internal_call ("MonoPlug.NativeMethods::Mono_EventDetach_ClientPutInServer", (const void*)Mono_EventDetach_ClientPutInServer);
 		if(!CMonoHelpers::GetMethod(this->m_image, "MonoPlug.ClsMain:Raise_ClientPutInServer(MonoPlug.ClsPlayer)", this->m_ClsMain_Raise_ClientPutInServer, error, maxlen)) return false;
 
-
-
-
 		//Various
 		mono_add_internal_call ("MonoPlug.NativeMethods::Mono_ClientDialogMessage", (const void*)Mono_ClientDialogMessage);
+		mono_add_internal_call ("MonoPlug.NativeMethods::Mono_ServerCommand", (const void*)Mono_ServerCommand);
+		mono_add_internal_call ("MonoPlug.NativeMethods::Mono_ClientMessage", (const void*)Mono_ClientMessage);
+
+		//IGameEventListener2 events
+		MP_EVENT_INIT(server_spawn, this->m_event_server_spawn,
+			"MonoPlug.ClsMain:Event_server_spawn(string,string,string,string,string,int,string,bool,bool)", this->m_ClsMain_event_server_spawn,
+			"MonoPlug.NativeMethods::Mono_EventAttach_server_spawn",
+			"MonoPlug.NativeMethods::Mono_EventDetach_server_spawn");
+		MP_EVENT_INIT(server_shutdown, this->m_event_server_shutdown,
+			"MonoPlug.ClsMain:Event_server_shutdown(string)", this->m_ClsMain_event_server_shutdown,
+			"MonoPlug.NativeMethods::Mono_EventAttach_server_shutdown",
+			"MonoPlug.NativeMethods::Mono_EventDetach_server_shutdown");
+		MP_EVENT_INIT(player_connect, this->m_event_player_connect,
+			"MonoPlug.ClsMain:Event_player_connect(string,int,int,string,string,MonoPlug.ClsPlayer)", this->m_ClsMain_event_player_connect,
+			"MonoPlug.NativeMethods::Mono_EventAttach_player_connect",
+			"MonoPlug.NativeMethods::Mono_EventDetach_player_connect");
+
+		MP_EVENT_INIT(player_disconnect, this->m_event_player_disconnect,
+			"MonoPlug.ClsMain:Event_player_disconnect(int,string,string,string,MonoPlug.ClsPlayer)", this->m_ClsMain_event_player_disconnect,
+			"MonoPlug.NativeMethods::Mono_EventAttach_player_disconnect",
+			"MonoPlug.NativeMethods::Mono_EventDetach_player_disconnect");
 
 		//Create main instance
 		this->m_main = CMonoHelpers::ClassNew(g_Domain, this->m_class_ClsMain);
@@ -105,6 +124,16 @@ namespace MonoPlugin
 		{
 			return false;
 		}
+	}
+
+	MonoObject* CMonoPlugin::GetPlayer(int userid)
+	{
+		edict_t* pEntity = EdictOfUserId(userid);
+		if(pEntity && !pEntity->IsFree())
+		{
+			return this->GetPlayer(pEntity);
+		}
+		return NULL;
 	}
 
 	MonoObject* CMonoPlugin::GetPlayer(edict_t* pEntity)

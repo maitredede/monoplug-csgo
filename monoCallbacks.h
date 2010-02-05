@@ -34,6 +34,8 @@ namespace MonoPlugin
 
 	//Various
 	void Mono_ClientDialogMessage(int client, MonoString* title, MonoString* message, int a, int r, int g, int b, int level, int time);
+	void Mono_ServerCommand(MonoString* command);
+	void Mono_ClientMessage(int userId, MonoString* message);
 
 	//LevelShutdown
 	void Mono_EventAttach_LevelShutdown();

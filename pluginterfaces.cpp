@@ -13,3 +13,4 @@ IServerPluginCallbacks* g_vsp_callbacks = NULL;
 IServerPluginHelpers* g_helpers = NULL;
 IServerGameClients* g_ServerClients = NULL;
 IPlayerInfoManager *g_PlayerInfoManager = NULL;
+IGameEventManager2 *g_GameEventManager = NULL;

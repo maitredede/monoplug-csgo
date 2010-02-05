@@ -13,12 +13,16 @@ namespace MonoPlugin
 	{
 		SH_ADD_HOOK_MEMFUNC(IServerGameDLL, GameFrame, g_iserver, &g_MonoPlugin, &CMonoPlugin::Hook_GameFrame, true);
 		SH_ADD_HOOK_MEMFUNC(IServerGameDLL, ServerActivate, g_iserver, &g_MonoPlugin, &CMonoPlugin::Hook_Raise_ServerActivate, true);
+		SH_ADD_HOOK_MEMFUNC(IServerGameClients, ClientDisconnect, g_ServerClients, &g_MonoPlugin, &CMonoPlugin::Hook_Raise_ClientDisconnect, true);		//Hook ClientPutInServer to our function
+		SH_ADD_HOOK_MEMFUNC(IServerGameClients, ClientPutInServer, g_ServerClients, &g_MonoPlugin, &CMonoPlugin::Hook_Raise_ClientPutInServer, true);	//Hook SetCommandClient to our function
 	}
 
 	void CMonoPlugin::RemoveHooks()
 	{
 		SH_REMOVE_HOOK_MEMFUNC(IServerGameDLL, GameFrame, g_iserver, &g_MonoPlugin, &CMonoPlugin::Hook_GameFrame, true);
 		SH_REMOVE_HOOK_MEMFUNC(IServerGameDLL, ServerActivate, g_iserver, &g_MonoPlugin, &CMonoPlugin::Hook_Raise_ServerActivate, true);
+		SH_REMOVE_HOOK_MEMFUNC(IServerGameClients, ClientDisconnect, g_ServerClients, &g_MonoPlugin, &CMonoPlugin::Hook_Raise_ClientDisconnect, true);		//Hook ClientPutInServer to our function
+		SH_REMOVE_HOOK_MEMFUNC(IServerGameClients, ClientPutInServer, g_ServerClients, &g_MonoPlugin, &CMonoPlugin::Hook_Raise_ClientPutInServer, true);	//Hook SetCommandClient to our function
 	}
 
 	void CMonoPlugin::Hook_Attach_ServerActivate()
@@ -29,6 +33,24 @@ namespace MonoPlugin
 	void CMonoPlugin::Hook_Detach_ServerActivate()
 	{
 		//Special case : Nothing to do
+	}
+
+	void CMonoPlugin::Hook_Attach_ClientDisconnect()
+	{
+		//Special case : Nothing to do
+	}
+
+	void CMonoPlugin::Hook_Detach_ClientDisconnect()
+	{
+		//Special case : Nothing to do
+	}
+
+	void CMonoPlugin::Hook_Attach_ClientPutInServer()
+	{
+	}
+
+	void CMonoPlugin::Hook_Detach_ClientPutInServer()
+	{
 	}
 
 	void CMonoPlugin::Hook_Raise_ServerActivate(edict_t *pEdictList, int edictCount, int clientMax)
@@ -54,16 +76,6 @@ namespace MonoPlugin
 		CMonoHelpers::CallMethod(this->m_main, this->m_ClsMain_Raise_LevelShutdown, NULL);
 	}
 
-	void CMonoPlugin::Hook_Attach_ClientDisconnect()
-	{
-		SH_ADD_HOOK_MEMFUNC(IServerGameClients, ClientDisconnect, g_ServerClients, &g_MonoPlugin, &CMonoPlugin::Hook_Raise_ClientDisconnect, true);		//Hook ClientPutInServer to our function
-	}
-
-	void CMonoPlugin::Hook_Detach_ClientDisconnect()
-	{
-		SH_REMOVE_HOOK_MEMFUNC(IServerGameClients, ClientDisconnect, g_ServerClients, &g_MonoPlugin, &CMonoPlugin::Hook_Raise_ClientDisconnect, true);		//Hook ClientPutInServer to our function
-	}
-
 	void CMonoPlugin::Hook_Raise_ClientDisconnect(edict_t *pEntity)
 	{
 		if(!pEntity || pEntity->IsFree())
@@ -76,16 +88,6 @@ namespace MonoPlugin
 		void* args[1];
 		args[0] = player;
 		CMonoHelpers::CallMethod(this->m_main, this->m_ClsMain_Raise_ClientDisconnect, args);
-	}
-
-	void CMonoPlugin::Hook_Attach_ClientPutInServer()
-	{
-		SH_ADD_HOOK_MEMFUNC(IServerGameClients, ClientPutInServer, g_ServerClients, &g_MonoPlugin, &CMonoPlugin::Hook_Raise_ClientPutInServer, true);	//Hook SetCommandClient to our function
-	}
-
-	void CMonoPlugin::Hook_Detach_ClientPutInServer()
-	{
-		SH_REMOVE_HOOK_MEMFUNC(IServerGameClients, ClientPutInServer, g_ServerClients, &g_MonoPlugin, &CMonoPlugin::Hook_Raise_ClientPutInServer, true);	//Hook SetCommandClient to our function
 	}
 
 	void CMonoPlugin::Hook_Raise_ClientPutInServer(edict_t *pEntity, const char* playername)

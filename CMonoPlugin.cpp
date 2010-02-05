@@ -21,6 +21,7 @@ bool MonoPlugin::CMonoPlugin::Load(PluginId id, ISmmAPI *ismm, char *error, size
 	GET_V_IFACE_CURRENT(GetEngineFactory, g_helpers, IServerPluginHelpers, INTERFACEVERSION_ISERVERPLUGINHELPERS);
 	GET_V_IFACE_ANY(GetServerFactory, g_ServerClients, IServerGameClients, INTERFACEVERSION_SERVERGAMECLIENTS);
 	GET_V_IFACE_ANY(GetServerFactory, g_PlayerInfoManager, IPlayerInfoManager, INTERFACEVERSION_PLAYERINFOMANAGER);
+	GET_V_IFACE_CURRENT(GetEngineFactory, g_GameEventManager, IGameEventManager2, INTERFACEVERSION_GAMEEVENTSMANAGER2);
 
 	gpGlobals = ismm->GetCGlobals();
 
@@ -53,12 +54,17 @@ bool MonoPlugin::CMonoPlugin::Load(PluginId id, ISmmAPI *ismm, char *error, size
 		return false;
 	}
 
+	//if(!this->AddEventListeners(error, maxlen))
+	//{
+	//	return false;
+	//}
+
+
 	this->m_nextConbaseId = 1;
 	this->m_conbase = new CUtlMap<uint64, ConCommandBase*>();
 	this->m_conbase->SetLessFunc(CMonoPlugin::Less_uint64);
 
 	this->AddHooks();
-
 #if SOURCE_ENGINE >= SE_ORANGEBOX
 	g_pCVar = icvar;
 	ConVar_Register(0, &s_BaseAccessor);

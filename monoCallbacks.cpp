@@ -255,4 +255,18 @@ namespace MonoPlugin
 	{
 		g_MonoPlugin.Hook_Detach_ClientPutInServer();
 	}
+
+	void Mono_ServerCommand(MonoString* command)
+	{
+		g_engine->ServerCommand(mono_string_to_utf8(command));
+	}
+
+	void Mono_ClientMessage(int userid, MonoString* message)
+	{
+		edict_t* e = EdictOfUserId(userid);
+		if(e && !e->IsFree())
+		{
+			g_engine->ClientPrintf(e, mono_string_to_utf8(message));
+		}
+	}
 }
