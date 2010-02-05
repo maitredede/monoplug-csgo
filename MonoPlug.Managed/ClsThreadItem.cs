@@ -44,13 +44,10 @@ namespace MonoPlug
             {
                 this._return = this._code(this._param);
             }
-#if DEBUG
             catch (Exception ex)
             {
                 this._msg.Warning(ex);
-                throw ex;
             }
-#endif
             finally
             {
 #if DEBUG
