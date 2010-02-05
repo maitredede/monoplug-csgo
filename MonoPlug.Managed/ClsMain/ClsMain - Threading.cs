@@ -124,9 +124,9 @@ namespace MonoPlug
                     Exception err = ex;
                     do
                     {
-                        Console.WriteLine("GameFrame : {0}", ex.GetType().FullName);
-                        Console.WriteLine("GameFrame : {0}", ex.Message);
-                        Console.WriteLine("GameFrame : {0}", ex.StackTrace);
+                        Console.WriteLine("GameFrame : {0}", err.GetType().FullName);
+                        Console.WriteLine("GameFrame : {0}", err.Message);
+                        Console.WriteLine("GameFrame : {0}", err.StackTrace);
                     }
                     while ((err = ex.InnerException) != null);
                 }

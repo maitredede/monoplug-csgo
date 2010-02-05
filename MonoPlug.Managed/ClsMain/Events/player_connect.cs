@@ -11,14 +11,6 @@ namespace MonoPlug
         {
 #if DEBUG
             this._msg.DevMsg("ClsMain::Event_player_connect: name={0} index={1} userid={2} networkid={3} address={4}\n", name, index, userid, networkid, address);
-            if (player == null)
-            {
-                this._msg.DevMsg("ClsMain::Event_player_connect: player={0}\n", "<null>");
-            }
-            else
-            {
-                this._msg.DevMsg("ClsMain::Event_player_connect: player={0}\n", player.Dump());
-            }
 #endif
             ClsPlayer player = new ClsPlayer();
             player.Id = userid;
