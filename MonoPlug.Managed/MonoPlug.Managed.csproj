@@ -40,6 +40,7 @@
     <Compile Include="AuthType.cs" />
     <Compile Include="ClsAdminEntry.cs" />
     <Compile Include="ClsMainConvarValue.cs" />
+    <Compile Include="ClsMain\ClsMain - IEngineWrapper - ClientDialog.cs" />
     <Compile Include="ClsMain\ClsMain - IEventsAttach - LevelShutdown.cs" />
     <Compile Include="ClsMain\ClsMain - IEventsAttach - ServerActivate.cs" />
     <Compile Include="ClsMain\ClsMain - IEventsAttach - ClientDisconnect.cs" />

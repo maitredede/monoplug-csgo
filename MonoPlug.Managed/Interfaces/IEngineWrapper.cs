@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Drawing;
 
 namespace MonoPlug
 {
@@ -18,5 +19,6 @@ namespace MonoPlug
         void ServerCommand(string command);
 
         void ClientMessage(ClsPlayer client, string message);
+        void ClientDialog(ClsPlayer player, string title, string message, Color color, int level, int time);
     }
 }

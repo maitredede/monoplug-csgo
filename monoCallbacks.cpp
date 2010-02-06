@@ -109,7 +109,7 @@ namespace MonoPlugin
 	void Mono_ClientDialogMessage(int client, MonoString* title, MonoString* message, int a, int r, int g, int b, int level, int time)
 	{
 		edict_t* pEntity = EdictOfUserId(client);
-		if(pEntity)
+		if(pEntity && !pEntity->IsFree())
 		{
 			KeyValues *kv = new KeyValues( "msg" );
 			kv->SetString( "title", mono_string_to_utf8(title) );

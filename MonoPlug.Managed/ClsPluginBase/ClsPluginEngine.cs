@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Drawing;
 
 namespace MonoPlug
 {
@@ -100,6 +101,13 @@ namespace MonoPlug
         void IEngine.UnregisterSayCommand(ClsSayCommand command)
         {
             //TODO IEngine.UnregisterSayCommand
+        }
+
+        void IEngine.ClientDialog(ClsPlayer player, string title, string message, Color color, int level, int time)
+        {
+            Check.NonNull("player", player);
+
+            this._conEntry.ClientDialog(player, title, message, color, level, time);
         }
     }
 }

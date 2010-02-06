@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Drawing;
 
 namespace MonoPlug
 {
@@ -72,5 +73,6 @@ namespace MonoPlug
         /// </summary>
         /// <param name="command">Command to unregister</param>
         void UnregisterSayCommand(ClsSayCommand command);
+        void ClientDialog(ClsPlayer player, string title, string message, Color color, int level, int time);
     }
 }
