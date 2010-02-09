@@ -46,5 +46,10 @@ namespace MonoPlug
         /// PlayerDisconnect
         /// </summary>
         event EventHandler<PlayerDisconnectEventArgs> PlayerDisconnect;
+        /// <summary>
+        /// ClientConnect
+        /// </summary>
+        event EventHandler<ClientEventArgs> ClientConnect;
+
     }
 }

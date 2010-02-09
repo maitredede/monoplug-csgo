@@ -7,17 +7,13 @@ namespace MonoPlug
 {
     partial class ClsMain
     {
-        internal void Event_player_connect(string name, int index, int userid, string networkid, string address)
+        internal void Event_player_connect(ClsPlayer player)
         {
 #if DEBUG
-            this._msg.DevMsg("ClsMain::Event_player_connect: name={0} index={1} userid={2} networkid={3} address={4}\n", name, index, userid, networkid, address);
+            string p = "<null>";
+            if (player != null) p = player.Dump();
+            this._msg.DevMsg("ClsMain::Event_player_connect: player={0}\n", p);
 #endif
-            ClsPlayer player = new ClsPlayer();
-            player.Id = userid;
-            player.Name = name;
-            player.SteamID = networkid;
-            player.IP = address;
-
             this.AddPlayer(player);
 
             foreach (ClsPluginBase plugin in this.GetHandlerPlugins(Events.PlayerConnect))
@@ -28,12 +24,12 @@ namespace MonoPlug
 
         void IEventsAnchor.PlayerConnect_Attach(ClsPluginBase plugin)
         {
-            this.Event_Add(plugin, Events.PlayerConnect, NativeMethods.Mono_EventAttach_player_connect);
+            this.Event_Add(plugin, Events.PlayerConnect, null);
         }
 
         void IEventsAnchor.PlayerConnect_Detach(ClsPluginBase plugin)
         {
-            this.Event_Remove(plugin, Events.PlayerConnect, NativeMethods.Mono_EventDetach_player_connect);
+            this.Event_Remove(plugin, Events.PlayerConnect, null);
         }
     }
 }

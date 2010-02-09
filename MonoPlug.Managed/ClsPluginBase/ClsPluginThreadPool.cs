@@ -39,6 +39,12 @@ namespace MonoPlug
             this._pool.QueueUserWorkItem(callback, state);
         }
 
+        void IThreadPool.QueueUserWorkItem<T1, T2, T3>(ThreadAction<T1, T2, T3> work, T1 item1, T2 item2, T3 item3)
+        {
+            this._pool.QueueUserWorkItem<T1, T2, T3>(work, item1, item2, item3);
+        }
+
+
         #endregion
     }
 }

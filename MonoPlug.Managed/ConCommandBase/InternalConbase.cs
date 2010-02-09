@@ -30,6 +30,8 @@ namespace MonoPlug
             this._nativeId = nativeId;
         }
 
+        internal abstract bool IsCommand { get; }
+
         internal abstract ClsPluginBase Plugin { get; }
     }
 

@@ -37,12 +37,12 @@ namespace MonoPlug
 
         void IEventsAnchor.PlayerDisconnect_Attach(ClsPluginBase plugin)
         {
-            this.Event_Add(plugin, Events.PlayerDisconnect, NativeMethods.Mono_EventAttach_player_disconnect);
+            this.Event_Add(plugin, Events.PlayerDisconnect, null);
         }
 
         void IEventsAnchor.PlayerDisconnect_Detach(ClsPluginBase plugin)
         {
-            this.Event_Remove(plugin, Events.PlayerDisconnect, NativeMethods.Mono_EventDetach_player_disconnect);
+            this.Event_Remove(plugin, Events.PlayerDisconnect, null);
         }
     }
 }

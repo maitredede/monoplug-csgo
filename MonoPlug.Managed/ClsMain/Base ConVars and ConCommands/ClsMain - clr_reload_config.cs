@@ -11,7 +11,7 @@ namespace MonoPlug
 {
     partial class ClsMain
     {
-        private void clr_reload_config(string line, string[] args)
+        private void _clrReload()
         {
             //Try to reload config file
             this._lckConfig.AcquireReaderLock(Timeout.Infinite);
@@ -27,7 +27,7 @@ namespace MonoPlug
                     this._lckConfig.DowngradeFromWriterLock(ref cookie);
                 }
 
-                this.clr_plugin_refresh(string.Empty, null);
+                this.RefreshPluginCache();
 
                 if (this._configLoadedOK && this._config != null && this._config.plugin != null)
                 {
@@ -68,13 +68,13 @@ namespace MonoPlug
                                 if (loaded && !configPlugin.loaded)
                                 {
                                     //Unload plugin
-                                    this._thPool.QueueUserWorkItem<string, string[]>(this.clr_plugin_unload, configPlugin.name, null);
+                                    this._thPool.QueueUserWorkItem(this.UnloadPlugin, configPlugin.name);
                                 }
 
                                 if (!loaded && configPlugin.loaded)
                                 {
                                     //load plugin
-                                    this._thPool.QueueUserWorkItem<string, string[]>(this.clr_plugin_load, configPlugin.name, null);
+                                    this._thPool.QueueUserWorkItem(this.LoadPlugin, configPlugin.name);
                                 }
                             }
 
@@ -97,7 +97,7 @@ namespace MonoPlug
                                 if (!found)
                                 {
                                     //Unload plugin
-                                    this._thPool.QueueUserWorkItem<string, string[]>(this.clr_plugin_unload, dom.FriendlyName, null);
+                                    this._thPool.QueueUserWorkItem(this.UnloadPlugin, dom.FriendlyName);
                                 }
                             }
                         }

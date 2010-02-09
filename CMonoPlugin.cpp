@@ -54,17 +54,12 @@ bool MonoPlugin::CMonoPlugin::Load(PluginId id, ISmmAPI *ismm, char *error, size
 		return false;
 	}
 
-	//if(!this->AddEventListeners(error, maxlen))
-	//{
-	//	return false;
-	//}
-
-
 	this->m_nextConbaseId = 1;
 	this->m_conbase = new CUtlMap<uint64, ConCommandBase*>();
 	this->m_conbase->SetLessFunc(CMonoPlugin::Less_uint64);
 
 	this->AddHooks();
+
 #if SOURCE_ENGINE >= SE_ORANGEBOX
 	g_pCVar = icvar;
 	ConVar_Register(0, &s_BaseAccessor);

@@ -9,10 +9,12 @@
 #include "CMonoCommand.h"
 #include "utlmap.h"
 #include "Events.h"
+#include "CMonoPlayer.h"
 
 namespace MonoPlugin
 {
 	class CMonoConsole;
+	class CMonoPlayer;
 
 	class CMonoPlugin : public ISmmPlugin, public IMetamodListener/*, public IGameEventListener2*/
 	{
@@ -37,9 +39,10 @@ namespace MonoPlugin
 		void AddHooks();
 		void RemoveHooks();
 		static bool Less_uint64(const uint64 &, const uint64 & );
+		ConCommand* m_pSayCmd;
+		ConCommand* m_pSayTeamCmd;
 	public:
-		MonoObject* GetPlayer(edict_t *pEntity);
-		MonoObject* GetPlayer(int userid);
+		int m_clientCommand;
 	public:
 		void Hook_Attach_ServerActivate();
 		void Hook_Detach_ServerActivate();
@@ -49,6 +52,10 @@ namespace MonoPlugin
 		void Hook_Detach_LevelShutdown();
 		void Hook_Raise_LevelShutdown();
 
+		void Hook_Attach_ClientConnect();
+		void Hook_Detach_ClientConnect();
+		bool Hook_Raise_ClientConnect(edict_t *pEntity, const char *pszName, const char *pszAddress, char *reject, int maxrejectlen);
+
 		void Hook_Attach_ClientDisconnect();
 		void Hook_Detach_ClientDisconnect();
 		void Hook_Raise_ClientDisconnect(edict_t *pEntity);
@@ -56,6 +63,9 @@ namespace MonoPlugin
 		void Hook_Attach_ClientPutInServer();
 		void Hook_Detach_ClientPutInServer();
 		void Hook_Raise_ClientPutInServer(edict_t *pEntity, char const *playername);
+		void Hook_PlayerSay(const CCommand &command);
+		void Hook_SetCommandClient(int index);
+		void Hook_NetworkIDValidated(const char *pszUserName, const char *pszNetworkID);
 	public:// Main
 		MonoAssembly* m_assembly;
 		MonoImage* m_image;
@@ -71,16 +81,24 @@ namespace MonoPlugin
 		MonoMethod* m_ClsMain_Raise_ConVarChange;
 		MonoMethod* m_ClsMain_Raise_ServerActivate;
 		MonoMethod* m_ClsMain_Raise_LevelShutdown;
+		MonoMethod* m_ClsMain_Raise_PlayerSay;
 
 		MonoMethod* m_ClsMain_Raise_ClientDisconnect;
 		MonoMethod* m_ClsMain_Raise_ClientPutInServer;
+		MonoMethod* m_ClsMain_Raise_ClientConnect;
 	public:
 		MonoClass* m_Class_ClsPlayer;
-		MonoClassField* m_Field_ClsPlayer_id;
+		MonoClassField* m_Field_ClsPlayer_userId;
+		MonoClassField* m_Field_ClsPlayer_isBot;
+		MonoClassField* m_Field_ClsPlayer_isConnecting;
+		MonoClassField* m_Field_ClsPlayer_isConnected;
 		MonoClassField* m_Field_ClsPlayer_name;
+		MonoClassField* m_Field_ClsPlayer_ip;
+		MonoClassField* m_Field_ClsPlayer_steamId;
+		MonoClassField* m_Field_ClsPlayer_isSteamValid;
+
 		MonoClassField* m_Field_ClsPlayer_frag;
 		MonoClassField* m_Field_ClsPlayer_death;
-		MonoClassField* m_Field_ClsPlayer_ip;
 		MonoClassField* m_Field_ClsPlayer_language;
 		MonoClassField* m_Field_ClsPlayer_avgLatency;
 		MonoClassField* m_Field_ClsPlayer_timeConnected;
@@ -90,6 +108,17 @@ namespace MonoPlugin
 		uint64 m_nextConbaseId;
 		CUtlMap<uint64, ConCommandBase*>* m_conbase;
 		int m_EdictCount;
+	public:
+		//MonoObject* GetPlayerInfo(edict_t *pEntity);
+		//MonoObject* GetPlayerInfo(int userid);
+		//CMonoPlayer* GetPlayerByUserId(int index);
+		//CMonoPlayer* CreatePlayer(int index, int userid, const char* name, const char* networkid, const char* address, bool bot, edict_t* entity);
+		int m_clientMax;
+		
+		CMonoPlayerInfo m_players[MAXPLAYERS + 2];
+		//void RefreshPlayerInfo(int index, const char* name, const char* address, edict_t *pEntity);
+		//CMonoPlayer** m_allClients;
+
 	public: //IMetamodListener stuff
 		void OnVSPListening(IServerPluginCallbacks *iface);
 	public:

@@ -5,7 +5,7 @@ using System.Threading;
 
 namespace MonoPlug
 {
-    partial class ClsMain : IThreadPool
+    partial class ClsMain /*: IThreadPool*/
     {
 #if DEBUG
         private bool _Verbose = false;
@@ -134,19 +134,19 @@ namespace MonoPlug
             }
         }
 
-        void IThreadPool.QueueUserWorkItem<T>(ThreadAction<T> work, T item)
-        {
-            this._thPool.QueueUserWorkItem<T>(work, item);
-        }
+        //void IThreadPool.QueueUserWorkItem<T>(ThreadAction<T> work, T item)
+        //{
+        //    this._thPool.QueueUserWorkItem<T>(work, item);
+        //}
 
-        void IThreadPool.QueueUserWorkItem<T1, T2>(ThreadAction<T1, T2> work, T1 item1, T2 item2)
-        {
-            this._thPool.QueueUserWorkItem<T1, T2>(work, item1, item2);
-        }
+        //void IThreadPool.QueueUserWorkItem<T1, T2>(ThreadAction<T1, T2> work, T1 item1, T2 item2)
+        //{
+        //    this._thPool.QueueUserWorkItem<T1, T2>(work, item1, item2);
+        //}
 
-        void IThreadPool.QueueUserWorkItem(WaitCallback callback, object state)
-        {
-            this._thPool.QueueUserWorkItem(callback, state);
-        }
+        //void IThreadPool.QueueUserWorkItem(WaitCallback callback, object state)
+        //{
+        //    this._thPool.QueueUserWorkItem(callback, state);
+        //}
     }
 }

@@ -12,31 +12,49 @@ namespace MonoPlug
     [System.Diagnostics.DebuggerDisplay("#{Id} {Name}")]
     public sealed class ClsPlayer : ObjectBase
     {
+        private int _userId = 0;
+        private bool _isBot = false;
+        private bool _isConnecting = false;
+        private bool _isConnected = false;
+        private string _name = string.Empty;
+        private string _ip = string.Empty;
+        private string _steamId = string.Empty;
+        private bool _isSteamValid = false;
+
         private int _armor = 0;
         private int _death = 0;
         private int _frag = 0;
         private int _health = 0;
         private int _maxhealth = 0;
-        private string _name = string.Empty;
-        private string _steamid = string.Empty;
-        private int _id = 0;
         private string _language = string.Empty;
-        private string _ip = string.Empty;
         private float _avgLatency = 0;
         private float _timeConnected = 0;
+
+        /// <summary>
+        /// User ID
+        /// </summary>
+        public int UserId { get { return this._userId; } }
+        public bool IsBot { get { return this._isBot; } }
+        public bool IsConnecting { get { return this._isConnecting; } }
+        public bool IsConnected { get { return this._isConnected; } }
+        /// <summary>
+        /// Name
+        /// </summary>
+        public string Name { get { return this._name; } }
+        /// <summary>
+        /// Client IP
+        /// </summary>
+        public string IP { get { return this._ip; } }
+        /// <summary>
+        /// SteamID
+        /// </summary>
+        public string SteamID { get { return this._steamId; } }
+        public bool IsSteamValid { get { return this._isSteamValid; } }
 
         internal ClsPlayer()
         {
         }
 
-        /// <summary>
-        /// User ID
-        /// </summary>
-        public int Id { get { return this._id; } internal set { this._id = value; } }
-        /// <summary>
-        /// Name
-        /// </summary>
-        public string Name { get { return this._name; } internal set { this._name = value; } }
         /// <summary>
         /// Frags
         /// </summary>
@@ -58,17 +76,9 @@ namespace MonoPlug
         /// </summary>
         public int MaxHealth { get { return this._maxhealth; } internal set { this._maxhealth = value; } }
         /// <summary>
-        /// SteamID
-        /// </summary>
-        public string SteamID { get { return this._steamid; } internal set { this._steamid = value; } }
-        /// <summary>
         /// Client language
         /// </summary>
         public string Language { get { return this._language; } internal set { this._language = value; } }
-        /// <summary>
-        /// Client IP
-        /// </summary>
-        public string IP { get { return this._ip; } internal set { this._ip = value; } }
         /// <summary>
         /// Average player latency
         /// </summary>
@@ -84,7 +94,7 @@ namespace MonoPlug
         /// <returns></returns>
         public override string ToString()
         {
-            return string.Format("#{0} {1}", this._id, this._name);
+            return string.Format("#{0} {1}", this._userId, this._name);
         }
 
         /// <summary>

@@ -17,6 +17,7 @@ namespace MonoPlug
         internal ConCommandCompleteDelegate Complete { get { return this._complete; } }
         internal bool Async { get { return this._async; } }
         internal ConCommandDelegate Execute { get { return this._exec; } }
+        internal override bool IsCommand { get { return true; } }
 
         internal InternalConCommand(string name, string help, FCVAR flags, ConCommandDelegate code, ConCommandCompleteDelegate complete, bool async, IThreadPool pool)
             : base(name, help, flags)
@@ -33,7 +34,7 @@ namespace MonoPlug
             this._thPool = pool;
         }
 
-        private void DoExec(string line, string[] args)
+        private void DoExec(ClsPlayer sender, string line, string[] args)
         {
             if (this.Public != null)
             {
@@ -44,7 +45,7 @@ namespace MonoPlug
                     NativeMethods.Mono_DevMsg(string.Format("InternalConCommand::DoExec Plugin={0} async={1} public={2}\n", this.Plugin.Name, this._async, this.Public ?? (object)"<null>"));
                     NativeMethods.Mono_DevMsg(string.Format("InternalConCommand::DoExec Plugin={0} async={1}\n", this.Plugin.Name, this._async));
 #endif
-                    this.Public.Execute(line, args);
+                    this.Public.Execute(sender, line, args);
 #if DEBUG
                 }
                 finally
@@ -59,18 +60,18 @@ namespace MonoPlug
                 NativeMethods.Mono_DevMsg(string.Format("InternalConCommand::DoExec Main async={0}\n", this._async));
                 if (this._async)
                 {
-                    this._thPool.QueueUserWorkItem(this.DoExecMain, line, args);
+                    this._thPool.QueueUserWorkItem(this.DoExecMain, sender, line, args);
                 }
                 else
                 {
-                    this.DoExecMain(line, args);
+                    this.DoExecMain(sender, line, args);
                 }
             }
         }
 
-        private void DoExecMain(string line, string[] args)
+        private void DoExecMain(ClsPlayer sender, string line, string[] args)
         {
-            this._code(line, args);
+            this._code(sender, line, args);
         }
     }
 }

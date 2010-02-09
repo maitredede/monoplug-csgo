@@ -34,6 +34,7 @@ namespace MonoPlugin
 
 	//Various
 	void Mono_ClientDialogMessage(int client, MonoString* title, MonoString* message, int a, int r, int g, int b, int level, int time);
+	void Mono_ClientDialogText(int client, MonoString* title, MonoString* message, int level, int time);
 	void Mono_ServerCommand(MonoString* command);
 	void Mono_ClientMessage(int userId, MonoString* message);
 
@@ -49,9 +50,13 @@ namespace MonoPlugin
 	void Mono_EventAttach_ClientDisconnect();
 	void Mono_EventDetach_ClientDisconnect();
 
-	//ClientDisconnect
+	//ClientPutInServer
 	void Mono_EventAttach_ClientPutInServer();
 	void Mono_EventDetach_ClientPutInServer();
+
+	//ClientConnect
+	void Mono_EventAttach_ClientConnect();
+	void Mono_EventDetach_ClientConnect();
 }
 
 #endif //_MONOCALLBACKS_H_

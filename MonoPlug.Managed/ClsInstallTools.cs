@@ -60,7 +60,7 @@ namespace MonoPlug
             this.Engine.UnregisterConCommand(this._versions);
         }
 
-        private void MySQL_Test(string line, string[] args)
+        private void MySQL_Test(ClsPlayer sender, string line, string[] args)
         {
             try
             {
@@ -115,7 +115,7 @@ namespace MonoPlug
         private readonly object _geoLock = new object();
         private bool _geoRunning = false;
 
-        private void InstallGeoIP(string line, string[] args)
+        private void InstallGeoIP(ClsPlayer sender, string line, string[] args)
         {
             lock (this._geoLock)
             {
@@ -253,7 +253,7 @@ namespace MonoPlug
             }
         }
 
-        private void clr_versions(string line, string[] args)
+        private void clr_versions(ClsPlayer sender, string line, string[] args)
         {
             this.Message.Msg("Mono version : {0}\n", ClsMain.GetMonoVersion());
             try
@@ -305,7 +305,7 @@ namespace MonoPlug
             }
         }
 
-        private void Test_all(string line, string[] args)
+        private void Test_all(ClsPlayer sender, string line, string[] args)
         {
         }
     }

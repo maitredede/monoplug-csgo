@@ -89,7 +89,7 @@ namespace MonoPlugin
 		if(methodHandle == NULL) META_CONPRINT("MONO_CALL ERROR : methodHandle is NULL\n");
 
 		MonoObject* exception = NULL;
-		MonoObject* ret = mono_runtime_invoke(methodHandle, target, args, &exception);
+ 		MonoObject* ret = mono_runtime_invoke(methodHandle, target, args, &exception);
 		if(exception)
 		{
 			mono_print_unhandled_exception(exception);
@@ -135,5 +135,16 @@ namespace MonoPlugin
 			return false;
 		} 
 		return true;
+	}
+
+	MonoArray* CMonoHelpers::GetStringArray(MonoDomain* domain, mono_array_size_t argc, const char** nArray)
+	{
+		MonoArray* arr = mono_array_new(domain, mono_get_string_class(), argc);
+		for(mono_array_size_t i = 0; i<argc; i++)
+		{
+			MonoString* str = CMonoHelpers::GetString(domain, nArray[i]);
+			mono_array_set(arr, MonoString*, i, str);
+		}
+		return arr;
 	}
 }

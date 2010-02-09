@@ -53,14 +53,14 @@ namespace MaitreDede.TnT.AntiBoulet
                         {
                             this.Message.Msg("Player {0} is admin\n", player);
 
-                            this.Engine.ClientMessage(player, "TNT-AB: *******************************\n");
+                            this.Engine.ClientPrint(player, "TNT-AB: *******************************\n");
                             foreach (ClsPlayer dumped in players)
                             {
-                                this.Engine.ClientMessage(player, "TNT-AB: Name={0}\n", dumped.Name);
-                                this.Engine.ClientMessage(player, "TNT-AB: Steam={0}\n", dumped.SteamID);
-                                this.Engine.ClientMessage(player, "TNT-AB: IP={0}\n", dumped.IP);
+                                this.Engine.ClientPrint(player, "TNT-AB: Name={0}\n", dumped.Name);
+                                this.Engine.ClientPrint(player, "TNT-AB: Steam={0}\n", dumped.SteamID);
+                                this.Engine.ClientPrint(player, "TNT-AB: IP={0}\n", dumped.IP);
                             }
-                            this.Engine.ClientMessage(player, "TNT-AB: *******************************\n");
+                            this.Engine.ClientPrint(player, "TNT-AB: *******************************\n");
                             break;
                         }
                     }
@@ -96,13 +96,13 @@ namespace MaitreDede.TnT.AntiBoulet
                     if (player.IsAdmin(admin))
                     {
                         this.Message.Msg("Player {0} is admin\n", player);
-                        this.Engine.ClientMessage(player, "TNT-AB: ***** Client disconnected *****\n");
+                        this.Engine.ClientPrint(player, "TNT-AB: ***** Client disconnected *****\n");
                         if (!string.IsNullOrEmpty(reason))
-                            this.Engine.ClientMessage(player, "TNT-AB: Reason={0}\n", reason);
-                        this.Engine.ClientMessage(player, "TNT-AB: Name={0}\n", e.Client.Name);
-                        this.Engine.ClientMessage(player, "TNT-AB: Steam={0}\n", e.Client.SteamID);
-                        this.Engine.ClientMessage(player, "TNT-AB: IP={0}\n", e.Client.IP);
-                        this.Engine.ClientMessage(player, "TNT-AB: *******************************\n");
+                            this.Engine.ClientPrint(player, "TNT-AB: Reason={0}\n", reason);
+                        this.Engine.ClientPrint(player, "TNT-AB: Name={0}\n", e.Client.Name);
+                        this.Engine.ClientPrint(player, "TNT-AB: Steam={0}\n", e.Client.SteamID);
+                        this.Engine.ClientPrint(player, "TNT-AB: IP={0}\n", e.Client.IP);
+                        this.Engine.ClientPrint(player, "TNT-AB: *******************************\n");
                         players.Remove(player);
                         break;
                     }

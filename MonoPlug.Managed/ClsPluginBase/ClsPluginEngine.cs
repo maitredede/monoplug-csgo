@@ -82,32 +82,52 @@ namespace MonoPlug
             this._conEntry.ServerCommand(command);
         }
 
-        void IEngine.ClientMessage(ClsPlayer client, string message, params object[] args)
+        void IEngine.ClientPrint(ClsPlayer client, string message, params object[] args)
         {
             if (args != null && args.Length > 0)
             {
                 message = string.Format(message, args);
             }
 
-            this._conEntry.ClientMessage(client, message);
+            this._conEntry.ClientPrint(client, message);
         }
 
-        ClsSayCommand IEngine.RegisterSayCommand(string trigger, bool async, bool hidden)
+        ClsSayCommand IEngine.RegisterSayCommand(string trigger, bool async, bool hidden, ConCommandDelegate code)
         {
-            //TODO IEngine.RegisterSayCommand
+            Check.NonNullOrEmpty("trigger", trigger);
+            Check.NonNull("code", code);
+
+            InternalSayCommand cmd = this._conEntry.RegisterSayCommand(trigger, async, hidden, this._owner, code);
+            if (cmd != null)
+            {
+                return new ClsSayCommand(cmd);
+            }
             return null;
         }
 
         void IEngine.UnregisterSayCommand(ClsSayCommand command)
         {
-            //TODO IEngine.UnregisterSayCommand
+            Check.NonNull("command", command);
+            this._conEntry.UnregisterSayCommand(command.Internal);
         }
 
         void IEngine.ClientDialog(ClsPlayer player, string title, string message, Color color, int level, int time)
         {
             Check.NonNull("player", player);
 
-            this._conEntry.ClientDialog(player, title, message, color, level, time);
+            this._conEntry.ClientDialogMessage(player, title, message, color, level, time);
         }
+
+        #region IEngine Membres
+
+
+        void IEngine.ClientMenuMessage(ClsPlayer player, string title, string message, int level, int time)
+        {
+            Check.NonNull("player", player);
+
+            this._conEntry.ClientMenuMessage(player, title, message, level, time);
+        }
+
+        #endregion
     }
 }

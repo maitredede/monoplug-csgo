@@ -16,6 +16,7 @@ namespace MonoPlugin
 		static bool GetField(MonoClass* classPtr, MonoClassField*& fieldPtr, const char* fieldName, char *error, size_t maxlen);
 
 		static MonoString* GetString(MonoDomain* domain, const char* str);
+		static MonoArray* GetStringArray(MonoDomain* domain, mono_array_size_t argc, const char** nArray);
 		static MonoObject* CallMethod(void* target, MonoMethod* methodHandle, void** args = NULL);
 		static MonoObject* CallDelegate(MonoDelegate* delegateObject, void** args);
 		static MonoObject* ClassNew(MonoDomain* domain, MonoClass *cls);

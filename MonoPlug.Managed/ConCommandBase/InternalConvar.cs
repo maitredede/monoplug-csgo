@@ -17,6 +17,7 @@ namespace MonoPlug
             this._accessor = accessor;
         }
 
+        internal override bool IsCommand { get { return false; } }
         internal string DefaultValue { get { return this._defaultValue; } }
 
         internal void RaiseValueChanged()

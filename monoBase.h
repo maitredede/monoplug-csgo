@@ -12,4 +12,6 @@
 #include <mono/metadata/assembly.h>
 #include <mono/metadata/debug-helpers.h>
 
+#define MAXPLAYERS ABSOLUTE_PLAYER_LIMIT +1
+
 #endif //_MONOBASE_H_

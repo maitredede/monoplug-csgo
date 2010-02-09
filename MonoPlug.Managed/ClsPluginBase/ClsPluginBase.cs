@@ -8,12 +8,55 @@ namespace MonoPlug
     /// </summary>
     public abstract partial class ClsPluginBase : ObjectBase
     {
+        private sealed class ClsPluginMain : ClsPluginBase
+        {
+            internal ClsPluginMain()
+                : base()
+            {
+            }
+
+            public override string Name
+            {
+                get { return "DummyMain"; }
+            }
+
+            public override string Description
+            {
+                get { return "DummyMain"; }
+            }
+
+            protected override void Load()
+            {
+                throw new NotImplementedException();
+            }
+
+            protected override void Unload()
+            {
+                throw new NotImplementedException();
+            }
+        }
+
+        internal static readonly ClsPluginBase DummyMain = new ClsPluginMain();
+
         /// <summary>
         /// Default constructor
         /// </summary>
         public ClsPluginBase()
+#if DEBUG
+            : this(false)
+#endif
         {
         }
+
+#if DEBUG
+        private readonly bool _verbInit;
+
+        public ClsPluginBase(bool verboseInit)
+            : base()
+        {
+            this._verbInit = verboseInit;
+        }
+#endif
 
         #region Abstracts
         /// <summary>
@@ -43,20 +86,32 @@ namespace MonoPlug
 
         internal void Init(ClsProxy proxy, IMessage msg, IEventsAnchor anchor, IEngineWrapper entry, IThreadPool pool, IDatabaseConfig db)
         {
-            Check.NonNull("proxy", proxy);
-            Check.NonNull("msg", msg);
-            Check.NonNull("anchor", anchor);
-            Check.NonNull("entry", entry);
-            Check.NonNull("pool", pool);
-            Check.NonNull("db", db);
+#if DEBUG
+            if (this._verbInit) msg.DevMsg("ClsPluginBase::Init [{0}] (enter)\n", this.Name);
+            try
+            {
+#endif
+                Check.NonNull("proxy", proxy);
+                Check.NonNull("msg", msg);
+                Check.NonNull("anchor", anchor);
+                Check.NonNull("entry", entry);
+                Check.NonNull("pool", pool);
+                Check.NonNull("db", db);
 
-            this._proxy = proxy;
-            this._msg = new ClsPluginMessage(this, msg);
-            this._events = new ClsPluginEvents(this, anchor);
-            this._entry = new ClsPluginEngine(this, entry);
-            this._pool = new ClsPluginThreadPool(this, pool);
-            this._db = new ClsPluginDatabase(this, db, this._msg);
-            this.Load();
+                this._proxy = proxy;
+                this._msg = new ClsPluginMessage(this, msg);
+                this._events = new ClsPluginEvents(this, anchor);
+                this._entry = new ClsPluginEngine(this, entry);
+                this._pool = new ClsPluginThreadPool(this, pool);
+                this._db = new ClsPluginDatabase(this, db, this._msg);
+                this.Load();
+#if DEBUG
+            }
+            finally
+            {
+                if (this._verbInit) msg.DevMsg("ClsPluginBase::Init [{0}] (exit)\n", this.Name);
+            }
+#endif
         }
 
         ///// <summary>

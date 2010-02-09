@@ -19,7 +19,7 @@ namespace MonoPlug
             setup.ApplicationBase = this._assemblyPath;
             setup.ShadowCopyFiles = shadow.ToString();
             AppDomain dom = AppDomain.CreateDomain(name, null, setup);
-            proxy = ClsProxy.CreateInDomain<ClsProxy>(dom, this._msg);
+            proxy = ClsProxy.CreateProxy(dom, this._msg);
             return dom;
         }
     }

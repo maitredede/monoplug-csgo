@@ -1,6 +1,7 @@
 #include "CMonoCommand.h"
 #include "pluginterfaces.h"
 #include "CMonoHelpers.h"
+#include "CMonoPlugin.h"
 
 namespace MonoPlugin
 {
@@ -13,21 +14,31 @@ namespace MonoPlugin
 
 	void CMonoCommand::Dispatch(const CCommand &command)
 	{
-		MonoArray* arr = mono_array_new(g_Domain, mono_get_string_class(), command.ArgC());
-		mono_array_size_t max = (mono_array_size_t)command.ArgC();
-		for(mono_array_size_t i = 0; i<max; i++)
+		MonoArray* arr = CMonoHelpers::GetStringArray(g_Domain, command.ArgC(), command.ArgV());
+		//MonoArray* arr = mono_array_new(g_Domain, mono_get_string_class(), command.ArgC());
+		//mono_array_size_t max = (mono_array_size_t)command.ArgC();
+		//for(mono_array_size_t i = 0; i<max; i++)
+		//{
+		//	MonoString* str = CMonoHelpers::GetString(g_Domain, command.ArgV()[i]);
+		//	mono_array_set(arr, MonoString*, i, str);
+		//}
+
+		Assert(g_MonoPlugin.m_clientCommand == -1);
+
+		int index = g_MonoPlugin.m_clientCommand;
+
+		MonoObject* player = NULL;
+		if(index >= 0)
 		{
-			MonoString* str = CMonoHelpers::GetString(g_Domain, command.ArgV()[i]);
-			mono_array_set(arr, MonoString*, i, str);
+			player = g_MonoPlugin.m_players[index].Player->GetPlayer();
 		}
 
-		void* args[2]; 
-		args[0] = CMonoHelpers::GetString(g_Domain, command.ArgS());
-		args[1] = arr;
+		void* args[3]; 
+		args[0] = player;
+		args[1] = CMonoHelpers::GetString(g_Domain, command.ArgS());
+		args[2] = arr;
 
-		//META_CONPRINTF("Dispatch command BEGIN : %s\n", command.GetCommandString());
 		CMonoHelpers::CallDelegate(this->m_code, args);
-		//META_CONPRINTF("Dispatch command END : %s\n", command.GetCommandString());
 	};
 
 	int CMonoCommand::AutoCompleteSuggest( const char *partial, CUtlVector< CUtlString > &commands )

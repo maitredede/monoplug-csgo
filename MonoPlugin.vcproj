@@ -502,6 +502,7 @@
 			/>
 			<Tool
 				Name="VCCustomBuildTool"
+				CommandLine=""
 			/>
 			<Tool
 				Name="VCXMLDataGeneratorTool"
@@ -567,6 +568,7 @@
 			/>
 			<Tool
 				Name="VCPostBuildEventTool"
+				CommandLine=""
 			/>
 		</Configuration>
 		<Configuration
@@ -990,6 +992,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\CMonoPlayer.cpp"
+				>
+			</File>
+			<File
 				RelativePath="CMonoPlugin.cpp"
 				>
 			</File>
@@ -1010,11 +1016,23 @@
 				>
 			</File>
 			<File
+				RelativePath=".\CMonoPlugin_Players.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\CMonoPlugin_PluginBase.cpp"
 				>
 			</File>
 			<File
 				RelativePath=".\Events.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\Events_Player_Connection.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\Events_Player_Disconnection.cpp"
 				>
 			</File>
 			<File
@@ -1049,6 +1067,10 @@
 			</File>
 			<File
 				RelativePath=".\CMonoHelpers.h"
+				>
+			</File>
+			<File
+				RelativePath=".\CMonoPlayer.h"
 				>
 			</File>
 			<File

@@ -2,11 +2,14 @@
 #include "Events.h"
 #include "CMonoHelpers.h"
 #include "CMonoPlugin.h"
+#include "CMonoPlayer.h"
+#include "tools.h"
 
 namespace MonoPlugin
 {
 	MP_EVENT_CODE(server_spawn, g_MonoPlugin.m_event_server_spawn, g_MonoPlugin.m_ClsMain_event_server_spawn)
 	{
+		META_LOG(g_PLAPI, "********** %s **********\n", "MP_EVENT_CODE server_spawn");
 		void* args[9];
 		args[0] = CMonoHelpers::GetString(g_Domain, evt->GetString("hostname"));
 		args[1] = CMonoHelpers::GetString(g_Domain, evt->GetString("address"));
@@ -25,35 +28,11 @@ namespace MonoPlugin
 
 	MP_EVENT_CODE(server_shutdown, g_MonoPlugin.m_event_server_shutdown, g_MonoPlugin.m_ClsMain_event_server_shutdown)
 	{
+		META_LOG(g_PLAPI, "********** %s **********\n", "MP_EVENT_CODE server_shutdown");
 		void* args[1];
 		args[0] = CMonoHelpers::GetString(g_Domain, evt->GetString("reason"));
 		CMonoHelpers::CallMethod(g_MonoPlugin.m_main, this->m_method, args);
 	}
 
-	MP_EVENT_CODE_PERMANENT(player_connect, g_MonoPlugin.m_event_player_connect, g_MonoPlugin.m_ClsMain_event_player_connect)
-	{
-		void* args[5];
-		args[0] = CMonoHelpers::GetString(g_Domain, evt->GetString("name"));
-		int index = evt->GetInt("index");
-		args[1] = &index;
-		int userid = evt->GetInt("userid");
-		args[2] = &userid;
-		args[3] = CMonoHelpers::GetString(g_Domain, evt->GetString("networkid"));
-		args[4] = CMonoHelpers::GetString(g_Domain, evt->GetString("address"));
-		//args[5] = g_MonoPlugin.GetPlayer(userid);
-		CMonoHelpers::CallMethod(g_MonoPlugin.m_main, this->m_method, args);
-	}
-
-	MP_EVENT_CODE_PERMANENT(player_disconnect, g_MonoPlugin.m_event_player_disconnect, g_MonoPlugin.m_ClsMain_event_player_disconnect)
-	{
-		void* args[5];
-		int userid = evt->GetInt("userid");
-		args[0] = &userid;
-		args[1] = CMonoHelpers::GetString(g_Domain, evt->GetString("reason"));
-		args[2] = CMonoHelpers::GetString(g_Domain, evt->GetString("name"));
-		args[3] = CMonoHelpers::GetString(g_Domain, evt->GetString("networkid"));
-		args[4] = g_MonoPlugin.GetPlayer(userid);
-		CMonoHelpers::CallMethod(g_MonoPlugin.m_main, this->m_method, args);
-	}
 }
 

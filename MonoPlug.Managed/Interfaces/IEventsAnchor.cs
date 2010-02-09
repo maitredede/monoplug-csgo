@@ -13,6 +13,9 @@ namespace MonoPlug
         void ConsoleMessage_Attach(ClsPluginBase plugin);
         void ConsoleMessage_Detach(ClsPluginBase plugin);
 
+        void ClientConnect_Attach(ClsPluginBase plugin);
+        void ClientConnect_Detach(ClsPluginBase plugin);
+
         void ClientPutInServer_Attach(ClsPluginBase plugin);
         void ClientPutInServer_Detach(ClsPluginBase plugin);
 

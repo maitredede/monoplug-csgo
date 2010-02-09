@@ -42,27 +42,27 @@ namespace MonoPlug
             this._icmd = icmd;
         }
 
-        internal void Execute(string line, string[] args)
+        internal void Execute(ClsPlayer sender, string line, string[] args)
         {
 #if DEBUG
             NativeMethods.Mono_DevMsg(string.Format("ClsConCommand::Execute async={0}\n", this.Async));
 #endif
             if (this.Async)
             {
-                this.Plugin.ThreadPool.QueueUserWorkItem<string, string[]>(this.Exec, line, args);
+                this.Plugin.ThreadPool.QueueUserWorkItem<ClsPlayer, string, string[]>(this.Exec, sender, line, args);
             }
             else
             {
-                this.Exec(line, args);
+                this.Exec(sender, line, args);
             }
         }
 
-        private void Exec(string line, string[] args)
+        private void Exec(ClsPlayer sender, string line, string[] args)
         {
 #if DEBUG
             NativeMethods.Mono_DevMsg(string.Format("ClsConCommand::Exec async={0}\n", this.Async));
 #endif
-            this.Code(line, args);
+            this.Code(sender, line, args);
         }
 
 #if DEBUG

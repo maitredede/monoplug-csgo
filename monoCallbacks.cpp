@@ -123,6 +123,22 @@ namespace MonoPlugin
 		}
 	};
 
+	void Mono_ClientDialogText(int client, MonoString* title, MonoString* message, int level, int time)
+	{
+		edict_t* pEntity = EdictOfUserId(client);
+		if(pEntity && !pEntity->IsFree())
+		{
+			KeyValues *kv = new KeyValues("menu");
+			kv->SetString("title", mono_string_to_utf8(title));
+			kv->SetInt("level", level);
+			kv->SetInt("time", time);
+			kv->SetString("msg", mono_string_to_utf8(message));
+
+			g_helpers->CreateMessage(pEntity, DIALOG_TEXT, kv, g_vsp_callbacks);
+			kv->deleteThis();
+		}
+	}
+	
 
 	MonoString* Mono_Convar_GetString(uint64 nativeID)
 	{
@@ -268,5 +284,15 @@ namespace MonoPlugin
 		{
 			g_engine->ClientPrintf(e, mono_string_to_utf8(message));
 		}
+	}
+
+	void Mono_EventAttach_ClientConnect()
+	{
+		g_MonoPlugin.Hook_Attach_ClientConnect();
+	}
+
+	void Mono_EventDetach_ClientConnect()
+	{
+		g_MonoPlugin.Hook_Detach_ClientConnect();
 	}
 }

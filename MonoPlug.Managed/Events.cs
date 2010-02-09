@@ -17,5 +17,6 @@ namespace MonoPlug
         public static readonly object ServerShutdown = new object();
         public static readonly object PlayerConnect = new object();
         public static readonly object PlayerDisconnect = new object();
+        public static readonly object ClientConnect = new object();
     }
 }

@@ -16,9 +16,30 @@ namespace MonoPlug
         /// </summary>
         public string AppDomainName { get { return this._current.FriendlyName; } }
 
+        internal static ClsProxy CreateProxy(AppDomain target, IMessage msg)
+        {
+            //Load the System assembly
+            Assembly remoteSystemAssemnly = target.Load(typeof(Assembly).Assembly.FullName);
+            //Get the "Assembly" type
+            Type remoteAssemblyType = remoteSystemAssemnly.GetType(typeof(Assembly).FullName);
+            //call the Assenmnly.Load function to load assembly containing proxy class
+            Assembly remoteAssembly = (Assembly)remoteAssemblyType.InvokeMember("LoadFile",
+                BindingFlags.Public | BindingFlags.Static | BindingFlags.InvokeMethod,
+                null, null,
+                new object[] { Assembly.GetExecutingAssembly().Location });
+            Type remoteProxyType = remoteAssembly.GetType(typeof(ClsProxy).FullName);
+
+            ClsProxy proxy = (ClsProxy)target.CreateInstanceAndUnwrap(remoteAssembly.FullName, remoteProxyType.FullName);
+
+            return proxy;
+        }
+
         public ClsProxy()
         {
             this._current = AppDomain.CurrentDomain;
+#if DEBUG
+            NativeMethods.Mono_DevMsg(string.Format("New Proxy in domain [{0}]\n", this._current.FriendlyName));
+#endif
         }
 
         /// <summary>
@@ -30,7 +51,9 @@ namespace MonoPlug
         /// <returns>Plugin instance</returns>
         public ClsPluginBase CreatePluginClass(IMessage msg, string assemblyBaseDir, PluginDefinition plugin)
         {
-            return (ClsPluginBase)CreateInDomain(this._current, msg, Path.Combine(assemblyBaseDir, plugin.File), plugin.Type);
+            Assembly asm = Assembly.LoadFile(Path.Combine(assemblyBaseDir, plugin.File));
+            Type t = asm.GetType(plugin.Type);
+            return (ClsPluginBase)Activator.CreateInstance(t);
         }
 
         public IMessage CreatePluginMessage(ClsPluginBase owner, IMessage msg)
@@ -43,80 +66,15 @@ namespace MonoPlug
             return new ClsPluginEngine(owner, main);
         }
 
-        //[Obsolete("Rewriting", true)]
-        //public ClsConVar CreateConVar(IMessage msg, IThreadPool pool, ClsPluginBase plugin, string name, string help, FCVAR flags, IConVarValue val, string defaultValue)
-        //{
-        //    return new ClsConVar(msg, pool, plugin, name, help, flags, val, defaultValue);
-        //}
-
-        //[Obsolete("Rewriting", true)]
-        //public ClsConCommand CreateCommand(IMessage msg, IThreadPool pool, ClsPluginBase plugin, string name, string help, FCVAR flags, ConCommandDelegate code, ConCommandCompleteDelegate complete, bool async)
-        //{
-        //    return new ClsConCommand(msg, pool, plugin, name, help, flags, code, complete, async);
-        //}
-
-        public static T CreateInDomain<T>(AppDomain domain, IMessage msg) where T : ObjectBase
-        {
-            return CreateInDomain<T>(domain, msg, typeof(T).FullName);
-        }
-
-        public static T CreateInDomain<T>(AppDomain domain, IMessage msg, string typeName) where T : ObjectBase
-        {
-            return (T)CreateInDomain(domain, msg, typeof(T).Assembly.Location, typeName);
-        }
-        public static object CreateInDomain(AppDomain domain, IMessage msg, string assemblyFile, string typeName)
-        {
-            //#if DEBUG
-            //            msg.DevMsg("Entering Remote::CreateInDomain in [{0}] for [{1}]...\n", AppDomain.CurrentDomain.FriendlyName, domain.FriendlyName);
-            //            try
-            //            {
-            //                msg.DevMsg("  Calling {0}.LoadFile()\n", typeof(Assembly).FullName);
-            //#endif
-            Assembly remoteSystemAssemnly = domain.Load(typeof(Assembly).Assembly.FullName);
-            Type remoteAssemblyType = remoteSystemAssemnly.GetType(typeof(Assembly).FullName);
-            Assembly remoteAssembly = (Assembly)remoteAssemblyType.InvokeMember("LoadFile", BindingFlags.Public | BindingFlags.Static | BindingFlags.InvokeMethod, null, null, new object[] { assemblyFile });
-
-            //#if DEBUG
-            //                msg.DevMsg("  Creating object instance...\n");
-            //#endif
-            object item = domain.CreateInstanceAndUnwrap(remoteAssembly.FullName, typeName);
-
-            //#if DEBUG
-            //                msg.DevMsg("  Creating object instance OK !\n");
-            //#endif
-            return item;
-            //#if DEBUG
-            //            }
-            //            finally
-            //            {
-            //                msg.DevMsg("Exiting Remote::CreateInDomain...\n");
-            //            }
-            //#endif
-        }
-
         public PluginDefinition[] GetPluginsFromDirectory(IMessage msg, string path)
         {
-            //#if DEBUG
-            //            msg.DevMsg("GetPluginsFromDirectory: Scanning path {0}\n", path);
-            //            try
-            //            {
-            //#endif
             List<PluginDefinition> lst = new List<PluginDefinition>();
             string[] files = Directory.GetFiles(path, "*.dll", SearchOption.TopDirectoryOnly);
-            //#if DEBUG
-            //                msg.DevMsg("   Files count : {0}\n", files.Length);
-            //#endif
             foreach (string file in files)
             {
-                //#if DEBUG
-                //                    msg.DevMsg("   Scanning file {0}\n", file);
-                //#endif
                 try
                 {
                     string filename = Path.Combine(path, file);
-                    //#if DEBUG
-                    //                        msg.DevMsg("   Filename is  {0}\n", filename);
-                    //#endif
                     Assembly asm = Assembly.LoadFile(filename);
                     foreach (Type t in asm.GetTypes())
                     {
@@ -124,9 +82,6 @@ namespace MonoPlug
                         {
                             if (!t.IsAbstract && t.IsSubclassOf(typeof(ClsPluginBase)) && t.IsPublic)
                             {
-                                //#if DEBUG
-                                //                                    msg.DevMsg("   Type is ClsPluginBase {0}\n", t.FullName);
-                                //#endif
                                 ConstructorInfo ctor = t.GetConstructor(Type.EmptyTypes);
                                 if (ctor != null)
                                 {
@@ -136,9 +91,6 @@ namespace MonoPlug
                                     definition.Name = plugin.Name;
                                     definition.Type = plugin.GetType().FullName;
                                     definition.Description = plugin.Description;
-                                    //#if DEBUG
-                                    //                                        msg.DevMsg("   Found Plugin {0}\n", plugin.Name);
-                                    //#endif
                                     lst.Add(definition);
                                 }
                             }
@@ -146,9 +98,6 @@ namespace MonoPlug
                         catch (Exception ex)
                         {
                             msg.Warning("Can't create type : '{0}' : {1}\n", t.FullName, ex.Message);
-                            //#if DEBUG
-                            //                                msg.Warning(ex);
-                            //#endif
                         }
                     }
                 }
@@ -159,25 +108,15 @@ namespace MonoPlug
                 catch (Exception ex)
                 {
                     msg.Warning("Can't load file : '{0}', {1}\n", file, ex.Message);
-                    //#if DEBUG
-                    //                        msg.Warning(ex);
-                    //#endif
                 }
             }
             return lst.ToArray();
-            //#if DEBUG
-            //            }
-            //            finally
-            //            {
-            //                msg.DevMsg("GetPluginsFromDirectory: exit\n");
-            //            }
-            //#endif
         }
 
 #if DEBUG
-        internal static void DumpDomainAssemblies(IMessage msg)
+        internal void DumpDomainAssemblies(IMessage msg)
         {
-            Assembly[] arr = AppDomain.CurrentDomain.GetAssemblies();
+            Assembly[] arr = this._current.GetAssemblies();
             msg.DevMsg("DumpCurrentDomainAssemblies : {0} loaded\n", arr.Length);
             for (int i = 0; i < arr.Length; i++)
             {
@@ -186,5 +125,36 @@ namespace MonoPlug
             msg.DevMsg("DumpCurrentDomainAssemblies : End\n");
         }
 #endif
+
+        internal static void WriteAssemblyVersion(IMessage msg, Type type, string format)
+        {
+            try
+            {
+                AssemblyName asmName = type.Assembly.GetName();
+                if (asmName != null)
+                {
+                    msg.Msg(format, asmName.Version.ToString(4));
+                }
+                else
+                {
+                    object[] arr = type.Assembly.GetCustomAttributes(typeof(AssemblyVersionAttribute), true);
+                    if (arr != null && arr.Length > 0)
+                    {
+                        foreach (AssemblyVersionAttribute att in arr)
+                        {
+                            msg.Msg(format, att.Version);
+                        }
+                    }
+                    else
+                    {
+                        msg.Msg(format, "no version");
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                msg.Warning(format, ex.Message);
+            }
+        }
     }
 }

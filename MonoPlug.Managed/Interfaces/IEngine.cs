@@ -59,7 +59,7 @@ namespace MonoPlug
         /// <param name="client">Target client</param>
         /// <param name="format">Message format</param>
         /// <param name="args">Message arguments</param>
-        void ClientMessage(ClsPlayer client, string format, params object[] args);
+        void ClientPrint(ClsPlayer client, string format, params object[] args);
         /// <summary>
         /// Register a say command
         /// </summary>
@@ -67,12 +67,13 @@ namespace MonoPlug
         /// <param name="async">Command is executed asynchronously</param>
         /// <param name="hidden">Prevent text from being shown</param>
         /// <returns>SayCommand instance, or NULL if failed</returns>
-        ClsSayCommand RegisterSayCommand(string trigger, bool async, bool hidden);
+        ClsSayCommand RegisterSayCommand(string trigger, bool async, bool hidden, ConCommandDelegate code);
         /// <summary>
         /// Unregister a say command
         /// </summary>
         /// <param name="command">Command to unregister</param>
         void UnregisterSayCommand(ClsSayCommand command);
         void ClientDialog(ClsPlayer player, string title, string message, Color color, int level, int time);
+        void ClientMenuMessage(ClsPlayer player, string title, string message, int level, int time);
     }
 }

@@ -51,6 +51,9 @@ namespace MonoPlug
         [MethodImpl(MethodImplOptions.InternalCall)]
         internal static extern void Mono_ClientDialogMessage(int client, string title, string message, int a, int r, int g, int b, int level, int time);
         [MethodImpl(MethodImplOptions.InternalCall)]
+        internal static extern void Mono_ClientDialogText(int client, string title, string message, int level, int time);
+
+        [MethodImpl(MethodImplOptions.InternalCall)]
         internal static extern void Mono_ServerCommand(string command);
         [MethodImpl(MethodImplOptions.InternalCall)]
         internal static extern void Mono_ClientMessage(int userid, string command);
@@ -71,5 +74,10 @@ namespace MonoPlug
         internal static extern void Mono_EventAttach_ClientPutInServer();
         [MethodImpl(MethodImplOptions.InternalCall)]
         internal static extern void Mono_EventDetach_ClientPutInServer();
+
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        internal static extern void Mono_EventAttach_ClientConnect();
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        internal static extern void Mono_EventDetach_ClientConnect();
     }
 }
