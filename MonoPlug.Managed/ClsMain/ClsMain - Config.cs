@@ -43,7 +43,7 @@ namespace MonoPlug
             }
             catch (Exception ex)
             {
-                Console.WriteLine(this._msg.GetExceptionText(ex));
+                Console.WriteLine(this.GetExceptionText(ex));
                 this._msg.Warning(ex);
                 ok = false;
                 conf = null;

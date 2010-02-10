@@ -54,7 +54,7 @@ namespace MonoPlug
         /// Thread pool engine
         /// </summary>
         private readonly ClsThreadPool _thPool;
-        private readonly ClsMainMessage _msg;
+        private readonly IMessage _msg;
         private readonly ClsMainConvarValue _cvarValue;
 
         public ClsMain()
@@ -72,7 +72,7 @@ namespace MonoPlug
 
             this._assemblyPath = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
 
-            this._msg = new ClsMainMessage(this);
+            this._msg = (IMessage)this;
             this._thPool = new ClsThreadPool(this._msg);
             this._cvarValue = new ClsMainConvarValue(this);
         }

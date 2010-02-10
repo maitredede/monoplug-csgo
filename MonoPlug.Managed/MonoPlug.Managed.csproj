@@ -43,6 +43,7 @@
     <Compile Include="ClsMain\ClsMain - IEngineWrapper - ClientDialog.cs" />
     <Compile Include="ClsMain\ClsMain - IEngineWrapper - ClientPrint.cs" />
     <Compile Include="ClsMain\ClsMain - IEngineWrapper - ServerCommand.cs" />
+    <Compile Include="ClsMain\ClsMain - IMessage.cs" />
     <Compile Include="ClsMain\Events\_InitEvents.cs" />
     <Compile Include="ClsMain\Events\ClientConnect.cs" />
     <Compile Include="ClsMain\Events\LevelShutdown.cs" />
@@ -92,7 +93,6 @@
     <Compile Include="ClsMain\ClsMain - AllPluginsLoaded.cs" />
     <Compile Include="ClsMain\ClsMain - Config.cs" />
     <Compile Include="ClsMain\ClsMain - MySQL.cs" />
-    <Compile Include="ClsMainMessage.cs" />
     <Compile Include="ClsPluginBase\ClsPluginEngine.cs" />
     <Compile Include="ClsPluginBase\ClsPluginMessage.cs" />
     <Compile Include="Interfaces\IEngineWrapper.cs" />
