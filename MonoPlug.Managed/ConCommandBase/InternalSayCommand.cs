@@ -28,6 +28,7 @@ namespace MonoPlug
 
         public string Name { get { return this._name; } }
         public ClsPluginBase Plugin { get { return this._plugin; } }
+        public bool Hide { get { return this._hidden; } }
 
         public void Execute(ClsPlayer sender, string line, string[] args)
         {

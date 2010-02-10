@@ -19,7 +19,23 @@ namespace MonoPlug
             this._lckSayCommands.AcquireReaderLock(Timeout.Infinite);
             try
             {
-                return false;
+                string[] arr = text.Split(new char[] { ' ' }, 2);
+                string test = arr[0].ToLowerInvariant();
+                if (this._dicSayCommands.ContainsKey(test))
+                {
+                    bool hide = false;
+                    List<InternalSayCommand> lst = this._dicSayCommands[test];
+                    foreach (InternalSayCommand cmd in lst)
+                    {
+                        cmd.Execute(player, text, args);
+                        hide |= cmd.Hide;
+                    }
+                    return hide;
+                }
+                else
+                {
+                    return false;
+                }
             }
             finally
             {
@@ -54,14 +70,14 @@ namespace MonoPlug
 
                 //Add SayCmd to name-indexed list
                 List<InternalSayCommand> lst;
-                if (this._dicSayCommands.ContainsKey(name))
+                if (this._dicSayCommands.ContainsKey(name.ToLowerInvariant()))
                 {
-                    lst = this._dicSayCommands[name];
+                    lst = this._dicSayCommands[name.ToLowerInvariant()];
                 }
                 else
                 {
                     lst = new List<InternalSayCommand>();
-                    this._dicSayCommands.Add(name, lst);
+                    this._dicSayCommands.Add(name.ToLowerInvariant(), lst);
                 }
                 lst.Add(cmd);
 
@@ -94,16 +110,16 @@ namespace MonoPlug
             this._lckSayCommands.AcquireWriterLock(Timeout.Infinite);
             try
             {
-                if (this._dicSayCommands.ContainsKey(command.Name))
+                if (this._dicSayCommands.ContainsKey(command.Name.ToLowerInvariant()))
                 {
-                    List<InternalSayCommand> lst = this._dicSayCommands[command.Name];
+                    List<InternalSayCommand> lst = this._dicSayCommands[command.Name.ToLowerInvariant()];
                     if (lst.Contains(command))
                     {
                         lst.Remove(command);
                     }
                     if (lst.Count == 0)
                     {
-                        this._dicSayCommands.Remove(command.Name);
+                        this._dicSayCommands.Remove(command.Name.ToLowerInvariant());
                     }
                 }
 
