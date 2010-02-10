@@ -66,6 +66,7 @@ namespace MonoPlug
         /// <param name="trigger">Trigger text</param>
         /// <param name="async">Command is executed asynchronously</param>
         /// <param name="hidden">Prevent text from being shown</param>
+        /// <param name="code">Code of command</param>
         /// <returns>SayCommand instance, or NULL if failed</returns>
         ClsSayCommand RegisterSayCommand(string trigger, bool async, bool hidden, ConCommandDelegate code);
         /// <summary>
@@ -73,7 +74,24 @@ namespace MonoPlug
         /// </summary>
         /// <param name="command">Command to unregister</param>
         void UnregisterSayCommand(ClsSayCommand command);
+        /// <summary>
+        /// Show a Dialog message on client
+        /// </summary>
+        /// <param name="player">Client to show dialog</param>
+        /// <param name="title">Title</param>
+        /// <param name="message">Message</param>
+        /// <param name="color">Color</param>
+        /// <param name="level">Level</param>
+        /// <param name="time">Time</param>
         void ClientDialog(ClsPlayer player, string title, string message, Color color, int level, int time);
+        /// <summary>
+        /// Show a menu message on client
+        /// </summary>
+        /// <param name="player">Client to show dialog</param>
+        /// <param name="title">Title</param>
+        /// <param name="message">Message</param>
+        /// <param name="level">Level</param>
+        /// <param name="time">Time</param>
         void ClientMenuMessage(ClsPlayer player, string title, string message, int level, int time);
     }
 }

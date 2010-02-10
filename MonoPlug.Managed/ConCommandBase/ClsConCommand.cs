@@ -9,10 +9,6 @@ namespace MonoPlug
     /// </summary>
     public sealed class ClsConCommand : ClsConCommandBase
     {
-        //private readonly ConCommandDelegate _code;
-        //private readonly ConCommandCompleteDelegate _complete;
-        //private readonly bool _async;
-
         /// <summary>
         /// The delegate to execute for command
         /// </summary>

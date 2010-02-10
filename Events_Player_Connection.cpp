@@ -13,7 +13,7 @@ namespace MonoPlugin
 	MP_EVENT_CODE(player_connect, g_MonoPlugin.m_event_player_connect, g_MonoPlugin.m_ClsMain_event_player_connect)
 	{
 #ifdef _DEBUG
-		META_LOG(g_PLAPI, "********** %s **********\n", "MP_EVENT_CODE player_connect");
+		META_CONPRINTF("********** %s **********\n", "MP_EVENT_CODE player_connect");
 #endif
 		int index = evt->GetInt("index") + 1;
 		const char* name = evt->GetString("name");
@@ -45,7 +45,7 @@ namespace MonoPlugin
 	bool CMonoPlugin::Hook_Raise_ClientConnect(edict_t *pEntity, const char *pszName, const char *pszAddress, char *reject, int maxrejectlen)
 	{
 #ifdef _DEBUG
-		META_LOG(g_PLAPI, "********** %s **********\n", "Hook_Raise_ClientConnect");
+		META_CONPRINTF("********** %s **********\n", "Hook_Raise_ClientConnect");
 #endif
 		int index = g_engine->IndexOfEdict(pEntity);
 		//int userid = g_engine->GetPlayerUserId(pEntity);
@@ -68,7 +68,7 @@ namespace MonoPlugin
 	void CMonoPlugin::Hook_Raise_ClientPutInServer(edict_t *pEntity, const char* playername)
 	{
 #ifdef _DEBUG
-		META_LOG(g_PLAPI, "********** %s **********\n", "Hook_Raise_ClientPutInServer");
+		META_CONPRINTF("********** %s **********\n", "Hook_Raise_ClientPutInServer");
 #endif
 		if(!pEntity || pEntity->IsFree())
 		{
@@ -93,7 +93,7 @@ namespace MonoPlugin
 	void CMonoPlugin::Hook_NetworkIDValidated(const char *pszUserName, const char *pszNetworkID)
 	{
 #ifdef _DEBUG
-		META_LOG(g_PLAPI, "********** %s **********\n", "Hook_NetworkIDValidated");
+		META_CONPRINTF("********** %s **********\n", "Hook_NetworkIDValidated");
 #endif
 		for(int i = 0; i < MAXPLAYERS + 2; i++)
 		{

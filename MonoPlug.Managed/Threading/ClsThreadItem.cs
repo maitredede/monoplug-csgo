@@ -30,16 +30,6 @@ namespace MonoPlug
 
         public void Execute()
         {
-#if DEBUG
-            //NativeMethods.Mono_DevMsg(string.Format("ClsThreadItem::Execute() in [{0}]\n", AppDomain.CurrentDomain.FriendlyName));
-            try
-            {
-                //NativeMethods.Mono_DevMsg(string.Format("  Target method is {0} in {1}\n", this._code.Method.Name, this._code.Method.DeclaringType.AssemblyQualifiedName));
-            }
-            catch
-            {
-            }
-#endif
             try
             {
                 this._return = this._code(this._param);
@@ -50,9 +40,6 @@ namespace MonoPlug
             }
             finally
             {
-#if DEBUG
-                //NativeMethods.Mono_DevMsg(string.Format("ClsThreadItem::Execute() in [{0}] Done.\n", AppDomain.CurrentDomain.FriendlyName));
-#endif
                 this._latch.Set();
             }
         }

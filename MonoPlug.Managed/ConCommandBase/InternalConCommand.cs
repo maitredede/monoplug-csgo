@@ -39,25 +39,11 @@ namespace MonoPlug
             if (this.Public != null)
             {
                 //ClsPlugin
-#if DEBUG
-                try
-                {
-                    NativeMethods.Mono_DevMsg(string.Format("InternalConCommand::DoExec Plugin={0} async={1} public={2}\n", this.Plugin.Name, this._async, this.Public ?? (object)"<null>"));
-                    NativeMethods.Mono_DevMsg(string.Format("InternalConCommand::DoExec Plugin={0} async={1}\n", this.Plugin.Name, this._async));
-#endif
-                    this.Public.Execute(sender, line, args);
-#if DEBUG
-                }
-                finally
-                {
-                    NativeMethods.Mono_DevMsg(string.Format("InternalConCommand::DoExec exit\n"));
-                }
-#endif
+                this.Public.Execute(sender, line, args);
             }
             else
             {
                 //ClsMain
-                NativeMethods.Mono_DevMsg(string.Format("InternalConCommand::DoExec Main async={0}\n", this._async));
                 if (this._async)
                 {
                     this._thPool.QueueUserWorkItem(this.DoExecMain, sender, line, args);

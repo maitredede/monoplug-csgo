@@ -49,36 +49,6 @@ namespace MonoPlug
             }
         }
 
-        //private string[] clr_plugin_load_complete(string partial)
-        //{
-        //    if (this._pluginCache == null)
-        //        this._pluginCache = new PluginDefinition[] { };
-        //    List<string> lst = new List<string>();
-
-        //    string[] args = partial.Split(new char[] { ' ' }, 2, StringSplitOptions.RemoveEmptyEntries);
-        //    if (args.Length == 2)
-        //    {
-        //        if (string.IsNullOrEmpty(args[1]))
-        //        {
-        //            foreach (PluginDefinition desc in this._pluginCache)
-        //            {
-        //                lst.Add(string.Format("{0} {1}", args[0], desc.Name));
-        //            }
-        //        }
-        //        else
-        //        {
-        //            foreach (PluginDefinition desc in this._pluginCache)
-        //            {
-        //                if (desc.Name.ToUpperInvariant().Contains(args[1].ToUpperInvariant()))
-        //                {
-        //                    lst.Add(string.Format("{0} {1}", args[0], desc.Name));
-        //                }
-        //            }
-        //        }
-        //    }
-        //    return lst.ToArray();
-        //}
-
         /// <summary>
         /// Load a plugin
         /// </summary>
@@ -124,21 +94,7 @@ namespace MonoPlug
                         ClsProxy remoteProxy;
                         dom = this.CreateAppDomain(def.Name, out remoteProxy);
                         plugin = remoteProxy.CreatePluginClass(this._msg, this._assemblyPath, def);
-                        //IMessage pluginMessage = remoteProxy.CreatePluginMessage(plugin, this._msg);
-                        //IConItem pluginConItem = remoteProxy.CreatePluginConItem(plugin, this);
-#if DEBUG
-                        this._msg.DevMsg("ClsMain::LoadPlugin BeforeInit...\n");
-                        //this._msg.DevMsg("ClsMain::LoadPlugin {0} = {1}\n", "plugin", plugin ?? (object)"<null>");
-                        //this._msg.DevMsg("ClsMain::LoadPlugin {0} = {1}\n", "remoteProxy", remoteProxy ?? (object)"<null>");
-                        //this._msg.DevMsg("ClsMain::LoadPlugin {0} = {1}\n", "msg", pluginMessage ?? (object)"<null>");
-                        //this._msg.DevMsg("ClsMain::LoadPlugin {0} = {1}\n", "database", this ?? (object)"<null>");
-                        //this._msg.DevMsg("ClsMain::LoadPlugin {0} = {1}\n", "conImtem", pluginConItem ?? (object)"<null>");
-                        //this._msg.DevMsg("ClsMain::LoadPlugin {0} = {1}\n", "engine", this ?? (object)"<null>");
-#endif
                         plugin.Init(remoteProxy, this._msg, this, this, this._thPool, this);
-#if DEBUG
-                        this._msg.DevMsg("ClsMain::LoadPlugin AfterInit...\n");
-#endif
 
                         this._msg.Msg("Plugin '{0}' loaded\n", plugin.Name);
                         LockCookie cookie = this._lckPlugins.UpgradeToWriterLock(Timeout.Infinite);

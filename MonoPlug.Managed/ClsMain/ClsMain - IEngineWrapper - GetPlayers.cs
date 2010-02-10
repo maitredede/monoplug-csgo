@@ -12,34 +12,14 @@ namespace MonoPlug
         private readonly Dictionary<int, ClsPlayer> _lstPlayers = new Dictionary<int, ClsPlayer>();
         private readonly ReaderWriterLock _lckPlayers = new ReaderWriterLock();
 
-        ClsPlayer[] IEngineWrapper.GetPlayers()
-        {
-            List<ClsPlayer> lst = new List<ClsPlayer>();
-            this._lckPlayers.AcquireReaderLock(Timeout.Infinite);
-            try
-            {
-                foreach (int id in this._lstPlayers.Keys)
-                {
-                    lst.Add(this._lstPlayers[id]);
-                }
-                return lst.ToArray();
-            }
-            finally
-            {
-                this._lckPlayers.ReleaseReaderLock();
-            }
-        }
-
         private void AddPlayer(ClsPlayer player)
         {
+            if (player == null) return;
             this._lckPlayers.AcquireWriterLock(Timeout.Infinite);
             try
             {
                 if (this._lstPlayers.ContainsKey(player.UserId))
                 {
-#if DEBUG
-                    this._msg.DevMsg("ClsMain::AddPlayer : copy\n");
-#endif
                     ClsPlayer current = this._lstPlayers[player.UserId];
                     foreach (PropertyInfo prop in player.GetType().GetProperties())
                     {
@@ -51,9 +31,6 @@ namespace MonoPlug
                 }
                 else
                 {
-#if DEBUG
-                    this._msg.DevMsg("ClsMain::AddPlayer : new\n");
-#endif
                     this._lstPlayers.Add(player.UserId, player);
                 }
             }
@@ -80,26 +57,37 @@ namespace MonoPlug
             }
         }
 
-        void IEngineWrapper.ServerCommand(string command)
+        private void ClearPlayer()
         {
-            this.InterThreadCall<object, string>(this.ServerCommand_CALL, command);
+            this._lckPlayers.AcquireWriterLock(Timeout.Infinite);
+            try
+            {
+                this._lstPlayers.Clear();
+            }
+            finally
+            {
+                this._lckPlayers.ReleaseWriterLock();
+            }
         }
 
-        private object ServerCommand_CALL(string command)
+        ClsPlayer[] IEngineWrapper.GetPlayers()
         {
-            NativeMethods.Mono_ServerCommand(command);
-            return null;
-        }
-
-        void IEngineWrapper.ClientPrint(ClsPlayer client, string message)
-        {
-            this.InterThreadCall<object, CTuple<int, string>>(this.ClientMessage_CALL, new CTuple<int, string>(client.UserId, message));
-        }
-
-        private object ClientMessage_CALL(CTuple<int, string> data)
-        {
-            NativeMethods.Mono_ClientMessage(data.Item1, data.Item2);
-            return null;
+            List<ClsPlayer> lst = new List<ClsPlayer>();
+            this._lckPlayers.AcquireReaderLock(Timeout.Infinite);
+            try
+            {
+                foreach (int id in this._lstPlayers.Keys)
+                {
+                    ClsPlayer player = this._lstPlayers[id];
+                    if (player.IsConnecting || player.IsConnected)
+                        lst.Add(player);
+                }
+                return lst.ToArray();
+            }
+            finally
+            {
+                this._lckPlayers.ReleaseReaderLock();
+            }
         }
     }
 }

@@ -15,6 +15,7 @@ namespace MonoPlug
 
             NativeMethods.Mono_EventAttach_player_connect();
             NativeMethods.Mono_EventAttach_player_disconnect();
+            NativeMethods.Mono_EventAttach_LevelShutdown();
         }
 
         private void ShutdownEvents()
@@ -25,6 +26,7 @@ namespace MonoPlug
 
             NativeMethods.Mono_EventDetach_player_connect();
             NativeMethods.Mono_EventDetach_player_disconnect();
+            NativeMethods.Mono_EventDetach_LevelShutdown();
         }
     }
 }

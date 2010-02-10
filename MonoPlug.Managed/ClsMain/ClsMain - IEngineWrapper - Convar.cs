@@ -10,11 +10,6 @@ namespace MonoPlug
     {
         InternalConvar IEngineWrapper.RegisterConvar(string name, string help, FCVAR flags, string defaultValue)
         {
-            Check.NonNullOrEmpty("name", name);
-            Check.NonNullOrEmpty("help", help);
-            Check.ValidFlags(flags, "flags");
-            Check.NonNull("defaultValue", defaultValue);
-
             this._lckConCommandBase.AcquireReaderLock(Timeout.Infinite);
             try
             {

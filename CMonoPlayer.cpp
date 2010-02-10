@@ -21,14 +21,14 @@ namespace MonoPlugin
 		return this->m_obj;
 	}
 
-	CMonoPlayer::~CMonoPlayer()
-	{
-		if(this->m_obj)
-		{
-			delete this->m_obj;
-			this->m_obj = NULL;
-		}
-	}
+	//CMonoPlayer::~CMonoPlayer()
+	//{
+	//	if(this->m_obj)
+	//	{
+	//		delete this->m_obj;
+	//		this->m_obj = NULL;
+	//	}
+	//}
 
 	bool CMonoPlayer::IsBot()
 	{

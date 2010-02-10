@@ -10,13 +10,6 @@ namespace MonoPlug
     {
         InternalConCommand IEngineWrapper.RegisterConCommand(string name, string help, FCVAR flags, ConCommandDelegate code, ConCommandCompleteDelegate complete, bool async)
         {
-#if DEBUG
-            Check.NonNull("code", code);
-            Check.NonNullOrEmpty("name", name);
-            Check.NonNullOrEmpty("help", help);
-            Check.ValidFlags(flags, "flags");
-#endif
-
             this._lckConCommandBase.AcquireReaderLock(Timeout.Infinite);
             try
             {
@@ -66,9 +59,6 @@ namespace MonoPlug
 
         void IEngineWrapper.UnregisterConCommand(InternalConCommand command)
         {
-#if DEBUG
-            Check.NonNull("command", command);
-#endif
             this._lckConCommandBase.AcquireWriterLock(Timeout.Infinite);
             try
             {

@@ -17,11 +17,6 @@ namespace MonoPlug
 
         internal ClsPluginDatabase(ClsPluginBase owner, IDatabaseConfig db, IMessage msg)
         {
-#if DEBUG
-            Check.NonNull("owner", owner);
-            Check.NonNull("db", db);
-            Check.NonNull("msg", msg);
-#endif
             this._owner = owner;
             this._db = db;
             this._msg = msg;

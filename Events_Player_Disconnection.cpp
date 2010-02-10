@@ -10,7 +10,7 @@ namespace MonoPlugin
 	void CMonoPlugin::Hook_Raise_ClientDisconnect(edict_t *pEntity)
 	{
 #ifdef _DEBUG
-		META_LOG(g_PLAPI, "********** %s **********\n", "Hook_Raise_ClientDisconnect");
+		META_CONPRINTF("********** %s **********\n", "Hook_Raise_ClientDisconnect");
 #endif
 		if(!pEntity || pEntity->IsFree())
 		{
@@ -18,21 +18,24 @@ namespace MonoPlugin
 		}
 
 		int index = g_engine->IndexOfEdict(pEntity);
-		int userid = g_engine->GetPlayerUserId(pEntity);
 
-		g_MonoPlugin.m_players[index].Player->SetConnected(false, false);
+		MonoObject* player = NULL;
+		if(g_MonoPlugin.m_players[index].Player)
+		{
+			g_MonoPlugin.m_players[index].Player->SetConnected(false, false);
+			player = g_MonoPlugin.m_players[index].Player->GetPlayer();
+		}
 
-		//TODO : FIXME
+		void* args[1];
+		args[0] = player;
+		CMonoHelpers::CallMethod(this->m_main, this->m_ClsMain_Raise_ClientDisconnect, args);
 
-		//void* args[1];
-		//args[0] = this->m_players[index].MPlayer;
-		//CMonoHelpers::CallMethod(this->m_main, this->m_ClsMain_Raise_ClientDisconnect, args);
-
-		//if(this->m_players[index].MPlayer)
-		//{
-		//	delete this->m_players[index].MPlayer;
-		//	this->m_players[index].MPlayer = NULL;
-		//}
+		if(g_MonoPlugin.m_players[index].Player)
+		{
+			delete g_MonoPlugin.m_players[index].Player;
+			g_MonoPlugin.m_players[index].Player = NULL;
+			g_MonoPlugin.m_players[index].PlayerEdict = NULL;
+		}
 
 		RETURN_META(MRES_IGNORED);
 	}
@@ -40,11 +43,10 @@ namespace MonoPlugin
 	MP_EVENT_CODE(player_disconnect, g_MonoPlugin.m_event_player_disconnect, g_MonoPlugin.m_ClsMain_event_player_disconnect)
 	{
 #ifdef _DEBUG
-		META_LOG(g_PLAPI, "********** %s **********\n", "MP_EVENT_CODE player_disconnect");
+		META_CONPRINTF("********** %s **********\n", "MP_EVENT_CODE player_disconnect");
 #endif
 
 		int userid = evt->GetInt("userid");
-		edict_t* pEntity = EdictOfUserId(userid);
 		bool found = false;
 		int index = -1;
 
@@ -60,25 +62,51 @@ namespace MonoPlugin
 				}
 			}
 		}
-		//int index = g_engine->IndexOfEdict(pEntity);
-		//int userid = g_engine->GetPlayerUserId(pEntity);
+
+		MonoObject* player = NULL;
+		if(found)
+		{
+			g_MonoPlugin.m_players[index].Player->SetData(evt->GetString("name"), NULL);
+			g_MonoPlugin.m_players[index].Player->SetConnected(false, false);
+			player = g_MonoPlugin.m_players[index].Player->GetPlayer();
+		}
+
+		void* args[2];
+		args[0] = player;
+		args[1] = CMonoHelpers::GetString(g_Domain, evt->GetString("reason"));
+		CMonoHelpers::CallMethod(g_MonoPlugin.m_main, this->m_method, args);
 
 		if(found)
 		{
-			g_MonoPlugin.m_players[index].Player->SetConnected(false, false);
+			delete g_MonoPlugin.m_players[index].Player;
+			g_MonoPlugin.m_players[index].Player = NULL;
+			g_MonoPlugin.m_players[index].PlayerEdict = NULL;
 		}
-		//TODO : FIXME
+	}
 
-		//int index = g_engine->IndexOfEdict(pEntity);
+	void CMonoPlugin::Hook_Raise_LevelShutdown()
+	{
+#ifdef _DEBUG
+		META_CONPRINTF("********** %s **********\n", "Hook_Raise_LevelShutdown");
+#endif
+		for(int i = 0; i < MAXPLAYERS + 2; i++)
+		{
+			if(g_MonoPlugin.m_players[i].Player)
+			{
+				g_MonoPlugin.m_players[i].Player->SetConnected(false, false);
+			}
+		}
 
-		//MonoObject* player = g_MonoPlugin.m_players[index].MPlayer;
+		CMonoHelpers::CallMethod(this->m_main, this->m_ClsMain_Raise_LevelShutdown, NULL);
 
-		//void* args[5];
-		//args[0] = &userid;
-		//args[1] = CMonoHelpers::GetString(g_Domain, evt->GetString("reason"));
-		//args[2] = CMonoHelpers::GetString(g_Domain, evt->GetString("name"));
-		//args[3] = CMonoHelpers::GetString(g_Domain, evt->GetString("networkid"));
-		//args[4] = player;
-		//CMonoHelpers::CallMethod(g_MonoPlugin.m_main, this->m_method, args);
+		for(int i = 0; i < MAXPLAYERS + 2; i++)
+		{
+			if(g_MonoPlugin.m_players[i].Player)
+			{
+				delete g_MonoPlugin.m_players[i].Player;
+				g_MonoPlugin.m_players[i].Player = NULL;
+				g_MonoPlugin.m_players[i].PlayerEdict = NULL;
+			}
+		}
 	}
 }

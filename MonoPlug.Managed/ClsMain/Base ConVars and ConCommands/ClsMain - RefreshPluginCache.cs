@@ -10,11 +10,6 @@ namespace MonoPlug
 {
     partial class ClsMain
     {
-        //private void clr_plugin_refresh(ClsPlayer sender, string line, string[] arguments)
-        //{
-        //    this.RefreshPluginCache();
-        //}
-
         private bool RefreshPluginCache()
         {
             bool ok = false;

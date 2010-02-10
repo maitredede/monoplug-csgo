@@ -7,27 +7,8 @@ namespace MonoPlug
 {
     partial class ClsMain
     {
-        internal void Event_player_disconnect(int userid, string reason, string name, string networkid, ClsPlayer player)
+        internal void Event_player_disconnect(ClsPlayer player, string reason)
         {
-#if DEBUG
-            this._msg.DevMsg("ClsMain::Event_player_disconnect: userid={0} reason={1} name={2} networkid={3}\n", userid, reason, name, networkid);
-            if (player == null)
-            {
-                this._msg.DevMsg("ClsMain::Event_player_disconnect: player={0}\n", "<null>");
-            }
-            else
-            {
-                this._msg.DevMsg("ClsMain::Event_player_disconnect: player={0}\n", player.Dump());
-            }
-#endif
-            if (player == null)
-            {
-                this._msg.Msg("ClsMain::Event_player_disconnect: player=<null>\n");
-            }
-            else
-            {
-                this._msg.Msg("ClsMain::Event_player_disconnect: player={0}\n", player.Dump());
-            }
             this.RemovePlayer(player);
             foreach (ClsPluginBase plugin in this.GetHandlerPlugins(Events.PlayerDisconnect))
             {

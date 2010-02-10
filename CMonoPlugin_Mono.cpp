@@ -116,7 +116,7 @@ namespace MonoPlugin
 			"MonoPlug.NativeMethods::Mono_EventAttach_player_connect",
 			"MonoPlug.NativeMethods::Mono_EventDetach_player_connect");
 		MP_EVENT_INIT(player_disconnect, this->m_event_player_disconnect,
-			"MonoPlug.ClsMain:Event_player_disconnect(int,string,string,string,MonoPlug.ClsPlayer)", this->m_ClsMain_event_player_disconnect,
+			"MonoPlug.ClsMain:Event_player_disconnect(MonoPlug.ClsPlayer,string)", this->m_ClsMain_event_player_disconnect,
 			"MonoPlug.NativeMethods::Mono_EventAttach_player_disconnect",
 			"MonoPlug.NativeMethods::Mono_EventDetach_player_disconnect");
 

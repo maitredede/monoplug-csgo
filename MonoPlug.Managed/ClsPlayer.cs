@@ -34,8 +34,17 @@ namespace MonoPlug
         /// User ID
         /// </summary>
         public int UserId { get { return this._userId; } }
+        /// <summary>
+        /// Bot
+        /// </summary>
         public bool IsBot { get { return this._isBot; } }
+        /// <summary>
+        /// Player connecting
+        /// </summary>
         public bool IsConnecting { get { return this._isConnecting; } }
+        /// <summary>
+        /// Player connected
+        /// </summary>
         public bool IsConnected { get { return this._isConnected; } }
         /// <summary>
         /// Name
@@ -49,6 +58,9 @@ namespace MonoPlug
         /// SteamID
         /// </summary>
         public string SteamID { get { return this._steamId; } }
+        /// <summary>
+        /// SteamID Validated
+        /// </summary>
         public bool IsSteamValid { get { return this._isSteamValid; } }
 
         internal ClsPlayer()
@@ -104,10 +116,12 @@ namespace MonoPlug
         /// <returns>True if player match admin entry</returns>
         public bool IsAdmin(ClsAdminEntry admin)
         {
+            if (this._isBot) return false;
             //TODO : check more admin AuthType
             switch (admin.AuthType)
             {
-                case AuthType.steam: return this.SteamID == admin.Identity;
+                case AuthType.steam:
+                    return this._isSteamValid && this.SteamID.Equals(admin.Identity, StringComparison.InvariantCultureIgnoreCase);
                 default:
                     return false;
             }

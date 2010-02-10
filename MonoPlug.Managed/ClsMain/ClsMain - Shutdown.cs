@@ -38,15 +38,10 @@ namespace MonoPlug
 
             //Remove internals
             ((IEngineWrapper)this).UnregisterConvar(this._clr_plugin_directory);
+            ((IEngineWrapper)this).UnregisterConCommand(this._clr);
 #if DEBUG
             ((IEngineWrapper)this).UnregisterConCommand(this._clr_test);
 #endif
-            ((IEngineWrapper)this).UnregisterConCommand(this._clr);
-            //((IEngineWrapper)this).UnregisterConCommand(this._clr_plugin_list);
-            //((IEngineWrapper)this).UnregisterConCommand(this._clr_plugin_refresh);
-            //((IEngineWrapper)this).UnregisterConCommand(this._clr_plugin_load);
-            //((IEngineWrapper)this).UnregisterConCommand(this._clr_plugin_unload);
-            //((IEngineWrapper)this).UnregisterConCommand(this._clr_reload_config);
         }
     }
 }

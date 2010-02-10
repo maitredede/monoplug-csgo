@@ -9,11 +9,6 @@ namespace MonoPlug
     {
         internal void Event_player_connect(ClsPlayer player)
         {
-#if DEBUG
-            string p = "<null>";
-            if (player != null) p = player.Dump();
-            this._msg.DevMsg("ClsMain::Event_player_connect: player={0}\n", p);
-#endif
             this.AddPlayer(player);
 
             foreach (ClsPluginBase plugin in this.GetHandlerPlugins(Events.PlayerConnect))

@@ -116,11 +116,6 @@ namespace MonoPlugin
 		CMonoHelpers::CallMethod(this->m_main, this->m_ClsMain_Raise_ServerActivate, args);
 	}
 
-	void CMonoPlugin::Hook_Raise_LevelShutdown()
-	{
-		CMonoHelpers::CallMethod(this->m_main, this->m_ClsMain_Raise_LevelShutdown, NULL);
-	}
-
 	void CMonoPlugin::Hook_PlayerSay(const CCommand &command)
 	{
 		MonoString* line = CMonoHelpers::GetString(g_Domain, command.ArgS());

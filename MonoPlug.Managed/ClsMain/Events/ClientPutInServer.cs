@@ -19,9 +19,6 @@ namespace MonoPlug
 
         internal void Raise_ClientPutInServer(ClsPlayer player)
         {
-#if DEBUG
-            this._msg.DevMsg("ClsMain::Raise_ClientPutInServer: player={0}\n", player.Dump());
-#endif
             foreach (ClsPluginBase plugin in this.GetHandlerPlugins(Events.ClientPutInServer))
             {
                 plugin.PluginEvents.Raise_ClientPutInServer(player);

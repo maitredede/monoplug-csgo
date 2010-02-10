@@ -15,6 +15,8 @@ namespace MonoPlug
             this._msg.Msg("Available     : {0} plugins\n", this._pluginCache.Length);
             foreach (PluginDefinition desc in this._pluginCache)
             {
+                if (desc.DontList)
+                    continue;
                 this._msg.Msg("  {0}\n", desc);
             }
 

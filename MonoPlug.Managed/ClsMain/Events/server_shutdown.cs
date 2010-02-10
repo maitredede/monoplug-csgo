@@ -9,9 +9,6 @@ namespace MonoPlug
     {
         internal void Event_server_shutdown(string reason)
         {
-#if DEBUG
-            this._msg.DevMsg("ClsMain::Event_server_shutdown: reason={0}\n", reason);
-#endif
             foreach (ClsPluginBase plugin in this.GetHandlerPlugins(Events.ServerShutdown))
             {
                 plugin.PluginEvents.Raise_ServerShutdown(reason);

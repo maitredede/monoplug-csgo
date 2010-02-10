@@ -17,7 +17,7 @@ namespace MonoPlugin
 		char m_name[MAX_PLAYER_NAME_LENGTH];
 	public:
 		CMonoPlayer(int userId, bool isBot);
-		~CMonoPlayer();
+		//~CMonoPlayer();
 		MonoObject* GetPlayer();
 
 		void SetConnected(bool connecting, bool connected);

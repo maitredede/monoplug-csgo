@@ -15,9 +15,6 @@ namespace MonoPlug
         private bool LoadConfigNoLock(out TConfig conf)
         {
             string path = Path.Combine(this._assemblyPath, "config.xml");
-#if DEBUG
-            this._msg.DevMsg("Loading config file {0}\n", path);
-#endif
             bool ok = false;
             try
             {
@@ -45,9 +42,6 @@ namespace MonoPlug
             if (conf == null) return false;
 
             string path = Path.Combine(this._assemblyPath, "config.xml");
-#if DEBUG
-            this._msg.DevMsg("Saving config file {0}\n", path);
-#endif
             bool ok = false;
             try
             {

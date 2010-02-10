@@ -7,6 +7,9 @@ using System.Threading;
 
 namespace MonoPlug
 {
+    /// <summary>
+    /// Parallel processor to speedup collections processing
+    /// </summary>
     public static class Parallel
     {
         /// <summary>
@@ -15,7 +18,6 @@ namespace MonoPlug
         /// <typeparam name="T">Type of collection item</typeparam>
         /// <param name="collection">Collection of items</param>
         /// <param name="action">Action to execute</param>
-        /// <param name="threadsPerProc">Number of total threads</param>
         public static void ForEach<T>(ICollection<T> collection, Action<T> action) where T : class
         {
             Check.NonNull("collection", collection);

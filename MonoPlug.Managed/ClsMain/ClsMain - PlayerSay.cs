@@ -14,7 +14,7 @@ namespace MonoPlug
         private readonly Dictionary<string, List<InternalSayCommand>> _dicSayCommands = new Dictionary<string, List<InternalSayCommand>>();
         private readonly Dictionary<ClsPluginBase, List<InternalSayCommand>> _dicSayCommandsPlugin = new Dictionary<ClsPluginBase, List<InternalSayCommand>>();
 
-        bool Raise_PlayerSay(ClsPlayer player, string text, string[] args)
+        internal bool Raise_PlayerSay(ClsPlayer player, string text, string[] args)
         {
             this._lckSayCommands.AcquireReaderLock(Timeout.Infinite);
             try

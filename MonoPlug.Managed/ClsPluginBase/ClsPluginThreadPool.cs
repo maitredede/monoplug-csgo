@@ -22,8 +22,6 @@ namespace MonoPlug
             this._pool = pool;
         }
 
-        #region IThreadPool Membres
-
         void IThreadPool.QueueUserWorkItem<T>(ThreadAction<T> work, T item)
         {
             this._pool.QueueUserWorkItem<T>(work, item);
@@ -43,8 +41,5 @@ namespace MonoPlug
         {
             this._pool.QueueUserWorkItem<T1, T2, T3>(work, item1, item2, item3);
         }
-
-
-        #endregion
     }
 }

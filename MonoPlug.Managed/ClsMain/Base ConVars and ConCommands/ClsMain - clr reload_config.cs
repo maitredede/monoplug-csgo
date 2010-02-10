@@ -113,15 +113,5 @@ namespace MonoPlug
                 this._lckConfig.ReleaseReaderLock();
             }
         }
-
-        //private void SaveConfigNoLock()
-        //{
-        //    string path = Path.Combine(this.GetAssemblyDirectory(), "config.xml");
-        //    using (FileStream fs = File.Open(path, FileMode.OpenOrCreate, FileAccess.ReadWrite, FileShare.None))
-        //    {
-        //        XmlSerializer xz = new XmlSerializer(typeof(ClsConfig));
-        //        xz.Serialize(fs, this._config);
-        //    }
-        //}
     }
 }

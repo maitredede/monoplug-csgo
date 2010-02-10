@@ -9,23 +9,9 @@ namespace MonoPlug
     {
         internal void Raise_ClientConnect(ClsPlayer player)
         {
-#if DEBUG
-            string p;
-            if (player == null)
-            {
-                p = "<null>";
-            }
-            else
-            {
-                p = player.Dump();
-            }
-
-            this._msg.Msg("ClsMain::Raise_ClientConnect: player={0}\n", p);
-#endif
-
             foreach (ClsPluginBase plugin in this.GetHandlerPlugins(Events.ClientConnect))
             {
-                //plugin.Events.Raise_ClientConnect(player);
+                plugin.PluginEvents.Raise_ClientConnect(player);
             }
         }
 

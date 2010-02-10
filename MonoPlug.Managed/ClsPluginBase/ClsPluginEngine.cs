@@ -13,10 +13,6 @@ namespace MonoPlug
 
         internal ClsPluginEngine(ClsPluginBase owner, IEngineWrapper conEntry)
         {
-#if DEBUG
-            Check.NonNull("owner", owner);
-            Check.NonNull("conEntry", conEntry);
-#endif
             this._conEntry = conEntry;
             this._owner = owner;
         }
@@ -69,6 +65,8 @@ namespace MonoPlug
 
         void IEngine.UnregisterConCommand(ClsConCommand command)
         {
+            Check.NonNull("command", command);
+
             this._conEntry.UnregisterConCommand(command.Internal);
         }
 
@@ -84,6 +82,8 @@ namespace MonoPlug
 
         void IEngine.ClientPrint(ClsPlayer client, string message, params object[] args)
         {
+            Check.NonNull("client", client);
+
             if (args != null && args.Length > 0)
             {
                 message = string.Format(message, args);
@@ -108,6 +108,7 @@ namespace MonoPlug
         void IEngine.UnregisterSayCommand(ClsSayCommand command)
         {
             Check.NonNull("command", command);
+
             this._conEntry.UnregisterSayCommand(command.Internal);
         }
 
@@ -118,16 +119,11 @@ namespace MonoPlug
             this._conEntry.ClientDialogMessage(player, title, message, color, level, time);
         }
 
-        #region IEngine Membres
-
-
         void IEngine.ClientMenuMessage(ClsPlayer player, string title, string message, int level, int time)
         {
             Check.NonNull("player", player);
 
             this._conEntry.ClientMenuMessage(player, title, message, level, time);
         }
-
-        #endregion
     }
 }

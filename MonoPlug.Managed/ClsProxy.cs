@@ -37,9 +37,6 @@ namespace MonoPlug
         public ClsProxy()
         {
             this._current = AppDomain.CurrentDomain;
-#if DEBUG
-            NativeMethods.Mono_DevMsg(string.Format("New Proxy in domain [{0}]\n", this._current.FriendlyName));
-#endif
         }
 
         /// <summary>
@@ -91,6 +88,17 @@ namespace MonoPlug
                                     definition.Name = plugin.Name;
                                     definition.Type = plugin.GetType().FullName;
                                     definition.Description = plugin.Description;
+
+                                    object[] arr = t.GetCustomAttributes(typeof(DontListPluginAttribute), true);
+                                    if (arr != null && arr.Length > 0)
+                                    {
+                                        definition.DontList = true;
+                                    }
+                                    else
+                                    {
+                                        definition.DontList = false;
+                                    }
+
                                     lst.Add(definition);
                                 }
                             }
@@ -113,7 +121,6 @@ namespace MonoPlug
             return lst.ToArray();
         }
 
-#if DEBUG
         internal void DumpDomainAssemblies(IMessage msg)
         {
             Assembly[] arr = this._current.GetAssemblies();
@@ -124,7 +131,6 @@ namespace MonoPlug
             }
             msg.DevMsg("DumpCurrentDomainAssemblies : End\n");
         }
-#endif
 
         internal static void WriteAssemblyVersion(IMessage msg, Type type, string format)
         {

@@ -32,8 +32,7 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
-    <DocumentationFile>
-    </DocumentationFile>
+    <DocumentationFile>..\Release\addons\MonoPlug.Managed.XML</DocumentationFile>
   </PropertyGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>
@@ -42,6 +41,8 @@
     <Compile Include="ClsMainConvarValue.cs" />
     <Compile Include="ClsMain\Base ConVars and ConCommands\ClsMain - clr.cs" />
     <Compile Include="ClsMain\ClsMain - IEngineWrapper - ClientDialog.cs" />
+    <Compile Include="ClsMain\ClsMain - IEngineWrapper - ClientPrint.cs" />
+    <Compile Include="ClsMain\ClsMain - IEngineWrapper - ServerCommand.cs" />
     <Compile Include="ClsMain\Events\_InitEvents.cs" />
     <Compile Include="ClsMain\Events\ClientConnect.cs" />
     <Compile Include="ClsMain\Events\LevelShutdown.cs" />
@@ -87,7 +88,7 @@
     <Compile Include="EventArgs\ServerSpawnEventArgs.cs" />
     <Compile Include="Events.cs" />
     <Compile Include="Check.cs" />
-    <Compile Include="ClsMain\Base ConVars and ConCommands\ClsMain - clr_reload_config.cs" />
+    <Compile Include="ClsMain\Base ConVars and ConCommands\ClsMain - clr reload_config.cs" />
     <Compile Include="ClsMain\ClsMain - AllPluginsLoaded.cs" />
     <Compile Include="ClsMain\ClsMain - Config.cs" />
     <Compile Include="ClsMain\ClsMain - MySQL.cs" />
@@ -117,7 +118,6 @@
     <Compile Include="EventArgs\ClientEventArgs.cs" />
     <Compile Include="EventArgs\ConMessageEventArgs.cs" />
     <Compile Include="EventArgs\ClientCommandEventArgs.cs" />
-    <Compile Include="EventArgs\ClientConnectEventArgs.cs" />
     <Compile Include="ConCommandBase\ClsConCommandBase.cs" />
     <Compile Include="ConCommandBase\ClsConCommand.cs" />
     <Compile Include="ClsMain\Base ConVars and ConCommands\ClsMain - clr list.cs" />
@@ -127,8 +127,6 @@
     <Compile Include="ClsMain\Base ConVars and ConCommands\ClsMain - clr_test.cs" />
     <Compile Include="ClsMain\ClsMain - Convar.cs" />
     <Compile Include="ClsMain\ClsMain - Init.cs" />
-    <Compile Include="ClsMain\ClsMain - Messages.cs" />
-    <Compile Include="ClsMain\ClsMain - Players.cs" />
     <Compile Include="ClsMain\ClsMain - RemoteAppDomain.cs" />
     <Compile Include="ClsMain\ClsMain - Threading.cs" />
     <Compile Include="ClsMain\ClsMain - GetMonoVersion.cs" />

@@ -86,47 +86,21 @@ namespace MonoPlug
 
         internal void Init(ClsProxy proxy, IMessage msg, IEventsAnchor anchor, IEngineWrapper entry, IThreadPool pool, IDatabaseConfig db)
         {
-#if DEBUG
-            if (this._verbInit) msg.DevMsg("ClsPluginBase::Init [{0}] (enter)\n", this.Name);
-            try
-            {
-#endif
-                Check.NonNull("proxy", proxy);
-                Check.NonNull("msg", msg);
-                Check.NonNull("anchor", anchor);
-                Check.NonNull("entry", entry);
-                Check.NonNull("pool", pool);
-                Check.NonNull("db", db);
+            Check.NonNull("proxy", proxy);
+            Check.NonNull("msg", msg);
+            Check.NonNull("anchor", anchor);
+            Check.NonNull("entry", entry);
+            Check.NonNull("pool", pool);
+            Check.NonNull("db", db);
 
-                this._proxy = proxy;
-                this._msg = new ClsPluginMessage(this, msg);
-                this._events = new ClsPluginEvents(this, anchor);
-                this._entry = new ClsPluginEngine(this, entry);
-                this._pool = new ClsPluginThreadPool(this, pool);
-                this._db = new ClsPluginDatabase(this, db, this._msg);
-                this.Load();
-#if DEBUG
-            }
-            finally
-            {
-                if (this._verbInit) msg.DevMsg("ClsPluginBase::Init [{0}] (exit)\n", this.Name);
-            }
-#endif
+            this._proxy = proxy;
+            this._msg = new ClsPluginMessage(this, msg);
+            this._events = new ClsPluginEvents(this, anchor);
+            this._entry = new ClsPluginEngine(this, entry);
+            this._pool = new ClsPluginThreadPool(this, pool);
+            this._db = new ClsPluginDatabase(this, db, this._msg);
+            this.Load();
         }
-
-        ///// <summary>
-        ///// Lifetime overriding to avoid passive plugin removal
-        ///// </summary>
-        ///// <returns></returns>
-        //public sealed override object InitializeLifetimeService()
-        //{
-        //    ILease lease = (ILease)base.InitializeLifetimeService();
-        //    if (lease.CurrentState == LeaseState.Initial)
-        //    {
-        //        lease.InitialLeaseTime = TimeSpan.Zero;
-        //    }
-        //    return lease;
-        //}
 
         /// <summary>
         /// Message to Console

@@ -19,5 +19,14 @@ namespace MonoPlug
     /// <param name="item1"></param>
     /// <param name="item2"></param>
     public delegate void ThreadAction<T1, T2>(T1 item1, T2 item2);
+    /// <summary>
+    /// Simple delegate for actions
+    /// </summary>
+    /// <typeparam name="T1"></typeparam>
+    /// <typeparam name="T2"></typeparam>
+    /// <typeparam name="T3"></typeparam>
+    /// <param name="item1"></param>
+    /// <param name="item2"></param>
+    /// <param name="item3"></param>
     public delegate void ThreadAction<T1, T2, T3>(T1 item1, T2 item2, T3 item3);
 }

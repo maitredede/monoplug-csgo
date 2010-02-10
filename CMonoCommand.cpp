@@ -23,12 +23,12 @@ namespace MonoPlugin
 		//	mono_array_set(arr, MonoString*, i, str);
 		//}
 
-		Assert(g_MonoPlugin.m_clientCommand == -1);
+		Assert(g_MonoPlugin.m_clientCommand == 0);
 
 		int index = g_MonoPlugin.m_clientCommand;
 
 		MonoObject* player = NULL;
-		if(index >= 0)
+		if(index > 0)
 		{
 			player = g_MonoPlugin.m_players[index].Player->GetPlayer();
 		}

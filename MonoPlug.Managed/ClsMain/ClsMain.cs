@@ -48,11 +48,6 @@ namespace MonoPlug
         //Internal commands and vars
         private InternalConCommand _clr = null;
         private InternalConvar _clr_plugin_directory = null;
-        //private InternalConCommand _clr_plugin_list = null;
-        //private InternalConCommand _clr_plugin_refresh = null;
-        //private InternalConCommand _clr_plugin_load = null;
-        //private InternalConCommand _clr_plugin_unload = null;
-        //private InternalConCommand _clr_reload_config = null;
         #endregion
 
         /// <summary>
@@ -84,33 +79,13 @@ namespace MonoPlug
 
         Assembly CurrentDomain_AssemblyResolve(object sender, ResolveEventArgs args)
         {
-            //#if DEBUG
-            //            NativeMethods.Mono_Msg("CurrentDomain_AssemblyResolve [" + AppDomain.CurrentDomain.FriendlyName + "]: " + args.Name + "\n");
-            //#endif
             AssemblyName an = new AssemblyName(args.Name);
             string codebase = this.GetType().Assembly.Location;
             string asm = this.GetType().Assembly.GetName(false).Name;
             int pos = codebase.LastIndexOf(asm);
             string newCB = codebase.Remove(pos, asm.Length).Insert(pos, an.Name);
-#if DEBUG
-            try
-            {
-#endif
-                Assembly assembly = Assembly.LoadFrom(newCB);
-#if DEBUG
-                NativeMethods.Mono_DevMsg("CurrentDomain_AssemblyResolve [" + AppDomain.CurrentDomain.FriendlyName + "]: Location=" + assembly.Location + "\n");
-                //NativeMethods.Mono_DevMsg(Environment.StackTrace);
-#endif
-                return assembly;
-#if DEBUG
-            }
-            catch (Exception ex)
-            {
-                NativeMethods.Mono_Warning("CurrentDomain_AssemblyResolve [" + AppDomain.CurrentDomain.FriendlyName + "]: CodeBase=" + newCB + "\n");
-                NativeMethods.Mono_Warning("CurrentDomain_AssemblyResolve [" + AppDomain.CurrentDomain.FriendlyName + "]: Exception=" + ex.Message + "\n");
-                throw ex;
-            }
-#endif
+            Assembly assembly = Assembly.LoadFrom(newCB);
+            return assembly;
         }
     }
 }

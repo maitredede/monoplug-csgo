@@ -19,14 +19,6 @@ namespace MonoPlug
 
         internal void Raise_ClientDisconnect(ClsPlayer player)
         {
-            if (player == null)
-            {
-                this._msg.Msg("ClsMain::Raise_ClientDisconnect: player=<null>\n");
-            }
-            else
-            {
-                this._msg.Msg("ClsMain::Raise_ClientDisconnect: player={0}\n", player.Dump());
-            }
             this.RemovePlayer(player);
             foreach (ClsPluginBase plugin in this.GetHandlerPlugins(Events.ClientDisconnect))
             {

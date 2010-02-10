@@ -11,11 +11,16 @@ namespace MonoPlug
     /// </summary>
     public sealed class ParallelSemaphore : MarshalByRefObject, IDisposable
     {
-        private Mutex _mut;
+        private readonly Mutex _mut;
         private int _count;
-        private int _max;
-        private ManualResetEvent _latch;
+        private readonly int _max;
+        private readonly ManualResetEvent _latch;
 
+        /// <summary>
+        /// Constructor
+        /// </summary>
+        /// <param name="count">Initial value</param>
+        /// <param name="max">Maximum count</param>
         public ParallelSemaphore(int count, int max)
             : base()
         {
@@ -25,6 +30,9 @@ namespace MonoPlug
             this._latch = new ManualResetEvent(this._count > 0);
         }
 
+        /// <summary>
+        /// Block until one is available
+        /// </summary>
         public void WaitOne()
         {
             while (true)
@@ -41,6 +49,9 @@ namespace MonoPlug
             }
         }
 
+        /// <summary>
+        /// Release one
+        /// </summary>
         public void Release()
         {
             this._mut.WaitOne();

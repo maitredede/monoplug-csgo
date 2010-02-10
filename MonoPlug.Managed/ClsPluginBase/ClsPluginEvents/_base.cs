@@ -18,11 +18,6 @@ namespace MonoPlug
 
         internal ClsPluginEvents(ClsPluginBase owner, IEventsAnchor anchor)
         {
-#if DEBUG
-            Check.NonNull("owner", owner);
-            Check.NonNull("anchor", anchor);
-#endif
-
             this._owner = owner;
             this._anchor = anchor;
         }

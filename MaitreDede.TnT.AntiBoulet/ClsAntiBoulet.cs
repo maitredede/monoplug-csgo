@@ -9,7 +9,7 @@ namespace MaitreDede.TnT.AntiBoulet
 {
     public sealed class ClsAntiBoulet : ClsPluginBase
     {
-        private Timer _timer;
+        //private Timer _timer;
 
         public override string Name
         {
@@ -23,54 +23,54 @@ namespace MaitreDede.TnT.AntiBoulet
 
         protected override void Load()
         {
-            this._timer = new Timer(this.Tick, null, 1, 30000);
+            //this._timer = new Timer(this.Tick, null, 1, 30000);
             this.Events.ClientDisconnect += this.Events_ClientDisconnect;
             this.Events.PlayerDisconnect += this.Events_PlayerDisconnect;
         }
 
         protected override void Unload()
         {
-            this._timer.Dispose();
+            //this._timer.Dispose();
             this.Events.ClientDisconnect -= this.Events_ClientDisconnect;
             this.Events.PlayerDisconnect -= this.Events_PlayerDisconnect;
         }
 
-        private void Tick(object state)
-        {
-            this.Message.Msg("TNTAB: Tick\n");
-            try
-            {
-                ClsPlayer[] players = this.Engine.GetPlayers();
-                ClsAdminEntry[] admins = this.Database.GetAdmins();
+        //private void Tick(object state)
+        //{
+        //    this.Message.Msg("TNTAB: Tick\n");
+        //    try
+        //    {
+        //        ClsPlayer[] players = this.Engine.GetPlayers();
+        //        ClsAdminEntry[] admins = this.Database.GetAdmins();
 
-                this.Message.Msg("Admins count: {0} Players count: {1}\n", admins.Length, players.Length);
+        //        this.Message.Msg("Admins count: {0} Players count: {1}\n", admins.Length, players.Length);
 
-                foreach (ClsAdminEntry admin in admins)
-                {
-                    foreach (ClsPlayer player in players)
-                    {
-                        if (player.IsAdmin(admin))
-                        {
-                            this.Message.Msg("Player {0} is admin\n", player);
+        //        foreach (ClsAdminEntry admin in admins)
+        //        {
+        //            foreach (ClsPlayer player in players)
+        //            {
+        //                if (player.IsAdmin(admin))
+        //                {
+        //                    this.Message.Msg("Player {0} is admin\n", player);
 
-                            this.Engine.ClientPrint(player, "TNT-AB: *******************************\n");
-                            foreach (ClsPlayer dumped in players)
-                            {
-                                this.Engine.ClientPrint(player, "TNT-AB: Name={0}\n", dumped.Name);
-                                this.Engine.ClientPrint(player, "TNT-AB: Steam={0}\n", dumped.SteamID);
-                                this.Engine.ClientPrint(player, "TNT-AB: IP={0}\n", dumped.IP);
-                            }
-                            this.Engine.ClientPrint(player, "TNT-AB: *******************************\n");
-                            break;
-                        }
-                    }
-                }
-            }
-            catch (Exception ex)
-            {
-                this.Message.Warning(ex);
-            }
-        }
+        //                    this.Engine.ClientPrint(player, "TNT-AB: *******************************\n");
+        //                    foreach (ClsPlayer dumped in players)
+        //                    {
+        //                        this.Engine.ClientPrint(player, "TNT-AB: Name={0}\n", dumped.Name);
+        //                        this.Engine.ClientPrint(player, "TNT-AB: Steam={0}\n", dumped.SteamID);
+        //                        this.Engine.ClientPrint(player, "TNT-AB: IP={0}\n", dumped.IP);
+        //                    }
+        //                    this.Engine.ClientPrint(player, "TNT-AB: *******************************\n");
+        //                    break;
+        //                }
+        //            }
+        //        }
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        this.Message.Warning(ex);
+        //    }
+        //}
 
         private void Events_ClientDisconnect(object sender, ClientEventArgs e)
         {

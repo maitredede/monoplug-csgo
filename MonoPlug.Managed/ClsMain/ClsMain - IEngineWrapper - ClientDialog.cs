@@ -10,6 +10,9 @@ namespace MonoPlug
     {
         void IEngineWrapper.ClientDialogMessage(ClsPlayer player, string title, string message, Color color, int level, int time)
         {
+            Check.NonNull("player", player);
+            if (player.IsBot) return;
+
             DialogMessage msg = new DialogMessage();
             msg.Client = player;
             msg.Title = title;
@@ -28,6 +31,9 @@ namespace MonoPlug
 
         void IEngineWrapper.ClientMenuMessage(ClsPlayer player, string title, string message, int level, int time)
         {
+            Check.NonNull("player", player);
+            if (player.IsBot) return;
+
             DialogMessage msg = new DialogMessage();
             msg.Client = player;
             msg.Title = title;
