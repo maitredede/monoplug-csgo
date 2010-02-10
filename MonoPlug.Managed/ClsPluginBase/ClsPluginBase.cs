@@ -42,21 +42,8 @@ namespace MonoPlug
         /// Default constructor
         /// </summary>
         public ClsPluginBase()
-#if DEBUG
-            : this(false)
-#endif
         {
         }
-
-#if DEBUG
-        private readonly bool _verbInit;
-
-        public ClsPluginBase(bool verboseInit)
-            : base()
-        {
-            this._verbInit = verboseInit;
-        }
-#endif
 
         #region Abstracts
         /// <summary>
