@@ -28,6 +28,19 @@ namespace MonoPlug
                     }
                 }
             }
+            catch (FileNotFoundException)
+            {
+                conf = new TConfig();
+                if (!this.SaveConfigNoLock(conf))
+                {
+                    conf = null;
+                    return false;
+                }
+                else
+                {
+                    return true;
+                }
+            }
             catch (Exception ex)
             {
                 Console.WriteLine(this._msg.GetExceptionText(ex));
