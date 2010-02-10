@@ -1,5 +1,4 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="Config.xsd">
-  <mysql host="vmdedeubuntu" port="3306" user="monoplug" pass="monoplug" base="monoplug" />
-	<plugin name="ConClock" loaded="false" />
+  <mysql host="localhost" port="3306" user="monoplug" pass="monoplug" base="monoplug" />
 </config>
