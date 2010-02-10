@@ -1,4 +1,7 @@
 #!/bin/sh
 svn update
+rm -Rf Debug
+mkdir Debug
+mkdir Debug/addons
 make ENGINE=orangeboxvalve DEBUG=true clean
 make ENGINE=orangeboxvalve DEBUG=true
