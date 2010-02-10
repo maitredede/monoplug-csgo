@@ -39,7 +39,7 @@ namespace MonoPlug
             this.Error(this.GetExceptionText(ex));
         }
 
-        private string GetExceptionText(Exception ex)
+        internal string GetExceptionText(Exception ex)
         {
             StringBuilder sb = new StringBuilder();
             while (ex != null)

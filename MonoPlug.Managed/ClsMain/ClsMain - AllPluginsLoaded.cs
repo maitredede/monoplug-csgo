@@ -74,7 +74,17 @@ namespace MonoPlug
             }
             catch (Exception ex)
             {
-                this._msg.Warning(ex);
+                try
+                {
+                    this._msg.Warning(ex);
+                }
+                catch (Exception ex2)
+                {
+                    Console.WriteLine("*-*-*-*-*-*-*-*-*-* UNHANDLED ERROR *-*-*-*-*-*-*-*-*-* ");
+                    Console.WriteLine(this._msg.GetExceptionText(ex2));
+                    Console.WriteLine("*-*-*-*-*-*-*-*-*-* ERROR WAS *-*-*-*-*-*-*-*-*-* ");
+                    Console.WriteLine(this._msg.GetExceptionText(ex));
+                }
             }
         }
     }
