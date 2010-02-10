@@ -123,21 +123,25 @@ namespace MonoPlugin
 
 		int index = this->m_clientCommand;
 
-		//TODO : FIXME
+		MonoObject* player = NULL;
+		if(index > 0)
+		{
+			player = g_MonoPlugin.m_players[index].Player->GetPlayer();
+		}
 
-		//void* args[3];
-		//args[0] = this->m_players[index].MPlayer;
-		//args[1] = line;
-		//args[2] = arr;
-		//MonoObject* ret = CMonoHelpers::CallMethod(this->m_main, this->m_ClsMain_Raise_PlayerSay, args);
-		//if(ret)
-		//{
-		//	bool bRet = *(bool*)mono_object_unbox(ret);
-		//	if(bRet)
-		//	{
-		//		RETURN_META(MRES_SUPERCEDE);
-		//	}
-		//}
+		void* args[3];
+		args[0] = player;
+		args[1] = line;
+		args[2] = arr;
+		MonoObject* ret = CMonoHelpers::CallMethod(this->m_main, this->m_ClsMain_Raise_PlayerSay, args);
+		if(ret)
+		{
+			bool bRet = *(bool*)mono_object_unbox(ret);
+			if(bRet)
+			{
+				RETURN_META(MRES_SUPERCEDE);
+			}
+		}
 		RETURN_META(MRES_IGNORED);
 	}
 
