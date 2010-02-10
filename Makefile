@@ -20,8 +20,9 @@ SRCDS_BASE = $(BASE_DIR)/srcds
 
 OBJECTS = CBaseAccessor.cpp CMonoCommand.cpp CMonoConsole.cpp CMonoHelpers.cpp CMonoPlugin.cpp
 OBJECTS += CMonoPlugin_GameFrame.cpp CMonoPlugin_Hooks.cpp CMonoPlugin_IMetamodListener.cpp
-OBJECTS += CMonoPlugin_Mono.cpp CMonoPlugin_PluginBase.cpp Events.cpp monoCallbacks.cpp
-OBJECTS += pluginterfaces.cpp tools.cpp
+OBJECTS += CMonoPlugin_Mono.cpp CMonoPlugin_Players.cpp CMonoPlugin_PluginBase.cpp 
+OBJECTS += Events.cpp Events_Player_Connection.cpp Events_Player_Disconnection.cpp
+OBJECTS += monoCallbacks.cpp pluginterfaces.cpp tools.cpp
 
 BINARY = monoplug_i486.so
 CSPROJECT = MonoPlug.Managed/MonoPlug.Managed.csproj MonoPlug.Samples/MonoPlug.Samples.csproj
