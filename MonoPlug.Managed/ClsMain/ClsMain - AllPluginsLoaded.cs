@@ -15,6 +15,7 @@ namespace MonoPlug
                 if (this.RefreshPluginCache())
                 {
                     //Load config file
+                    this._config = null;
                     this._configLoadedOK = this.LoadConfigNoLock(out this._config);
                     if (this._configLoadedOK)
                     {
@@ -74,17 +75,18 @@ namespace MonoPlug
             }
             catch (Exception ex)
             {
-                try
-                {
-                    this._msg.Warning(ex);
-                }
-                catch (Exception ex2)
-                {
-                    Console.WriteLine("*-*-*-*-*-*-*-*-*-* UNHANDLED ERROR *-*-*-*-*-*-*-*-*-* ");
-                    Console.WriteLine(this._msg.GetExceptionText(ex2));
-                    Console.WriteLine("*-*-*-*-*-*-*-*-*-* ERROR WAS *-*-*-*-*-*-*-*-*-* ");
-                    Console.WriteLine(this._msg.GetExceptionText(ex));
-                }
+                this._msg.Warning(ex);
+                //try
+                //{
+                //    this._msg.Warning(ex);
+                //}
+                //catch (Exception ex2)
+                //{
+                //Console.WriteLine("*-*-*-*-*-*-*-*-*-* UNHANDLED ERROR *-*-*-*-*-*-*-*-*-* ");
+                //Console.WriteLine(this._msg.GetExceptionText(ex2));
+                //Console.WriteLine("*-*-*-*-*-*-*-*-*-* ERROR WAS *-*-*-*-*-*-*-*-*-* ");
+                //Console.WriteLine(this._msg.GetExceptionText(ex));
+                //}
             }
         }
     }
