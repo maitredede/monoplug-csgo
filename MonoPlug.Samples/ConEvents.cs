@@ -47,6 +47,8 @@ namespace MonoPlug
         /// </summary>
         protected override void Unload()
         {
+            this.Engine.UnregisterConCommand(this._cmd);
+            this.Engine.UnregisterSayCommand(this._thetime);
         }
 
         /// <summary>
@@ -145,17 +147,14 @@ namespace MonoPlug
 
         private void TheTime(ClsPlayer sender, string line, string[] args)
         {
-#if DEBUG
-            this.Message.DevMsg("TheTime triggered");
-#endif
             string time = DateTime.Now.ToLongTimeString();
             if (sender == null)
             {
-                this.Message.Msg("The time : {0}\n", time);
+                this.Message.Msg("The time from {0} : {1}\n", this.Name, time);
             }
             else
             {
-                this.Engine.ClientDialog(sender, "The time", time, Color.Azure, 1, 5);
+                this.Engine.ClientDialog(sender, string.Format("The time from {0}", this.Name), time, Color.Azure, 1, 5);
             }
         }
     }
