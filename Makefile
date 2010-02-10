@@ -24,7 +24,7 @@ OBJECTS += CMonoPlugin_Mono.cpp CMonoPlugin_Players.cpp CMonoPlugin_PluginBase.c
 OBJECTS += Events.cpp Events_Player_Connection.cpp Events_Player_Disconnection.cpp
 OBJECTS += monoCallbacks.cpp pluginterfaces.cpp tools.cpp
 
-BINARY = monoplug_mm_i486.so
+BINARY = monoplugin_mm_i486.so
 CSPROJECT = MonoPlug.Managed/MonoPlug.Managed.csproj MonoPlug.Samples/MonoPlug.Samples.csproj
 CSPROJECT += MaitreDede.TnT.AntiBoulet/MaitreDede.TnT.AntiBoulet.csproj
 
