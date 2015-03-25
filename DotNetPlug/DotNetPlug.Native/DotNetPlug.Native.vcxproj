@@ -340,6 +340,9 @@
     <PostBuildEvent>
       <Command>xcopy "$(OutDir)"* "D:\csgo_default\csgo\addons\metamod\dotnetplug" /y /v</Command>
     </PostBuildEvent>
+    <PreBuildEvent>
+      <Command>REM tlbexp "$(SolutionDir)DotNetPlug.Managed\bin\Debug\DotNetPlug.Managed.dll" /out:"$(ProjectDir)DotNetPlug.Managed.tlb"</Command>
+    </PreBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release - Original|Win32'">
     <ClCompile>
@@ -368,6 +371,9 @@
     <PostBuildEvent>
       <Command>xcopy "$(OutDir)"* "D:\csgo_default\csgo\addons\metamod\dotnetplug" /y /v</Command>
     </PostBuildEvent>
+    <PreBuildEvent>
+      <Command>REM tlbexp "$(SolutionDir)DotNetPlug.Managed\bin\Debug\DotNetPlug.Managed.dll" /out:"$(ProjectDir)DotNetPlug.Managed.tlb"</Command>
+    </PreBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug - Dark Messiah|Win32'">
     <ClCompile>
@@ -397,6 +403,9 @@
     <PostBuildEvent>
       <Command>xcopy "$(OutDir)"* "D:\csgo_default\csgo\addons\metamod\dotnetplug" /y /v</Command>
     </PostBuildEvent>
+    <PreBuildEvent>
+      <Command>REM tlbexp "$(SolutionDir)DotNetPlug.Managed\bin\Debug\DotNetPlug.Managed.dll" /out:"$(ProjectDir)DotNetPlug.Managed.tlb"</Command>
+    </PreBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release - Dark Messiah|Win32'">
     <ClCompile>
@@ -425,6 +434,9 @@
     <PostBuildEvent>
       <Command>xcopy "$(OutDir)"* "D:\csgo_default\csgo\addons\metamod\dotnetplug" /y /v</Command>
     </PostBuildEvent>
+    <PreBuildEvent>
+      <Command>REM tlbexp "$(SolutionDir)DotNetPlug.Managed\bin\Debug\DotNetPlug.Managed.dll" /out:"$(ProjectDir)DotNetPlug.Managed.tlb"</Command>
+    </PreBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug - Orange Box|Win32'">
     <ClCompile>
@@ -454,6 +466,9 @@
     <PostBuildEvent>
       <Command>xcopy "$(OutDir)"* "D:\csgo_default\csgo\addons\metamod\dotnetplug" /y /v</Command>
     </PostBuildEvent>
+    <PreBuildEvent>
+      <Command>REM tlbexp "$(SolutionDir)DotNetPlug.Managed\bin\Debug\DotNetPlug.Managed.dll" /out:"$(ProjectDir)DotNetPlug.Managed.tlb"</Command>
+    </PreBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release - Orange Box|Win32'">
     <ClCompile>
@@ -482,6 +497,9 @@
     <PostBuildEvent>
       <Command>xcopy "$(OutDir)"* "D:\csgo_default\csgo\addons\metamod\dotnetplug" /y /v</Command>
     </PostBuildEvent>
+    <PreBuildEvent>
+      <Command>REM tlbexp "$(SolutionDir)DotNetPlug.Managed\bin\Debug\DotNetPlug.Managed.dll" /out:"$(ProjectDir)DotNetPlug.Managed.tlb"</Command>
+    </PreBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug - Orange Box Valve|Win32'">
     <ClCompile>
@@ -511,6 +529,9 @@
     <PostBuildEvent>
       <Command>xcopy "$(OutDir)"* "D:\csgo_default\csgo\addons\metamod\dotnetplug" /y /v</Command>
     </PostBuildEvent>
+    <PreBuildEvent>
+      <Command>REM tlbexp "$(SolutionDir)DotNetPlug.Managed\bin\Debug\DotNetPlug.Managed.dll" /out:"$(ProjectDir)DotNetPlug.Managed.tlb"</Command>
+    </PreBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug - CSS|Win32'">
     <ClCompile>
@@ -540,6 +561,9 @@
     <PostBuildEvent>
       <Command>xcopy "$(OutDir)"* "D:\csgo_default\csgo\addons\metamod\dotnetplug" /y /v</Command>
     </PostBuildEvent>
+    <PreBuildEvent>
+      <Command>REM tlbexp "$(SolutionDir)DotNetPlug.Managed\bin\Debug\DotNetPlug.Managed.dll" /out:"$(ProjectDir)DotNetPlug.Managed.tlb"</Command>
+    </PreBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug - EYE|Win32'">
     <ClCompile>
@@ -569,6 +593,9 @@
     <PostBuildEvent>
       <Command>xcopy "$(OutDir)"* "D:\csgo_default\csgo\addons\metamod\dotnetplug" /y /v</Command>
     </PostBuildEvent>
+    <PreBuildEvent>
+      <Command>REM tlbexp "$(SolutionDir)DotNetPlug.Managed\bin\Debug\DotNetPlug.Managed.dll" /out:"$(ProjectDir)DotNetPlug.Managed.tlb"</Command>
+    </PreBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug - Bloody Good Time|Win32'">
     <ClCompile>
@@ -598,6 +625,9 @@
     <PostBuildEvent>
       <Command>xcopy "$(OutDir)"* "D:\csgo_default\csgo\addons\metamod\dotnetplug" /y /v</Command>
     </PostBuildEvent>
+    <PreBuildEvent>
+      <Command>REM tlbexp "$(SolutionDir)DotNetPlug.Managed\bin\Debug\DotNetPlug.Managed.dll" /out:"$(ProjectDir)DotNetPlug.Managed.tlb"</Command>
+    </PreBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release - Orange Box Valve|Win32'">
     <ClCompile>
@@ -626,6 +656,9 @@
     <PostBuildEvent>
       <Command>xcopy "$(OutDir)"* "D:\csgo_default\csgo\addons\metamod\dotnetplug" /y /v</Command>
     </PostBuildEvent>
+    <PreBuildEvent>
+      <Command>REM tlbexp "$(SolutionDir)DotNetPlug.Managed\bin\Debug\DotNetPlug.Managed.dll" /out:"$(ProjectDir)DotNetPlug.Managed.tlb"</Command>
+    </PreBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release - CSS|Win32'">
     <ClCompile>
@@ -654,6 +687,9 @@
     <PostBuildEvent>
       <Command>xcopy "$(OutDir)"* "D:\csgo_default\csgo\addons\metamod\dotnetplug" /y /v</Command>
     </PostBuildEvent>
+    <PreBuildEvent>
+      <Command>REM tlbexp "$(SolutionDir)DotNetPlug.Managed\bin\Debug\DotNetPlug.Managed.dll" /out:"$(ProjectDir)DotNetPlug.Managed.tlb"</Command>
+    </PreBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release - EYE|Win32'">
     <ClCompile>
@@ -682,6 +718,9 @@
     <PostBuildEvent>
       <Command>xcopy "$(OutDir)"* "D:\csgo_default\csgo\addons\metamod\dotnetplug" /y /v</Command>
     </PostBuildEvent>
+    <PreBuildEvent>
+      <Command>REM tlbexp "$(SolutionDir)DotNetPlug.Managed\bin\Debug\DotNetPlug.Managed.dll" /out:"$(ProjectDir)DotNetPlug.Managed.tlb"</Command>
+    </PreBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release - Bloody Good Time|Win32'">
     <ClCompile>
@@ -710,6 +749,9 @@
     <PostBuildEvent>
       <Command>xcopy "$(OutDir)"* "D:\csgo_default\csgo\addons\metamod\dotnetplug" /y /v</Command>
     </PostBuildEvent>
+    <PreBuildEvent>
+      <Command>REM tlbexp "$(SolutionDir)DotNetPlug.Managed\bin\Debug\DotNetPlug.Managed.dll" /out:"$(ProjectDir)DotNetPlug.Managed.tlb"</Command>
+    </PreBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug - Left 4 Dead|Win32'">
     <ClCompile>
@@ -739,6 +781,9 @@
     <PostBuildEvent>
       <Command>xcopy "$(OutDir)"* "D:\csgo_default\csgo\addons\metamod\dotnetplug" /y /v</Command>
     </PostBuildEvent>
+    <PreBuildEvent>
+      <Command>REM tlbexp "$(SolutionDir)DotNetPlug.Managed\bin\Debug\DotNetPlug.Managed.dll" /out:"$(ProjectDir)DotNetPlug.Managed.tlb"</Command>
+    </PreBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release - Left 4 Dead|Win32'">
     <ClCompile>
@@ -767,6 +812,9 @@
     <PostBuildEvent>
       <Command>xcopy "$(OutDir)"* "D:\csgo_default\csgo\addons\metamod\dotnetplug" /y /v</Command>
     </PostBuildEvent>
+    <PreBuildEvent>
+      <Command>REM tlbexp "$(SolutionDir)DotNetPlug.Managed\bin\Debug\DotNetPlug.Managed.dll" /out:"$(ProjectDir)DotNetPlug.Managed.tlb"</Command>
+    </PreBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug - Left 4 Dead 2|Win32'">
     <ClCompile>
@@ -796,6 +844,9 @@
     <PostBuildEvent>
       <Command>xcopy "$(OutDir)"* "D:\csgo_default\csgo\addons\metamod\dotnetplug" /y /v</Command>
     </PostBuildEvent>
+    <PreBuildEvent>
+      <Command>REM tlbexp "$(SolutionDir)DotNetPlug.Managed\bin\Debug\DotNetPlug.Managed.dll" /out:"$(ProjectDir)DotNetPlug.Managed.tlb"</Command>
+    </PreBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug - Alien Swarm|Win32'">
     <ClCompile>
@@ -825,6 +876,9 @@
     <PostBuildEvent>
       <Command>xcopy "$(OutDir)"* "D:\csgo_default\csgo\addons\metamod\dotnetplug" /y /v</Command>
     </PostBuildEvent>
+    <PreBuildEvent>
+      <Command>REM tlbexp "$(SolutionDir)DotNetPlug.Managed\bin\Debug\DotNetPlug.Managed.dll" /out:"$(ProjectDir)DotNetPlug.Managed.tlb"</Command>
+    </PreBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug - CS GO|Win32'">
     <ClCompile>
@@ -854,6 +908,9 @@
     <PostBuildEvent>
       <Command>xcopy "$(OutDir)"* "D:\csgo_default\csgo\addons\metamod\dotnetplug" /y /v</Command>
     </PostBuildEvent>
+    <PreBuildEvent>
+      <Command>REM tlbexp "$(SolutionDir)DotNetPlug.Managed\bin\Debug\DotNetPlug.Managed.dll" /out:"$(ProjectDir)DotNetPlug.Managed.tlb"</Command>
+    </PreBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug - Portal 2|Win32'">
     <ClCompile>
@@ -883,6 +940,9 @@
     <PostBuildEvent>
       <Command>xcopy "$(OutDir)"* "D:\csgo_default\csgo\addons\metamod\dotnetplug" /y /v</Command>
     </PostBuildEvent>
+    <PreBuildEvent>
+      <Command>REM tlbexp "$(SolutionDir)DotNetPlug.Managed\bin\Debug\DotNetPlug.Managed.dll" /out:"$(ProjectDir)DotNetPlug.Managed.tlb"</Command>
+    </PreBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release - Left 4 Dead 2|Win32'">
     <ClCompile>
@@ -911,6 +971,9 @@
     <PostBuildEvent>
       <Command>xcopy "$(OutDir)"* "D:\csgo_default\csgo\addons\metamod\dotnetplug" /y /v</Command>
     </PostBuildEvent>
+    <PreBuildEvent>
+      <Command>REM tlbexp "$(SolutionDir)DotNetPlug.Managed\bin\Debug\DotNetPlug.Managed.dll" /out:"$(ProjectDir)DotNetPlug.Managed.tlb"</Command>
+    </PreBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release - Alien Swarm|Win32'">
     <ClCompile>
@@ -939,6 +1002,9 @@
     <PostBuildEvent>
       <Command>xcopy "$(OutDir)"* "D:\csgo_default\csgo\addons\metamod\dotnetplug" /y /v</Command>
     </PostBuildEvent>
+    <PreBuildEvent>
+      <Command>REM tlbexp "$(SolutionDir)DotNetPlug.Managed\bin\Debug\DotNetPlug.Managed.dll" /out:"$(ProjectDir)DotNetPlug.Managed.tlb"</Command>
+    </PreBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release - CS GO|Win32'">
     <ClCompile>
@@ -967,6 +1033,9 @@
     <PostBuildEvent>
       <Command>xcopy "$(OutDir)"* "D:\csgo_default\csgo\addons\metamod\dotnetplug" /y /v</Command>
     </PostBuildEvent>
+    <PreBuildEvent>
+      <Command>REM tlbexp "$(SolutionDir)DotNetPlug.Managed\bin\Debug\DotNetPlug.Managed.dll" /out:"$(ProjectDir)DotNetPlug.Managed.tlb"</Command>
+    </PreBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release - Portal 2|Win32'">
     <ClCompile>
@@ -995,6 +1064,9 @@
     <PostBuildEvent>
       <Command>xcopy "$(OutDir)"* "D:\csgo_default\csgo\addons\metamod\dotnetplug" /y /v</Command>
     </PostBuildEvent>
+    <PreBuildEvent>
+      <Command>REM tlbexp "$(SolutionDir)DotNetPlug.Managed\bin\Debug\DotNetPlug.Managed.dll" /out:"$(ProjectDir)DotNetPlug.Managed.tlb"</Command>
+    </PreBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="engine_wrappers.h" />

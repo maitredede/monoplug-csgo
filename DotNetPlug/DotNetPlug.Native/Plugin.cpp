@@ -2,6 +2,7 @@
 #include "Plugin.h"
 
 SH_DECL_HOOK3_void(IServerGameDLL, ServerActivate, SH_NOATTRIB, 0, edict_t *, int, int);
+SH_DECL_HOOK1_void(IServerGameDLL, GameFrame, SH_NOATTRIB, 0, bool);
 
 DotNetPlugPlugin g_DotNetPlugPlugin;
 IServerGameDLL *server = NULL;
@@ -11,7 +12,7 @@ IServerPluginHelpers *helpers = NULL;
 IGameEventManager2 *gameevents = NULL;
 IServerPluginCallbacks *vsp_callbacks = NULL;
 IPlayerInfoManager *playerinfomanager = NULL;
-//ICvar *icvar = NULL;
+ICvar *icvar = NULL;
 CGlobalVars *gpGlobals = NULL;
 
 PLUGIN_EXPOSE(DotNetPlugPlugin, g_DotNetPlugPlugin);
@@ -23,20 +24,20 @@ bool DotNetPlugPlugin::Load(PluginId id, ISmmAPI *ismm, char *error, size_t maxl
 	GET_V_IFACE_CURRENT(GetEngineFactory, engine, IVEngineServer, INTERFACEVERSION_VENGINESERVER);
 	GET_V_IFACE_CURRENT(GetEngineFactory, gameevents, IGameEventManager2, INTERFACEVERSION_GAMEEVENTSMANAGER2);
 	GET_V_IFACE_CURRENT(GetEngineFactory, helpers, IServerPluginHelpers, INTERFACEVERSION_ISERVERPLUGINHELPERS);
-	GET_V_IFACE_CURRENT(GetEngineFactory, g_pCVar, ICvar, CVAR_INTERFACE_VERSION);
+	GET_V_IFACE_CURRENT(GetEngineFactory, icvar, ICvar, CVAR_INTERFACE_VERSION);
 	GET_V_IFACE_ANY(GetServerFactory, server, IServerGameDLL, INTERFACEVERSION_SERVERGAMEDLL);
 	GET_V_IFACE_ANY(GetServerFactory, gameclients, IServerGameClients, INTERFACEVERSION_SERVERGAMECLIENTS);
 	GET_V_IFACE_ANY(GetServerFactory, playerinfomanager, IPlayerInfoManager, INTERFACEVERSION_PLAYERINFOMANAGER);
-
 
 	char mm_path[MAX_PATH];
 	ZeroMemory(&mm_path, MAX_PATH);
 	const char* sBaseDir = g_SMAPI->GetBaseDir();
 
-	ConCommandBase* mm_basedirBase = g_pCVar->FindCommandBase("mm_basedir");
+	ConCommandBase* mm_basedirBase = icvar->FindCommandBase("mm_basedir");
 	if (mm_basedirBase->IsCommand())
 	{
 		snprintf(error, maxlen, "mm_basedir is not a convar\n");
+		return false;
 	}
 	ConVar* mm_basedirVar = (ConVar*)mm_basedirBase;
 	const char* mm_basedir = mm_basedirVar->GetString();
@@ -54,21 +55,37 @@ bool DotNetPlugPlugin::Load(PluginId id, ISmmAPI *ismm, char *error, size_t maxl
 	}
 
 
-	SH_ADD_HOOK_STATICFUNC(IServerGameDLL, ServerActivate, server, Hook_ServerActivate, true);
+	SH_ADD_HOOK_MEMFUNC(IServerGameDLL, ServerActivate, server, this, &DotNetPlugPlugin::Hook_ServerActivate, true);
+	SH_ADD_HOOK_MEMFUNC(IServerGameDLL, GameFrame, server, this, &DotNetPlugPlugin::Hook_GameFrame, true);
 
 	return true;
 }
 
 bool DotNetPlugPlugin::Unload(char *error, size_t maxlen)
 {
-	SH_REMOVE_HOOK_STATICFUNC(IServerGameDLL, ServerActivate, server, Hook_ServerActivate, true);
+	SH_REMOVE_HOOK_MEMFUNC(IServerGameDLL, GameFrame, server, this, &DotNetPlugPlugin::Hook_GameFrame, true);
+	SH_REMOVE_HOOK_MEMFUNC(IServerGameDLL, ServerActivate, server, this, &DotNetPlugPlugin::Hook_ServerActivate, true);
+
+	g_Managed.Unload();
 
 	return true;
 }
 
-void Hook_ServerActivate(edict_t *pEdictList, int edictCount, int clientMax)
+void DotNetPlugPlugin::Hook_ServerActivate(edict_t *pEdictList, int edictCount, int clientMax)
 {
 	META_LOG(g_PLAPI, "ServerActivate() called: edictCount = %d, clientMax = %d", edictCount, clientMax);
+}
+
+void DotNetPlugPlugin::Hook_GameFrame(bool simulating)
+{
+	/**
+	* simulating:
+	* ***********
+	* true  | game is ticking
+	* false | game is not ticking
+	*/
+	if (simulating)
+		g_Managed.Tick();
 }
 
 void DotNetPlugPlugin::AllPluginsLoaded()
@@ -76,6 +93,7 @@ void DotNetPlugPlugin::AllPluginsLoaded()
 	/* This is where we'd do stuff that relies on the mod or other plugins
 	* being initialized (for example, cvars added and events registered).
 	*/
+	g_Managed.AllPluginsLoaded();
 }
 
 bool DotNetPlugPlugin::Pause(char *error, size_t maxlen)

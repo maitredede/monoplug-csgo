@@ -6,11 +6,7 @@ using System.Threading.Tasks;
 
 namespace DotNetPlug
 {
-    internal interface IPlugin
+    public interface IConsole
     {
-        void Init(IEngine engine);
-
-        void Load();
-        void Unload();
     }
 }

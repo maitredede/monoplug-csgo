@@ -9,12 +9,44 @@ Managed::Managed()
 	this->pRuntimeInfo = NULL;
 	this->pCorRuntimeHost = NULL;
 
-	this->psaStaticMethodArgs = NULL;
-	this->psaMethodArgs = NULL;
-
 	this->pszVersion = L"v4.0.30319";
 	this->pszAssemblyName = L"DotNetPlug.Managed";
 	this->pszClassName = L"DotNetPlug.PluginManager";
+	this->pszIfaceName = L"DotNetPlug.IPluginManager";
+}
+
+#define GETMETHOD(hr, tType, lpwstrName, ppOut) {	\
+	bstr_t bstrMethodName(lpwstrName);				\
+	hr = tType->GetMethod_2(bstrMethodName, (BindingFlags)(BindingFlags_Instance | BindingFlags_Public), ppOut);	\
+	if (FAILED(hr))	\
+			{	\
+		META_CONPRINTF("Failed to get method %s w/hr 0x%08lx\n", lpwstrName, hr);	\
+		this->Cleanup();	\
+		return false;	\
+			}	\
+}
+
+#define SETCALLBACK(hr, funcPtr, setCallbackMethodInfo) {	\
+	LONG index = 0;	\
+	SAFEARRAY* params = SafeArrayCreateVector(VT_VARIANT, 0, 1);	\
+	variant_t vtEmptyCallback;	\
+	variant_t params0;	\
+	params0.llVal = (LONGLONG)funcPtr;	\
+	params0.vt = VT_I8;	\
+	hr = SafeArrayPutElement(params, &index, &params0);	\
+	if (FAILED(hr))	{	\
+		META_CONPRINTF("SafeArrayPutElement failed SetCallback_Log 0 w/hr 0x%08lx\n", hr);	\
+		this->Cleanup();	\
+		SafeArrayDestroy(params);	\
+		return false;	\
+	}	\
+	hr = this->spPluginManagerSetCallback_Log->Invoke_3(this->vtPluginManager, params, &vtEmptyCallback);	\
+	SafeArrayDestroy(params);	\
+	if (FAILED(hr))	{	\
+		META_CONPRINTF("Call failed SETCALLBACK w/hr 0x%08lx\n", hr);	\
+		this->Cleanup();	\
+		return false;	\
+	}	\
 }
 
 void Managed::Cleanup(){
@@ -33,22 +65,11 @@ void Managed::Cleanup(){
 		// Please note that after a call to Stop, the CLR cannot be 
 		// reinitialized into the same process. This step is usually not 
 		// necessary. You can leave the .NET runtime loaded in your process.
-		//wprintf(L"Stop the .NET runtime\n");
+		//META_CONPRINTF("Stop the .NET runtime\n");
 		//pCorRuntimeHost->Stop();
 
 		pCorRuntimeHost->Release();
 		pCorRuntimeHost = NULL;
-	}
-
-	if (psaStaticMethodArgs)
-	{
-		SafeArrayDestroy(psaStaticMethodArgs);
-		psaStaticMethodArgs = NULL;
-	}
-	if (psaMethodArgs)
-	{
-		SafeArrayDestroy(psaMethodArgs);
-		psaMethodArgs = NULL;
 	}
 }
 
@@ -69,28 +90,11 @@ bool Managed::Init(const char* sBaseDir)
 	bstr_t bstrAssemblyName(sAssemblyFile);
 	_AssemblyPtr spAssembly = NULL;
 
-	// The .NET class to instantiate.
-	bstr_t bstrClassName(pszClassName);
-	_TypePtr spType = NULL;
-	variant_t vtObject;
-	variant_t vtEmpty;
-
-	// The static method in the .NET class to invoke.
-	bstr_t bstrStaticMethodName(L"GetStringLength");
-	SAFEARRAY *psaStaticMethodArgs = NULL;
-	variant_t vtStringArg(L"HelloWorld");
-	variant_t vtLengthRet;
-
-	// The instance method in the .NET class to invoke.
-	bstr_t bstrMethodName(L"ToString");
-	SAFEARRAY *psaMethodArgs = NULL;
-	variant_t vtStringRet;
-
 	// Load and start the .NET runtime.
 	hr = CLRCreateInstance(CLSID_CLRMetaHost, IID_PPV_ARGS(&pMetaHost));
 	if (FAILED(hr))
 	{
-		wprintf(L"CLRCreateInstance failed w/hr 0x%08lx\n", hr);
+		META_CONPRINTF("CLRCreateInstance failed w/hr 0x%08lx\n", hr);
 		this->Cleanup();
 		return false;
 	}
@@ -100,7 +104,7 @@ bool Managed::Init(const char* sBaseDir)
 	hr = pMetaHost->GetRuntime(pszVersion, IID_PPV_ARGS(&pRuntimeInfo));
 	if (FAILED(hr))
 	{
-		wprintf(L"ICLRMetaHost::GetRuntime failed w/hr 0x%08lx\n", hr);
+		META_CONPRINTF("ICLRMetaHost::GetRuntime failed w/hr 0x%08lx\n", hr);
 		this->Cleanup();
 		return false;
 	}
@@ -113,14 +117,14 @@ bool Managed::Init(const char* sBaseDir)
 	hr = pRuntimeInfo->IsLoadable(&fLoadable);
 	if (FAILED(hr))
 	{
-		wprintf(L"ICLRRuntimeInfo::IsLoadable failed w/hr 0x%08lx\n", hr);
+		META_CONPRINTF("ICLRRuntimeInfo::IsLoadable failed w/hr 0x%08lx\n", hr);
 		this->Cleanup();
 		return false;
 	}
 
 	if (!fLoadable)
 	{
-		wprintf(L".NET runtime %s cannot be loaded\n", pszVersion);
+		META_CONPRINTF(".NET runtime %s cannot be loaded\n", pszVersion);
 		this->Cleanup();
 		return false;
 	}
@@ -134,7 +138,7 @@ bool Managed::Init(const char* sBaseDir)
 		IID_PPV_ARGS(&pCorRuntimeHost));
 	if (FAILED(hr))
 	{
-		wprintf(L"ICLRRuntimeInfo::GetInterface failed w/hr 0x%08lx\n", hr);
+		META_CONPRINTF("ICLRRuntimeInfo::GetInterface failed w/hr 0x%08lx\n", hr);
 		this->Cleanup();
 		return false;
 	}
@@ -143,7 +147,7 @@ bool Managed::Init(const char* sBaseDir)
 	hr = pCorRuntimeHost->Start();
 	if (FAILED(hr))
 	{
-		wprintf(L"CLR failed to start w/hr 0x%08lx\n", hr);
+		META_CONPRINTF("CLR failed to start w/hr 0x%08lx\n", hr);
 		this->Cleanup();
 		return false;
 	}
@@ -172,7 +176,7 @@ bool Managed::Init(const char* sBaseDir)
 	hr = pCorRuntimeHost->GetDefaultDomain(&spAppDomainThunk);
 	if (FAILED(hr))
 	{
-		wprintf(L"ICorRuntimeHost::GetDefaultDomain failed w/hr 0x%08lx\n", hr);
+		META_CONPRINTF("ICorRuntimeHost::GetDefaultDomain failed w/hr 0x%08lx\n", hr);
 		this->Cleanup();
 		return false;
 	}
@@ -180,7 +184,7 @@ bool Managed::Init(const char* sBaseDir)
 	hr = spAppDomainThunk->QueryInterface(IID_PPV_ARGS(&spDefaultAppDomain));
 	if (FAILED(hr))
 	{
-		wprintf(L"Failed to get default AppDomain w/hr 0x%08lx\n", hr);
+		META_CONPRINTF("Failed to get default AppDomain w/hr 0x%08lx\n", hr);
 		this->Cleanup();
 		return false;
 	}
@@ -190,7 +194,7 @@ bool Managed::Init(const char* sBaseDir)
 	_AssemblyPtr spMscorlibAssembly = NULL;
 	hr = hr = spDefaultAppDomain->Load_2(bstrMscorlibAssemblyName, &spMscorlibAssembly);
 	if (FAILED(hr)){
-		wprintf(L"Failed to load the assembly mscorlib w/hr 0x%08lx\n", hr);
+		META_CONPRINTF("Failed to load the assembly mscorlib w/hr 0x%08lx\n", hr);
 		this->Cleanup();
 		return false;
 	}
@@ -201,7 +205,7 @@ bool Managed::Init(const char* sBaseDir)
 	hr = spMscorlibAssembly->GetType_2(bstrAssemblyClassName, &spAssemblyType);
 	if (FAILED(hr))
 	{
-		wprintf(L"Failed to get the Type interface System.Reflection.Assembly w/hr 0x%08lx\n", hr);
+		META_CONPRINTF("Failed to get the Type interface System.Reflection.Assembly w/hr 0x%08lx\n", hr);
 		this->Cleanup();
 		return false;
 	}
@@ -219,33 +223,38 @@ bool Managed::Init(const char* sBaseDir)
 	hr = SafeArrayPutElement(psaAssemblyLoadMethodArgs, &index, &vtStringLoadFromArg);
 	if (FAILED(hr))
 	{
-		wprintf(L"SafeArrayPutElement failed vtStringLoadFromArg w/hr 0x%08lx\n", hr);
+		META_CONPRINTF("SafeArrayPutElement failed vtStringLoadFromArg w/hr 0x%08lx\n", hr);
+		SafeArrayDestroy(psaAssemblyLoadMethodArgs);
 		this->Cleanup();
 		return false;
 	}
 
 	// Invoke the "GetStringLength" method from the Type interface.
 	bstr_t bstrLoadFromMethodName(L"LoadFrom");
+	variant_t vtLoadFromMethodTarget = NULL;
+	variant_t vtLoadFromMethodOutput = NULL;
+
 	hr = spAssemblyType->InvokeMember_3(bstrLoadFromMethodName, static_cast<BindingFlags>(
 		BindingFlags_InvokeMethod | BindingFlags_Static | BindingFlags_Public),
-		NULL, vtEmpty, psaAssemblyLoadMethodArgs, &vtLengthRet);
+		NULL, vtLoadFromMethodTarget, psaAssemblyLoadMethodArgs, &vtLoadFromMethodOutput);
+	SafeArrayDestroy(psaAssemblyLoadMethodArgs);
 	if (FAILED(hr))
 	{
-		wprintf(L"Failed to invoke LoadFrom w/hr 0x%08lx\n", hr);
+		META_CONPRINTF("Failed to invoke LoadFrom w/hr 0x%08lx\n", hr);
 		this->Cleanup();
 		return false;
 	}
 
-	_AssemblyPtr assembly = (_AssemblyPtr)vtLengthRet;
+	_AssemblyPtr assembly = (_AssemblyPtr)vtLoadFromMethodOutput;
 
 	META_CONPRINTF("Assembly file loaded : %s\n", sAssemblyFile);
 
 	_Type* spPluginManagerType = NULL;
-	bstr_t bstrPluginManagerClassName(L"DotNetPlug.PluginManager");
+	bstr_t bstrPluginManagerClassName(this->pszClassName);
 	hr = assembly->GetType_2(bstrPluginManagerClassName, &spPluginManagerType);
 	if (FAILED(hr))
 	{
-		wprintf(L"Failed to get PluginManager type w/hr 0x%08lx\n", hr);
+		META_CONPRINTF("Failed to get PluginManager type w/hr 0x%08lx\n", hr);
 		this->Cleanup();
 		return false;
 	}
@@ -255,7 +264,7 @@ bool Managed::Init(const char* sBaseDir)
 	hr = spPluginManagerType->GetProperty(spPropName, (BindingFlags)(BindingFlags_NonPublic | BindingFlags_Static), &spPluginManagerInstanceProperty);
 	if (FAILED(hr))
 	{
-		wprintf(L"Failed to get PluginManager Instance PropertyInfo w/hr 0x%08lx\n", hr);
+		META_CONPRINTF("Failed to get PluginManager Instance PropertyInfo w/hr 0x%08lx\n", hr);
 		this->Cleanup();
 		return false;
 	}
@@ -264,26 +273,88 @@ bool Managed::Init(const char* sBaseDir)
 	hr = spPluginManagerInstanceProperty->GetGetMethod(true, &spPluginManagerInstancePropertyGet);
 	if (FAILED(hr))
 	{
-		wprintf(L"Failed to get PluginManager Instance Property GetMethod w/hr 0x%08lx\n", hr);
+		META_CONPRINTF("Failed to get PluginManager Instance Property GetMethod w/hr 0x%08lx\n", hr);
 		this->Cleanup();
 		return false;
 	}
 
-	variant_t vtObj = NULL;
-	variant_t vtRet = NULL;
-	SAFEARRAY* param = NULL;
-	hr = spPluginManagerInstancePropertyGet->Invoke_3(vtObj, param, &vtRet);
+	hr = spPluginManagerInstancePropertyGet->Invoke_3((variant_t)NULL, NULL, &vtPluginManager);
 	if (FAILED(hr))
 	{
-		wprintf(L"Failed to get PluginManager Instance Property value w/hr 0x%08lx\n", hr);
+		META_CONPRINTF("Failed to get PluginManager Instance Property value w/hr 0x%08lx\n", hr);
 		this->Cleanup();
 		return false;
 	}
 
+	_Type* spIPluginManagerType = NULL;
+	bstr_t bstrIPluginManagerClassName(this->pszIfaceName);
+	hr = assembly->GetType_2(bstrIPluginManagerClassName, &spIPluginManagerType);
+	if (FAILED(hr))
+	{
+		META_CONPRINTF("Failed to get IPluginManager type w/hr 0x%08lx\n", hr);
+		this->Cleanup();
+		return false;
+	}
+
+	/*bstr_t spMethodTick(L"Tick");
+	hr = spIPluginManagerType->GetMethod_2(spMethodTick, (BindingFlags)(BindingFlags_Instance | BindingFlags_Public), &spPluginManagerTick);
+	if (FAILED(hr))
+	{
+		META_CONPRINTF("Failed to get method %s.%s w/hr 0x%08lx\n", bstrIPluginManagerClassName, spMethodTick, hr);
+		this->Cleanup();
+		return false;
+	}*/
+	GETMETHOD(hr, spIPluginManagerType, L"Tick", &spPluginManagerTick);
+
+	//bstr_t spMethodAllPluginsLoaded(L"AllPluginsLoaded");
+	//hr = spIPluginManagerType->GetMethod_2(spMethodAllPluginsLoaded, (BindingFlags)(BindingFlags_Instance | BindingFlags_Public), &spPluginManagerAllPluginsLoaded);
+	//if (FAILED(hr))
+	//{
+	//	META_CONPRINTF("Failed to get method %s.%s w/hr 0x%08lx\n", bstrIPluginManagerClassName, spMethodTick, hr);
+	//	this->Cleanup();
+	//	return false;
+	//}
+	GETMETHOD(hr, spIPluginManagerType, L"AllPluginsLoaded", &spPluginManagerAllPluginsLoaded);
+
+	GETMETHOD(hr, spIPluginManagerType, L"SetCallback_Log", &spPluginManagerSetCallback_Log);
+	GETMETHOD(hr, spIPluginManagerType, L"SetCallback_ExecuteCommand", &spPluginManagerSetCallback_ExecuteCommand);
+	GETMETHOD(hr, spIPluginManagerType, L"Unload", &spPluginManagerUnload);
+
+	SETCALLBACK(hr, &Managed::Log, spPluginManagerSetCallback_Log);
+	SETCALLBACK(hr, &Managed::ExecuteCommand, spPluginManagerSetCallback_ExecuteCommand);
+
+	s_inited = true;
 	return true;
+}
+
+
+
+void Managed::Unload(){
+	variant_t vtEmptyCallback;
+	this->spPluginManagerUnload->Invoke_3(this->vtPluginManager, NULL, &vtEmptyCallback);
+	this->Cleanup();
+	s_inited = false;
 }
 
 void Managed::Tick()
 {
+	variant_t vtOutput = NULL;
+	this->spPluginManagerTick->Invoke_3(this->vtPluginManager, NULL, &vtOutput);
+}
 
+void Managed::AllPluginsLoaded()
+{
+	variant_t vtOutput = NULL;
+	this->spPluginManagerAllPluginsLoaded->Invoke_3(this->vtPluginManager, NULL, &vtOutput);
+}
+
+void Managed::Log(const char* msg)
+{
+	META_LOG(g_PLAPI, msg);
+}
+
+const char* Managed::ExecuteCommand(const char* cmd)
+{
+	META_LOG(g_PLAPI, cmd);
+	return cmd;
 }

@@ -20,6 +20,10 @@ public:
 	bool Pause(char *error, size_t maxlen);
 	bool Unpause(char *error, size_t maxlen);
 	void AllPluginsLoaded();
+public: //Hooks
+	void Hook_GameFrame(bool simulating);
+	void Hook_ServerActivate(edict_t *pEdictList, int edictCount, int clientMax);
+
 public:
 	const char *GetAuthor();
 	const char *GetName();
@@ -31,7 +35,6 @@ public:
 	const char *GetLogTag();
 };
 
-void Hook_ServerActivate(edict_t *pEdictList, int edictCount, int clientMax);
 
 extern DotNetPlugPlugin g_DotNetPlugPlugin;
 

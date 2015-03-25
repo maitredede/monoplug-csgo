@@ -24,6 +24,7 @@ namespace DotNetPlug
         /// <param name="state">Objet passé au délégué.</param>
         public override void Post(SendOrPostCallback d, object state)
         {
+            System.Diagnostics.Debug.WriteLine("EngineSynchronizationContext::Post");
             WorkItem wrk = new WorkItem(d, state, true);
             this.m_queue.Enqueue(wrk);
         }
@@ -35,6 +36,7 @@ namespace DotNetPlug
         /// <param name="state">Objet passé au délégué.</param>
         public override void Send(SendOrPostCallback d, object state)
         {
+            System.Diagnostics.Debug.WriteLine("EngineSynchronizationContext::Send");
             using (WorkItem wrk = new WorkItem(d, state, true))
             {
                 this.m_queue.Enqueue(wrk);

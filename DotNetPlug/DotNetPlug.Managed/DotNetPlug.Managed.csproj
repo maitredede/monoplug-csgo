@@ -39,9 +39,14 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="ClockTick.cs" />
+    <Compile Include="Delegates.cs" />
     <Compile Include="EngineSynchronizationContext.cs" />
+    <Compile Include="EngineWrapper.cs" />
+    <Compile Include="IConsole.cs" />
     <Compile Include="IEngine.cs" />
     <Compile Include="IPlugin.cs" />
+    <Compile Include="IPluginManager.cs" />
     <Compile Include="PluginBase.cs" />
     <Compile Include="PluginManager.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
