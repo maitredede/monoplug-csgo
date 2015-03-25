@@ -181,3 +181,8 @@ UpgradeLog*.htm
 
 # Microsoft Fakes
 FakesAssemblies/
+
+
+#MMSource
+[Dd]ebug - CS GO/
+[Rr]elease - CS GO/

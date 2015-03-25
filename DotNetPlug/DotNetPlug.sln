@@ -1,0 +1,47 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 2013
+VisualStudioVersion = 12.0.31101.0
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "DotNetPlug.Native", "DotNetPlug.Native\DotNetPlug.Native.vcxproj", "{BF4BC489-A094-4033-9BAF-41E95457B103}"
+	ProjectSection(ProjectDependencies) = postProject
+		{52A5E962-163E-4556-B9F0-394B5F5A058B} = {52A5E962-163E-4556-B9F0-394B5F5A058B}
+	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DotNetPlug.Managed", "DotNetPlug.Managed\DotNetPlug.Managed.csproj", "{52A5E962-163E-4556-B9F0-394B5F5A058B}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Debug|Mixed Platforms = Debug|Mixed Platforms
+		Debug|Win32 = Debug|Win32
+		Release|Any CPU = Release|Any CPU
+		Release|Mixed Platforms = Release|Mixed Platforms
+		Release|Win32 = Release|Win32
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{BF4BC489-A094-4033-9BAF-41E95457B103}.Debug|Any CPU.ActiveCfg = Debug - Bloody Good Time|Win32
+		{BF4BC489-A094-4033-9BAF-41E95457B103}.Debug|Mixed Platforms.ActiveCfg = Debug - CS GO|Win32
+		{BF4BC489-A094-4033-9BAF-41E95457B103}.Debug|Mixed Platforms.Build.0 = Debug - CS GO|Win32
+		{BF4BC489-A094-4033-9BAF-41E95457B103}.Debug|Win32.ActiveCfg = Debug - Bloody Good Time|Win32
+		{BF4BC489-A094-4033-9BAF-41E95457B103}.Debug|Win32.Build.0 = Debug - Bloody Good Time|Win32
+		{BF4BC489-A094-4033-9BAF-41E95457B103}.Release|Any CPU.ActiveCfg = Release - Orange Box|Win32
+		{BF4BC489-A094-4033-9BAF-41E95457B103}.Release|Mixed Platforms.ActiveCfg = Release - CS GO|Win32
+		{BF4BC489-A094-4033-9BAF-41E95457B103}.Release|Mixed Platforms.Build.0 = Release - CS GO|Win32
+		{BF4BC489-A094-4033-9BAF-41E95457B103}.Release|Win32.ActiveCfg = Release - Orange Box|Win32
+		{BF4BC489-A094-4033-9BAF-41E95457B103}.Release|Win32.Build.0 = Release - Orange Box|Win32
+		{52A5E962-163E-4556-B9F0-394B5F5A058B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{52A5E962-163E-4556-B9F0-394B5F5A058B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{52A5E962-163E-4556-B9F0-394B5F5A058B}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
+		{52A5E962-163E-4556-B9F0-394B5F5A058B}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
+		{52A5E962-163E-4556-B9F0-394B5F5A058B}.Debug|Win32.ActiveCfg = Debug|Any CPU
+		{52A5E962-163E-4556-B9F0-394B5F5A058B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{52A5E962-163E-4556-B9F0-394B5F5A058B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{52A5E962-163E-4556-B9F0-394B5F5A058B}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
+		{52A5E962-163E-4556-B9F0-394B5F5A058B}.Release|Mixed Platforms.Build.0 = Release|Any CPU
+		{52A5E962-163E-4556-B9F0-394B5F5A058B}.Release|Win32.ActiveCfg = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal
