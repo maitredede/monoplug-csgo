@@ -26,7 +26,7 @@ OBJECTS = Plugin.cpp Managed.cpp Managed_mono.cpp Managed_win32.cpp
 ##############################################
 
 OPT_FLAGS = -O3 -funroll-loops -pipe
-GCC4_FLAGS = -fvisibility=hidden -fvisibility-inlines-hidden
+GCC4_FLAGS = -fvisibility=hidden -fvisibility-inlines-hidden `pkg-config --cflags --libs mono-2` -D MANAGED_MONO
 DEBUG_FLAGS = -g -ggdb3 -D_DEBUG
 CPP = gcc
 CPP_OSX = clang
