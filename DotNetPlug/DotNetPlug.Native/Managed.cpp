@@ -5,6 +5,7 @@ Managed g_Managed;
 
 Managed::Managed()
 {
+	this->s_inited = false;
 }
 
 void Managed::Log(const char* msg)

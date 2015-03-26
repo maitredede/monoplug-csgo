@@ -38,46 +38,46 @@ public:
 	static void Log(const char* msg);
 	static const char* ExecuteCommand(const char* cmd);
 private:
-	bool s_inited = false;
+	bool s_inited;
 	bool InitPlateform(const char* sAssemblyFile);
 
 #ifdef MANAGED_WIN32
 private:
-	ICLRMetaHost *pMetaHost = NULL;
-	ICLRRuntimeInfo *pRuntimeInfo = NULL;
+	ICLRMetaHost *pMetaHost;
+	ICLRRuntimeInfo *pRuntimeInfo;
 	// ICorRuntimeHost and ICLRRuntimeHost are the two CLR hosting interfaces
 	// supported by CLR 4.0. Here we demo the ICorRuntimeHost interface that 
 	// was provided in .NET v1.x, and is compatible with all .NET Frameworks. 
-	ICorRuntimeHost *pCorRuntimeHost = NULL;
+	ICorRuntimeHost *pCorRuntimeHost;
 
-	variant_t vtPluginManager = NULL;
-	_MethodInfo* spPluginManagerTick = NULL;
-	_MethodInfo* spPluginManagerAllPluginsLoaded = NULL;
-	_MethodInfo* spPluginManagerUnload = NULL;
-	_MethodInfo* spPluginManagerSetCallback_Log = NULL;
-	_MethodInfo* spPluginManagerSetCallback_ExecuteCommand = NULL;
+	variant_t vtPluginManager;
+	_MethodInfo* spPluginManagerTick;
+	_MethodInfo* spPluginManagerAllPluginsLoaded;
+	_MethodInfo* spPluginManagerUnload;
+	_MethodInfo* spPluginManagerSetCallback_Log;
+	_MethodInfo* spPluginManagerSetCallback_ExecuteCommand;
 
-	LPWSTR pszVersion = NULL;
-	LPWSTR pszAssemblyName = NULL;
-	LPWSTR pszClassName = NULL;
-	LPWSTR pszIfaceName = NULL;
+	LPWSTR pszVersion;
+	LPWSTR pszAssemblyName;
+	LPWSTR pszClassName;
+	LPWSTR pszIfaceName;
 #endif
 #ifdef MANAGED_MONO
 private: //Private members
-	MonoDomain *pDomain = NULL;
-	MonoAssembly *pAssembly = NULL;
-	MonoImage *pAssemblyImage = NULL;
-	MonoClass *pPluginManagerClass = NULL;
-	MonoClass *pIPluginManagerClass = NULL;
-	MonoClass *pPluginManagerMonoClass = NULL;
-	MonoProperty* pPluginManagerInstanceProperty = NULL;
-	MonoMethod* pPluginManagerInstancePropertyGetMethod = NULL;
-	MonoObject* pPluginManagerInstanceObject = NULL;
-	MonoObject* pIPluginManagerInstanceObject = NULL;
+	MonoDomain *pDomain;
+	MonoAssembly *pAssembly;
+	MonoImage *pAssemblyImage;
+	MonoClass *pPluginManagerClass;
+	MonoClass *pIPluginManagerClass;
+	MonoClass *pPluginManagerMonoClass;
+	MonoProperty* pPluginManagerInstanceProperty;
+	MonoMethod* pPluginManagerInstancePropertyGetMethod;
+	MonoObject* pPluginManagerInstanceObject;
+	MonoObject* pIPluginManagerInstanceObject;
 
-	MonoMethod* pMapCallbacksToMono = NULL;
-	MonoMethod* pPluginManagerAllPluginsLoadedMethod = NULL;
-	MonoMethod* pPluginManagerAllPluginsLoadedMethodImplementation = NULL;
+	MonoMethod* pMapCallbacksToMono;
+	MonoMethod* pPluginManagerAllPluginsLoadedMethod;
+	MonoMethod* pPluginManagerAllPluginsLoadedMethodImplementation;
 private: //Private methods
 	static void LogMono(MonoString* pMsg);
 	static MonoString* ExecuteCommandMono(MonoString* pMsg);
