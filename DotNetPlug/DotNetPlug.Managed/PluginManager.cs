@@ -64,6 +64,8 @@ namespace DotNetPlug
 
         void IPluginManager.AllPluginsLoaded()
         {
+            this.m_engine.m_cb_Log("Hello from DotNetPlug PluginManager");
+
             Type[] plugTypes = AppDomain.CurrentDomain.GetAssemblies().SelectMany(a => a.GetTypes().Where(t => t.IsClass && !t.IsAbstract && typeof(IPlugin).IsAssignableFrom(t))).ToArray();
             foreach (Type tPlugin in plugTypes)
             {
@@ -77,6 +79,8 @@ namespace DotNetPlug
 
             foreach (IPlugin plugin in this.m_plugins)
             {
+                this.m_engine.m_cb_Log(string.Format("PluginManager : Loading plugin {0}", plugin.GetType().FullName));
+
                 plugin.Load();
             }
         }
@@ -89,6 +93,7 @@ namespace DotNetPlug
             }
         }
 
+        #region Win32 callbacks
         void IPluginManager.SetCallback_Log(Int64 callbackLog)
         {
             LogDelegate cb = (LogDelegate)Marshal.GetDelegateForFunctionPointer(new IntPtr(callbackLog), typeof(LogDelegate));
@@ -100,6 +105,14 @@ namespace DotNetPlug
             ExecuteCommandDelegate cb = (ExecuteCommandDelegate)Marshal.GetDelegateForFunctionPointer(new IntPtr(callbackLog), typeof(ExecuteCommandDelegate));
             this.m_engine.m_cb_ExecuteCommand = cb;
         }
+        #endregion
 
+        #region Mono callbacks
+        internal void MapCallbacksToMono()
+        {
+            this.m_engine.m_cb_Log = new LogDelegate(PluginManagerMono.Log);
+            this.m_engine.m_cb_ExecuteCommand = new ExecuteCommandDelegate(PluginManagerMono.ExecuteCommand);
+        }
+        #endregion
     }
 }

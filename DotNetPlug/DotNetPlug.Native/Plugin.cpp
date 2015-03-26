@@ -30,7 +30,7 @@ bool DotNetPlugPlugin::Load(PluginId id, ISmmAPI *ismm, char *error, size_t maxl
 	GET_V_IFACE_ANY(GetServerFactory, playerinfomanager, IPlayerInfoManager, INTERFACEVERSION_PLAYERINFOMANAGER);
 
 	char mm_path[MAX_PATH];
-	ZeroMemory(&mm_path, MAX_PATH);
+	memset(&mm_path, 0, MAX_PATH);
 	const char* sBaseDir = g_SMAPI->GetBaseDir();
 
 	ConCommandBase* mm_basedirBase = icvar->FindCommandBase("mm_basedir");
@@ -45,7 +45,6 @@ bool DotNetPlugPlugin::Load(PluginId id, ISmmAPI *ismm, char *error, size_t maxl
 	V_ComposeFileName(sBaseDir, mm_basedir, mm_path, MAX_PATH);
 
 	META_LOG(g_PLAPI, "GetBaseDir() %s\n", mm_path);
-	META_CONPRINTF("GetBaseDir() %s\n", mm_path);
 
 	//Init DotNet
 	if (!g_Managed.Init(mm_path)){
@@ -133,7 +132,15 @@ const char *DotNetPlugPlugin::GetAuthor()
 
 const char *DotNetPlugPlugin::GetDescription()
 {
-	return "Managed plugin";
+#ifdef MANAGED_WIN32
+	return "Managed plugin - Win32";
+#else 
+#ifdef MANAGED_MONO
+	return "Managed plugin - Mono";
+#else
+	return "Managed plugin - Unkown plateform";
+#endif
+#endif
 }
 
 const char *DotNetPlugPlugin::GetName()

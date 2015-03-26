@@ -1,29 +1,17 @@
 #include "Managed.h"
 #include "Plugin.h"
 
-Managed::Managed()
-{
-	s_inited = false;
-
-	this->pMetaHost = NULL;
-	this->pRuntimeInfo = NULL;
-	this->pCorRuntimeHost = NULL;
-
-	this->pszVersion = L"v4.0.30319";
-	this->pszAssemblyName = L"DotNetPlug.Managed";
-	this->pszClassName = L"DotNetPlug.PluginManager";
-	this->pszIfaceName = L"DotNetPlug.IPluginManager";
-}
+#ifdef MANAGED_WIN32
 
 #define GETMETHOD(hr, tType, lpwstrName, ppOut) {	\
 	bstr_t bstrMethodName(lpwstrName);				\
 	hr = tType->GetMethod_2(bstrMethodName, (BindingFlags)(BindingFlags_Instance | BindingFlags_Public), ppOut);	\
 	if (FAILED(hr))	\
-			{	\
+				{	\
 		META_CONPRINTF("Failed to get method %s w/hr 0x%08lx\n", lpwstrName, hr);	\
 		this->Cleanup();	\
 		return false;	\
-			}	\
+				}	\
 }
 
 #define SETCALLBACK(hr, funcPtr, setCallbackMethodInfo) {	\
@@ -39,14 +27,14 @@ Managed::Managed()
 		this->Cleanup();	\
 		SafeArrayDestroy(params);	\
 		return false;	\
-	}	\
+		}	\
 	hr = this->spPluginManagerSetCallback_Log->Invoke_3(this->vtPluginManager, params, &vtEmptyCallback);	\
 	SafeArrayDestroy(params);	\
 	if (FAILED(hr))	{	\
 		META_CONPRINTF("Call failed SETCALLBACK w/hr 0x%08lx\n", hr);	\
 		this->Cleanup();	\
 		return false;	\
-	}	\
+		}	\
 }
 
 void Managed::Cleanup(){
@@ -73,17 +61,14 @@ void Managed::Cleanup(){
 	}
 }
 
-bool Managed::Init(const char* sBaseDir)
+bool Managed::InitPlateform(const char* sAssemblyFile)
 {
-	if (s_inited)
-		return true;
+	this->pszVersion = L"v4.0.30319";
+	this->pszAssemblyName = L"DotNetPlug.Managed";
+	this->pszClassName = L"DotNetPlug.PluginManager";
+	this->pszIfaceName = L"DotNetPlug.IPluginManager";
 
 	HRESULT hr;
-
-	char sAssemblyFile[MAX_PATH];
-	ZeroMemory(sAssemblyFile, MAX_PATH);
-
-	V_ComposeFileName(sBaseDir, "dotnetplug/DotNetPlug.Managed.dll", sAssemblyFile, MAX_PATH);
 
 	// The .NET assembly to load.
 	//bstr_t bstrAssemblyName(pszAssemblyName);
@@ -300,9 +285,9 @@ bool Managed::Init(const char* sBaseDir)
 	hr = spIPluginManagerType->GetMethod_2(spMethodTick, (BindingFlags)(BindingFlags_Instance | BindingFlags_Public), &spPluginManagerTick);
 	if (FAILED(hr))
 	{
-		META_CONPRINTF("Failed to get method %s.%s w/hr 0x%08lx\n", bstrIPluginManagerClassName, spMethodTick, hr);
-		this->Cleanup();
-		return false;
+	META_CONPRINTF("Failed to get method %s.%s w/hr 0x%08lx\n", bstrIPluginManagerClassName, spMethodTick, hr);
+	this->Cleanup();
+	return false;
 	}*/
 	GETMETHOD(hr, spIPluginManagerType, L"Tick", &spPluginManagerTick);
 
@@ -327,8 +312,6 @@ bool Managed::Init(const char* sBaseDir)
 	return true;
 }
 
-
-
 void Managed::Unload(){
 	variant_t vtEmptyCallback;
 	this->spPluginManagerUnload->Invoke_3(this->vtPluginManager, NULL, &vtEmptyCallback);
@@ -347,14 +330,4 @@ void Managed::AllPluginsLoaded()
 	variant_t vtOutput = NULL;
 	this->spPluginManagerAllPluginsLoaded->Invoke_3(this->vtPluginManager, NULL, &vtOutput);
 }
-
-void Managed::Log(const char* msg)
-{
-	META_LOG(g_PLAPI, msg);
-}
-
-const char* Managed::ExecuteCommand(const char* cmd)
-{
-	META_LOG(g_PLAPI, cmd);
-	return cmd;
-}
+#endif

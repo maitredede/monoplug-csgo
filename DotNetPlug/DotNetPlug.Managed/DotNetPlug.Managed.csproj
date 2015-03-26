@@ -32,6 +32,7 @@
   <ItemGroup>
     <Reference Include="System" />
     <Reference Include="System.Core" />
+    <Reference Include="System.Drawing" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
@@ -44,11 +45,13 @@
     <Compile Include="EngineSynchronizationContext.cs" />
     <Compile Include="EngineWrapper.cs" />
     <Compile Include="IConsole.cs" />
+    <Compile Include="IConsolePlugin.cs" />
     <Compile Include="IEngine.cs" />
     <Compile Include="IPlugin.cs" />
     <Compile Include="IPluginManager.cs" />
     <Compile Include="PluginBase.cs" />
     <Compile Include="PluginManager.cs" />
+    <Compile Include="PluginManagerMono.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

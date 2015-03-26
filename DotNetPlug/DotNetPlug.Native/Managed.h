@@ -1,7 +1,7 @@
 #ifndef _DOTNETPLUG_MANAGED_H_
 #define _DOTNETPLUG_MANAGED_H_
 
-#if defined WIN32
+#ifdef MANAGED_WIN32
 
 #include <windows.h>
 #include <metahost.h>
@@ -16,8 +16,13 @@
 // #import "DotNetPlug.Managed.tlb" raw_interfaces_only
 
 using namespace mscorlib;
-#else
+#endif
 
+#ifdef MANAGED_MONO
+//#include <glib/glib.h>
+#include <mono/jit/jit.h>
+#include <mono/metadata/mono-config.h>
+#include <mono/metadata/assembly.h>
 #endif
 
 class Managed {
@@ -33,9 +38,10 @@ public:
 	static void Log(const char* msg);
 	static const char* ExecuteCommand(const char* cmd);
 private:
-	bool s_inited;
+	bool s_inited = false;
+	bool InitPlateform(const char* sAssemblyFile);
 
-#ifdef WIN32
+#ifdef MANAGED_WIN32
 private:
 	ICLRMetaHost *pMetaHost = NULL;
 	ICLRRuntimeInfo *pRuntimeInfo = NULL;
@@ -55,7 +61,26 @@ private:
 	LPWSTR pszAssemblyName = NULL;
 	LPWSTR pszClassName = NULL;
 	LPWSTR pszIfaceName = NULL;
-#else
+#endif
+#ifdef MANAGED_MONO
+private: //Private members
+	MonoDomain *pDomain = NULL;
+	MonoAssembly *pAssembly = NULL;
+	MonoImage *pAssemblyImage = NULL;
+	MonoClass *pPluginManagerClass = NULL;
+	MonoClass *pIPluginManagerClass = NULL;
+	MonoClass *pPluginManagerMonoClass = NULL;
+	MonoProperty* pPluginManagerInstanceProperty = NULL;
+	MonoMethod* pPluginManagerInstancePropertyGetMethod = NULL;
+	MonoObject* pPluginManagerInstanceObject = NULL;
+	MonoObject* pIPluginManagerInstanceObject = NULL;
+
+	MonoMethod* pMapCallbacksToMono = NULL;
+	MonoMethod* pPluginManagerAllPluginsLoadedMethod = NULL;
+	MonoMethod* pPluginManagerAllPluginsLoadedMethodImplementation = NULL;
+private: //Private methods
+	static void LogMono(MonoString* pMsg);
+	static MonoString* ExecuteCommandMono(MonoString* pMsg);
 #endif
 };
 
