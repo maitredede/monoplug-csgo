@@ -116,7 +116,7 @@ bool Managed::InitPlateform(const char* sAssemblyFile)
 		return false;
 	}
 	GETMETHOD(this->pPluginManagerTickMethod, this->pIPluginManagerClass, "Tick", 0);
-	GETMETHODIMPL(this->pPluginManagerTickMethodImplementation, this->pPluginManagerInstanceObject, this->pPluginManagerAllPluginsLoadedMethod, "Tick");
+	GETMETHODIMPL(this->pPluginManagerTickMethodImplementation, this->pPluginManagerInstanceObject, this->pPluginManagerTickMethod, "Tick");
 
 
 	//Callbacks
