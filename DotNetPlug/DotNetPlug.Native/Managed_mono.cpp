@@ -29,14 +29,14 @@ bool Managed::InitPlateform(const char* sAssemblyFile)
 {
 	MonoObject* exception = NULL;
 
+	mono_config_parse(NULL);
+
 	this->pDomain = mono_jit_init_version("DotNetPlug", "v4.0.30319");
 	if (!this->pDomain)
 	{
 		META_LOG(g_PLAPI, "Can't initialize Mono jit\n");
 		return false;
 	}
-
-	mono_config_parse(NULL);
 
 	this->pAssembly = mono_domain_assembly_open(this->pDomain, sAssemblyFile);
 	if (!this->pAssembly)
