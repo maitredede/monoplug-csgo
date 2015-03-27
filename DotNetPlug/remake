@@ -1,0 +1,6 @@
+#!/bin/bash
+pushd .
+cd DotNetPlug.Native
+make ENGINE=csgo clean && make ENGINE=csgo
+popd
+xbuild DotNetPlug.Managed/DotNetPlug.Managed.csproj /p:Configuration=Release 
