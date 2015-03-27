@@ -15,10 +15,5 @@ namespace DotNetPlug
         void Tick();
         void AllPluginsLoaded();
         void Unload();
-
-        //void SetCallback_Log([MarshalAs(UnmanagedType.FunctionPtr)] Action<string> callback);
-        void SetCallback_Log(Int64 callback);
-        void SetCallback_ExecuteCommand(Int64 callback);
-
     }
 }

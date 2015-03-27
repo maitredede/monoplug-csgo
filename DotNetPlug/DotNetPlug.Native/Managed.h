@@ -1,6 +1,7 @@
 #ifndef _DOTNETPLUG_MANAGED_H_
 #define _DOTNETPLUG_MANAGED_H_
 
+#include "VirtualConsole.h"
 
 #ifdef MANAGED_WIN32
 
@@ -81,6 +82,8 @@ private: //Private members
 	MonoMethod* pPluginManagerAllPluginsLoadedMethodImplementation;
 	MonoMethod* pPluginManagerTickMethod;
 	MonoMethod* pPluginManagerTickMethodImplementation;
+	MonoMethod* pPluginManagerUnloadMethod;
+	MonoMethod* pPluginManagerUnloadMethodImplementation;
 private: //Private methods
 	static void LogMono(MonoString* pMsg);
 	static MonoString* ExecuteCommandMono(MonoString* pMsg);

@@ -30,7 +30,7 @@ bool DotNetPlugPlugin::Load(PluginId id, ISmmAPI *ismm, char *error, size_t maxl
 	GET_V_IFACE_ANY(GetServerFactory, playerinfomanager, IPlayerInfoManager, INTERFACEVERSION_PLAYERINFOMANAGER);
 
 	char mm_path[MAX_PATH];
-	memset(&mm_path, 0, MAX_PATH);
+	ZeroMemory(&mm_path, MAX_PATH);
 	const char* sBaseDir = g_SMAPI->GetBaseDir();
 
 	ConCommandBase* mm_basedirBase = icvar->FindCommandBase("mm_basedir");

@@ -102,39 +102,42 @@ bool Managed::InitPlateform(const char* sAssemblyFile)
 		META_LOG(g_PLAPI, "Can't cast PluginManager instance to IPluginManager \n");
 		return false;
 	}*/
-	//Initial methods
-	this->pPluginManagerAllPluginsLoadedMethod = mono_class_get_method_from_name(this->pIPluginManagerClass, "AllPluginsLoaded", 0);
-	if (!this->pPluginManagerAllPluginsLoadedMethod)
-	{
-		META_LOG(g_PLAPI, "Can't get method AllPluginsLoaded \n");
-		return false;
-	}
-	this->pPluginManagerAllPluginsLoadedMethodImplementation = mono_object_get_virtual_method(this->pPluginManagerInstanceObject, this->pPluginManagerAllPluginsLoadedMethod);
-	if (!this->pPluginManagerAllPluginsLoadedMethod)
-	{
-		META_LOG(g_PLAPI, "Can't get method AllPluginsLoaded implementation on PluginManager Instance \n");
-		return false;
-	}
+
+	////////////////////////////
+	// PluginManager Methods
+	GETMETHOD(this->pPluginManagerAllPluginsLoadedMethod, this->pIPluginManagerClass, "AllPluginsLoaded", 0);
+	GETMETHODIMPL(this->pPluginManagerAllPluginsLoadedMethodImplementation, this->pPluginManagerInstanceObject, this->pPluginManagerAllPluginsLoadedMethod, "AllPluginsLoaded");
 	GETMETHOD(this->pPluginManagerTickMethod, this->pIPluginManagerClass, "Tick", 0);
 	GETMETHODIMPL(this->pPluginManagerTickMethodImplementation, this->pPluginManagerInstanceObject, this->pPluginManagerTickMethod, "Tick");
+	GETMETHOD(this->pPluginManagerUnloadMethod, this->pIPluginManagerClass, "Unload", 0);
+	GETMETHODIMPL(this->pPluginManagerUnloadMethodImplementation, this->pPluginManagerInstanceObject, this->pPluginManagerUnloadMethod, "Unload");
 
 
-	//Callbacks
+	////////////////////////////
+	// Callbacks from managed to native : DllImport
 	mono_add_internal_call("DotNetPlug.PluginManagerMono::Log", (void*)(&Managed::LogMono));
 	mono_add_internal_call("DotNetPlug.PluginManagerMono::ExecuteCommand", (void*)(&Managed::ExecuteCommandMono));
 
-
+	////////////////////////////
+	// Callback : assign callbacks in PluginManager
 	GETMETHOD(this->pMapCallbacksToMono, this->pPluginManagerClass, "MapCallbacksToMono", 0);
-
 	exception = NULL;
 	mono_runtime_invoke(this->pMapCallbacksToMono, this->pPluginManagerInstanceObject, NULL, &exception);
 
-	META_LOG(g_PLAPI, "\n\nMono Ready\n\n\n");
+	META_LOG(g_PLAPI, "PluginManager Ready");
+	s_inited = true;
 	return true;
 }
 
 void Managed::Unload()
 {
+	MonoObject* exception = NULL;
+	mono_runtime_invoke(this->pPluginManagerUnloadMethodImplementation, this->pPluginManagerInstanceObject, NULL, &exception);
+	if (exception){
+		mono_print_unhandled_exception(exception);
+	}
+	this->s_inited = false;
+	// mono_jit_cleanup(this->pDomain);
 }
 
 void Managed::Tick()
@@ -168,8 +171,17 @@ void Managed::LogMono(MonoString* pMsg){
 	mono_free(pString);
 }
 
-MonoString* Managed::ExecuteCommandMono(MonoString* pMsg){
-	return NULL;
+MonoString* Managed::ExecuteCommandMono(MonoString* pCommand){
+	if (!pCommand)
+		return NULL;
+	char* pString = mono_string_to_utf8(pCommand);
+	const char* pResult = Managed::ExecuteCommand(pString);
+	mono_free(pString);
+
+	MonoString* pResultMono = mono_string_new(g_Managed.pDomain, pString);
+	return pResultMono;
+
+	//icvar->InstallConsoleDisplayFunc
 }
 
 #endif

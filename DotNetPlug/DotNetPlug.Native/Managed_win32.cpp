@@ -281,33 +281,23 @@ bool Managed::InitPlateform(const char* sAssemblyFile)
 		return false;
 	}
 
-	/*bstr_t spMethodTick(L"Tick");
-	hr = spIPluginManagerType->GetMethod_2(spMethodTick, (BindingFlags)(BindingFlags_Instance | BindingFlags_Public), &spPluginManagerTick);
-	if (FAILED(hr))
-	{
-	META_CONPRINTF("Failed to get method %s.%s w/hr 0x%08lx\n", bstrIPluginManagerClassName, spMethodTick, hr);
-	this->Cleanup();
-	return false;
-	}*/
+	////////////////////////////
+	// PluginManager Methods
 	GETMETHOD(hr, spIPluginManagerType, L"Tick", &spPluginManagerTick);
-
-	//bstr_t spMethodAllPluginsLoaded(L"AllPluginsLoaded");
-	//hr = spIPluginManagerType->GetMethod_2(spMethodAllPluginsLoaded, (BindingFlags)(BindingFlags_Instance | BindingFlags_Public), &spPluginManagerAllPluginsLoaded);
-	//if (FAILED(hr))
-	//{
-	//	META_CONPRINTF("Failed to get method %s.%s w/hr 0x%08lx\n", bstrIPluginManagerClassName, spMethodTick, hr);
-	//	this->Cleanup();
-	//	return false;
-	//}
 	GETMETHOD(hr, spIPluginManagerType, L"AllPluginsLoaded", &spPluginManagerAllPluginsLoaded);
-
-	GETMETHOD(hr, spIPluginManagerType, L"SetCallback_Log", &spPluginManagerSetCallback_Log);
-	GETMETHOD(hr, spIPluginManagerType, L"SetCallback_ExecuteCommand", &spPluginManagerSetCallback_ExecuteCommand);
 	GETMETHOD(hr, spIPluginManagerType, L"Unload", &spPluginManagerUnload);
 
+	////////////////////////////
+	// Callbacks from managed to native : FunctionPointers
+	GETMETHOD(hr, spPluginManagerType, L"SetCallback_Log", &spPluginManagerSetCallback_Log);
+	GETMETHOD(hr, spPluginManagerType, L"SetCallback_ExecuteCommand", &spPluginManagerSetCallback_ExecuteCommand);
+
+	////////////////////////////
+	// Callback : assign callbacks in PluginManager
 	SETCALLBACK(hr, &Managed::Log, spPluginManagerSetCallback_Log);
 	SETCALLBACK(hr, &Managed::ExecuteCommand, spPluginManagerSetCallback_ExecuteCommand);
 
+	META_LOG(g_PLAPI, "PluginManager Ready");
 	s_inited = true;
 	return true;
 }
@@ -316,7 +306,7 @@ void Managed::Unload(){
 	variant_t vtEmptyCallback;
 	this->spPluginManagerUnload->Invoke_3(this->vtPluginManager, NULL, &vtEmptyCallback);
 	this->Cleanup();
-	s_inited = false;
+	this->s_inited = false;
 }
 
 void Managed::Tick()

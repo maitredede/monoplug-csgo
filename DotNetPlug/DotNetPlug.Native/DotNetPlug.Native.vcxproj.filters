@@ -24,6 +24,12 @@
     <ClInclude Include="engine_wrappers.h">
       <Filter>Fichiers d%27en-tête</Filter>
     </ClInclude>
+    <ClInclude Include="VirtualConsole.h">
+      <Filter>Fichiers d%27en-tête</Filter>
+    </ClInclude>
+    <ClInclude Include="Helpers.h">
+      <Filter>Fichiers d%27en-tête</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Plugin.cpp">
@@ -36,6 +42,9 @@
       <Filter>Fichiers sources</Filter>
     </ClCompile>
     <ClCompile Include="Managed_mono.cpp">
+      <Filter>Fichiers sources</Filter>
+    </ClCompile>
+    <ClCompile Include="VirtualConsole.cpp">
       <Filter>Fichiers sources</Filter>
     </ClCompile>
   </ItemGroup>

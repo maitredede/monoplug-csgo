@@ -12,7 +12,7 @@
 #define snprintf _snprintf
 #endif
 
-
+#include "Helpers.h"
 
 class DotNetPlugPlugin : public ISmmPlugin
 {
@@ -41,6 +41,9 @@ public: //Hooks
 
 
 extern DotNetPlugPlugin g_DotNetPlugPlugin;
+extern ICvar *icvar;
+extern IServerGameDLL *server;
+
 
 PLUGIN_GLOBALVARS();
 

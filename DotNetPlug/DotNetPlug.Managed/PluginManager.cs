@@ -94,13 +94,13 @@ namespace DotNetPlug
         }
 
         #region Win32 callbacks
-        void IPluginManager.SetCallback_Log(Int64 callbackLog)
+        internal void SetCallback_Log(Int64 callbackLog)
         {
             LogDelegate cb = (LogDelegate)Marshal.GetDelegateForFunctionPointer(new IntPtr(callbackLog), typeof(LogDelegate));
             this.m_engine.m_cb_Log = cb;
         }
 
-        void IPluginManager.SetCallback_ExecuteCommand(Int64 callbackLog)
+        internal void SetCallback_ExecuteCommand(Int64 callbackLog)
         {
             ExecuteCommandDelegate cb = (ExecuteCommandDelegate)Marshal.GetDelegateForFunctionPointer(new IntPtr(callbackLog), typeof(ExecuteCommandDelegate));
             this.m_engine.m_cb_ExecuteCommand = cb;
