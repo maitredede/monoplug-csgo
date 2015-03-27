@@ -168,7 +168,7 @@ endif
 
 # OS is Linux and not using clang
 ifeq "$(shell expr $(OS) \= Linux \& $(IS_CLANG) \= 0)" "1"
-	LINK += -static-libgcc -lstdc++
+	LINK += -static-libgcc -lstdc++ `pkg-config --libs mono-2`
 endif
 
 OBJ_BIN := $(OBJECTS:%.cpp=$(BIN_DIR)/%.o)
@@ -180,7 +180,7 @@ all: check
 	mkdir -p $(BIN_DIR)
 	ln -sf $(HL2LIB)/$(LIB_PREFIX)vstdlib$(LIB_SUFFIX)
 	ln -sf $(HL2LIB)/$(LIB_PREFIX)tier0$(LIB_SUFFIX)
-	$(MAKE) -f Makefile sample_mm
+	$(MAKE) -f Makefile dotnetplug_native
 	
 check:
 	if [ "$(ENGSET)" = "false" ]; then \
@@ -189,7 +189,7 @@ check:
 		exit 1; \
 	fi
 
-sample_mm: check $(OBJ_BIN)
+dotnetplug_native: check $(OBJ_BIN)
 	$(CPP) $(INCLUDE) -m32 $(OBJ_BIN) $(LINK) -ldl -lm -o $(BIN_DIR)/$(BINARY)
 
 default: all
