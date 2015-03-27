@@ -12,6 +12,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DotNetPlug.Managed", "DotNe
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{2D7A7872-5BEF-467E-9221-A8FFCB8236D8}"
 	ProjectSection(SolutionItems) = preProject
+		..\dotnetplug.vdf = ..\dotnetplug.vdf
 		DotNetPlug.Native\Makefile = DotNetPlug.Native\Makefile
 	EndProjectSection
 EndProject

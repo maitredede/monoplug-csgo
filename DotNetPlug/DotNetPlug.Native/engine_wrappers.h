@@ -17,6 +17,10 @@
 
 #include <eiface.h>
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 extern IVEngineServer *engine;
 extern CGlobalVars *gpGlobals;
 
@@ -92,6 +96,10 @@ inline edict_t *PEntityOfEntIndex(int iEntIndex)
 	return engine->PEntityOfEntIndex(iEntIndex);
 }
 
+#endif
+
+#ifdef __cplusplus
+}
 #endif
 
 #endif //_INCLUDE_SOURCE_ENGINE_WRAPPERS_

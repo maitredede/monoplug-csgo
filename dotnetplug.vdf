@@ -1,0 +1,5 @@
+"Metamod Plugin"
+{
+	"alias"		"dotnetplug"
+	"file"		"addons/metamod/dotnetplug/dotnetplug_native"
+}

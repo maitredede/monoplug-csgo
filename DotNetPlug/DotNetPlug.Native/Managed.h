@@ -2,10 +2,6 @@
 #define _DOTNETPLUG_MANAGED_H_
 
 
-#ifdef __cplusplus
-extern "C" {
-#endif
-
 #ifdef MANAGED_WIN32
 
 #include <windows.h>
@@ -18,16 +14,20 @@ extern "C" {
 	rename("ReportEvent", "InteropServices_ReportEvent")	\
 	rename("Assert", "_Assert")
 
-	// #import "DotNetPlug.Managed.tlb" raw_interfaces_only
+// #import "DotNetPlug.Managed.tlb" raw_interfaces_only
 
-	using namespace mscorlib;
+using namespace mscorlib;
 #endif
 
 #ifdef MANAGED_MONO
-	//#include <glib/glib.h>
+//#include <glib/glib.h>
 #include <mono/jit/jit.h>
 #include <mono/metadata/mono-config.h>
 #include <mono/metadata/assembly.h>
+#endif
+
+#ifdef __cplusplus
+extern "C" {
 #endif
 
 	class Managed {
@@ -88,10 +88,12 @@ extern "C" {
 		static MonoString* ExecuteCommandMono(MonoString* pMsg);
 #endif
 	};
+
+
+	extern Managed g_Managed;
+
 #ifdef __cplusplus
 }
 #endif
-
-extern Managed g_Managed;
 
 #endif // _DOTNETPLUG_MANAGED_H_
