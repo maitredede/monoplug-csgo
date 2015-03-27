@@ -12,6 +12,10 @@
 #define snprintf _snprintf
 #endif
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 class DotNetPlugPlugin : public ISmmPlugin
 {
 public:
@@ -36,6 +40,9 @@ public: //Hooks
 
 };
 
+#ifdef __cplusplus
+}
+#endif
 
 extern DotNetPlugPlugin g_DotNetPlugPlugin;
 
