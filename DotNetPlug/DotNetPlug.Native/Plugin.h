@@ -8,11 +8,6 @@
 #include <sh_vector.h>
 #include "engine_wrappers.h"
 
-#ifdef __cplusplus
-extern "C" {
-#endif
-
-
 #if defined WIN32 && !defined snprintf
 #define snprintf _snprintf
 #endif
@@ -48,9 +43,5 @@ public: //Hooks
 extern DotNetPlugPlugin g_DotNetPlugPlugin;
 
 PLUGIN_GLOBALVARS();
-
-#ifdef __cplusplus
-}
-#endif
 
 #endif //_DOTNETPLUG_PLUGIN_H_

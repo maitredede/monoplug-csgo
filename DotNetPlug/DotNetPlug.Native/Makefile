@@ -26,7 +26,7 @@ OBJECTS = Plugin.cpp Managed.cpp Managed_mono.cpp Managed_win32.cpp
 ##############################################
 
 OPT_FLAGS = -O3 -funroll-loops -pipe
-GCC4_FLAGS = -fvisibility=hidden -fvisibility-inlines-hidden `pkg-config --cflags --libs mono-2` -DMANAGED_MONO -Wno-unused-local-typedefs -lstdc++
+GCC4_FLAGS = -fvisibility=hidden -fvisibility-inlines-hidden `pkg-config --cflags --libs mono-2` -DMANAGED_MONO -Wno-unused-local-typedefs
 DEBUG_FLAGS = -g -ggdb3 -D_DEBUG
 CPP = gcc
 CPP_OSX = clang
@@ -168,7 +168,7 @@ endif
 
 # OS is Linux and not using clang
 ifeq "$(shell expr $(OS) \= Linux \& $(IS_CLANG) \= 0)" "1"
-	LINK += -static-libgcc
+	LINK += -static-libgcc -lstdc++
 endif
 
 OBJ_BIN := $(OBJECTS:%.cpp=$(BIN_DIR)/%.o)

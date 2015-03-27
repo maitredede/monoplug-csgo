@@ -81,12 +81,12 @@ bool Managed::InitPlateform(const char* sAssemblyFile)
 		}
 		return false;
 	}
-	this->pIPluginManagerInstanceObject = mono_object_castclass_mbyref(this->pPluginManagerInstanceObject, this->pIPluginManagerClass);
+	/*this->pIPluginManagerInstanceObject = mono_object_castclass_mbyref(this->pPluginManagerInstanceObject, this->pIPluginManagerClass);
 	if (!this->pIPluginManagerInstanceObject)
 	{
 		META_LOG(g_PLAPI, "Can't cast PluginManager instance to IPluginManager \n");
 		return false;
-	}
+	}*/
 	//Initial methods
 	this->pPluginManagerAllPluginsLoadedMethod = mono_class_get_method_from_name(this->pIPluginManagerClass, "AllPluginsLoaded", 0);
 	if (!this->pPluginManagerAllPluginsLoadedMethod)

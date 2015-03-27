@@ -6,7 +6,7 @@
  * ======================================================
  *
  * This software is provided 'as-is', without any express or implied warranty.
- * In no event will the authors be held liable for any damages arising from 
+ * In no event will the authors be held liable for any damages arising from
  * the use of this software.
  *
  * This sample plugin is public domain.
@@ -16,10 +16,6 @@
 #define _INCLUDE_SOURCE_ENGINE_WRAPPERS_
 
 #include <eiface.h>
-
-#ifdef __cplusplus
-extern "C" {
-#endif
 
 extern IVEngineServer *engine;
 extern CGlobalVars *gpGlobals;
@@ -96,10 +92,6 @@ inline edict_t *PEntityOfEntIndex(int iEntIndex)
 	return engine->PEntityOfEntIndex(iEntIndex);
 }
 
-#endif
-
-#ifdef __cplusplus
-}
 #endif
 
 #endif //_INCLUDE_SOURCE_ENGINE_WRAPPERS_
