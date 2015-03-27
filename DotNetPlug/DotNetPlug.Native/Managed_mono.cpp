@@ -11,6 +11,21 @@
 											}	\
 }
 
+#define GETMETHOD(destPtr, pClass, sMethodName, iParamCount) {	\
+	destPtr = mono_class_get_method_from_name(pClass, sMethodName, iParamCount);	\
+	if(!destPtr) {	\
+		META_LOG(g_PLAPI, "Can't get method %s (with %d params)\n", sMethodName, iParamCount);	\
+		return false;	\
+												}	\
+}
+#define GETMETHODIMPL(destPtr, pObject, pMethod, sMethodName) {	\
+	destPtr = mono_object_get_virtual_method(pObject, pMethod);	\
+	if(!destPtr) {	\
+		META_LOG(g_PLAPI, "Can't get method implementation of %s\n", sMethodName);	\
+		return false;	\
+													}	\
+}
+
 void Managed::Cleanup()
 {
 	if (this->pAssemblyImage)
@@ -100,17 +115,16 @@ bool Managed::InitPlateform(const char* sAssemblyFile)
 		META_LOG(g_PLAPI, "Can't get method AllPluginsLoaded implementation on PluginManager Instance \n");
 		return false;
 	}
+	GETMETHOD(this->pPluginManagerTickMethod, this->pIPluginManagerClass, "Tick", 0);
+	GETMETHODIMPL(this->pPluginManagerTickMethodImplementation, this->pPluginManagerInstanceObject, this->pPluginManagerAllPluginsLoadedMethod, "Tick");
+
 
 	//Callbacks
 	mono_add_internal_call("DotNetPlug.PluginManagerMono::Log", (void*)(&Managed::LogMono));
 	mono_add_internal_call("DotNetPlug.PluginManagerMono::ExecuteCommand", (void*)(&Managed::ExecuteCommandMono));
 
-	this->pMapCallbacksToMono = mono_class_get_method_from_name(this->pPluginManagerClass, "MapCallbacksToMono", 0);
-	if (!this->pMapCallbacksToMono)
-	{
-		META_LOG(g_PLAPI, "Can't get method MapCallbacksToMono \n");
-		return false;
-	}
+
+	GETMETHOD(this->pMapCallbacksToMono, this->pPluginManagerClass, "MapCallbacksToMono", 0);
 
 	exception = NULL;
 	mono_runtime_invoke(this->pMapCallbacksToMono, this->pPluginManagerInstanceObject, NULL, &exception);
@@ -125,6 +139,8 @@ void Managed::Unload()
 
 void Managed::Tick()
 {
+	MonoObject* exception = NULL;
+	mono_runtime_invoke(this->pMapCallbacksToMono, this->pPluginManagerInstanceObject, NULL, &exception);
 }
 
 void Managed::AllPluginsLoaded()

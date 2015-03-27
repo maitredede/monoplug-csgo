@@ -79,6 +79,8 @@ private: //Private members
 	MonoMethod* pMapCallbacksToMono;
 	MonoMethod* pPluginManagerAllPluginsLoadedMethod;
 	MonoMethod* pPluginManagerAllPluginsLoadedMethodImplementation;
+	MonoMethod* pPluginManagerTickMethod;
+	MonoMethod* pPluginManagerTickMethodImplementation;
 private: //Private methods
 	static void LogMono(MonoString* pMsg);
 	static MonoString* ExecuteCommandMono(MonoString* pMsg);
