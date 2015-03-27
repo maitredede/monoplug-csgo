@@ -140,7 +140,15 @@ void Managed::Unload()
 void Managed::Tick()
 {
 	MonoObject* exception = NULL;
-	mono_runtime_invoke(this->pMapCallbacksToMono, this->pPluginManagerInstanceObject, NULL, &exception);
+	if (this->pPluginManagerTickMethodImplementation)
+	{
+		mono_runtime_invoke(this->pPluginManagerTickMethodImplementation, this->pPluginManagerInstanceObject, NULL, &exception);
+		if (exception){
+			mono_print_unhandled_exception(exception);
+			META_LOG(g_PLAPI, "Disconnecting Tick Method\n");
+			this->pPluginManagerTickMethodImplementation = NULL;
+		}
+	}
 }
 
 void Managed::AllPluginsLoaded()
