@@ -175,10 +175,14 @@ MonoString* Managed::ExecuteCommandMono(MonoString* pCommand){
 	if (!pCommand)
 		return NULL;
 	char* pString = mono_string_to_utf8(pCommand);
-	const char* pResult = Managed::ExecuteCommand(pString);
+	char* dest = NULL;
+	size_t destLen = 0;
+	Managed::ExecuteCommand(pString, &dest, &destLen);
 	mono_free(pString);
 
-	MonoString* pResultMono = mono_string_new(g_Managed.pDomain, pString);
+	MonoString* pResultMono = mono_string_new(g_Managed.pDomain, dest);
+	delete dest;
+
 	return pResultMono;
 
 	//icvar->InstallConsoleDisplayFunc

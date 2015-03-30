@@ -13,7 +13,8 @@ public:
 
 	VirtualConsole();
 	~VirtualConsole();
-private: 
+	void Dump(char** dest, size_t* size);
+private:
 	struct Node {
 		char* str;
 		Node *next;

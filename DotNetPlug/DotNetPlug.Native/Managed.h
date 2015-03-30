@@ -38,7 +38,7 @@ public:
 	void Unload();
 
 	static void Log(const char* msg);
-	static const char* ExecuteCommand(const char* cmd);
+	static void ExecuteCommand(const char* cmd, char** output, size_t* size);
 private:
 	bool s_inited;
 	bool InitPlateform(const char* sAssemblyFile);

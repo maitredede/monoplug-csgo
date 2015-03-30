@@ -13,12 +13,18 @@ void Managed::Log(const char* msg)
 	META_LOG(g_PLAPI, msg);
 }
 
-const char* Managed::ExecuteCommand(const char* cmd)
+void Managed::ExecuteCommand(const char* cmd, char** output, size_t* size)
 {
 	/*META_LOG(g_PLAPI, cmd);
 	return cmd;*/
 	engine->ServerExecute();
-	VirtualConsole* vConsole = new VirtualConsole()
+	VirtualConsole* vConsole = new VirtualConsole();
+	icvar->RegisterConsole(vConsole);
+	engine->ServerCommand(cmd);
+	engine->ServerExecute();
+	icvar->UnregisterConsole(vConsole);
+	vConsole->Dump(output, size);
+	delete vConsole;
 }
 
 bool Managed::Init(const char* sBaseDir)
