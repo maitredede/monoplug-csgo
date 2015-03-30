@@ -18,9 +18,9 @@ namespace DotNetPlug
             await this.Engine.RegisterCommand("managed_status", "Managed status", FCVar.ServerCanExecute, this.Managed_Status);
         }
 
-        private void ClockTick(object state)
+        private async void ClockTick(object state)
         {
-            this.Engine.Log("Time from managed clock is : {0}", DateTime.Now.ToLongTimeString()).Wait();
+            await this.Engine.Log("Time from managed clock is : {0}", DateTime.Now.ToLongTimeString());
         }
 
         public override Task Unload()
