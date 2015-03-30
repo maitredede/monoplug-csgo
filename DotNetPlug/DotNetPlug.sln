@@ -16,6 +16,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		DotNetPlug.Native\Makefile = DotNetPlug.Native\Makefile
 	EndProjectSection
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DotNetPlug.Managed.Sample", "DotNetPlug.Managed.Sample\DotNetPlug.Managed.Sample.csproj", "{B1880063-F267-4310-B04B-BB519A4FAFFA}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug - Mono|Any CPU = Debug - Mono|Any CPU
@@ -59,6 +61,21 @@ Global
 		{52A5E962-163E-4556-B9F0-394B5F5A058B}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
 		{52A5E962-163E-4556-B9F0-394B5F5A058B}.Release|Mixed Platforms.Build.0 = Release|Any CPU
 		{52A5E962-163E-4556-B9F0-394B5F5A058B}.Release|Win32.ActiveCfg = Release|Any CPU
+		{B1880063-F267-4310-B04B-BB519A4FAFFA}.Debug - Mono|Any CPU.ActiveCfg = Debug|Any CPU
+		{B1880063-F267-4310-B04B-BB519A4FAFFA}.Debug - Mono|Any CPU.Build.0 = Debug|Any CPU
+		{B1880063-F267-4310-B04B-BB519A4FAFFA}.Debug - Mono|Mixed Platforms.ActiveCfg = Debug|Any CPU
+		{B1880063-F267-4310-B04B-BB519A4FAFFA}.Debug - Mono|Mixed Platforms.Build.0 = Debug|Any CPU
+		{B1880063-F267-4310-B04B-BB519A4FAFFA}.Debug - Mono|Win32.ActiveCfg = Debug|Any CPU
+		{B1880063-F267-4310-B04B-BB519A4FAFFA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B1880063-F267-4310-B04B-BB519A4FAFFA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B1880063-F267-4310-B04B-BB519A4FAFFA}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
+		{B1880063-F267-4310-B04B-BB519A4FAFFA}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
+		{B1880063-F267-4310-B04B-BB519A4FAFFA}.Debug|Win32.ActiveCfg = Debug|Any CPU
+		{B1880063-F267-4310-B04B-BB519A4FAFFA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B1880063-F267-4310-B04B-BB519A4FAFFA}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B1880063-F267-4310-B04B-BB519A4FAFFA}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
+		{B1880063-F267-4310-B04B-BB519A4FAFFA}.Release|Mixed Platforms.Build.0 = Release|Any CPU
+		{B1880063-F267-4310-B04B-BB519A4FAFFA}.Release|Win32.ActiveCfg = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

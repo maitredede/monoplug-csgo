@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading;
@@ -31,9 +33,10 @@ namespace DotNetPlug
         }
 
         private readonly EngineSynchronizationContext m_syncCtx;
-        private readonly EngineWrapper m_engine;
+        private IEngine m_engine;
         private readonly List<IPlugin> m_plugins = new List<IPlugin>();
         private readonly TaskScheduler m_taskScheduler;
+        private readonly Assembly m_thisAssembly;
 
         internal SynchronizationContext SynchronizationContext { get { return this.m_syncCtx; } }
         internal TaskScheduler TaskScheduler { get { return this.m_taskScheduler; } }
@@ -44,7 +47,20 @@ namespace DotNetPlug
             SynchronizationContext.SetSynchronizationContext(this.m_syncCtx);
             this.m_taskScheduler = TaskScheduler.FromCurrentSynchronizationContext();
 
-            this.m_engine = new EngineWrapper(this);
+            AppDomain.CurrentDomain.AssemblyResolve += this.CurrentDomain_AssemblyResolve;
+            this.m_thisAssembly = this.GetType().Assembly;
+        }
+
+        private Assembly CurrentDomain_AssemblyResolve(object sender, ResolveEventArgs args)
+        {
+            if (this.m_engine != null)
+            {
+                AssemblyName name = new AssemblyName(args.Name);
+                if (name.Name == this.m_thisAssembly.GetName().Name)
+                    return this.m_thisAssembly;
+                this.m_engine.Log("AppDomain.AssemblyResolve : ", args.Name);
+            }
+            return null;
         }
 
         void IDisposable.Dispose()
@@ -64,25 +80,25 @@ namespace DotNetPlug
 
         void IPluginManager.AllPluginsLoaded()
         {
-            this.m_engine.m_cb_Log("Hello from DotNetPlug PluginManager");
+            this.m_engine.Log("Hello from DotNetPlug PluginManager");
 
-            Type[] plugTypes = AppDomain.CurrentDomain.GetAssemblies().SelectMany(a => a.GetTypes().Where(t => t.IsClass && !t.IsAbstract && typeof(IPlugin).IsAssignableFrom(t))).ToArray();
-            foreach (Type tPlugin in plugTypes)
-            {
-                if (tPlugin.GetConstructor(Type.EmptyTypes) != null)
-                {
-                    IPlugin plugin = (IPlugin)Activator.CreateInstance(tPlugin);
-                    plugin.Init(this.m_engine);
-                    this.m_plugins.Add(plugin);
-                }
-            }
+            //Type[] plugTypes = AppDomain.CurrentDomain.GetAssemblies().SelectMany(a => a.GetTypes().Where(t => t.IsClass && !t.IsAbstract && typeof(IPlugin).IsAssignableFrom(t))).ToArray();
+            //foreach (Type tPlugin in plugTypes)
+            //{
+            //    if (tPlugin.GetConstructor(Type.EmptyTypes) != null)
+            //    {
+            //        IPlugin plugin = (IPlugin)Activator.CreateInstance(tPlugin);
+            //        plugin.Init(this.m_engine);
+            //        this.m_plugins.Add(plugin);
+            //    }
+            //}
 
-            foreach (IPlugin plugin in this.m_plugins)
-            {
-                this.m_engine.m_cb_Log(string.Format("PluginManager : Loading plugin {0}", plugin.GetType().FullName));
+            //foreach (IPlugin plugin in this.m_plugins)
+            //{
+            //    this.m_engine.m_cb_Log(string.Format("PluginManager : Loading plugin {0}", plugin.GetType().FullName));
 
-                plugin.Load();
-            }
+            //    plugin.Load();
+            //}
         }
 
         void IPluginManager.Unload()
@@ -93,26 +109,85 @@ namespace DotNetPlug
             }
         }
 
-        #region Win32 callbacks
-        internal void SetCallback_Log(Int64 callbackLog)
+
+        internal void InitWin32Engine(Int64 cbLog, Int64 cbExecuteCommand, Int64 cbRegisterCommand)
         {
-            LogDelegate cb = (LogDelegate)Marshal.GetDelegateForFunctionPointer(new IntPtr(callbackLog), typeof(LogDelegate));
-            this.m_engine.m_cb_Log = cb;
+            Engine_Win32 eng = new Engine_Win32(this);
+            eng.m_cb_Log = (LogDelegate)Marshal.GetDelegateForFunctionPointer(new IntPtr(cbLog), typeof(LogDelegate));
+            eng.m_cb_ExecuteCommand = (ExecuteCommandDelegate)Marshal.GetDelegateForFunctionPointer(new IntPtr(cbExecuteCommand), typeof(ExecuteCommandDelegate));
+            eng.m_cb_RegisterCommand = (RegisterCommandDelegate)Marshal.GetDelegateForFunctionPointer(new IntPtr(cbRegisterCommand), typeof(RegisterCommandDelegate));
+            this.m_engine = eng;
         }
 
-        internal void SetCallback_ExecuteCommand(Int64 callbackLog)
+        internal void InitMonoEngine()
         {
-            ExecuteCommandDelegate cb = (ExecuteCommandDelegate)Marshal.GetDelegateForFunctionPointer(new IntPtr(callbackLog), typeof(ExecuteCommandDelegate));
-            this.m_engine.m_cb_ExecuteCommand = cb;
+            Engine_Mono eng = new Engine_Mono(this);
+            this.m_engine = eng;
         }
-        #endregion
 
-        #region Mono callbacks
-        internal void MapCallbacksToMono()
+
+        async void IPluginManager.LoadAssembly(string[] param)
         {
-            this.m_engine.m_cb_Log = new LogDelegate(PluginManagerMono.Log);
-            this.m_engine.m_cb_ExecuteCommand = new ExecuteCommandDelegate(PluginManagerMono.ExecuteCommand);
+            //invalid call : no args
+            if (param == null)
+                return;
+            //invalid call : first arg is command
+            if (param.Length == 0)
+                return;
+
+            if (param.Length != 2)
+            {
+                await this.m_engine.Log("Syntax : {0} <assemblyfile>", param[0]);
+                return;
+            }
+            string assemblyFile = param[1];
+            string assemblyPath = Path.GetFullPath(assemblyFile);
+            await this.m_engine.Log("Trying to load assembly : {0}", assemblyPath);
+            FileInfo fi = new FileInfo(assemblyPath);
+            if (!fi.Exists)
+                await this.m_engine.Log("Assembly file not found : {0}", assemblyPath);
+            Assembly asm;
+            try
+            {
+                asm = Assembly.LoadFile(fi.FullName);
+            }
+            catch (Exception ex)
+            {
+                asm = null;
+                this.m_engine.Log("Assembly file loading error : {0}", ex.Message).Wait();
+            }
+            if (asm != null)
+                await this.LoadPluginsFromAssembly(asm);
+            await this.m_engine.Log("load_assembly end");
         }
-        #endregion
+
+        private async Task LoadPluginsFromAssembly(Assembly asm)
+        {
+            try
+            {
+                Type[] plugTypes = asm.GetTypes().Where(t => t.IsClass && !t.IsAbstract && typeof(IPlugin).IsAssignableFrom(t)).ToArray();
+                foreach (Type tPlugin in plugTypes)
+                {
+                    if (tPlugin.GetConstructor(Type.EmptyTypes) != null)
+                    {
+                        await this.m_engine.Log("Trying to create plugin {0}", tPlugin.FullName);
+                        IPlugin plugin = (IPlugin)Activator.CreateInstance(tPlugin);
+                        plugin.Init(this.m_engine);
+                        this.m_plugins.Add(plugin);
+                    }
+                }
+
+                foreach (IPlugin plugin in this.m_plugins)
+                {
+                    await this.m_engine.Log("PluginManager : Loading plugin {0}", plugin.GetType().FullName);
+
+                    plugin.Load();
+                }
+            }
+            catch (Exception ex)
+            {
+                this.m_engine.Log("PluginManager : LoadPluginsFromAssembly error : {0}", ex.Message).Wait();
+            }
+        }
     }
 }

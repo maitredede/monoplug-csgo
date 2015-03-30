@@ -57,11 +57,23 @@ bool DotNetPlugPlugin::Load(PluginId id, ISmmAPI *ismm, char *error, size_t maxl
 	SH_ADD_HOOK_MEMFUNC(IServerGameDLL, ServerActivate, server, this, &DotNetPlugPlugin::Hook_ServerActivate, true);
 	SH_ADD_HOOK_MEMFUNC(IServerGameDLL, GameFrame, server, this, &DotNetPlugPlugin::Hook_GameFrame, true);
 
+
+	//SH_MEMBER
+	//this->pLoadAsm = new ConCommand("load_assembly", &(this->LoadAssemblyCallback), "Load assembly plugin", FCVAR_NONE);
+	this->pLoadAsm = new ConCommand("load_assembly", (FnCommandCallback_t)(&DotNetPlugPlugin::LoadAssemblyCallback), "Load assembly plugin", FCVAR_NONE);
+
+	//META_REGCMD()
+	g_SMAPI->RegisterConCommandBase(g_PLAPI, this->pLoadAsm);
+
 	return true;
 }
 
 bool DotNetPlugPlugin::Unload(char *error, size_t maxlen)
 {
+	//META_UNREGCMD()
+	g_SMAPI->UnregisterConCommandBase(g_PLAPI, this->pLoadAsm);
+	delete this->pLoadAsm;
+
 	SH_REMOVE_HOOK_MEMFUNC(IServerGameDLL, GameFrame, server, this, &DotNetPlugPlugin::Hook_GameFrame, true);
 	SH_REMOVE_HOOK_MEMFUNC(IServerGameDLL, ServerActivate, server, this, &DotNetPlugPlugin::Hook_ServerActivate, true);
 
@@ -151,4 +163,8 @@ const char *DotNetPlugPlugin::GetName()
 const char *DotNetPlugPlugin::GetURL()
 {
 	return "http://www.sourcemm.net/";
+}
+
+void DotNetPlugPlugin::LoadAssemblyCallback(const CCommand &command){
+	g_Managed.LoadAssembly(command.ArgC(), command.ArgV());
 }

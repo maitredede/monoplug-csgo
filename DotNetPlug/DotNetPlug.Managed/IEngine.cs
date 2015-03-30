@@ -10,5 +10,6 @@ namespace DotNetPlug
     {
         Task<string> ExecuteCommand(string command);
         Task Log(string log);
+        Task RegisterCommand(string command, string description, FCVar flags, CommandExecuteDelegate callback);
     }
 }

@@ -15,5 +15,7 @@ namespace DotNetPlug
         void Tick();
         void AllPluginsLoaded();
         void Unload();
+
+        void LoadAssembly(string[] param);
     }
 }

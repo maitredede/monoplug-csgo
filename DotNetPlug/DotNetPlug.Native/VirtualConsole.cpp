@@ -50,6 +50,22 @@ void VirtualConsole::Print(const char *pMessage){
 void VirtualConsole::DPrint(const char *pMessage){
 	//Nothing to do here
 }
-void VirtualConsole::GetConsoleText(char *pchText, size_t bufSize){
+
+void VirtualConsole::GetConsoleText(char *pchText, size_t bufSize) const{
 	//TODO ?
+}
+
+void VirtualConsole::Dump(char** dest, size_t* size)
+{
+	char* buffer = new char[this->iBufferLen + 1];
+	ZeroMemory(buffer, this->iBufferLen + 1);
+
+	Node* pNode = this->pBuffer;
+	while (pNode){
+		strcat_s(buffer, strlen(pNode->str), pNode->str);
+		pNode = pNode->next;
+	}
+
+	*dest = buffer;
+	*size = this->iBufferLen;
 }

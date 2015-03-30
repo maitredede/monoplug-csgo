@@ -8,7 +8,7 @@
 	if(!destPtr) {	\
 		META_LOG(g_PLAPI, "Can't get class %s::%s\n", sNamespace, sName);	\
 		return false;	\
-											}	\
+														}	\
 }
 
 #define GETMETHOD(destPtr, pClass, sMethodName, iParamCount) {	\
@@ -16,14 +16,14 @@
 	if(!destPtr) {	\
 		META_LOG(g_PLAPI, "Can't get method %s (with %d params)\n", sMethodName, iParamCount);	\
 		return false;	\
-												}	\
+															}	\
 }
 #define GETMETHODIMPL(destPtr, pObject, pMethod, sMethodName) {	\
 	destPtr = mono_object_get_virtual_method(pObject, pMethod);	\
 	if(!destPtr) {	\
 		META_LOG(g_PLAPI, "Can't get method implementation of %s\n", sMethodName);	\
 		return false;	\
-													}	\
+																}	\
 }
 
 void Managed::Cleanup()
@@ -67,6 +67,8 @@ bool Managed::InitPlateform(const char* sAssemblyFile)
 		return false;
 	}
 
+	GETCLASS(this->pStringClass, NULL, "System", "String");
+
 	GETCLASS(this->pPluginManagerClass, this->pAssemblyImage, "DotNetPlug", "PluginManager");
 	GETCLASS(this->pIPluginManagerClass, this->pAssemblyImage, "DotNetPlug", "IPluginManager");
 	GETCLASS(this->pPluginManagerMonoClass, this->pAssemblyImage, "DotNetPlug", "PluginManagerMono");
@@ -99,8 +101,8 @@ bool Managed::InitPlateform(const char* sAssemblyFile)
 	/*this->pIPluginManagerInstanceObject = mono_object_castclass_mbyref(this->pPluginManagerInstanceObject, this->pIPluginManagerClass);
 	if (!this->pIPluginManagerInstanceObject)
 	{
-		META_LOG(g_PLAPI, "Can't cast PluginManager instance to IPluginManager \n");
-		return false;
+	META_LOG(g_PLAPI, "Can't cast PluginManager instance to IPluginManager \n");
+	return false;
 	}*/
 
 	////////////////////////////
@@ -112,6 +114,8 @@ bool Managed::InitPlateform(const char* sAssemblyFile)
 	GETMETHOD(this->pPluginManagerUnloadMethod, this->pIPluginManagerClass, "Unload", 0);
 	GETMETHODIMPL(this->pPluginManagerUnloadMethodImplementation, this->pPluginManagerInstanceObject, this->pPluginManagerUnloadMethod, "Unload");
 
+	GETMETHOD(this->pPluginManagerLoadAssemblyMethod, this->pIPluginManagerClass, "LoadAssembly", 1);
+	GETMETHODIMPL(this->pPluginManagerLoadAssemblyMethodImplementation, this->pPluginManagerInstanceObject, this->pPluginManagerUnloadMethod, "LoadAssembly");
 
 	////////////////////////////
 	// Callbacks from managed to native : DllImport
@@ -171,9 +175,14 @@ void Managed::LogMono(MonoString* pMsg){
 	mono_free(pString);
 }
 
-MonoString* Managed::ExecuteCommandMono(MonoString* pCommand){
+void Managed::ExecuteCommandMono(MonoString* pCommand, MonoString* pOutput, int* pLength){
 	if (!pCommand)
-		return NULL;
+	{
+		pOutput = NULL;
+		*pLength = 0;
+		return;
+	}
+
 	char* pString = mono_string_to_utf8(pCommand);
 	char* dest = NULL;
 	size_t destLen = 0;
@@ -183,9 +192,25 @@ MonoString* Managed::ExecuteCommandMono(MonoString* pCommand){
 	MonoString* pResultMono = mono_string_new(g_Managed.pDomain, dest);
 	delete dest;
 
-	return pResultMono;
+	pOutput = pResultMono;
+	*pLength = mono_string_length(pOutput);
 
 	//icvar->InstallConsoleDisplayFunc
 }
 
+void Managed::LoadAssembly(int argc, const char** argv)
+{
+	MonoArray* pArgs = mono_array_new(this->pDomain, this->pStringClass, argc);
+	for (int i = 0; i < argc; i++){
+		MonoString* str = mono_string_new(this->pDomain, argv[i]);
+		mono_array_set(pArgs, MonoString*, i, str);
+	}
+	MonoObject* exception = NULL;
+	void *args[1];
+	args[0] = pArgs;
+	mono_runtime_invoke(this->pPluginManagerLoadAssemblyMethodImplementation, this->pPluginManagerInstanceObject, args, &exception);
+	if (exception){
+		mono_print_unhandled_exception(exception);
+	}
+}
 #endif

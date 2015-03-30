@@ -12,12 +12,13 @@ namespace DotNetPlug
     {
         private const string Internal = "__Internal";
 
-        //[DllImport(Internal, EntryPoint = "Mono_Log")]
         [MethodImplAttribute(MethodImplOptions.InternalCall)]
         public static extern void Log(string message);
 
-        //[DllImport(Internal, EntryPoint = "Mono_ExecuteCommand")]
         [MethodImplAttribute(MethodImplOptions.InternalCall)]
-        public static extern string ExecuteCommand(string command);
+        public static extern void ExecuteCommand(string command, out string output, out int length);
+
+        [MethodImplAttribute(MethodImplOptions.InternalCall)]
+        public static extern void RegisterCommand(string command, string description, FCVar flags, CommandExecuteDelegate callback);
     }
 }

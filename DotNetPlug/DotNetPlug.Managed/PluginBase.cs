@@ -11,8 +11,8 @@ namespace DotNetPlug
 #endif
     public abstract class PluginBase : IPlugin
     {
-        public abstract void Load();
-        public abstract void Unload();
+        public abstract Task Load();
+        public abstract Task Unload();
 
         private IEngine m_engine;
 

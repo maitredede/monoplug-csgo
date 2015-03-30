@@ -36,6 +36,9 @@ public: //Hooks
 	void Hook_GameFrame(bool simulating);
 	void Hook_ServerActivate(edict_t *pEdictList, int edictCount, int clientMax);
 
+private:
+	ConCommand* pLoadAsm;
+	static void LoadAssemblyCallback(const CCommand &command);
 };
 
 

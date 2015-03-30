@@ -4,11 +4,11 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{52A5E962-163E-4556-B9F0-394B5F5A058B}</ProjectGuid>
+    <ProjectGuid>{B1880063-F267-4310-B04B-BB519A4FAFFA}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>DotNetPlug</RootNamespace>
-    <AssemblyName>DotNetPlug.Managed</AssemblyName>
+    <RootNamespace>DotNetPlug.Managed</RootNamespace>
+    <AssemblyName>DotNetPlug.Managed.Sample</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
   </PropertyGroup>
@@ -32,7 +32,6 @@
   <ItemGroup>
     <Reference Include="System" />
     <Reference Include="System.Core" />
-    <Reference Include="System.Drawing" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
@@ -40,32 +39,16 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="CommandExecuteDelegate.cs" />
-    <Compile Include="EngineWrapperBase.cs" />
-    <Compile Include="Engine_Mono.cs" />
-    <Compile Include="ExecuteCommandDelegate.cs" />
-    <Compile Include="Extensions.cs" />
-    <Compile Include="FCVar.cs" />
-    <Compile Include="EngineSynchronizationContext.cs" />
-    <Compile Include="IConsole.cs" />
-    <Compile Include="IConsolePlugin.cs" />
-    <Compile Include="IEngine.cs" />
-    <Compile Include="IPlayer.cs" />
-    <Compile Include="IPlugin.cs" />
-    <Compile Include="IPluginManager.cs" />
-    <Compile Include="LogDelegate.cs" />
-    <Compile Include="PluginBase.cs" />
-    <Compile Include="PluginManager.cs" />
-    <Compile Include="PluginManagerMono.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="RegisterCommandDelegate.cs" />
-    <Compile Include="Engine_Win32.cs" />
+    <Compile Include="SamplePlugin.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\DotNetPlug.Managed\DotNetPlug.Managed.csproj">
+      <Project>{52a5e962-163e-4556-b9f0-394b5f5a058b}</Project>
+      <Name>DotNetPlug.Managed</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
-  <PropertyGroup>
-    <PostBuildEvent>
-    </PostBuildEvent>
-  </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
   <Target Name="BeforeBuild">

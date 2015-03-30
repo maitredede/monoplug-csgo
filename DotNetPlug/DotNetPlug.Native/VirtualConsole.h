@@ -9,7 +9,7 @@ public:
 	void ColorPrint(const Color& clr, const char *pMessage);
 	void Print(const char *pMessage);
 	void DPrint(const char *pMessage);
-	void GetConsoleText(char *pchText, size_t bufSize);
+	void GetConsoleText(char *pchText, size_t bufSize) const;
 
 	VirtualConsole();
 	~VirtualConsole();

@@ -6,11 +6,8 @@ using System.Threading.Tasks;
 
 namespace DotNetPlug
 {
-    public interface IPlugin
+    public interface IPlayer
     {
-        void Init(IEngine engine);
-
-        Task Load();
-        Task Unload();
+        int Id { get; }
     }
 }

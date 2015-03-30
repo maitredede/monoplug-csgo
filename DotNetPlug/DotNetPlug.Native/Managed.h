@@ -33,12 +33,15 @@ public:
 	Managed();
 	bool Init(const char* sBaseDir);
 	void Cleanup();
+	
 	void Tick();
 	void AllPluginsLoaded();
 	void Unload();
+	void LoadAssembly(int argc, const char** argv);
 
 	static void Log(const char* msg);
 	static void ExecuteCommand(const char* cmd, char** output, size_t* size);
+	static void RegisterCommand(const char* cmd, const char* description, int flags, void* callback);
 private:
 	bool s_inited;
 	bool InitPlateform(const char* sAssemblyFile);
@@ -56,8 +59,9 @@ private:
 	_MethodInfo* spPluginManagerTick;
 	_MethodInfo* spPluginManagerAllPluginsLoaded;
 	_MethodInfo* spPluginManagerUnload;
-	_MethodInfo* spPluginManagerSetCallback_Log;
-	_MethodInfo* spPluginManagerSetCallback_ExecuteCommand;
+	_MethodInfo* spPluginManagerLoadAssembly;
+
+	_MethodInfo* spPluginManagerInitWin32Engine;
 
 	LPWSTR pszVersion;
 	LPWSTR pszAssemblyName;
@@ -69,6 +73,7 @@ private: //Private members
 	MonoDomain *pDomain;
 	MonoAssembly *pAssembly;
 	MonoImage *pAssemblyImage;
+	MonoClass *pStringClass;
 	MonoClass *pPluginManagerClass;
 	MonoClass *pIPluginManagerClass;
 	MonoClass *pPluginManagerMonoClass;
@@ -78,15 +83,21 @@ private: //Private members
 	//MonoObject* pIPluginManagerInstanceObject;
 
 	MonoMethod* pMapCallbacksToMono;
+
 	MonoMethod* pPluginManagerAllPluginsLoadedMethod;
 	MonoMethod* pPluginManagerAllPluginsLoadedMethodImplementation;
+	
 	MonoMethod* pPluginManagerTickMethod;
 	MonoMethod* pPluginManagerTickMethodImplementation;
+	
 	MonoMethod* pPluginManagerUnloadMethod;
 	MonoMethod* pPluginManagerUnloadMethodImplementation;
+
+	MonoMethod* pPluginManagerLoadAssemblyMethod;
+	MonoMethod* pPluginManagerLoadAssemblyMethodImplementation;
 private: //Private methods
 	static void LogMono(MonoString* pMsg);
-	static MonoString* ExecuteCommandMono(MonoString* pMsg);
+	static void ExecuteCommandMono(MonoString* pMsg, MonoString* pOutput, int* pLength);
 #endif
 };
 

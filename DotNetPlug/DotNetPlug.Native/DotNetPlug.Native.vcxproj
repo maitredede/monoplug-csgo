@@ -918,11 +918,9 @@
       <TargetMachine>MachineX86</TargetMachine>
     </Link>
     <PostBuildEvent>
-      <Command>xcopy "$(OutDir)"* "D:\csgo_default\csgo\addons\metamod\dotnetplug" /y /v</Command>
+      <Command>REM xcopy "$(OutDir)"* "D:\csgo_default\csgo\addons\metamod\dotnetplug" /y /v</Command>
     </PostBuildEvent>
-    <PreBuildEvent>
-      <Command>REM tlbexp "$(SolutionDir)DotNetPlug.Managed\bin\Debug\DotNetPlug.Managed.dll" /out:"$(ProjectDir)DotNetPlug.Managed.tlb"</Command>
-    </PreBuildEvent>
+    <PreBuildEvent />
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug - Mono|Win32'">
     <ClCompile>

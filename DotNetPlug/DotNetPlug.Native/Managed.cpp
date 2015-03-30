@@ -19,10 +19,11 @@ void Managed::ExecuteCommand(const char* cmd, char** output, size_t* size)
 	return cmd;*/
 	engine->ServerExecute();
 	VirtualConsole* vConsole = new VirtualConsole();
-	icvar->RegisterConsole(vConsole);
+	IConsoleDisplayFunc* conDispFunc = (IConsoleDisplayFunc*)vConsole;
+	icvar->InstallConsoleDisplayFunc(conDispFunc);
 	engine->ServerCommand(cmd);
 	engine->ServerExecute();
-	icvar->UnregisterConsole(vConsole);
+	icvar->RemoveConsoleDisplayFunc(conDispFunc);
 	vConsole->Dump(output, size);
 	delete vConsole;
 }
