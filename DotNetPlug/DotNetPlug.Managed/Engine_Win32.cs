@@ -9,9 +9,12 @@ namespace DotNetPlug
 {
     internal sealed class Engine_Win32 : EngineWrapperBase, IEngine
     {
+        private readonly Dictionary<int, GCHandle> m_handles;
+
         internal Engine_Win32(PluginManager manager)
             : base(manager)
         {
+            this.m_handles = new Dictionary<int, GCHandle>();
         }
 
         internal LogDelegate m_cb_Log;
@@ -47,17 +50,48 @@ namespace DotNetPlug
             });
         }
 
-        public Task RegisterCommand(string command, string description, FCVar flags, CommandExecuteDelegate callback)
+        public Task<int> RegisterCommand(string command, string description, FCVar flags, CommandExecuteDelegate callback)
         {
             if (this.m_cb_RegisterCommand == null)
-                return Task.FromResult(string.Empty);
+                return Task.FromResult(-1);
 
             byte[] cmdUTF8 = this.m_enc.GetBytes(command);
             byte[] descUTF8 = this.m_enc.GetBytes(description);
             int iFlags = (int)flags;
-            IntPtr callbackPtr = Marshal.GetFunctionPointerForDelegate(callback);
+            //IntPtr callbackPtr = Marshal.GetFunctionPointerForDelegate(callback);
+            //return this.m_fact.StartNew(() => this.m_cb_RegisterCommand(cmdUTF8, descUTF8, iFlags, callbackPtr));
+            //GCHandle gch = GCHandle.Alloc(callback);
+            IntPtr ip = Marshal.GetFunctionPointerForDelegate(callback);
+            return this.m_fact.StartNew(() =>
+            {
+                int id = this.m_cb_RegisterCommand(cmdUTF8, descUTF8, iFlags, ip);
+                //if (id < 0)
+                //{
+                //    gch.Free();
+                //}
+                //else
+                //{
+                //    lock (this.m_handles)
+                //    {
+                //        this.m_handles.Add(id, gch);
+                //    }
+                //}
+                return id;
+            });
+        }
 
-            return this.m_fact.StartNew(() => this.m_cb_RegisterCommand(cmdUTF8, descUTF8, iFlags, callbackPtr));
+        public Task UnregisterCommand(int id)
+        {
+            lock (this.m_handles)
+            {
+                if (this.m_handles.ContainsKey(id))
+                {
+                    this.m_handles[id].Free();
+                    this.m_handles.Remove(id);
+                }
+            }
+            //TODO : Unregister Command
+            return Task.FromResult(id);
         }
     }
 }

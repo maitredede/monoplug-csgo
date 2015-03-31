@@ -8,7 +8,7 @@
 	if(!destPtr) {	\
 		META_LOG(g_PLAPI, "Can't get class %s::%s\n", sNamespace, sName);	\
 		return false;	\
-														}	\
+															}	\
 }
 
 #define GETMETHOD(destPtr, pClass, sMethodName, iParamCount) {	\
@@ -16,14 +16,14 @@
 	if(!destPtr) {	\
 		META_LOG(g_PLAPI, "Can't get method %s (with %d params)\n", sMethodName, iParamCount);	\
 		return false;	\
-															}	\
+																}	\
 }
 #define GETMETHODIMPL(destPtr, pObject, pMethod, sMethodName) {	\
 	destPtr = mono_object_get_virtual_method(pObject, pMethod);	\
 	if(!destPtr) {	\
 		META_LOG(g_PLAPI, "Can't get method implementation of %s\n", sMethodName);	\
 		return false;	\
-																}	\
+																	}	\
 }
 
 void Managed::Cleanup()
@@ -71,7 +71,6 @@ bool Managed::InitPlateform(const char* sAssemblyFile)
 
 	GETCLASS(this->pPluginManagerClass, this->pAssemblyImage, "DotNetPlug", "PluginManager");
 	GETCLASS(this->pIPluginManagerClass, this->pAssemblyImage, "DotNetPlug", "IPluginManager");
-	GETCLASS(this->pPluginManagerMonoClass, this->pAssemblyImage, "DotNetPlug", "PluginManagerMono");
 
 	this->pPluginManagerInstanceProperty = mono_class_get_property_from_name(this->pPluginManagerClass, "Instance");
 	if (!this->pPluginManagerInstanceProperty)
@@ -121,6 +120,7 @@ bool Managed::InitPlateform(const char* sAssemblyFile)
 	// Callbacks from managed to native : DllImport
 	mono_add_internal_call("DotNetPlug.PluginManagerMono::Log", (void*)(&Managed::LogMono));
 	mono_add_internal_call("DotNetPlug.PluginManagerMono::ExecuteCommand", (void*)(&Managed::ExecuteCommandMono));
+	mono_add_internal_call("DotNetPlug.PluginManagerMono::RegisterCommand", (void*)(&Managed::RegisterCommandMono));
 
 	////////////////////////////
 	// Callback : assign callbacks in PluginManager
@@ -212,5 +212,12 @@ void Managed::LoadAssembly(int argc, const char** argv)
 	if (exception){
 		mono_print_unhandled_exception(exception);
 	}
+}
+
+void Managed::RegisterCommandMono(MonoString* pCommand, MonoString* pDescription, int flags, void* callback)
+{
+	char* pCmd = mono_string_to_utf8(pCommand);
+	char* pDesc = mono_string_to_utf8(pDescription);
+	Managed::RegisterCommand(pCmd, pDesc, flags, callback);
 }
 #endif

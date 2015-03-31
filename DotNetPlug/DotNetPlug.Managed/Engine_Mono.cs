@@ -29,9 +29,15 @@ namespace DotNetPlug
             });
         }
 
-        public Task RegisterCommand(string command, string description, FCVar flags, CommandExecuteDelegate callback)
+        public Task<int> RegisterCommand(string command, string description, FCVar flags, CommandExecuteDelegate callback)
         {
             return this.m_fact.StartNew(() => PluginManagerMono.RegisterCommand(command, description, flags, callback));
+        }
+
+        public Task UnregisterCommand(int id)
+        {
+            //TODO : Unregister Command
+            return Task.FromResult(id);
         }
     }
 }

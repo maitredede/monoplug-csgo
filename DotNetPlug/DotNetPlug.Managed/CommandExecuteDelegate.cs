@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 
 namespace DotNetPlug
 {
-    [UnmanagedFunctionPointer(System.Runtime.InteropServices.CallingConvention.Cdecl)]
+    //[UnmanagedFunctionPointer(System.Runtime.InteropServices.CallingConvention.StdCall)]
+    [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
     public delegate void CommandExecuteDelegate(string[] args);
 }

@@ -2,6 +2,9 @@
 #define _DOTNETPLUG_MANAGED_H_
 
 #include "VirtualConsole.h"
+#include "Helpers.h"
+#include "ManagedCommand.h"
+#include "Types.h"
 
 #ifdef MANAGED_WIN32
 
@@ -27,24 +30,33 @@ using namespace mscorlib;
 #include <mono/metadata/assembly.h>
 #endif
 
+class ManagedCommand;
+
 class Managed {
 
 public:
 	Managed();
+	~Managed();
 	bool Init(const char* sBaseDir);
 	void Cleanup();
-	
+
 	void Tick();
 	void AllPluginsLoaded();
 	void Unload();
 	void LoadAssembly(int argc, const char** argv);
 
+	ManagedCommand* GetCommand(const char* cmd);
+
 	static void Log(const char* msg);
 	static void ExecuteCommand(const char* cmd, char** output, size_t* size);
-	static void RegisterCommand(const char* cmd, const char* description, int flags, void* callback);
+	static int RegisterCommand(const char* cmd, const char* description, int flags, MANAGED_COMMAND_CALLBACK callback);
 private:
 	bool s_inited;
 	bool InitPlateform(const char* sAssemblyFile);
+
+	int m_nextCmdId;
+	std::map<const char*, int, char_cmp>* m_commandsIndex;
+	std::map<int, ManagedCommand*>* m_commandsClass;
 
 #ifdef MANAGED_WIN32
 private:
@@ -76,7 +88,7 @@ private: //Private members
 	MonoClass *pStringClass;
 	MonoClass *pPluginManagerClass;
 	MonoClass *pIPluginManagerClass;
-	MonoClass *pPluginManagerMonoClass;
+
 	MonoProperty* pPluginManagerInstanceProperty;
 	MonoMethod* pPluginManagerInstancePropertyGetMethod;
 	MonoObject* pPluginManagerInstanceObject;
@@ -86,10 +98,10 @@ private: //Private members
 
 	MonoMethod* pPluginManagerAllPluginsLoadedMethod;
 	MonoMethod* pPluginManagerAllPluginsLoadedMethodImplementation;
-	
+
 	MonoMethod* pPluginManagerTickMethod;
 	MonoMethod* pPluginManagerTickMethodImplementation;
-	
+
 	MonoMethod* pPluginManagerUnloadMethod;
 	MonoMethod* pPluginManagerUnloadMethodImplementation;
 
@@ -98,6 +110,7 @@ private: //Private members
 private: //Private methods
 	static void LogMono(MonoString* pMsg);
 	static void ExecuteCommandMono(MonoString* pMsg, MonoString* pOutput, int* pLength);
+	static void RegisterCommandMono(MonoString* pMsg, MonoString* pDesc, int flags, void* callback);
 #endif
 };
 

@@ -5,54 +5,10 @@
 
 #include <comutil.h>
 #include <stdio.h>
+#include "Helpers.h"
+
 #pragma comment(lib, "comsuppw.lib")
 #pragma comment(lib, "kernel32.lib")
-
-#define GETMETHOD_F(hr, tType, lpwstrName, ppOut, flags) {	\
-	bstr_t bstrMethodName(lpwstrName);				\
-	hr = tType->GetMethod_2(bstrMethodName, flags, ppOut);	\
-	if (FAILED(hr))	\
-														{	\
-		META_CONPRINTF("Failed to get method %s w/hr 0x%08lx\n", lpwstrName, hr);	\
-		this->Cleanup();	\
-		return false;	\
-														}	\
-}
-
-#define GETMETHOD(hr, tType, lpwstrName, ppOut) GETMETHOD_F(hr, tType, lpwstrName, ppOut, (BindingFlags)(BindingFlags_Instance | BindingFlags_Public))
-
-
-//#define SETCALLBACK(hr, funcPtr, setCallbackMethodInfo) {	\
-//	LONG index = 0;	\
-//	SAFEARRAY* params = SafeArrayCreateVector(VT_VARIANT, 0, 1);	\
-//	variant_t vtEmptyCallback;	\
-//	variant_t params0;	\
-//	params0.llVal = (LONGLONG)funcPtr;	\
-//	params0.vt = VT_I8;	\
-//	hr = SafeArrayPutElement(params, &index, &params0);	\
-//	if (FAILED(hr))	{	\
-//		META_CONPRINTF("SafeArrayPutElement failed SetCallback_Log 0 w/hr 0x%08lx\n", hr);	\
-//		this->Cleanup();	\
-//		SafeArrayDestroy(params);	\
-//		return false;	\
-//						}	\
-//	hr = setCallbackMethodInfo->Invoke_3(this->vtPluginManager, params, &vtEmptyCallback);	\
-//	SafeArrayDestroy(params);	\
-//	if (FAILED(hr))	{	\
-//		META_CONPRINTF("Call failed SETCALLBACK w/hr 0x%08lx\n", hr);	\
-//		this->Cleanup();	\
-//		return false;	\
-//						}	\
-//}
-inline HRESULT SET_CALLBACK(SAFEARRAY* params, long idx, LONGLONG funcPtr)
-{
-	HRESULT hr;
-	variant_t params0;
-	params0.llVal = funcPtr;
-	params0.vt = VT_I8;
-	hr = SafeArrayPutElement(params, &idx, &params0);
-	return hr;
-};
 
 void Managed::Cleanup(){
 	if (pMetaHost)
@@ -362,28 +318,40 @@ void Managed::AllPluginsLoaded()
 void Managed::LoadAssembly(int argc, const char** argv)
 {
 	HRESULT hr;
-	long i = 0;
-	SAFEARRAY *args = SafeArrayCreateVector(VT_VARIANT, 0, 1); // create an array of the length of 1 ( Main(string[]) )
+	//long i = 0;
+	//SAFEARRAY *args = SafeArrayCreateVector(VT_VARIANT, 0, 1); // create an array of the length of 1 ( Main(string[]) )
 
-	VARIANT vtPsa;
-	vtPsa.vt = (VT_ARRAY | VT_BSTR);
-	vtPsa.parray = SafeArrayCreateVector(VT_BSTR, 0, argc); // create an array of strings
+	//VARIANT vtPsa;
+	//vtPsa.vt = (VT_ARRAY | VT_BSTR);
+	//vtPsa.parray = SafeArrayCreateVector(VT_BSTR, 0, argc); // create an array of strings
 
-	for (i = 0; i < argc; i++)
+	//for (i = 0; i < argc; i++)
+	//{
+	//	VARIANT item;
+	//	VariantInit(&item);
+	//	item.vt = VT_BSTR;
+	//	item.bstrVal = _com_util::ConvertStringToBSTR(argv[i]);
+	//	hr = SafeArrayPutElement(vtPsa.parray, &i, item.bstrVal); // insert the string from argv[i] into the safearray
+	//	if (FAILED(hr))
+	//	{
+	//		META_CONPRINTF("Failed to add element to string array w/hr 0x%08lx\n", hr);
+	//	}
+	//	SysFreeString(item.bstrVal);
+	//}
+	//i = 0;
+	//hr = SafeArrayPutElement(args, &i, &vtPsa);
+	SAFEARRAY *args = NULL;
+	hr = CREATE_STRING_ARRAY_ARGS(argc, argv, &args);
+	if (FAILED(hr))
 	{
-		VARIANT item;
-		VariantInit(&item);
-		item.vt = VT_BSTR;
-		item.bstrVal = _com_util::ConvertStringToBSTR(argv[i]);
-		hr = SafeArrayPutElement(vtPsa.parray, &i, item.bstrVal); // insert the string from argv[i] into the safearray
+		META_CONPRINTF("Failed to create string array w/hr 0x%08lx\n", hr);
+		hr = SafeArrayDestroy(args);
 		if (FAILED(hr))
 		{
-			META_CONPRINTF("Failed to add element to string array w/hr 0x%08lx\n", hr);
+			META_CONPRINTF("Failed to destroy array w/hr 0x%08lx\n", hr);
 		}
-		SysFreeString(item.bstrVal);
+		return;
 	}
-	i = 0;
-	hr = SafeArrayPutElement(args, &i, &vtPsa);
 
 	variant_t vtOutput = NULL;
 	hr = this->spPluginManagerLoadAssembly->Invoke_3(this->vtPluginManager, args, &vtOutput);
@@ -397,10 +365,5 @@ void Managed::LoadAssembly(int argc, const char** argv)
 	{
 		META_CONPRINTF("Failed to destroy array w/hr 0x%08lx\n", hr);
 	}
-}
-
-void Managed::RegisterCommand(const char* cmd, const char* description, int flags, void* callback)
-{
-	META_LOG(g_PLAPI, "TODO RegisterCommand : %s : %s", cmd, description);
 }
 #endif
