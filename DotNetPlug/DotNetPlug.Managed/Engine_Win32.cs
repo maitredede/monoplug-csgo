@@ -50,6 +50,11 @@ namespace DotNetPlug
             });
         }
 
+        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        internal delegate void CommandExecuteDelegateWrapper(int argc,
+                                                            [MarshalAs(UnmanagedType.SafeArray, SafeArraySubType = VarEnum.VT_BSTR)]
+                                                        string[] args);
+
         public Task<int> RegisterCommand(string command, string description, FCVar flags, CommandExecuteDelegate callback)
         {
             if (this.m_cb_RegisterCommand == null)
@@ -61,7 +66,11 @@ namespace DotNetPlug
             //IntPtr callbackPtr = Marshal.GetFunctionPointerForDelegate(callback);
             //return this.m_fact.StartNew(() => this.m_cb_RegisterCommand(cmdUTF8, descUTF8, iFlags, callbackPtr));
             //GCHandle gch = GCHandle.Alloc(callback);
+            //IntPtr ip = Marshal.GetFunctionPointerForDelegate(callback);
+
+            CommandExecuteDelegateWrapper wrapper = (argc, args) => callback(args);
             IntPtr ip = Marshal.GetFunctionPointerForDelegate(callback);
+
             return this.m_fact.StartNew(() =>
             {
                 int id = this.m_cb_RegisterCommand(cmdUTF8, descUTF8, iFlags, ip);

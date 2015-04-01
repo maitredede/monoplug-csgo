@@ -43,26 +43,47 @@ void ManagedCommand::InvokeCallback(int argc, const char** argv)
 	//////////////////////////////////////////////////////////////////////////////
 	HRESULT hr;
 	SAFEARRAY *args = NULL;
-	hr = CREATE_STRING_ARRAY_ARGS(argc, argv, &args);
+	/*hr = CREATE_STRING_ARRAY_ARGS(argc, argv, &args);
 	if (FAILED(hr))
 	{
-		META_CONPRINTF("Failed to create string array w/hr 0x%08lx\n", hr);
-		hr = SafeArrayDestroy(args);
-		if (FAILED(hr))
-		{
-			META_CONPRINTF("Failed to destroy array w/hr 0x%08lx\n", hr);
-		}
-		return;
+	META_CONPRINTF("Failed to create string array w/hr 0x%08lx\n", hr);
+	hr = SafeArrayDestroy(args);
+	if (FAILED(hr))
+	{
+	META_CONPRINTF("Failed to destroy array w/hr 0x%08lx\n", hr);
+	}
+	return;
 	}
 	variant_t param;
 	LONG index = 0;
 	hr = SafeArrayGetElement(args, &index, &param);
 	if (FAILED(hr))
 	{
-		META_CONPRINTF("Failed to destroy array w/hr 0x%08lx\n", hr);
+	META_CONPRINTF("Failed to destroy array w/hr 0x%08lx\n", hr);
+	}*/
+
+	args = SafeArrayCreateVector(VT_BSTR, 0, argc);
+	for (long i = 0; i < argc; i++){
+		VARIANT item;
+		VariantInit(&item);
+		item.vt = VT_BSTR;
+		item.bstrVal = _com_util::ConvertStringToBSTR(argv[i]);
+		hr = SafeArrayPutElement(args, &i, &item);
+		SysFreeString(item.bstrVal);
+		if (FAILED(hr))
+		{
+			META_LOG(g_PLAPI, "Failed to set array item w/hr 0x%08lx\n", hr);
+			hr = SafeArrayDestroy(args);
+			if (FAILED(hr))
+			{
+				META_CONPRINTF("Failed to destroy array w/hr 0x%08lx\n", hr);
+			}
+			return;
+		}
 	}
+
 	variant_t vtOutput = NULL;
-	this->m_managedCallback(args);
+	this->m_managedCallback(argc, args);
 	hr = SafeArrayDestroy(args);
 	if (FAILED(hr))
 	{
