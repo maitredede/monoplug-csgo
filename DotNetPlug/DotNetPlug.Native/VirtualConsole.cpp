@@ -15,7 +15,11 @@ VirtualConsole::~VirtualConsole(){
 	}
 }
 
-void VirtualConsole::Append(const char* msg){
+void VirtualConsole::Append(const char* msg)
+{
+	if (!msg)
+		return;
+
 	size_t msgLen = strlen(msg);
 	if (this->pBuffer){
 		Node* last = this->pBuffer;
@@ -38,20 +42,21 @@ void VirtualConsole::Append(const char* msg){
 	this->iBufferLen += msgLen;
 }
 
-void VirtualConsole::ColorPrint(const Color& clr, const char *pMessage){
-	this->Print(pMessage);
+void VirtualConsole::ColorPrint(const Color& clr, const char *pMessage)
+{
+	this->Append(pMessage);
 }
-void VirtualConsole::Print(const char *pMessage){
-	if (!pMessage)
-		return;
-	size_t len = strlen(pMessage);
-
+void VirtualConsole::Print(const char *pMessage)
+{
+	this->Append(pMessage);
 }
-void VirtualConsole::DPrint(const char *pMessage){
+void VirtualConsole::DPrint(const char *pMessage)
+{
 	//Nothing to do here
 }
 
-void VirtualConsole::GetConsoleText(char *pchText, size_t bufSize) const{
+void VirtualConsole::GetConsoleText(char *pchText, size_t bufSize) const
+{
 	//TODO ?
 }
 

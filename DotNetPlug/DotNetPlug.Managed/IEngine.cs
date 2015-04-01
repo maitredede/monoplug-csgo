@@ -12,6 +12,7 @@ namespace DotNetPlug
         Task Log(string log);
 
         Task<int> RegisterCommand(string command, string description, FCVar flags, CommandExecuteDelegate callback);
+        void RaiseCommand(int id, int argc, string[] argv);
         Task UnregisterCommand(int id);
     }
 }

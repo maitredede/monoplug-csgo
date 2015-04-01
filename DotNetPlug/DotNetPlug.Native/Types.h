@@ -4,8 +4,6 @@
 #ifdef MANAGED_WIN32
 #include <comutil.h>
 #include <stdio.h>
-
-typedef void(*MANAGED_COMMAND_CALLBACK)(int argc, SAFEARRAY* stringArr);
 #endif //MANAGED_WIN32
 
 #ifdef MANAGED_MONO

@@ -17,5 +17,6 @@ namespace DotNetPlug
         void Unload();
 
         void LoadAssembly(string[] param);
+        void RaiseCommand(int id, int argc, string[] argv);
     }
 }

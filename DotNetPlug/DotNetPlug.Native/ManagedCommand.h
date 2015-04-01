@@ -15,13 +15,13 @@
 class ManagedCommand
 {
 public:
-	ManagedCommand(int id, const char* cmd, const char* description, int flags, MANAGED_COMMAND_CALLBACK managedCallback);
+	ManagedCommand(int id, const char* cmd, const char* description, int flags);
 	ConCommand* GetNativeCommand();
+	int GetId();
 private:
-	MANAGED_COMMAND_CALLBACK m_managedCallback;
 	int m_id;
 	ConCommand* m_nativeCommand;
-	void InvokeCallback(int argc, const char** argv);
+	//void InvokeCallback(int argc, const char** argv);
 
 	static void NativeCallback(const CCommand &command);
 };

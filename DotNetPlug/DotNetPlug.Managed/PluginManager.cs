@@ -189,5 +189,10 @@ namespace DotNetPlug
                 this.m_engine.Log("PluginManager : LoadPluginsFromAssembly error : {0}", ex.Message).Wait();
             }
         }
+
+        void IPluginManager.RaiseCommand(int id, int argc, string[] argv)
+        {
+            this.m_engine.RaiseCommand(id, argc, argv);
+        }
     }
 }

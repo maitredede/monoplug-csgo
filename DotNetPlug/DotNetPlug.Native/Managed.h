@@ -1,7 +1,6 @@
 #ifndef _DOTNETPLUG_MANAGED_H_
 #define _DOTNETPLUG_MANAGED_H_
 
-#include "VirtualConsole.h"
 #include "Helpers.h"
 #include "ManagedCommand.h"
 #include "Types.h"
@@ -43,18 +42,19 @@ public:
 	void Tick();
 	void AllPluginsLoaded();
 	void Unload();
+
 	void LoadAssembly(int argc, const char** argv);
 
-	ManagedCommand* GetCommand(const char* cmd);
+	void RaiseCommand(int argc, const char** argv);
+	void RaiseCommandPlateform(ManagedCommand* cmd, int argc, const char** argv);
 
 	static void Log(const char* msg);
-	static void ExecuteCommand(const char* cmd, char** output, size_t* size);
-	static int RegisterCommand(const char* cmd, const char* description, int flags, MANAGED_COMMAND_CALLBACK callback);
+	static void ExecuteCommand(const char* cmd, void** output, int* length);
+	static bool RegisterCommand(const char* cmd, const char* description, int flags, int id);
 private:
 	bool s_inited;
 	bool InitPlateform(const char* sAssemblyFile);
 
-	int m_nextCmdId;
 	std::map<const char*, int, char_cmp>* m_commandsIndex;
 	std::map<int, ManagedCommand*>* m_commandsClass;
 
@@ -72,6 +72,7 @@ private:
 	_MethodInfo* spPluginManagerAllPluginsLoaded;
 	_MethodInfo* spPluginManagerUnload;
 	_MethodInfo* spPluginManagerLoadAssembly;
+	_MethodInfo* spPluginManagerRaiseCommand;
 
 	_MethodInfo* spPluginManagerInitWin32Engine;
 

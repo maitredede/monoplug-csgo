@@ -1063,6 +1063,7 @@
   <ItemGroup>
     <ClInclude Include="engine_wrappers.h" />
     <ClInclude Include="Helpers.h" />
+    <ClInclude Include="LoggingListener.h" />
     <ClInclude Include="Managed.h" />
     <ClInclude Include="ManagedCommand.h" />
     <ClInclude Include="Plugin.h" />
@@ -1070,6 +1071,7 @@
     <ClInclude Include="VirtualConsole.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="LoggingListener.cpp" />
     <ClCompile Include="Managed.cpp" />
     <ClCompile Include="ManagedCommand.cpp" />
     <ClCompile Include="Managed_mono.cpp" />

@@ -36,6 +36,9 @@
     <ClInclude Include="Types.h">
       <Filter>Fichiers d%27en-tête</Filter>
     </ClInclude>
+    <ClInclude Include="LoggingListener.h">
+      <Filter>Fichiers d%27en-tête</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Plugin.cpp">
@@ -54,6 +57,9 @@
       <Filter>Fichiers sources</Filter>
     </ClCompile>
     <ClCompile Include="ManagedCommand.cpp">
+      <Filter>Fichiers sources</Filter>
+    </ClCompile>
+    <ClCompile Include="LoggingListener.cpp">
       <Filter>Fichiers sources</Filter>
     </ClCompile>
   </ItemGroup>

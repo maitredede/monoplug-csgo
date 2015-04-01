@@ -260,6 +260,7 @@ bool Managed::InitPlateform(const char* sAssemblyFile)
 	GETMETHOD(hr, spIPluginManagerType, L"AllPluginsLoaded", &spPluginManagerAllPluginsLoaded);
 	GETMETHOD(hr, spIPluginManagerType, L"Unload", &spPluginManagerUnload);
 	GETMETHOD(hr, spIPluginManagerType, L"LoadAssembly", &spPluginManagerLoadAssembly);
+	GETMETHOD(hr, spIPluginManagerType, L"RaiseCommand", &spPluginManagerRaiseCommand);
 
 	////////////////////////////
 	// Callbacks from managed to native : FunctionPointers
@@ -341,7 +342,7 @@ void Managed::LoadAssembly(int argc, const char** argv)
 	//i = 0;
 	//hr = SafeArrayPutElement(args, &i, &vtPsa);
 	SAFEARRAY *args = NULL;
-	hr = CREATE_STRING_ARRAY_ARGS(argc, argv, &args);
+	hr = CREATE_STRING_ARRAY_ARGS(argc, argv, 0, &args);
 	if (FAILED(hr))
 	{
 		META_CONPRINTF("Failed to create string array w/hr 0x%08lx\n", hr);
@@ -365,5 +366,34 @@ void Managed::LoadAssembly(int argc, const char** argv)
 	{
 		META_CONPRINTF("Failed to destroy array w/hr 0x%08lx\n", hr);
 	}
+}
+
+void Managed::RaiseCommandPlateform(ManagedCommand* pCmd, int argc, const char** argv)
+{
+	HRESULT hr;
+	long i;
+
+	SAFEARRAY *methodArgs = SafeArrayCreateVector(VT_VARIANT, 0, 3);
+	VARIANT vtId;
+	i = 0;
+	VariantInit(&vtId);
+	vtId.vt = VT_INT;
+	vtId.intVal = pCmd->GetId();
+	hr = SafeArrayPutElement(methodArgs, &i, &vtId);
+
+	VARIANT vtArgc;
+	i = 1;
+	VariantInit(&vtArgc);
+	vtArgc.vt = VT_INT;
+	vtArgc.intVal = argc;
+	hr = SafeArrayPutElement(methodArgs, &i, &vtArgc);
+
+	VARIANT vtArgv;
+	i = 2;
+	hr = CREATE_STRING_ARRAY(argc, argv, &vtArgv);
+	hr = SafeArrayPutElement(methodArgs, &i, &vtArgv);
+
+	variant_t vtOutput = NULL;
+	hr = this->spPluginManagerRaiseCommand->Invoke_3(this->vtPluginManager, methodArgs, &vtOutput);
 }
 #endif

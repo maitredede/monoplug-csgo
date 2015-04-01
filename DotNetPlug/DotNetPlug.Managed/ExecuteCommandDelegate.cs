@@ -8,5 +8,8 @@ using System.Threading.Tasks;
 namespace DotNetPlug
 {
     [UnmanagedFunctionPointer(System.Runtime.InteropServices.CallingConvention.Cdecl)]
-    internal delegate void ExecuteCommandDelegate(byte[] msg, out byte[] ret, out int len);
+    internal delegate void ExecuteCommandDelegate(
+        [In]byte[] msgUTF8,
+        [Out]out IntPtr output,
+        [Out]out int length);
 }

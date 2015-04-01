@@ -8,6 +8,5 @@ using System.Threading.Tasks;
 namespace DotNetPlug
 {
     [UnmanagedFunctionPointer(System.Runtime.InteropServices.CallingConvention.Cdecl)]
-    //internal delegate void RegisterCommandDelegate(byte[] command, byte[] description, int flags, IntPtr callback);
-    internal delegate int RegisterCommandDelegate(byte[] command, byte[] description, int flags, IntPtr ptr);
+    internal delegate bool RegisterCommandDelegate(byte[] commandUTF8, byte[] descriptionUTF8, int flags, int managedId);
 }

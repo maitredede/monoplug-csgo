@@ -4,7 +4,7 @@
 #include <eiface.h>
 #include <icvar.h>
 
-class VirtualConsole :IConsoleDisplayFunc{
+class VirtualConsole :public IConsoleDisplayFunc{
 public:
 	void ColorPrint(const Color& clr, const char *pMessage);
 	void Print(const char *pMessage);

@@ -54,6 +54,7 @@
     <Compile Include="IPlugin.cs" />
     <Compile Include="IPluginManager.cs" />
     <Compile Include="LogDelegate.cs" />
+    <Compile Include="ManagedCommand.cs" />
     <Compile Include="PluginBase.cs" />
     <Compile Include="PluginManager.cs" />
     <Compile Include="PluginManagerMono.cs" />

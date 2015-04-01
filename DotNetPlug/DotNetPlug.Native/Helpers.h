@@ -93,14 +93,13 @@ inline HRESULT CREATE_STRING_ARRAY(int argc, const char** argv, VARIANT* vtPsa)
 	return hr;
 }
 
-inline HRESULT CREATE_STRING_ARRAY_ARGS(int argc, const char** argv, SAFEARRAY** params)
+inline HRESULT CREATE_STRING_ARRAY_ARGS(int argc, const char** argv, long paramIndex, SAFEARRAY** params)
 {
 	HRESULT hr;
-	long i = 0;
+	long i = paramIndex;
 	*params = SafeArrayCreateVector(VT_VARIANT, 0, 1);
 	VARIANT vtPsa;
 	hr = CREATE_STRING_ARRAY(argc, argv, &vtPsa);
-	i = 0;
 	hr = SafeArrayPutElement(*params, &i, &vtPsa);
 	return hr;
 }

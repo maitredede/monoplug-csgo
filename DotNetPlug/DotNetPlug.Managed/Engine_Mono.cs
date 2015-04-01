@@ -39,5 +39,10 @@ namespace DotNetPlug
             //TODO : Unregister Command
             return Task.FromResult(id);
         }
+
+        void IEngine.RaiseCommand(int id, int argc, string[] argv)
+        {
+
+        }
     }
 }
