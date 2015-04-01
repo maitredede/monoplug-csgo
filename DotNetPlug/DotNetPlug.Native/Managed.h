@@ -108,10 +108,13 @@ private: //Private members
 
 	MonoMethod* pPluginManagerLoadAssemblyMethod;
 	MonoMethod* pPluginManagerLoadAssemblyMethodImplementation;
+
+	MonoMethod* pPluginManagerRaiseCommandMethod;
+	MonoMethod* pPluginManagerRaiseCommandMethodImplementation;
 private: //Private methods
 	static void LogMono(MonoString* pMsg);
 	static void ExecuteCommandMono(MonoString* pMsg, MonoString* pOutput, int* pLength);
-	static void RegisterCommandMono(MonoString* pMsg, MonoString* pDesc, int flags, void* callback);
+	static void RegisterCommandMono(MonoString* pMsg, MonoString* pDesc, int flags, int id);
 #endif
 };
 

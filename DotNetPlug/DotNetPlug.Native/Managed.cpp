@@ -45,8 +45,13 @@ void Managed::ExecuteCommand(const char* cmd, void** output, int* length)
 	char* outDump = NULL;
 	vLog.Dump(&outDump, length);
 
+#if MANAGED_WIN32
 	*output = CoTaskMemAlloc(*length);
 	memcpy_s(*output, *length, outDump, *length);
+#endif
+#if MANAGED_MONO
+	*output = (void*)outDump;
+#endif
 }
 
 bool Managed::Init(const char* sBaseDir)

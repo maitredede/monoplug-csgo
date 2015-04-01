@@ -7,8 +7,6 @@
 #endif //MANAGED_WIN32
 
 #ifdef MANAGED_MONO
-#error TODO : Types.h
-typedef MonoMethod* MANAGED_COMMAND_CALLBACK;
 #endif
 
 #endif // _DOTNETPLUG_TYPES_H_

@@ -181,7 +181,7 @@ namespace DotNetPlug
                 {
                     await this.m_engine.Log("PluginManager : Loading plugin {0}", plugin.GetType().FullName);
 
-                    plugin.Load();
+                    await plugin.Load();
                 }
             }
             catch (Exception ex)
