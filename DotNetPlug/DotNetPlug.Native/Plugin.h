@@ -46,6 +46,15 @@ private:
 extern DotNetPlugPlugin g_DotNetPlugPlugin;
 extern ICvar *icvar;
 extern IServerGameDLL *server;
+extern IServerGameClients *gameclients;
+extern IVEngineServer *engine;
+extern IServerPluginHelpers *helpers;
+extern IGameEventManager2 *gameevents;
+extern IServerPluginCallbacks *vsp_callbacks;
+extern IPlayerInfoManager *playerinfomanager;
+extern CGlobalVars *gpGlobals;
+extern AdminInterface* adminManager;
+
 
 
 PLUGIN_GLOBALVARS();

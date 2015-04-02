@@ -33,7 +33,7 @@ namespace DotNetPlug
         }
 
         private readonly EngineSynchronizationContext m_syncCtx;
-        private IEngine m_engine;
+        private EngineWrapperBase m_engine;
         private readonly List<IPlugin> m_plugins = new List<IPlugin>();
         private readonly TaskScheduler m_taskScheduler;
         private readonly Assembly m_thisAssembly;

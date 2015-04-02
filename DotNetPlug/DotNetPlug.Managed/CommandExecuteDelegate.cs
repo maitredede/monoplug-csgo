@@ -7,7 +7,10 @@ using System.Threading.Tasks;
 
 namespace DotNetPlug
 {
-    //[UnmanagedFunctionPointer(System.Runtime.InteropServices.CallingConvention.StdCall)]
+    /// <summary>
+    /// Delegate called when a managed command is called
+    /// </summary>
+    /// <param name="args">The arguments. Index 0 is command name</param>
     [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
     public delegate void CommandExecuteDelegate(string[] args);
 }

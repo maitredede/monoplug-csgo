@@ -1,9 +1,9 @@
 #ifndef _DOTNETPLUG_MANAGED_H_
 #define _DOTNETPLUG_MANAGED_H_
 
+#include "Types.h"
 #include "Helpers.h"
 #include "ManagedCommand.h"
-#include "Types.h"
 
 #ifdef MANAGED_WIN32
 
@@ -23,7 +23,6 @@ using namespace mscorlib;
 #endif
 
 #ifdef MANAGED_MONO
-//#include <glib/glib.h>
 #include <mono/jit/jit.h>
 #include <mono/metadata/mono-config.h>
 #include <mono/metadata/assembly.h>
@@ -51,6 +50,9 @@ public:
 	static void Log(const char* msg);
 	static void ExecuteCommand(const char* cmd, void** output, int* length);
 	static bool RegisterCommand(const char* cmd, const char* description, int flags, int id);
+	static void UnregisterCommand(int id);
+	//static void GetServerInfo();
+	//static void GetPlayers();
 private:
 	bool s_inited;
 	bool InitPlateform(const char* sAssemblyFile);
@@ -93,7 +95,6 @@ private: //Private members
 	MonoProperty* pPluginManagerInstanceProperty;
 	MonoMethod* pPluginManagerInstancePropertyGetMethod;
 	MonoObject* pPluginManagerInstanceObject;
-	//MonoObject* pIPluginManagerInstanceObject;
 
 	MonoMethod* pMapCallbacksToMono;
 

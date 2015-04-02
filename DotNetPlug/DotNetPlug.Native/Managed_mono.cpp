@@ -222,6 +222,8 @@ void Managed::RegisterCommandMono(MonoString* pCommand, MonoString* pDescription
 	char* pCmd = mono_string_to_utf8(pCommand);
 	char* pDesc = mono_string_to_utf8(pDescription);
 	Managed::RegisterCommand(pCmd, pDesc, flags, id);
+	mono_free(pCmd);
+	mono_free(pDesc);
 }
 
 void Managed::RaiseCommandPlateform(ManagedCommand* cmd, int argc, const char** argv)

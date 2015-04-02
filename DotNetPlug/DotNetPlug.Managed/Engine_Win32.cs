@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace DotNetPlug
 {
-    internal sealed class Engine_Win32 : EngineWrapperBase, IEngine
+    internal sealed class Engine_Win32 : EngineWrapperBase
     {
         internal Engine_Win32(PluginManager manager)
             : base(manager)
@@ -19,7 +19,7 @@ namespace DotNetPlug
         internal ExecuteCommandDelegate m_cb_ExecuteCommand;
         internal RegisterCommandDelegate m_cb_RegisterCommand;
 
-        public Task Log(string msg)
+        public override Task Log(string msg)
         {
             if (this.m_cb_Log == null)
                 return Task.FromResult(string.Empty);
@@ -29,7 +29,7 @@ namespace DotNetPlug
             return this.m_fact.StartNew(() => this.m_cb_Log(msgUTF8));
         }
 
-        public Task<string> ExecuteCommand(string command)
+        public override Task<string> ExecuteCommand(string command)
         {
             if (this.m_cb_ExecuteCommand == null)
                 return Task.FromResult<string>(null);
@@ -53,7 +53,7 @@ namespace DotNetPlug
             });
         }
 
-        public Task<int> RegisterCommand(string command, string description, FCVar flags, CommandExecuteDelegate callback)
+        public override Task<int> RegisterCommand(string command, string description, FCVar flags, CommandExecuteDelegate callback)
         {
             if (this.m_cb_RegisterCommand == null)
                 return Task.FromResult(-1);
@@ -74,20 +74,6 @@ namespace DotNetPlug
                 }
                 return cmd.Id;
             });
-        }
-
-        Task IEngine.UnregisterCommand(int id)
-        {
-            return base.UnregisterCommand(id);
-        }
-
-        void IEngine.RaiseCommand(int id, int argc, string[] argv)
-        {
-            ManagedCommand cmd;
-            if (this.m_commands.TryGetValue(id, out cmd))
-            {
-                cmd.Callback.BeginInvoke(argv, null, null);
-            }
         }
     }
 }

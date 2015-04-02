@@ -16,6 +16,7 @@ class ManagedCommand
 {
 public:
 	ManagedCommand(int id, const char* cmd, const char* description, int flags);
+	~ManagedCommand();
 	ConCommand* GetNativeCommand();
 	int GetId();
 private:

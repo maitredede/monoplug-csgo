@@ -14,15 +14,12 @@ namespace DotNetPlug
 
         public override async Task Load()
         {
+            //Start a timer for threaded demo
             this.m_timer = new Timer(this.ClockTick, null, TimeSpan.FromSeconds(1), TimeSpan.FromSeconds(5));
 
+            //Add a sample command for managed code
             int cmd = await this.Engine.RegisterCommand("managed_status", "Managed status", FCVar.ServerCanExecute, this.Managed_Status);
             this.m_commands.Add(cmd);
-        }
-
-        private async void ClockTick(object state)
-        {
-            await this.Engine.Log("Time from managed clock is : {0}", DateTime.Now.ToLongTimeString());
         }
 
         public override async Task Unload()
@@ -41,7 +38,15 @@ namespace DotNetPlug
             }
         }
 
-        public async void Managed_Status(string[] param)
+        private async void ClockTick(object state)
+        {
+            await this.Engine.Log("Time from managed clock is : {0}", DateTime.Now.ToLongTimeString());
+
+            IPlayer[] players = await this.Engine.GetPlayers();
+            await this.Engine.Log("There is {0} players connected", players.Length);
+        }
+
+        private async void Managed_Status(string[] param)
         {
             string result = await this.Engine.ExecuteCommand("status");
             await this.Engine.Log(result);

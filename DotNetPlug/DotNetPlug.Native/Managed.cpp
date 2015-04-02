@@ -83,6 +83,36 @@ bool Managed::RegisterCommand(const char* cmd, const char* description, int flag
 	return true;
 }
 
+void Managed::UnregisterCommand(int id)
+{
+	std::map<const char*, int, char_cmp>::iterator it_id = g_Managed.m_commandsIndex->begin();
+	while (it_id != g_Managed.m_commandsIndex->end())
+	{
+		if (it_id->second == id)
+		{
+			g_Managed.m_commandsIndex->erase(it_id);
+			break;
+		}
+	}
+
+	std::map<int, ManagedCommand*>::iterator it_cmd = g_Managed.m_commandsClass->find(id);
+	if (it_cmd != g_Managed.m_commandsClass->end())
+	{
+		ManagedCommand* mCmd = it_cmd->second;
+		g_SMAPI->UnregisterConCommandBase(g_PLAPI, mCmd->GetNativeCommand());
+		delete mCmd;
+
+		g_Managed.m_commandsClass->erase(it_cmd);
+	}
+
+	//ManagedCommand* mCmd = new ManagedCommand(id, cmd, description, flags);
+	//g_Managed.m_commandsClass->insert(std::pair<int, ManagedCommand*>(id, mCmd));
+
+	//g_SMAPI->RegisterConCommandBase(g_PLAPI, mCmd->GetNativeCommand());
+
+	//return true;
+}
+
 void Managed::RaiseCommand(int argc, const char** argv){
 	if (argc <= 0 || !argv)
 		return;
@@ -104,3 +134,24 @@ void Managed::RaiseCommand(int argc, const char** argv){
 
 	this->RaiseCommandPlateform(result, argc, argv);
 }
+
+//void Managed::GetServerInfo(){
+//	engine->GetAppID();
+//	engine->GetGameDir();
+//	engine->GetGameServerSteamID();
+//	engine->GetLaunchOptions();
+//	engine->GetServerVersion();
+//	engine->GetTimescale();
+//	engine->IsDedicatedServer();
+//
+//	server->GetGameDescription();
+//	server->GetTickInterval();
+//
+//	gameclients->GetPlayerLimits();
+//
+//	//gpGlobals
+//}
+//
+//void Managed::GetPlayers(){
+//	gameclients->
+//}

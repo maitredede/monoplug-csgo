@@ -6,19 +6,19 @@ using System.Threading.Tasks;
 
 namespace DotNetPlug
 {
-    internal sealed class Engine_Mono : EngineWrapperBase, IEngine
+    internal sealed class Engine_Mono : EngineWrapperBase
     {
         internal Engine_Mono(PluginManager manager)
             : base(manager)
         {
         }
 
-        public Task Log(string msg)
+        public override Task Log(string msg)
         {
             return this.m_fact.StartNew(() => PluginManagerMono.Log(msg));
         }
 
-        public Task<string> ExecuteCommand(string command)
+        public override Task<string> ExecuteCommand(string command)
         {
             return this.m_fact.StartNew(() =>
             {
@@ -29,20 +29,9 @@ namespace DotNetPlug
             });
         }
 
-        public Task<int> RegisterCommand(string command, string description, FCVar flags, CommandExecuteDelegate callback)
+        public override Task<int> RegisterCommand(string command, string description, FCVar flags, CommandExecuteDelegate callback)
         {
             return this.m_fact.StartNew(() => PluginManagerMono.RegisterCommand(command, description, flags, callback));
-        }
-
-        public Task UnregisterCommand(int id)
-        {
-            //TODO : Unregister Command
-            return Task.FromResult(id);
-        }
-
-        void IEngine.RaiseCommand(int id, int argc, string[] argv)
-        {
-
         }
     }
 }

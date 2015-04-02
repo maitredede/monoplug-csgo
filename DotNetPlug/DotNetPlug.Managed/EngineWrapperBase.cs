@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace DotNetPlug
 {
-    internal abstract class EngineWrapperBase
+    internal abstract class EngineWrapperBase : IEngine
     {
         protected readonly PluginManager m_manager;
         protected readonly TaskFactory m_fact;
@@ -44,7 +44,7 @@ namespace DotNetPlug
             return cmd;
         }
 
-        protected Task UnregisterCommand(int id)
+        public Task UnregisterCommand(int id)
         {
             lock (this.m_commands)
             {
@@ -55,5 +55,18 @@ namespace DotNetPlug
             }
             return Task.FromResult(id);
         }
+
+        public virtual void RaiseCommand(int id, int argc, string[] argv)
+        {
+            ManagedCommand cmd;
+            if (this.m_commands.TryGetValue(id, out cmd))
+            {
+                cmd.Callback.BeginInvoke(argv, null, null);
+            }
+        }
+
+        public abstract Task<string> ExecuteCommand(string command);
+        public abstract Task Log(string log);
+        public abstract Task<int> RegisterCommand(string command, string description, FCVar flags, CommandExecuteDelegate callback);
     }
 }

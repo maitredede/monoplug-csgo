@@ -47,12 +47,11 @@
     <Compile Include="Extensions.cs" />
     <Compile Include="FCVar.cs" />
     <Compile Include="EngineSynchronizationContext.cs" />
-    <Compile Include="IConsole.cs" />
-    <Compile Include="IConsolePlugin.cs" />
     <Compile Include="IEngine.cs" />
     <Compile Include="IPlayer.cs" />
     <Compile Include="IPlugin.cs" />
     <Compile Include="IPluginManager.cs" />
+    <Compile Include="IServerInfo.cs" />
     <Compile Include="LogDelegate.cs" />
     <Compile Include="ManagedCommand.cs" />
     <Compile Include="PluginBase.cs" />

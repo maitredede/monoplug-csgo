@@ -6,6 +6,9 @@ using System.Threading.Tasks;
 
 namespace DotNetPlug
 {
+    /// <summary>
+    /// Game commands or CVar flags
+    /// </summary>
     [Flags]
     public enum FCVar
     {
