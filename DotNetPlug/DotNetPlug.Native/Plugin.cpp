@@ -32,6 +32,7 @@ Managed g_Managed;
 UserTracker gUserTracker;
 
 PLUGIN_EXPOSE(DotNetPlugPlugin, g_DotNetPlugPlugin);
+
 bool DotNetPlugPlugin::Load(PluginId id, ISmmAPI *ismm, char *error, size_t maxlen, bool late)
 {
 	PLUGIN_SAVEVARS();

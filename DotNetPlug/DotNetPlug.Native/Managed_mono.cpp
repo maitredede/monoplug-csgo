@@ -229,4 +229,49 @@ void Managed::RaiseCommandPlateform(ManagedCommand* cmd, int argc, const char** 
 		mono_print_unhandled_exception(exception);
 	}
 }
+
+void Managed::RaiseLevelInit(const char *pMapName, const char *pMapEntities, const char *pOldLevel, const char *pLandmarkName, bool loadGame, bool background)
+{
+	META_LOG(g_PLAPI, "TODO : RaiseLevelInit\n");
+}
+
+void Managed::RaiseServerActivate(int clientMax)
+{
+	META_LOG(g_PLAPI, "TODO : RaiseServerActivate\n");
+}
+
+void Managed::RaiseLevelShutdown()
+{
+	META_LOG(g_PLAPI, "TODO : RaiseLevelShutdown\n");
+}
+
+void Managed::RaiseClientActive()
+{
+	META_LOG(g_PLAPI, "TODO : RaiseClientActive\n");
+}
+
+void Managed::RaiseClientDisconnect()
+{
+	META_LOG(g_PLAPI, "TODO : RaiseClientDisconnect\n");
+}
+
+void Managed::RaiseClientPutInServer()
+{
+	META_LOG(g_PLAPI, "TODO : RaiseClientPutInServer\n");
+}
+
+void Managed::RaiseClientSettingsChanged()
+{
+	META_LOG(g_PLAPI, "TODO : RaiseClientSettingsChanged\n");
+}
+
+void Managed::RaiseClientConnect()
+{
+	META_LOG(g_PLAPI, "TODO : RaiseClientConnect\n");
+}
+
+void Managed::RaiseClientCommand()
+{
+	META_LOG(g_PLAPI, "TODO : RaiseClientCommand\n");
+}
 #endif

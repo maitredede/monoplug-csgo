@@ -37,6 +37,7 @@ namespace DotNetPlug
         private readonly List<IPlugin> m_plugins = new List<IPlugin>();
         private readonly TaskScheduler m_taskScheduler;
         private readonly Assembly m_thisAssembly;
+        private IPlugin m_corePlugin;
 
         internal SynchronizationContext SynchronizationContext { get { return this.m_syncCtx; } }
         internal TaskScheduler TaskScheduler { get { return this.m_taskScheduler; } }
@@ -80,7 +81,10 @@ namespace DotNetPlug
 
         void IPluginManager.Load()
         {
-            this.m_engine.Log("Hello from DotNetPlug PluginManager");
+            this.m_corePlugin = new CorePlugin();
+            this.m_corePlugin.Init(this.m_engine);
+            this.m_corePlugin.Load().Wait();
+            //this.m_engine.Log("Hello from DotNetPlug PluginManager");
 
             //Type[] plugTypes = AppDomain.CurrentDomain.GetAssemblies().SelectMany(a => a.GetTypes().Where(t => t.IsClass && !t.IsAbstract && typeof(IPlugin).IsAssignableFrom(t))).ToArray();
             //foreach (Type tPlugin in plugTypes)
@@ -107,8 +111,8 @@ namespace DotNetPlug
             {
                 plugin.Unload();
             }
+            this.m_corePlugin.Unload().Wait();
         }
-
 
         internal void InitWin32Engine(Int64 cbLog, Int64 cbExecuteCommand, Int64 cbRegisterCommand)
         {
@@ -124,7 +128,6 @@ namespace DotNetPlug
             Engine_Mono eng = new Engine_Mono(this);
             this.m_engine = eng;
         }
-
 
         internal async void LoadAssembly(string[] param)
         {
@@ -193,6 +196,20 @@ namespace DotNetPlug
         void IPluginManager.RaiseCommand(int id, int argc, string[] argv)
         {
             this.m_engine.RaiseCommand(id, argc, argv);
+        }
+
+        void IPluginManager.RaiseLevelInit(string mapName, string mapEntities, string oldLevel, string landmarkName, bool loadGame, bool background)
+        {
+            LevelInitEventArgs e = new LevelInitEventArgs()
+            {
+                MapName = mapName,
+                MapEntities = mapEntities,
+                OldLevel = oldLevel,
+                LandmarkName = landmarkName,
+                LoadGame = loadGame,
+                Background = background,
+            };
+            ThreadPool.QueueUserWorkItem((s) => this.m_engine.RaiseLevelInit((LevelInitEventArgs)s), e);
         }
     }
 }

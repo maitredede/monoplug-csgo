@@ -52,5 +52,7 @@ namespace DotNetPlug
         /// </summary>
         /// <returns></returns>
         Task<IServerInfo> GetServerInfo();
+
+        event EventHandler<LevelInitEventArgs> LevelInit;
     }
 }

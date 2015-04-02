@@ -1074,6 +1074,7 @@
     <ClInclude Include="VirtualConsole.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="Helpers.cpp" />
     <ClCompile Include="LoggingListener.cpp" />
     <ClCompile Include="Managed.cpp" />
     <ClCompile Include="ManagedCommand.cpp" />

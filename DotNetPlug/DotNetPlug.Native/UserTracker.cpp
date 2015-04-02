@@ -30,7 +30,7 @@ bool FindPlayerByIndex(player_t *player_ptr)
 
 			if (FStrEq(player_ptr->steam_id, "BOT"))
 			{
-				if (tv_name && strcmp(player_ptr->name, tv_name->GetString()) == 0)
+				if (g_DotNetPlugPlugin.tv_name && strcmp(player_ptr->name, g_DotNetPlugPlugin.tv_name->GetString()) == 0)
 				{
 					return false;
 				}
@@ -76,7 +76,7 @@ void	UserTracker::Load(void)
 		hash_table[i] = -1;
 	}
 
-	for (int i = 1; i <= max_players; i++)
+	for (int i = 1; i <= g_DotNetPlugPlugin.max_players; i++)
 	{
 		player_t player;
 
@@ -118,11 +118,7 @@ void	UserTracker::ClientActive(edict_t *pEntity)
 		IPlayerInfo *playerinfo = playerinfomanager->GetPlayerInfo(pEntity);
 		if (playerinfo && playerinfo->IsConnected())
 		{
-#if defined ( GAME_CSGO )
 			hash_table[playerinfo->GetUserID()] = IndexOfEdict(pEntity);
-#else
-			hash_table[playerinfo->GetUserID()] = engine->IndexOfEdict(pEntity);
-#endif
 		}
 	}
 }

@@ -79,5 +79,22 @@ namespace DotNetPlug
             Console.WriteLine("GetPlayers not implemented");
             return Task.FromResult<IPlayer[]>(null);
         }
+
+        private static object evtLevelInit = new object();
+        private readonly System.ComponentModel.EventHandlerList m_events = new System.ComponentModel.EventHandlerList();
+
+        public event EventHandler<LevelInitEventArgs> LevelInit
+        {
+            add { this.m_events.AddHandler(evtLevelInit, value); }
+            remove { this.m_events.RemoveHandler(evtLevelInit, value); }
+        }
+
+        internal void RaiseLevelInit(LevelInitEventArgs e)
+        {
+            EventHandler<LevelInitEventArgs> d = (EventHandler<LevelInitEventArgs>)this.m_events[evtLevelInit];
+            if (d != null)
+                d.Invoke(this, e);
+        }
+
     }
 }

@@ -38,20 +38,30 @@ public:
 	bool Init(const char* sBaseDir);
 	void Cleanup();
 
-	void Tick();
 	void Load();
+	void Tick();
 	void Unload();
 
 	void RaiseCommand(int argc, const char** argv);
-	void RaiseCommandPlateform(ManagedCommand* cmd, int argc, const char** argv);
 
 	static void Log(const char* msg);
 	static void ExecuteCommand(const char* cmd, void** output, int* length);
 	static bool RegisterCommand(const char* cmd, const char* description, int flags, int id);
 	static void UnregisterCommand(int id);
+
+	void RaiseLevelInit(const char *pMapName, const char *pMapEntities, const char *pOldLevel, const char *pLandmarkName, bool loadGame, bool background);
+	void RaiseServerActivate(int clientMax);
+	void RaiseLevelShutdown();
+	void RaiseClientActive();
+	void RaiseClientDisconnect();
+	void RaiseClientPutInServer();
+	void RaiseClientSettingsChanged();
+	void RaiseClientConnect();
+	void RaiseClientCommand();
 private:
 	bool s_inited;
 	bool InitPlateform(const char* sAssemblyFile);
+	void RaiseCommandPlateform(ManagedCommand* cmd, int argc, const char** argv);
 
 	std::map<const char*, int, char_cmp> m_commandsIndex;
 	std::map<int, ManagedCommand*> m_commandsClass;
@@ -73,6 +83,8 @@ private:
 	_MethodInfo* spPluginManagerRaiseCommand;
 
 	_MethodInfo* spPluginManagerInitWin32Engine;
+
+	_MethodInfo* spPluginManagerLevelInit;
 
 	LPWSTR pszVersion;
 	LPWSTR pszAssemblyName;
