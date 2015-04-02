@@ -32,6 +32,9 @@ struct char_cmp {
 HRESULT SET_CALLBACK(SAFEARRAY* params, long idx, LONGLONG funcPtr);
 HRESULT CREATE_STRING_ARRAY(int argc, const char** argv, VARIANT* vtPsa);
 HRESULT CREATE_STRING_ARRAY_ARGS(int argc, const char** argv, long paramIndex, SAFEARRAY** params);
+HRESULT SET_STRING_PARAM(SAFEARRAY* psa, LONG* i, const char* pStr);
+HRESULT SET_BOOL_PARAM(SAFEARRAY* psa, LONG* i, bool bVal);
+HRESULT SET_INT_PARAM(SAFEARRAY* psa, LONG* i, int iVal);
 
 #endif //MANAGED_WIN32
 

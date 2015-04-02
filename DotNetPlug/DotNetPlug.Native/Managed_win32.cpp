@@ -261,7 +261,9 @@ bool Managed::InitPlateform(const char* sAssemblyFile)
 	GETMETHOD(hr, spIPluginManagerType, L"Unload", &spPluginManagerUnload);
 	GETMETHOD(hr, spIPluginManagerType, L"LoadAssembly", &spPluginManagerLoadAssembly);
 	GETMETHOD(hr, spIPluginManagerType, L"RaiseCommand", &spPluginManagerRaiseCommand);
-
+	GETMETHOD(hr, spIPluginManagerType, L"RaiseLevelInit", &spPluginManagerLevelInit);
+	GETMETHOD(hr, spIPluginManagerType, L"RaiseServerActivate", &spPluginManagerServerActivate);
+	
 	////////////////////////////
 	// Callbacks from managed to native : FunctionPointers
 	GETMETHOD_F(hr, spPluginManagerType, L"InitWin32Engine", &spPluginManagerInitWin32Engine, (BindingFlags)(BindingFlags_Instance | BindingFlags_NonPublic));
@@ -272,10 +274,11 @@ bool Managed::InitPlateform(const char* sAssemblyFile)
 	//SETCALLBACK(hr, &Managed::ExecuteCommand, spPluginManagerSetCallback_ExecuteCommand);
 	//SETCALLBACK(hr, &Managed::RegisterCommand, spPluginManagerSetCallback_RegisterCommand);
 
-	SAFEARRAY* params = SafeArrayCreateVector(VT_VARIANT, 0, 3);
+	SAFEARRAY* params = SafeArrayCreateVector(VT_VARIANT, 0, 4);
 	hr = SET_CALLBACK(params, 0, (LONGLONG)&Managed::Log);
 	hr = SET_CALLBACK(params, 1, (LONGLONG)&Managed::ExecuteCommand);
 	hr = SET_CALLBACK(params, 2, (LONGLONG)&Managed::RegisterCommand);
+	hr = SET_CALLBACK(params, 3, (LONGLONG)&Managed::UnregisterCommand);
 
 	variant_t vtEmptyCallback;
 	hr = this->spPluginManagerInitWin32Engine->Invoke_3(this->vtPluginManager, params, &vtEmptyCallback);
@@ -293,6 +296,26 @@ bool Managed::InitPlateform(const char* sAssemblyFile)
 	return true;
 }
 
+void Managed::Load()
+{
+	variant_t vtOutput = NULL;
+	HRESULT hr = this->spPluginManagerLoad->Invoke_3(this->vtPluginManager, NULL, &vtOutput);
+	if (FAILED(hr))
+	{
+		META_CONPRINTF("Failed to call PluginManager.Load w/hr 0x%08lx\n", hr);
+	}
+}
+
+void Managed::Tick()
+{
+	variant_t vtOutput = NULL;
+	HRESULT hr = this->spPluginManagerTick->Invoke_3(this->vtPluginManager, NULL, &vtOutput);
+	if (FAILED(hr))
+	{
+		META_CONPRINTF("Failed to call PluginManager.Tick w/hr 0x%08lx\n", hr);
+	}
+}
+
 void Managed::Unload(){
 	variant_t vtEmptyCallback;
 	HRESULT hr = this->spPluginManagerUnload->Invoke_3(this->vtPluginManager, NULL, &vtEmptyCallback);
@@ -302,18 +325,6 @@ void Managed::Unload(){
 	}
 	this->Cleanup();
 	this->s_inited = false;
-}
-
-void Managed::Tick()
-{
-	variant_t vtOutput = NULL;
-	this->spPluginManagerTick->Invoke_3(this->vtPluginManager, NULL, &vtOutput);
-}
-
-void Managed::Load()
-{
-	variant_t vtOutput = NULL;
-	this->spPluginManagerLoad->Invoke_3(this->vtPluginManager, NULL, &vtOutput);
 }
 
 void Managed::RaiseCommandPlateform(ManagedCommand* pCmd, int argc, const char** argv)
@@ -347,12 +358,40 @@ void Managed::RaiseCommandPlateform(ManagedCommand* pCmd, int argc, const char**
 
 void Managed::RaiseLevelInit(const char *pMapName, const char *pMapEntities, const char *pOldLevel, const char *pLandmarkName, bool loadGame, bool background)
 {
-	META_LOG(g_PLAPI, "TODO : RaiseLevelInit\n");
+	HRESULT hr;
+	long i;
+
+	SAFEARRAY *methodArgs = SafeArrayCreateVector(VT_VARIANT, 0, 6);
+	i = 0;
+	hr = SET_STRING_PARAM(methodArgs, &i, pMapName);
+	i = 1;
+	hr = SET_STRING_PARAM(methodArgs, &i, pMapEntities);
+	i = 2;
+	hr = SET_STRING_PARAM(methodArgs, &i, pOldLevel);
+	i = 3;
+	hr = SET_STRING_PARAM(methodArgs, &i, pLandmarkName);
+	i = 4;
+	hr = SET_BOOL_PARAM(methodArgs, &i, loadGame);
+	i = 5;
+	hr = SET_BOOL_PARAM(methodArgs, &i, background);
+
+	variant_t vtOutput = NULL;
+	hr = this->spPluginManagerLevelInit->Invoke_3(this->vtPluginManager, methodArgs, &vtOutput);
+	hr = SafeArrayDestroy(methodArgs);
 }
 
 void Managed::RaiseServerActivate(int clientMax)
 {
-	META_LOG(g_PLAPI, "TODO : RaiseServerActivate\n");
+	HRESULT hr;
+	long i;
+
+	SAFEARRAY *methodArgs = SafeArrayCreateVector(VT_VARIANT, 0, 1);
+	i = 0;
+	hr = SET_INT_PARAM(methodArgs, &i, clientMax);
+	
+	variant_t vtOutput = NULL;
+	hr = this->spPluginManagerServerActivate->Invoke_3(this->vtPluginManager, methodArgs, &vtOutput);
+	hr = SafeArrayDestroy(methodArgs);
 }
 
 void Managed::RaiseLevelShutdown()

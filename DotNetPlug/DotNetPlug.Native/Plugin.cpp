@@ -17,7 +17,6 @@ SH_DECL_HOOK5(IServerGameClients, ClientConnect, SH_NOATTRIB, 0, bool, edict_t *
 SH_DECL_HOOK2_void(IServerGameClients, ClientCommand, SH_NOATTRIB, 0, edict_t *, const CCommand &);
 
 IServerGameDLL *server = NULL;
-IServerGameDLL	*serverdll = NULL;
 IServerGameClients *gameclients = NULL;
 IVEngineServer *engine = NULL;
 IServerPluginHelpers *helpers = NULL;
@@ -45,6 +44,7 @@ bool DotNetPlugPlugin::Load(PluginId id, ISmmAPI *ismm, char *error, size_t maxl
 	GET_V_IFACE_ANY(GetServerFactory, server, IServerGameDLL, INTERFACEVERSION_SERVERGAMEDLL);
 	GET_V_IFACE_ANY(GetServerFactory, gameclients, IServerGameClients, INTERFACEVERSION_SERVERGAMECLIENTS);
 	GET_V_IFACE_ANY(GetServerFactory, playerinfomanager, IPlayerInfoManager, INTERFACEVERSION_PLAYERINFOMANAGER);
+	gpGlobals = g_SMAPI->GetCGlobals();
 
 	//Gather init data
 	char mm_path[MAX_PATH];
@@ -72,7 +72,7 @@ bool DotNetPlugPlugin::Load(PluginId id, ISmmAPI *ismm, char *error, size_t maxl
 	SH_ADD_HOOK_MEMFUNC(IServerGameDLL, LevelInit, server, this, &DotNetPlugPlugin::Hook_LevelInit, false);
 	SH_ADD_HOOK_MEMFUNC(IServerGameDLL, ServerActivate, server, this, &DotNetPlugPlugin::Hook_ServerActivate, true);
 	SH_ADD_HOOK_MEMFUNC(IServerGameDLL, GameFrame, server, this, &DotNetPlugPlugin::Hook_GameFrame, true);
-	SH_ADD_HOOK_MEMFUNC(IServerGameDLL, LevelShutdown, serverdll, this, &DotNetPlugPlugin::Hook_LevelShutdown, false);
+	SH_ADD_HOOK_MEMFUNC(IServerGameDLL, LevelShutdown, server, this, &DotNetPlugPlugin::Hook_LevelShutdown, false);
 
 	SH_ADD_HOOK_MEMFUNC(IServerGameClients, ClientActive, gameclients, this, &DotNetPlugPlugin::Hook_ClientActive, false);
 	SH_ADD_HOOK_MEMFUNC(IServerGameClients, ClientDisconnect, gameclients, this, &DotNetPlugPlugin::Hook_ClientDisconnect, false);
@@ -82,13 +82,12 @@ bool DotNetPlugPlugin::Load(PluginId id, ISmmAPI *ismm, char *error, size_t maxl
 	SH_ADD_HOOK_MEMFUNC(IServerGameClients, ClientConnect, gameclients, this, &DotNetPlugPlugin::Hook_ClientConnect, false);
 	SH_ADD_HOOK_MEMFUNC(IServerGameClients, ClientCommand, gameclients, this, &DotNetPlugPlugin::Hook_ClientCommand, false);
 
-
+	this->tv_name = icvar->FindVar("tv_name");
+	gUserTracker.Load();
+	
 	//Load Native interop
 	g_Managed.Load();
-
-	this->tv_name = g_pCVar->FindVar("tv_name");
-	gUserTracker.Load();
-
+	
 	return true;
 }
 
@@ -100,7 +99,7 @@ bool DotNetPlugPlugin::Unload(char *error, size_t maxlen)
 	SH_REMOVE_HOOK_MEMFUNC(IServerGameDLL, LevelInit, server, this, &DotNetPlugPlugin::Hook_LevelInit, false);
 	SH_REMOVE_HOOK_MEMFUNC(IServerGameDLL, ServerActivate, server, this, &DotNetPlugPlugin::Hook_ServerActivate, true);
 	SH_REMOVE_HOOK_MEMFUNC(IServerGameDLL, GameFrame, server, this, &DotNetPlugPlugin::Hook_GameFrame, true);
-	SH_REMOVE_HOOK_MEMFUNC(IServerGameDLL, LevelShutdown, serverdll, this, &DotNetPlugPlugin::Hook_LevelShutdown, false);
+	SH_REMOVE_HOOK_MEMFUNC(IServerGameDLL, LevelShutdown, server, this, &DotNetPlugPlugin::Hook_LevelShutdown, false);
 
 	SH_REMOVE_HOOK_MEMFUNC(IServerGameClients, ClientActive, gameclients, this, &DotNetPlugPlugin::Hook_ClientActive, false);
 	SH_REMOVE_HOOK_MEMFUNC(IServerGameClients, ClientDisconnect, gameclients, this, &DotNetPlugPlugin::Hook_ClientDisconnect, false);

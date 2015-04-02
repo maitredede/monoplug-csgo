@@ -18,6 +18,7 @@ namespace DotNetPlug
         internal LogDelegate m_cb_Log;
         internal ExecuteCommandDelegate m_cb_ExecuteCommand;
         internal RegisterCommandDelegate m_cb_RegisterCommand;
+        internal UnregisterCommandDelegate m_cb_UnregisterCommand;
 
         public override Task Log(string msg)
         {
@@ -53,27 +54,30 @@ namespace DotNetPlug
             });
         }
 
-        public override Task<int> RegisterCommand(string command, string description, FCVar flags, CommandExecuteDelegate callback)
+        protected override int RegisterCommandImpl(byte[] cmdUTF8, byte[] descUTF8, int iFlags, int id)
         {
-            if (this.m_cb_RegisterCommand == null)
-                return Task.FromResult(-1);
-
-            ManagedCommand cmd = base.CreateCommand(command, description, flags, callback);
-
-            byte[] cmdUTF8 = this.m_enc.GetBytes(command);
-            byte[] descUTF8 = this.m_enc.GetBytes(description);
-            int iFlags = (int)flags;
-
-            return this.m_fact.StartNew(() =>
+            bool succes = this.m_cb_RegisterCommand(cmdUTF8, descUTF8, iFlags, id);
+            if (!succes)
             {
-                bool succes = this.m_cb_RegisterCommand(cmdUTF8, descUTF8, iFlags, cmd.Id);
-                if (!succes)
-                {
-                    base.UnregisterCommand(cmd.Id).Wait();
-                    return -1;
-                }
-                return cmd.Id;
-            });
+                base.UnregisterCommandDic(id);
+                return -1;
+            }
+            return id;
+        }
+
+        //public override Task UnregisterCommand(int id)
+        //{
+        //    base.UnregisterCommandDic(id);
+
+        //    return this.m_fact.StartNew(() =>
+        //    {
+        //        this.m_cb_UnregisterCommand(id);
+        //    });
+        //}
+
+        protected override void UnregisterCommandImpl(int id)
+        {
+            this.m_cb_UnregisterCommand(id);
         }
     }
 }

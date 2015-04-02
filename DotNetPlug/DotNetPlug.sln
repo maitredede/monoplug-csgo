@@ -11,15 +11,15 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "DotNetPlug.Native", "DotNet
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DotNetPlug.Managed", "DotNetPlug.Managed\DotNetPlug.Managed.csproj", "{52A5E962-163E-4556-B9F0-394B5F5A058B}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{2D7A7872-5BEF-467E-9221-A8FFCB8236D8}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DotNetPlug.Managed.Sample", "DotNetPlug.Managed.Sample\DotNetPlug.Managed.Sample.csproj", "{B1880063-F267-4310-B04B-BB519A4FAFFA}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{DB23BD43-8149-4F95-A0B8-2E24213FF17D}"
 	ProjectSection(SolutionItems) = preProject
 		..\dotnetplug.vdf = ..\dotnetplug.vdf
-		go = go
-		DotNetPlug.Native\Makefile = DotNetPlug.Native\Makefile
-		remake = remake
+		..\dotnetplug_server.cfg = ..\dotnetplug_server.cfg
+		..\go = ..\go
+		..\remake = ..\remake
 	EndProjectSection
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DotNetPlug.Managed.Sample", "DotNetPlug.Managed.Sample\DotNetPlug.Managed.Sample.csproj", "{B1880063-F267-4310-B04B-BB519A4FAFFA}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

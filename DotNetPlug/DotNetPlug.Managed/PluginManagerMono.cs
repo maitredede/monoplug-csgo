@@ -19,6 +19,9 @@ namespace DotNetPlug
         public static extern void ExecuteCommand(string command, out string output, out int length);
 
         [MethodImplAttribute(MethodImplOptions.InternalCall)]
-        public static extern int RegisterCommand(string command, string description, FCVar flags, CommandExecuteDelegate callback);
+        public static extern int RegisterCommand(byte[] commandUTF8, byte[] descriptionUTF8, int iFlags, int id);
+
+        [MethodImplAttribute(MethodImplOptions.InternalCall)]
+        public static extern void UnregisterCommand(int id);
     }
 }

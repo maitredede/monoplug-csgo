@@ -9,4 +9,6 @@ namespace DotNetPlug
 {
     [UnmanagedFunctionPointer(System.Runtime.InteropServices.CallingConvention.Cdecl)]
     internal delegate bool RegisterCommandDelegate(byte[] commandUTF8, byte[] descriptionUTF8, int flags, int managedId);
+    [UnmanagedFunctionPointer(System.Runtime.InteropServices.CallingConvention.Cdecl)]
+    internal delegate void UnregisterCommandDelegate(int managedId);
 }

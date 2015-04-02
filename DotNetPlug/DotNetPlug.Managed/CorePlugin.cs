@@ -9,15 +9,31 @@ namespace DotNetPlug
     public sealed class CorePlugin : PluginBase
     {
         private int m_loadAssembly;
+        private readonly PluginManager m_manager;
 
-        public override async Task Load()
+        internal CorePlugin(PluginManager manager)
         {
-            this.m_loadAssembly = await this.Engine.RegisterCommand("load_assembly", "Load assembly plugin", FCVar.ServerCanExecute, PluginManager.Instance.LoadAssembly);
+            this.m_manager = manager;
         }
 
-        public override async Task Unload()
+        public override Task Load()
         {
-            await this.Engine.UnregisterCommand(this.m_loadAssembly);
+            throw new InvalidOperationException();
+        }
+
+        internal void LoadSync()
+        {
+            this.m_loadAssembly = this.m_manager.EngineWrapper.RegisterCommandInternal("load_assembly", "Load assembly plugin", FCVar.ServerCanExecute, PluginManager.Instance.LoadAssembly);
+        }
+
+        public override Task Unload()
+        {
+            throw new InvalidOperationException();
+        }
+
+        internal void UnloadSync()
+        {
+            this.m_manager.EngineWrapper.UnregisterCommandSync(this.m_loadAssembly);
         }
     }
 }

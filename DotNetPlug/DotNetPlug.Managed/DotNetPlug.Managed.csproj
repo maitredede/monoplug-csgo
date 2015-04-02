@@ -63,6 +63,7 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="RegisterCommandDelegate.cs" />
     <Compile Include="Engine_Win32.cs" />
+    <Compile Include="ServerActivateEventArgs.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>

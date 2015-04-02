@@ -42,8 +42,8 @@ namespace DotNetPlug
         {
             await this.Engine.Log("Time from managed clock is : {0}", DateTime.Now.ToLongTimeString());
 
-            IPlayer[] players = await this.Engine.GetPlayers();
-            await this.Engine.Log("There is {0} players connected", players.Length);
+            //IPlayer[] players = await this.Engine.GetPlayers();
+            //await this.Engine.Log("There is {0} players connected", players.Length);
         }
 
         private async void Managed_Status(string[] param)

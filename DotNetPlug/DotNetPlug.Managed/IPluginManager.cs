@@ -19,6 +19,7 @@ namespace DotNetPlug
         void RaiseCommand(int id, int argc, string[] argv);
 
         void RaiseLevelInit(string mapName, string mapEntities, string oldLevel, string landmarkName, bool loadGame, bool background);
+        void RaiseServerActivate(int clientMax);
 
     }
 }

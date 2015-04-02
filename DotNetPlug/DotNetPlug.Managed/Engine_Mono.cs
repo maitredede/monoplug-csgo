@@ -29,9 +29,14 @@ namespace DotNetPlug
             });
         }
 
-        public override Task<int> RegisterCommand(string command, string description, FCVar flags, CommandExecuteDelegate callback)
+        protected override int RegisterCommandImpl(byte[] cmdUTF8, byte[] descUTF8, int iFlags, int id)
         {
-            return this.m_fact.StartNew(() => PluginManagerMono.RegisterCommand(command, description, flags, callback));
+            return PluginManagerMono.RegisterCommand(cmdUTF8, descUTF8, iFlags, id);
+        }
+
+        protected override void UnregisterCommandImpl(int id)
+        {
+            PluginManagerMono.UnregisterCommand(id);
         }
     }
 }

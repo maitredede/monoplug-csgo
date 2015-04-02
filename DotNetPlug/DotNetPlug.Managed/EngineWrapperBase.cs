@@ -44,18 +44,6 @@ namespace DotNetPlug
             return cmd;
         }
 
-        public Task UnregisterCommand(int id)
-        {
-            lock (this.m_commands)
-            {
-                if (this.m_commands.ContainsKey(id))
-                {
-                    this.m_commands.Remove(id);
-                }
-            }
-            return Task.FromResult(id);
-        }
-
         public virtual void RaiseCommand(int id, int argc, string[] argv)
         {
             ManagedCommand cmd;
@@ -67,7 +55,6 @@ namespace DotNetPlug
 
         public abstract Task<string> ExecuteCommand(string command);
         public abstract Task Log(string log);
-        public abstract Task<int> RegisterCommand(string command, string description, FCVar flags, CommandExecuteDelegate callback);
 
         public virtual Task<IServerInfo> GetServerInfo()
         {
@@ -80,21 +67,101 @@ namespace DotNetPlug
             return Task.FromResult<IPlayer[]>(null);
         }
 
-        private static object evtLevelInit = new object();
+        private enum Events
+        {
+            LevelInit,
+            ServerActivate,
+        }
         private readonly System.ComponentModel.EventHandlerList m_events = new System.ComponentModel.EventHandlerList();
 
         public event EventHandler<LevelInitEventArgs> LevelInit
         {
-            add { this.m_events.AddHandler(evtLevelInit, value); }
-            remove { this.m_events.RemoveHandler(evtLevelInit, value); }
+            add { this.m_events.AddHandler(Events.LevelInit, value); }
+            remove { this.m_events.RemoveHandler(Events.LevelInit, value); }
+        }
+
+        public event EventHandler<ServerActivateEventArgs> ServerActivate
+        {
+            add { this.m_events.AddHandler(Events.ServerActivate, value); }
+            remove { this.m_events.RemoveHandler(Events.ServerActivate, value); }
+        }
+
+        private void RaiseEvent<T>(Events evt, T args) where T : EventArgs
+        {
+            EventHandler<T> d = (EventHandler<T>)this.m_events[evt];
+            if (d != null)
+                d.Invoke(this, args);
         }
 
         internal void RaiseLevelInit(LevelInitEventArgs e)
         {
-            EventHandler<LevelInitEventArgs> d = (EventHandler<LevelInitEventArgs>)this.m_events[evtLevelInit];
-            if (d != null)
-                d.Invoke(this, e);
+            this.RaiseEvent(Events.LevelInit, e);
         }
 
+        internal void RaiseServerActivate(ServerActivateEventArgs e)
+        {
+            this.RaiseEvent(Events.ServerActivate, e);
+        }
+
+        internal int RegisterCommandInternal(string command, string description, FCVar flags, CommandExecuteDelegate callback)
+        {
+            ManagedCommand cmd = this.CreateCommand(command, description, flags, callback);
+
+            byte[] cmdUTF8 = this.m_enc.GetBytes(command);
+            byte[] descUTF8 = this.m_enc.GetBytes(description);
+            int iFlags = (int)flags;
+
+            int id = this.RegisterCommandImpl(cmdUTF8, descUTF8, iFlags, cmd.Id);
+            if (id == -1)
+            {
+                this.UnregisterCommandDic(id);
+            }
+            return id;
+        }
+
+        public Task<int> RegisterCommand(string command, string description, FCVar flags, CommandExecuteDelegate callback)
+        {
+            ManagedCommand cmd = this.CreateCommand(command, description, flags, callback);
+
+            byte[] cmdUTF8 = this.m_enc.GetBytes(command);
+            byte[] descUTF8 = this.m_enc.GetBytes(description);
+            int iFlags = (int)flags;
+
+            return this.m_fact.StartNew(() =>
+            {
+                int id = this.RegisterCommandImpl(cmdUTF8, descUTF8, iFlags, cmd.Id);
+                if (id == -1)
+                {
+                    this.UnregisterCommandDic(id);
+                }
+                return id;
+            });
+        }
+        protected abstract int RegisterCommandImpl(byte[] cmdUTF8, byte[] descUTF8, int iFlags, int id);
+
+        public Task UnregisterCommand(int id)
+        {
+            this.UnregisterCommandDic(id);
+            return this.m_fact.StartNew(() => this.UnregisterCommandImpl(id));
+        }
+
+        protected void UnregisterCommandDic(int id)
+        {
+            lock (this.m_commands)
+            {
+                if (this.m_commands.ContainsKey(id))
+                {
+                    this.m_commands.Remove(id);
+                }
+            }
+        }
+
+        protected abstract void UnregisterCommandImpl(int id);
+
+        internal void UnregisterCommandSync(int id)
+        {
+            this.UnregisterCommandDic(id);
+            this.UnregisterCommandImpl(id);
+        }
     }
 }

@@ -37,10 +37,11 @@ namespace DotNetPlug
         private readonly List<IPlugin> m_plugins = new List<IPlugin>();
         private readonly TaskScheduler m_taskScheduler;
         private readonly Assembly m_thisAssembly;
-        private IPlugin m_corePlugin;
+        private CorePlugin m_corePlugin;
 
         internal SynchronizationContext SynchronizationContext { get { return this.m_syncCtx; } }
         internal TaskScheduler TaskScheduler { get { return this.m_taskScheduler; } }
+        internal EngineWrapperBase EngineWrapper { get { return this.m_engine; } }
 
         private PluginManager()
         {
@@ -81,9 +82,9 @@ namespace DotNetPlug
 
         void IPluginManager.Load()
         {
-            this.m_corePlugin = new CorePlugin();
-            this.m_corePlugin.Init(this.m_engine);
-            this.m_corePlugin.Load().Wait();
+            this.m_corePlugin = new CorePlugin(this);
+            ((IPlugin)this.m_corePlugin).Init(this.m_engine);
+            this.m_corePlugin.LoadSync();
             //this.m_engine.Log("Hello from DotNetPlug PluginManager");
 
             //Type[] plugTypes = AppDomain.CurrentDomain.GetAssemblies().SelectMany(a => a.GetTypes().Where(t => t.IsClass && !t.IsAbstract && typeof(IPlugin).IsAssignableFrom(t))).ToArray();
@@ -105,21 +106,22 @@ namespace DotNetPlug
             //}
         }
 
-        void IPluginManager.Unload()
+        async void IPluginManager.Unload()
         {
             foreach (IPlugin plugin in this.m_plugins)
             {
-                plugin.Unload();
+                await plugin.Unload();
             }
-            this.m_corePlugin.Unload().Wait();
+            this.m_corePlugin.UnloadSync();
         }
 
-        internal void InitWin32Engine(Int64 cbLog, Int64 cbExecuteCommand, Int64 cbRegisterCommand)
+        internal void InitWin32Engine(Int64 cbLog, Int64 cbExecuteCommand, Int64 cbRegisterCommand, Int64 cbUnregisterCommand)
         {
             Engine_Win32 eng = new Engine_Win32(this);
             eng.m_cb_Log = (LogDelegate)Marshal.GetDelegateForFunctionPointer(new IntPtr(cbLog), typeof(LogDelegate));
             eng.m_cb_ExecuteCommand = (ExecuteCommandDelegate)Marshal.GetDelegateForFunctionPointer(new IntPtr(cbExecuteCommand), typeof(ExecuteCommandDelegate));
             eng.m_cb_RegisterCommand = (RegisterCommandDelegate)Marshal.GetDelegateForFunctionPointer(new IntPtr(cbRegisterCommand), typeof(RegisterCommandDelegate));
+            eng.m_cb_UnregisterCommand = (UnregisterCommandDelegate)Marshal.GetDelegateForFunctionPointer(new IntPtr(cbUnregisterCommand), typeof(UnregisterCommandDelegate));
             this.m_engine = eng;
         }
 
@@ -198,6 +200,11 @@ namespace DotNetPlug
             this.m_engine.RaiseCommand(id, argc, argv);
         }
 
+        private void Raise<T>(Action<T> engineRaise, T args) where T : EventArgs
+        {
+            ThreadPool.QueueUserWorkItem((s) => engineRaise((T)s), args);
+        }
+
         void IPluginManager.RaiseLevelInit(string mapName, string mapEntities, string oldLevel, string landmarkName, bool loadGame, bool background)
         {
             LevelInitEventArgs e = new LevelInitEventArgs()
@@ -209,7 +216,16 @@ namespace DotNetPlug
                 LoadGame = loadGame,
                 Background = background,
             };
-            ThreadPool.QueueUserWorkItem((s) => this.m_engine.RaiseLevelInit((LevelInitEventArgs)s), e);
+            this.Raise(this.m_engine.RaiseLevelInit, e);
+        }
+
+        void IPluginManager.RaiseServerActivate(int clientMax)
+        {
+            ServerActivateEventArgs e = new ServerActivateEventArgs()
+            {
+                ClientMax = clientMax,
+            };
+            this.Raise(this.m_engine.RaiseServerActivate, e);
         }
     }
 }

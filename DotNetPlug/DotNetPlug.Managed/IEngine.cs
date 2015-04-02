@@ -54,5 +54,6 @@ namespace DotNetPlug
         Task<IServerInfo> GetServerInfo();
 
         event EventHandler<LevelInitEventArgs> LevelInit;
+        event EventHandler<ServerActivateEventArgs> ServerActivate;
     }
 }

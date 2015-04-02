@@ -7,8 +7,8 @@ bool DotNetPlugPlugin::Hook_LevelInit(const char *pMapName, const char *pMapEnti
 {
 	gUserTracker.LevelInit();
 
-	this->hostname = g_pCVar->FindVar("hostname");
-	this->tv_name = g_pCVar->FindVar("tv_name");
+	this->hostname = icvar->FindVar("hostname");
+	this->tv_name = icvar->FindVar("tv_name");
 
 	g_Managed.RaiseLevelInit(pMapName, pMapEntities, pOldLevel, pLandmarkName, loadGame, background);
 

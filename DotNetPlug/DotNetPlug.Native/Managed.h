@@ -85,6 +85,7 @@ private:
 	_MethodInfo* spPluginManagerInitWin32Engine;
 
 	_MethodInfo* spPluginManagerLevelInit;
+	_MethodInfo* spPluginManagerServerActivate;
 
 	LPWSTR pszVersion;
 	LPWSTR pszAssemblyName;

@@ -23,6 +23,11 @@ HRESULT CREATE_STRING_ARRAY(int argc, const char** argv, VARIANT* vtPsa)
 
 	for (i = 0; i < argc; i++)
 	{
+		/*hr = SET_STRING_PARAM(vtPsa->parray, &i, argv[i]);
+		if (FAILED(hr))
+		{
+			break;
+		}*/
 		VARIANT item;
 		VariantInit(&item);
 		item.vt = VT_BSTR;
@@ -35,7 +40,49 @@ HRESULT CREATE_STRING_ARRAY(int argc, const char** argv, VARIANT* vtPsa)
 			return hr;
 		}
 		SysFreeString(item.bstrVal);
+
 	}
+	if (FAILED(hr))
+	{
+		SafeArrayDestroy(vtPsa->parray);
+	}
+	return hr;
+}
+
+HRESULT SET_BOOL_PARAM(SAFEARRAY* psa, LONG* i, bool bVal)
+{
+	HRESULT hr;
+
+	VARIANT item;
+	VariantInit(&item);
+	item.vt = VT_BOOL;
+	item.boolVal = bVal;
+	hr = SafeArrayPutElement(psa, i, &item); // insert the string from argv[i] into the safearray
+	return hr;
+}
+
+HRESULT SET_INT_PARAM(SAFEARRAY* psa, LONG* i, int iVal)
+{
+	HRESULT hr;
+
+	VARIANT item;
+	VariantInit(&item);
+	item.vt = VT_INT;
+	item.intVal = iVal;
+	hr = SafeArrayPutElement(psa, i, &item); // insert the string from argv[i] into the safearray
+	return hr;
+}
+
+HRESULT SET_STRING_PARAM(SAFEARRAY* psa, LONG* i, const char* pStr)
+{
+	HRESULT hr;
+
+	VARIANT item;
+	VariantInit(&item);
+	item.vt = VT_BSTR;
+	item.bstrVal = _com_util::ConvertStringToBSTR(pStr);
+	hr = SafeArrayPutElement(psa, i, &item); // insert the string from argv[i] into the safearray
+	SysFreeString(item.bstrVal);
 	return hr;
 }
 
