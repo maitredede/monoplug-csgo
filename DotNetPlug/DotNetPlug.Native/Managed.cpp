@@ -2,19 +2,12 @@
 #include "Managed.h"
 #include "LoggingListener.h"
 
-Managed g_Managed;
-
 Managed::Managed()
 {
 	this->s_inited = false;
-	this->m_commandsIndex = new std::map<const char*, int, char_cmp>();
-	this->m_commandsClass = new std::map<int, ManagedCommand*>();
-	//this->m_nextCmdId = 0;
 }
 
 Managed::~Managed(){
-	delete this->m_commandsClass;
-	delete this->m_commandsIndex;
 }
 
 void Managed::Log(const char* msg)
@@ -69,14 +62,14 @@ bool Managed::Init(const char* sBaseDir)
 
 bool Managed::RegisterCommand(const char* cmd, const char* description, int flags, int id)
 {
-	std::map<const char*, int, char_cmp>::iterator it_id = g_Managed.m_commandsIndex->find(cmd);
-	if (it_id != g_Managed.m_commandsIndex->end())
+	std::map<const char*, int, char_cmp>::iterator it_id = g_Managed.m_commandsIndex.find(cmd);
+	if (it_id != g_Managed.m_commandsIndex.end())
 		return -1;
 
 	ManagedCommand* mCmd = new ManagedCommand(id, cmd, description, flags);
 
-	g_Managed.m_commandsIndex->insert(std::pair<const char*, int>(cmd, id));
-	g_Managed.m_commandsClass->insert(std::pair<int, ManagedCommand*>(id, mCmd));
+	g_Managed.m_commandsIndex.insert(std::pair<const char*, int>(cmd, id));
+	g_Managed.m_commandsClass.insert(std::pair<int, ManagedCommand*>(id, mCmd));
 
 	g_SMAPI->RegisterConCommandBase(g_PLAPI, mCmd->GetNativeCommand());
 
@@ -85,24 +78,24 @@ bool Managed::RegisterCommand(const char* cmd, const char* description, int flag
 
 void Managed::UnregisterCommand(int id)
 {
-	std::map<const char*, int, char_cmp>::iterator it_id = g_Managed.m_commandsIndex->begin();
-	while (it_id != g_Managed.m_commandsIndex->end())
+	std::map<const char*, int, char_cmp>::iterator it_id = g_Managed.m_commandsIndex.begin();
+	while (it_id != g_Managed.m_commandsIndex.end())
 	{
 		if (it_id->second == id)
 		{
-			g_Managed.m_commandsIndex->erase(it_id);
+			g_Managed.m_commandsIndex.erase(it_id);
 			break;
 		}
 	}
 
-	std::map<int, ManagedCommand*>::iterator it_cmd = g_Managed.m_commandsClass->find(id);
-	if (it_cmd != g_Managed.m_commandsClass->end())
+	std::map<int, ManagedCommand*>::iterator it_cmd = g_Managed.m_commandsClass.find(id);
+	if (it_cmd != g_Managed.m_commandsClass.end())
 	{
 		ManagedCommand* mCmd = it_cmd->second;
 		g_SMAPI->UnregisterConCommandBase(g_PLAPI, mCmd->GetNativeCommand());
 		delete mCmd;
 
-		g_Managed.m_commandsClass->erase(it_cmd);
+		g_Managed.m_commandsClass.erase(it_cmd);
 	}
 
 	//ManagedCommand* mCmd = new ManagedCommand(id, cmd, description, flags);
@@ -121,14 +114,14 @@ void Managed::RaiseCommand(int argc, const char** argv){
 	const char* cmdChar = argv[0];
 
 	//Get command id from text
-	std::map<const char*, int, char_cmp>::iterator it_id = this->m_commandsIndex->find(cmdChar);
-	if (it_id == this->m_commandsIndex->end())
+	std::map<const char*, int, char_cmp>::iterator it_id = this->m_commandsIndex.find(cmdChar);
+	if (it_id == this->m_commandsIndex.end())
 		return;
 	int id = it_id->second;
 
 	//Get command object from id
-	std::map<int, ManagedCommand*>::iterator it_cmd = this->m_commandsClass->find(id);
-	if (it_cmd == this->m_commandsClass->end())
+	std::map<int, ManagedCommand*>::iterator it_cmd = this->m_commandsClass.find(id);
+	if (it_cmd == this->m_commandsClass.end())
 		return;
 	ManagedCommand* result = it_cmd->second;
 

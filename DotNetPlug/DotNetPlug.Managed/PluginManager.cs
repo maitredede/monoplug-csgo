@@ -78,7 +78,7 @@ namespace DotNetPlug
             this.m_syncCtx.Tick();
         }
 
-        void IPluginManager.AllPluginsLoaded()
+        void IPluginManager.Load()
         {
             this.m_engine.Log("Hello from DotNetPlug PluginManager");
 
@@ -126,7 +126,7 @@ namespace DotNetPlug
         }
 
 
-        async void IPluginManager.LoadAssembly(string[] param)
+        internal async void LoadAssembly(string[] param)
         {
             //invalid call : no args
             if (param == null)

@@ -41,11 +41,16 @@ namespace DotNetPlug
         /// <returns></returns>
         Task UnregisterCommand(int id);
 
-        ///// <summary>
-        ///// Gets the players.
-        ///// </summary>
-        ///// <returns></returns>
-        //Task<IPlayer[]> GetPlayers();
+        /// <summary>
+        /// Gets the players.
+        /// </summary>
+        /// <returns></returns>
+        Task<IPlayer[]> GetPlayers();
+
+        /// <summary>
+        /// Gets the server information.
+        /// </summary>
+        /// <returns></returns>
         Task<IServerInfo> GetServerInfo();
     }
 }

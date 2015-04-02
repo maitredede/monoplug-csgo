@@ -68,5 +68,16 @@ namespace DotNetPlug
         public abstract Task<string> ExecuteCommand(string command);
         public abstract Task Log(string log);
         public abstract Task<int> RegisterCommand(string command, string description, FCVar flags, CommandExecuteDelegate callback);
+
+        public virtual Task<IServerInfo> GetServerInfo()
+        {
+            Console.WriteLine("GetServerInfo not implemented");
+            return Task.FromResult<IServerInfo>(null);
+        }
+        public virtual Task<IPlayer[]> GetPlayers()
+        {
+            Console.WriteLine("GetPlayers not implemented");
+            return Task.FromResult<IPlayer[]>(null);
+        }
     }
 }

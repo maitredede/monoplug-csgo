@@ -1,11 +1,23 @@
 #include <stdio.h>
 #include "Plugin.h"
+#include <iplayerinfo.h>
+#include "UserTracker.h"
 
+SH_DECL_HOOK6(IServerGameDLL, LevelInit, SH_NOATTRIB, 0, bool, char const *, char const *, char const *, char const *, bool, bool);
 SH_DECL_HOOK3_void(IServerGameDLL, ServerActivate, SH_NOATTRIB, 0, edict_t *, int, int);
 SH_DECL_HOOK1_void(IServerGameDLL, GameFrame, SH_NOATTRIB, 0, bool);
+SH_DECL_HOOK0_void(IServerGameDLL, LevelShutdown, SH_NOATTRIB, 0);
 
-DotNetPlugPlugin g_DotNetPlugPlugin;
+SH_DECL_HOOK2_void(IServerGameClients, ClientActive, SH_NOATTRIB, 0, edict_t *, bool);
+SH_DECL_HOOK1_void(IServerGameClients, ClientDisconnect, SH_NOATTRIB, 0, edict_t *);
+SH_DECL_HOOK2_void(IServerGameClients, ClientPutInServer, SH_NOATTRIB, 0, edict_t *, char const *);
+SH_DECL_HOOK1_void(IServerGameClients, SetCommandClient, SH_NOATTRIB, 0, int);
+SH_DECL_HOOK1_void(IServerGameClients, ClientSettingsChanged, SH_NOATTRIB, 0, edict_t *);
+SH_DECL_HOOK5(IServerGameClients, ClientConnect, SH_NOATTRIB, 0, bool, edict_t *, const char*, const char *, char *, int);
+SH_DECL_HOOK2_void(IServerGameClients, ClientCommand, SH_NOATTRIB, 0, edict_t *, const CCommand &);
+
 IServerGameDLL *server = NULL;
+IServerGameDLL	*serverdll = NULL;
 IServerGameClients *gameclients = NULL;
 IVEngineServer *engine = NULL;
 IServerPluginHelpers *helpers = NULL;
@@ -14,6 +26,10 @@ IServerPluginCallbacks *vsp_callbacks = NULL;
 IPlayerInfoManager *playerinfomanager = NULL;
 ICvar *icvar = NULL;
 CGlobalVars *gpGlobals = NULL;
+
+DotNetPlugPlugin g_DotNetPlugPlugin;
+Managed g_Managed;
+UserTracker gUserTracker;
 
 PLUGIN_EXPOSE(DotNetPlugPlugin, g_DotNetPlugPlugin);
 bool DotNetPlugPlugin::Load(PluginId id, ISmmAPI *ismm, char *error, size_t maxlen, bool late)
@@ -29,6 +45,7 @@ bool DotNetPlugPlugin::Load(PluginId id, ISmmAPI *ismm, char *error, size_t maxl
 	GET_V_IFACE_ANY(GetServerFactory, gameclients, IServerGameClients, INTERFACEVERSION_SERVERGAMECLIENTS);
 	GET_V_IFACE_ANY(GetServerFactory, playerinfomanager, IPlayerInfoManager, INTERFACEVERSION_PLAYERINFOMANAGER);
 
+	//Gather init data
 	char mm_path[MAX_PATH];
 	ZeroMemory(&mm_path, MAX_PATH);
 	const char* sBaseDir = g_SMAPI->GetBaseDir();
@@ -44,8 +61,6 @@ bool DotNetPlugPlugin::Load(PluginId id, ISmmAPI *ismm, char *error, size_t maxl
 
 	V_ComposeFileName(sBaseDir, mm_basedir, mm_path, MAX_PATH);
 
-	META_LOG(g_PLAPI, "GetBaseDir() %s\n", mm_path);
-
 	//Init DotNet
 	if (!g_Managed.Init(mm_path)){
 		//strcpy_s(error, maxlen, "Error with DotNet init");
@@ -53,50 +68,48 @@ bool DotNetPlugPlugin::Load(PluginId id, ISmmAPI *ismm, char *error, size_t maxl
 		return false;
 	}
 
-
+	SH_ADD_HOOK_MEMFUNC(IServerGameDLL, LevelInit, server, this, &DotNetPlugPlugin::Hook_LevelInit, false);
 	SH_ADD_HOOK_MEMFUNC(IServerGameDLL, ServerActivate, server, this, &DotNetPlugPlugin::Hook_ServerActivate, true);
 	SH_ADD_HOOK_MEMFUNC(IServerGameDLL, GameFrame, server, this, &DotNetPlugPlugin::Hook_GameFrame, true);
+	SH_ADD_HOOK_MEMFUNC(IServerGameDLL, LevelShutdown, serverdll, this, &DotNetPlugPlugin::Hook_LevelShutdown, false);
+
+	SH_ADD_HOOK_MEMFUNC(IServerGameClients, ClientActive, gameclients, this, &DotNetPlugPlugin::Hook_ClientActive, false);
+	SH_ADD_HOOK_MEMFUNC(IServerGameClients, ClientDisconnect, gameclients, this, &DotNetPlugPlugin::Hook_ClientDisconnect, false);
+	SH_ADD_HOOK_MEMFUNC(IServerGameClients, ClientPutInServer, gameclients, this, &DotNetPlugPlugin::Hook_ClientPutInServer, true);
+	SH_ADD_HOOK_MEMFUNC(IServerGameClients, SetCommandClient, gameclients, this, &DotNetPlugPlugin::Hook_SetCommandClient, true);
+	SH_ADD_HOOK_MEMFUNC(IServerGameClients, ClientSettingsChanged, gameclients, this, &DotNetPlugPlugin::Hook_ClientSettingsChanged, true);
+	SH_ADD_HOOK_MEMFUNC(IServerGameClients, ClientConnect, gameclients, this, &DotNetPlugPlugin::Hook_ClientConnect, false);
+	SH_ADD_HOOK_MEMFUNC(IServerGameClients, ClientCommand, gameclients, this, &DotNetPlugPlugin::Hook_ClientCommand, false);
 
 
-	//SH_MEMBER
-	//this->pLoadAsm = new ConCommand("load_assembly", &(this->LoadAssemblyCallback), "Load assembly plugin", FCVAR_NONE);
-	this->pLoadAsm = new ConCommand("load_assembly", (FnCommandCallback_t)(&DotNetPlugPlugin::LoadAssemblyCallback), "Load assembly plugin", FCVAR_NONE);
+	//Load Native interop
+	g_Managed.Load();
 
-	//META_REGCMD()
-	g_SMAPI->RegisterConCommandBase(g_PLAPI, this->pLoadAsm);
+	this->tv_name = g_pCVar->FindVar("tv_name");
+	gUserTracker.Load();
 
 	return true;
 }
 
 bool DotNetPlugPlugin::Unload(char *error, size_t maxlen)
 {
-	//META_UNREGCMD()
-	g_SMAPI->UnregisterConCommandBase(g_PLAPI, this->pLoadAsm);
-	delete this->pLoadAsm;
-
-	SH_REMOVE_HOOK_MEMFUNC(IServerGameDLL, GameFrame, server, this, &DotNetPlugPlugin::Hook_GameFrame, true);
-	SH_REMOVE_HOOK_MEMFUNC(IServerGameDLL, ServerActivate, server, this, &DotNetPlugPlugin::Hook_ServerActivate, true);
-
+	gUserTracker.Unload();
 	g_Managed.Unload();
 
+	SH_REMOVE_HOOK_MEMFUNC(IServerGameDLL, LevelInit, server, this, &DotNetPlugPlugin::Hook_LevelInit, false);
+	SH_REMOVE_HOOK_MEMFUNC(IServerGameDLL, ServerActivate, server, this, &DotNetPlugPlugin::Hook_ServerActivate, true);
+	SH_REMOVE_HOOK_MEMFUNC(IServerGameDLL, GameFrame, server, this, &DotNetPlugPlugin::Hook_GameFrame, true);
+	SH_REMOVE_HOOK_MEMFUNC(IServerGameDLL, LevelShutdown, serverdll, this, &DotNetPlugPlugin::Hook_LevelShutdown, false);
+
+	SH_REMOVE_HOOK_MEMFUNC(IServerGameClients, ClientActive, gameclients, this, &DotNetPlugPlugin::Hook_ClientActive, false);
+	SH_REMOVE_HOOK_MEMFUNC(IServerGameClients, ClientDisconnect, gameclients, this, &DotNetPlugPlugin::Hook_ClientDisconnect, false);
+	SH_REMOVE_HOOK_MEMFUNC(IServerGameClients, ClientPutInServer, gameclients, this, &DotNetPlugPlugin::Hook_ClientPutInServer, true);
+	SH_REMOVE_HOOK_MEMFUNC(IServerGameClients, SetCommandClient, gameclients, this, &DotNetPlugPlugin::Hook_SetCommandClient, true);
+	SH_REMOVE_HOOK_MEMFUNC(IServerGameClients, ClientSettingsChanged, gameclients, this, &DotNetPlugPlugin::Hook_ClientSettingsChanged, true);
+	SH_REMOVE_HOOK_MEMFUNC(IServerGameClients, ClientConnect, gameclients, this, &DotNetPlugPlugin::Hook_ClientConnect, false);
+	SH_REMOVE_HOOK_MEMFUNC(IServerGameClients, ClientCommand, gameclients, this, &DotNetPlugPlugin::Hook_ClientCommand, false);
+
 	return true;
-}
-
-void DotNetPlugPlugin::Hook_ServerActivate(edict_t *pEdictList, int edictCount, int clientMax)
-{
-	META_LOG(g_PLAPI, "ServerActivate() called: edictCount = %d, clientMax = %d", edictCount, clientMax);
-}
-
-void DotNetPlugPlugin::Hook_GameFrame(bool simulating)
-{
-	/**
-	* simulating:
-	* ***********
-	* true  | game is ticking
-	* false | game is not ticking
-	*/
-	if (simulating)
-		g_Managed.Tick();
 }
 
 void DotNetPlugPlugin::AllPluginsLoaded()
@@ -104,7 +117,6 @@ void DotNetPlugPlugin::AllPluginsLoaded()
 	/* This is where we'd do stuff that relies on the mod or other plugins
 	* being initialized (for example, cvars added and events registered).
 	*/
-	g_Managed.AllPluginsLoaded();
 }
 
 bool DotNetPlugPlugin::Pause(char *error, size_t maxlen)
@@ -163,8 +175,4 @@ const char *DotNetPlugPlugin::GetName()
 const char *DotNetPlugPlugin::GetURL()
 {
 	return "http://www.sourcemm.net/";
-}
-
-void DotNetPlugPlugin::LoadAssemblyCallback(const CCommand &command){
-	g_Managed.LoadAssembly(command.ArgC(), command.ArgV());
 }

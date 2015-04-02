@@ -39,10 +39,8 @@ public:
 	void Cleanup();
 
 	void Tick();
-	void AllPluginsLoaded();
+	void Load();
 	void Unload();
-
-	void LoadAssembly(int argc, const char** argv);
 
 	void RaiseCommand(int argc, const char** argv);
 	void RaiseCommandPlateform(ManagedCommand* cmd, int argc, const char** argv);
@@ -51,14 +49,12 @@ public:
 	static void ExecuteCommand(const char* cmd, void** output, int* length);
 	static bool RegisterCommand(const char* cmd, const char* description, int flags, int id);
 	static void UnregisterCommand(int id);
-	//static void GetServerInfo();
-	//static void GetPlayers();
 private:
 	bool s_inited;
 	bool InitPlateform(const char* sAssemblyFile);
 
-	std::map<const char*, int, char_cmp>* m_commandsIndex;
-	std::map<int, ManagedCommand*>* m_commandsClass;
+	std::map<const char*, int, char_cmp> m_commandsIndex;
+	std::map<int, ManagedCommand*> m_commandsClass;
 
 #ifdef MANAGED_WIN32
 private:
@@ -71,7 +67,7 @@ private:
 
 	variant_t vtPluginManager;
 	_MethodInfo* spPluginManagerTick;
-	_MethodInfo* spPluginManagerAllPluginsLoaded;
+	_MethodInfo* spPluginManagerLoad;
 	_MethodInfo* spPluginManagerUnload;
 	_MethodInfo* spPluginManagerLoadAssembly;
 	_MethodInfo* spPluginManagerRaiseCommand;
@@ -98,8 +94,8 @@ private: //Private members
 
 	MonoMethod* pMapCallbacksToMono;
 
-	MonoMethod* pPluginManagerAllPluginsLoadedMethod;
-	MonoMethod* pPluginManagerAllPluginsLoadedMethodImplementation;
+	MonoMethod* pPluginManagerLoadMethod;
+	MonoMethod* pPluginManagerLoadMethodImplementation;
 
 	MonoMethod* pPluginManagerTickMethod;
 	MonoMethod* pPluginManagerTickMethodImplementation;

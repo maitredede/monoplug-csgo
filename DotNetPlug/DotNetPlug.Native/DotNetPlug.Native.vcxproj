@@ -1061,13 +1061,16 @@
     </PreBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="AdminInterface.h" />
     <ClInclude Include="engine_wrappers.h" />
     <ClInclude Include="Helpers.h" />
     <ClInclude Include="LoggingListener.h" />
     <ClInclude Include="Managed.h" />
     <ClInclude Include="ManagedCommand.h" />
+    <ClInclude Include="Player.h" />
     <ClInclude Include="Plugin.h" />
     <ClInclude Include="Types.h" />
+    <ClInclude Include="UserTracker.h" />
     <ClInclude Include="VirtualConsole.h" />
   </ItemGroup>
   <ItemGroup>
@@ -1077,6 +1080,8 @@
     <ClCompile Include="Managed_mono.cpp" />
     <ClCompile Include="Managed_win32.cpp" />
     <ClCompile Include="Plugin.cpp" />
+    <ClCompile Include="PluginHook.cpp" />
+    <ClCompile Include="UserTracker.cpp" />
     <ClCompile Include="VirtualConsole.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

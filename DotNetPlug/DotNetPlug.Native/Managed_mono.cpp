@@ -106,8 +106,8 @@ bool Managed::InitPlateform(const char* sAssemblyFile)
 
 	////////////////////////////
 	// PluginManager Methods
-	GETMETHOD(this->pPluginManagerAllPluginsLoadedMethod, this->pIPluginManagerClass, "AllPluginsLoaded", 0);
-	GETMETHODIMPL(this->pPluginManagerAllPluginsLoadedMethodImplementation, this->pPluginManagerInstanceObject, this->pPluginManagerAllPluginsLoadedMethod, "AllPluginsLoaded");
+	GETMETHOD(this->pPluginManagerLoadMethod, this->pIPluginManagerClass, "Load", 0);
+	GETMETHODIMPL(this->pPluginManagerLoadMethodImplementation, this->pPluginManagerInstanceObject, this->pPluginManagerLoadMethod, "Load");
 	GETMETHOD(this->pPluginManagerTickMethod, this->pIPluginManagerClass, "Tick", 0);
 	GETMETHODIMPL(this->pPluginManagerTickMethodImplementation, this->pPluginManagerInstanceObject, this->pPluginManagerTickMethod, "Tick");
 	GETMETHOD(this->pPluginManagerUnloadMethod, this->pIPluginManagerClass, "Unload", 0);
@@ -161,10 +161,10 @@ void Managed::Tick()
 	}
 }
 
-void Managed::AllPluginsLoaded()
+void Managed::Load()
 {
 	MonoObject* exception = NULL;
-	mono_runtime_invoke(this->pPluginManagerAllPluginsLoadedMethodImplementation, this->pPluginManagerInstanceObject, NULL, &exception);
+	mono_runtime_invoke(this->pPluginManagerLoadMethodImplementation, this->pPluginManagerInstanceObject, NULL, &exception);
 	if (exception){
 		mono_print_unhandled_exception(exception);
 	}
@@ -199,22 +199,6 @@ void Managed::ExecuteCommandMono(MonoString* pCommand, MonoString* pOutput, int*
 	*pLength = mono_string_length(pOutput);
 
 	//icvar->InstallConsoleDisplayFunc
-}
-
-void Managed::LoadAssembly(int argc, const char** argv)
-{
-	MonoArray* pArgs = mono_array_new(this->pDomain, this->pStringClass, argc);
-	for (int i = 0; i < argc; i++){
-		MonoString* str = mono_string_new(this->pDomain, argv[i]);
-		mono_array_set(pArgs, MonoString*, i, str);
-	}
-	MonoObject* exception = NULL;
-	void *args[1];
-	args[0] = pArgs;
-	mono_runtime_invoke(this->pPluginManagerLoadAssemblyMethodImplementation, this->pPluginManagerInstanceObject, args, &exception);
-	if (exception){
-		mono_print_unhandled_exception(exception);
-	}
 }
 
 void Managed::RegisterCommandMono(MonoString* pCommand, MonoString* pDescription, int flags, int id)

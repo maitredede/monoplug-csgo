@@ -257,7 +257,7 @@ bool Managed::InitPlateform(const char* sAssemblyFile)
 	////////////////////////////
 	// PluginManager Methods
 	GETMETHOD(hr, spIPluginManagerType, L"Tick", &spPluginManagerTick);
-	GETMETHOD(hr, spIPluginManagerType, L"AllPluginsLoaded", &spPluginManagerAllPluginsLoaded);
+	GETMETHOD(hr, spIPluginManagerType, L"Load", &spPluginManagerLoad);
 	GETMETHOD(hr, spIPluginManagerType, L"Unload", &spPluginManagerUnload);
 	GETMETHOD(hr, spIPluginManagerType, L"LoadAssembly", &spPluginManagerLoadAssembly);
 	GETMETHOD(hr, spIPluginManagerType, L"RaiseCommand", &spPluginManagerRaiseCommand);
@@ -310,62 +310,10 @@ void Managed::Tick()
 	this->spPluginManagerTick->Invoke_3(this->vtPluginManager, NULL, &vtOutput);
 }
 
-void Managed::AllPluginsLoaded()
+void Managed::Load()
 {
 	variant_t vtOutput = NULL;
-	this->spPluginManagerAllPluginsLoaded->Invoke_3(this->vtPluginManager, NULL, &vtOutput);
-}
-
-void Managed::LoadAssembly(int argc, const char** argv)
-{
-	HRESULT hr;
-	//long i = 0;
-	//SAFEARRAY *args = SafeArrayCreateVector(VT_VARIANT, 0, 1); // create an array of the length of 1 ( Main(string[]) )
-
-	//VARIANT vtPsa;
-	//vtPsa.vt = (VT_ARRAY | VT_BSTR);
-	//vtPsa.parray = SafeArrayCreateVector(VT_BSTR, 0, argc); // create an array of strings
-
-	//for (i = 0; i < argc; i++)
-	//{
-	//	VARIANT item;
-	//	VariantInit(&item);
-	//	item.vt = VT_BSTR;
-	//	item.bstrVal = _com_util::ConvertStringToBSTR(argv[i]);
-	//	hr = SafeArrayPutElement(vtPsa.parray, &i, item.bstrVal); // insert the string from argv[i] into the safearray
-	//	if (FAILED(hr))
-	//	{
-	//		META_CONPRINTF("Failed to add element to string array w/hr 0x%08lx\n", hr);
-	//	}
-	//	SysFreeString(item.bstrVal);
-	//}
-	//i = 0;
-	//hr = SafeArrayPutElement(args, &i, &vtPsa);
-	SAFEARRAY *args = NULL;
-	hr = CREATE_STRING_ARRAY_ARGS(argc, argv, 0, &args);
-	if (FAILED(hr))
-	{
-		META_CONPRINTF("Failed to create string array w/hr 0x%08lx\n", hr);
-		hr = SafeArrayDestroy(args);
-		if (FAILED(hr))
-		{
-			META_CONPRINTF("Failed to destroy array w/hr 0x%08lx\n", hr);
-		}
-		return;
-	}
-
-	variant_t vtOutput = NULL;
-	hr = this->spPluginManagerLoadAssembly->Invoke_3(this->vtPluginManager, args, &vtOutput);
-	if (FAILED(hr))
-	{
-		META_CONPRINTF("Failed to call PluginManager.LoadAssembly w/hr 0x%08lx\n", hr);
-	}
-
-	hr = SafeArrayDestroy(args);
-	if (FAILED(hr))
-	{
-		META_CONPRINTF("Failed to destroy array w/hr 0x%08lx\n", hr);
-	}
+	this->spPluginManagerLoad->Invoke_3(this->vtPluginManager, NULL, &vtOutput);
 }
 
 void Managed::RaiseCommandPlateform(ManagedCommand* pCmd, int argc, const char** argv)

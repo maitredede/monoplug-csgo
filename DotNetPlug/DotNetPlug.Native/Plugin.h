@@ -13,6 +13,7 @@
 #endif
 
 #include "Helpers.h"
+#include "AdminInterface.h"
 
 class DotNetPlugPlugin : public ISmmPlugin
 {
@@ -31,17 +32,25 @@ public:
 	const char *GetVersion();
 	const char *GetDate();
 	const char *GetLogTag();
+public:
+	int max_players;
+	ConVar* tv_name;
+	ConVar* hostname;
 
 public: //Hooks
-	void Hook_GameFrame(bool simulating);
+	bool Hook_LevelInit(const char *pMapName, const char *pMapEntities, const char *pOldLevel, const char *pLandmarkName, bool loadGame, bool background);
 	void Hook_ServerActivate(edict_t *pEdictList, int edictCount, int clientMax);
+	void Hook_GameFrame(bool simulating);
+	void Hook_LevelShutdown();
 
-private:
-	ConCommand* pLoadAsm;
-	static void LoadAssemblyCallback(const CCommand &command);
+	void Hook_ClientActive(edict_t *pEntity, bool bLoadGame);
+	void Hook_ClientDisconnect(edict_t *pEntity);
+	void Hook_ClientPutInServer(edict_t *pEntity, char const *playername);
+	void Hook_SetCommandClient(int index);
+	void Hook_ClientSettingsChanged(edict_t *pEdict);
+	bool Hook_ClientConnect(edict_t *pEntity, const char *pszName, const char *pszAddress, char *reject, int maxrejectlen);
+	void Hook_ClientCommand(edict_t *pEntity, const CCommand &args);
 };
-
-
 
 extern DotNetPlugPlugin g_DotNetPlugPlugin;
 extern ICvar *icvar;
@@ -53,9 +62,6 @@ extern IGameEventManager2 *gameevents;
 extern IServerPluginCallbacks *vsp_callbacks;
 extern IPlayerInfoManager *playerinfomanager;
 extern CGlobalVars *gpGlobals;
-extern AdminInterface* adminManager;
-
-
 
 PLUGIN_GLOBALVARS();
 

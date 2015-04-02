@@ -41,6 +41,8 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="CommandExecuteDelegate.cs" />
+    <Compile Include="CommandExtensions.cs" />
+    <Compile Include="CorePlugin.cs" />
     <Compile Include="EngineWrapperBase.cs" />
     <Compile Include="Engine_Mono.cs" />
     <Compile Include="ExecuteCommandDelegate.cs" />

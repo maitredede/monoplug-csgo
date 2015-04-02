@@ -12,11 +12,10 @@ namespace DotNetPlug
     /// </summary>
     internal interface IPluginManager
     {
+        void Load();
         void Tick();
-        void AllPluginsLoaded();
         void Unload();
 
-        void LoadAssembly(string[] param);
         void RaiseCommand(int id, int argc, string[] argv);
     }
 }
