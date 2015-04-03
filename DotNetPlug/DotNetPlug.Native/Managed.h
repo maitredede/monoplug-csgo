@@ -87,6 +87,14 @@ private:
 	_MethodInfo* spPluginManagerLevelInit;
 	_MethodInfo* spPluginManagerServerActivate;
 
+	_MethodInfo* spPluginManagerLevelShutdown;
+	_MethodInfo* spPluginManagerClientActive;
+	_MethodInfo* spPluginManagerClientDisconnect;
+	_MethodInfo* spPluginManagerClientPutInServer;
+	_MethodInfo* spPluginManagerClientSettingsChanged;
+	_MethodInfo* spPluginManagerClientConnect;
+	_MethodInfo* spPluginManagerClientCommand;
+
 	LPWSTR pszVersion;
 	LPWSTR pszAssemblyName;
 	LPWSTR pszClassName;

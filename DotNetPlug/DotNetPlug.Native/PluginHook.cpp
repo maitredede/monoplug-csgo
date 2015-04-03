@@ -21,8 +21,6 @@ void DotNetPlugPlugin::Hook_ServerActivate(edict_t *pEdictList, int edictCount, 
 	this->max_players = clientMax;
 
 	g_Managed.RaiseServerActivate(clientMax);
-
-	engine->ServerCommand("exec dotnetplug_server.cfg\n");
 }
 
 void DotNetPlugPlugin::Hook_GameFrame(bool simulating)

@@ -67,42 +67,6 @@ namespace DotNetPlug
             return Task.FromResult<IPlayer[]>(null);
         }
 
-        private enum Events
-        {
-            LevelInit,
-            ServerActivate,
-        }
-        private readonly System.ComponentModel.EventHandlerList m_events = new System.ComponentModel.EventHandlerList();
-
-        public event EventHandler<LevelInitEventArgs> LevelInit
-        {
-            add { this.m_events.AddHandler(Events.LevelInit, value); }
-            remove { this.m_events.RemoveHandler(Events.LevelInit, value); }
-        }
-
-        public event EventHandler<ServerActivateEventArgs> ServerActivate
-        {
-            add { this.m_events.AddHandler(Events.ServerActivate, value); }
-            remove { this.m_events.RemoveHandler(Events.ServerActivate, value); }
-        }
-
-        private void RaiseEvent<T>(Events evt, T args) where T : EventArgs
-        {
-            EventHandler<T> d = (EventHandler<T>)this.m_events[evt];
-            if (d != null)
-                d.Invoke(this, args);
-        }
-
-        internal void RaiseLevelInit(LevelInitEventArgs e)
-        {
-            this.RaiseEvent(Events.LevelInit, e);
-        }
-
-        internal void RaiseServerActivate(ServerActivateEventArgs e)
-        {
-            this.RaiseEvent(Events.ServerActivate, e);
-        }
-
         internal int RegisterCommandInternal(string command, string description, FCVar flags, CommandExecuteDelegate callback)
         {
             ManagedCommand cmd = this.CreateCommand(command, description, flags, callback);
@@ -162,6 +126,129 @@ namespace DotNetPlug
         {
             this.UnregisterCommandDic(id);
             this.UnregisterCommandImpl(id);
+        }
+
+        #region Events
+        private readonly System.ComponentModel.EventHandlerList m_events = new System.ComponentModel.EventHandlerList();
+        private enum Events
+        {
+            LevelInit,
+            ServerActivate,
+            LevelShutdown,
+            ClientActive,
+            ClientDisconnect,
+            ClientPutInServer,
+            ClientSettingsChanged,
+            ClientConnect,
+            ClientCommand,
+        }
+
+        private void RaiseEvent<T>(Events evt, T args) where T : EventArgs
+        {
+            EventHandler<T> d = (EventHandler<T>)this.m_events[evt];
+            if (d != null)
+                d.Invoke(this, args);
+        }
+
+        public event EventHandler<LevelInitEventArgs> LevelInit
+        {
+            add { this.m_events.AddHandler(Events.LevelInit, value); }
+            remove { this.m_events.RemoveHandler(Events.LevelInit, value); }
+        }
+
+        internal void RaiseLevelInit(LevelInitEventArgs e)
+        {
+            this.RaiseEvent(Events.LevelInit, e);
+        }
+
+        public event EventHandler<ServerActivateEventArgs> ServerActivate
+        {
+            add { this.m_events.AddHandler(Events.ServerActivate, value); }
+            remove { this.m_events.RemoveHandler(Events.ServerActivate, value); }
+        }
+
+        internal void RaiseServerActivate(ServerActivateEventArgs e)
+        {
+            this.RaiseEvent(Events.ServerActivate, e);
+        }
+        #endregion
+
+
+        public event EventHandler LevelShutdown
+        {
+            add { this.m_events.AddHandler(Events.LevelShutdown, value); }
+            remove { this.m_events.RemoveHandler(Events.LevelShutdown, value); }
+        }
+
+        internal void RaiseLevelShutdown(EventArgs e)
+        {
+            this.RaiseEvent(Events.LevelShutdown, e);
+        }
+
+        public event EventHandler ClientActive
+        {
+            add { this.m_events.AddHandler(Events.ClientActive, value); }
+            remove { this.m_events.RemoveHandler(Events.ClientActive, value); }
+        }
+
+        internal void RaiseClientActive(EventArgs e)
+        {
+            this.RaiseEvent(Events.ClientActive, e);
+        }
+
+        public event EventHandler ClientDisconnect
+        {
+            add { this.m_events.AddHandler(Events.ClientDisconnect, value); }
+            remove { this.m_events.RemoveHandler(Events.ClientDisconnect, value); }
+        }
+
+        internal void RaiseClientDisconnect(EventArgs e)
+        {
+            this.RaiseEvent(Events.ClientDisconnect, e);
+        }
+
+        public event EventHandler ClientPutInServer
+        {
+            add { this.m_events.AddHandler(Events.ClientPutInServer, value); }
+            remove { this.m_events.RemoveHandler(Events.ClientPutInServer, value); }
+        }
+
+        internal void RaiseClientPutInServer(EventArgs e)
+        {
+            this.RaiseEvent(Events.ClientPutInServer, e);
+        }
+
+        public event EventHandler ClientSettingsChanged
+        {
+            add { this.m_events.AddHandler(Events.ClientSettingsChanged, value); }
+            remove { this.m_events.RemoveHandler(Events.ClientSettingsChanged, value); }
+        }
+
+        internal void RaiseClientSettingsChanged(EventArgs e)
+        {
+            this.RaiseEvent(Events.ClientSettingsChanged, e);
+        }
+
+        public event EventHandler ClientConnect
+        {
+            add { this.m_events.AddHandler(Events.ClientConnect, value); }
+            remove { this.m_events.RemoveHandler(Events.ClientConnect, value); }
+        }
+
+        internal void RaiseClientConnect(EventArgs e)
+        {
+            this.RaiseEvent(Events.ClientConnect, e);
+        }
+
+        public event EventHandler ClientCommand
+        {
+            add { this.m_events.AddHandler(Events.ClientCommand, value); }
+            remove { this.m_events.RemoveHandler(Events.ClientCommand, value); }
+        }
+
+        internal void RaiseClientCommand(EventArgs e)
+        {
+            this.RaiseEvent(Events.ClientCommand, e);
         }
     }
 }

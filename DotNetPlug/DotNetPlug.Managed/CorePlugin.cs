@@ -9,6 +9,7 @@ namespace DotNetPlug
     public sealed class CorePlugin : PluginBase
     {
         private int m_loadAssembly;
+        private int m_loadType;
         private readonly PluginManager m_manager;
 
         internal CorePlugin(PluginManager manager)
@@ -24,6 +25,7 @@ namespace DotNetPlug
         internal void LoadSync()
         {
             this.m_loadAssembly = this.m_manager.EngineWrapper.RegisterCommandInternal("load_assembly", "Load assembly plugin", FCVar.ServerCanExecute, PluginManager.Instance.LoadAssembly);
+            this.m_loadType = this.m_manager.EngineWrapper.RegisterCommandInternal("load_type", "Load type plugin", FCVar.ServerCanExecute, PluginManager.Instance.LoadType);
         }
 
         public override Task Unload()

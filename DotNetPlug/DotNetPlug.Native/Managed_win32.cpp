@@ -264,6 +264,14 @@ bool Managed::InitPlateform(const char* sAssemblyFile)
 	GETMETHOD(hr, spIPluginManagerType, L"RaiseLevelInit", &spPluginManagerLevelInit);
 	GETMETHOD(hr, spIPluginManagerType, L"RaiseServerActivate", &spPluginManagerServerActivate);
 	
+	GETMETHOD(hr, spIPluginManagerType, L"RaiseLevelShutdown", &spPluginManagerLevelShutdown);
+	GETMETHOD(hr, spIPluginManagerType, L"RaiseClientActive", &spPluginManagerClientActive);
+	GETMETHOD(hr, spIPluginManagerType, L"RaiseClientDisconnect", &spPluginManagerClientDisconnect);
+	GETMETHOD(hr, spIPluginManagerType, L"RaiseClientPutInServer", &spPluginManagerClientPutInServer);
+	GETMETHOD(hr, spIPluginManagerType, L"RaiseClientSettingsChanged", &spPluginManagerClientSettingsChanged);
+	GETMETHOD(hr, spIPluginManagerType, L"RaiseClientConnect", &spPluginManagerClientConnect);
+	GETMETHOD(hr, spIPluginManagerType, L"RaiseClientCommand", &spPluginManagerClientCommand);
+
 	////////////////////////////
 	// Callbacks from managed to native : FunctionPointers
 	GETMETHOD_F(hr, spPluginManagerType, L"InitWin32Engine", &spPluginManagerInitWin32Engine, (BindingFlags)(BindingFlags_Instance | BindingFlags_NonPublic));
@@ -396,38 +404,58 @@ void Managed::RaiseServerActivate(int clientMax)
 
 void Managed::RaiseLevelShutdown()
 {
-	META_LOG(g_PLAPI, "TODO : RaiseLevelShutdown\n");
+	HRESULT hr;
+
+	variant_t vtOutput = NULL;
+	hr = this->spPluginManagerLevelShutdown->Invoke_3(this->vtPluginManager, NULL, &vtOutput);
 }
 
 void Managed::RaiseClientActive()
 {
-	META_LOG(g_PLAPI, "TODO : RaiseClientActive\n");
+	HRESULT hr;
+
+	variant_t vtOutput = NULL;
+	hr = this->spPluginManagerClientActive->Invoke_3(this->vtPluginManager, NULL, &vtOutput);
 }
 
 void Managed::RaiseClientDisconnect()
 {
-	META_LOG(g_PLAPI, "TODO : RaiseClientDisconnect\n");
+	HRESULT hr;
+
+	variant_t vtOutput = NULL;
+	hr = this->spPluginManagerClientDisconnect->Invoke_3(this->vtPluginManager, NULL, &vtOutput);
 }
 
 void Managed::RaiseClientPutInServer()
 {
-	META_LOG(g_PLAPI, "TODO : RaiseClientPutInServer\n");
+	HRESULT hr;
+
+	variant_t vtOutput = NULL;
+	hr = this->spPluginManagerClientPutInServer->Invoke_3(this->vtPluginManager, NULL, &vtOutput);
 }
 
 void Managed::RaiseClientSettingsChanged()
 {
-	META_LOG(g_PLAPI, "TODO : RaiseClientSettingsChanged\n");
+	HRESULT hr;
+
+	variant_t vtOutput = NULL;
+	hr = this->spPluginManagerClientSettingsChanged->Invoke_3(this->vtPluginManager, NULL, &vtOutput);
 }
 
 void Managed::RaiseClientConnect()
 {
-	META_LOG(g_PLAPI, "TODO : RaiseClientConnect\n");
+	HRESULT hr;
+
+	variant_t vtOutput = NULL;
+	hr = this->spPluginManagerClientConnect->Invoke_3(this->vtPluginManager, NULL, &vtOutput);
 }
 
 void Managed::RaiseClientCommand()
 {
-	META_LOG(g_PLAPI, "TODO : RaiseClientCommand\n");
-}
+	HRESULT hr;
 
+	variant_t vtOutput = NULL;
+	hr = this->spPluginManagerClientCommand->Invoke_3(this->vtPluginManager, NULL, &vtOutput);
+}
 
 #endif

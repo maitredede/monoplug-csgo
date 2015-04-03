@@ -55,5 +55,12 @@ namespace DotNetPlug
 
         event EventHandler<LevelInitEventArgs> LevelInit;
         event EventHandler<ServerActivateEventArgs> ServerActivate;
+        event EventHandler LevelShutdown;
+        event EventHandler ClientActive;
+        event EventHandler ClientDisconnect;
+        event EventHandler ClientPutInServer;
+        event EventHandler ClientSettingsChanged;
+        event EventHandler ClientConnect;
+        event EventHandler ClientCommand;
     }
 }

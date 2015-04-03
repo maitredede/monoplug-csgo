@@ -173,20 +173,18 @@ namespace DotNetPlug
                 Type[] plugTypes = asm.GetTypes().Where(t => t.IsClass && !t.IsAbstract && typeof(IPlugin).IsAssignableFrom(t)).ToArray();
                 foreach (Type tPlugin in plugTypes)
                 {
-                    if (tPlugin.GetConstructor(Type.EmptyTypes) != null)
-                    {
-                        await this.m_engine.Log("Trying to create plugin {0}", tPlugin.FullName);
-                        IPlugin plugin = (IPlugin)Activator.CreateInstance(tPlugin);
-                        plugin.Init(this.m_engine);
-                        this.m_plugins.Add(plugin);
-                    }
-                }
+                    await this.CreatePluginAndLoad(tPlugin);
+                    //if (tPlugin.GetConstructor(Type.EmptyTypes) == null)
+                    //    continue;
 
-                foreach (IPlugin plugin in this.m_plugins)
-                {
-                    await this.m_engine.Log("PluginManager : Loading plugin {0}", plugin.GetType().FullName);
+                    //await this.m_engine.Log("Trying to create plugin {0}", tPlugin.FullName);
+                    //IPlugin plugin = (IPlugin)Activator.CreateInstance(tPlugin);
+                    //plugin.Init(this.m_engine);
+                    //this.m_plugins.Add(plugin);
 
-                    await plugin.Load();
+                    //await this.m_engine.Log("PluginManager : Loading plugin {0}", plugin.GetType().FullName);
+
+                    //await plugin.Load();
                 }
             }
             catch (Exception ex)
@@ -194,6 +192,58 @@ namespace DotNetPlug
                 this.m_engine.Log("PluginManager : LoadPluginsFromAssembly error : {0}", ex.Message).Wait();
             }
         }
+
+        private async Task<IPlugin> CreatePluginAndLoad(Type tPlugin)
+        {
+            if (tPlugin.GetConstructor(Type.EmptyTypes) == null)
+                return null;
+
+            await this.m_engine.Log("Trying to create plugin {0}", tPlugin.FullName);
+            IPlugin plugin = (IPlugin)Activator.CreateInstance(tPlugin);
+            plugin.Init(this.m_engine);
+            lock (this.m_plugins)
+            {
+                this.m_plugins.Add(plugin);
+            }
+
+            await this.m_engine.Log("PluginManager : Loading plugin {0}", plugin.GetType().FullName);
+
+            await plugin.Load();
+
+            return plugin;
+        }
+
+        internal async void LoadType(string[] args)
+        {
+            if (args == null || args.Length < 1)
+                return;
+            if (args.Length != 2)
+            {
+                await this.EngineWrapper.Log("Usage : {0} <type>", args[0]);
+            }
+
+            Type t;
+            try
+            {
+                t = Type.GetType(args[1]);
+            }
+            catch (Exception ex)
+            {
+                this.m_engine.Log("Can't get type {0} : {1}:{2}", args[1], ex.GetType().Name, ex.Message).Wait();
+                return;
+            }
+
+            try
+            {
+                IPlugin plugin = await this.CreatePluginAndLoad(t);
+            }
+            catch (Exception ex)
+            {
+                this.m_engine.Log("Can't create plugin {0} : {1}:{2}", args[1], ex.GetType().Name, ex.Message).Wait();
+                return;
+            }
+        }
+
 
         void IPluginManager.RaiseCommand(int id, int argc, string[] argv)
         {
@@ -226,6 +276,49 @@ namespace DotNetPlug
                 ClientMax = clientMax,
             };
             this.Raise(this.m_engine.RaiseServerActivate, e);
+        }
+
+
+        void IPluginManager.RaiseLevelShutdown()
+        {
+            EventArgs e = new EventArgs();
+            this.Raise(this.m_engine.RaiseLevelShutdown, e);
+        }
+
+        void IPluginManager.RaiseClientActive()
+        {
+            EventArgs e = new EventArgs();
+            this.Raise(this.m_engine.RaiseClientActive, e);
+        }
+
+        void IPluginManager.RaiseClientDisconnect()
+        {
+            EventArgs e = new EventArgs();
+            this.Raise(this.m_engine.RaiseClientDisconnect, e);
+        }
+
+        void IPluginManager.RaiseClientPutInServer()
+        {
+            EventArgs e = new EventArgs();
+            this.Raise(this.m_engine.RaiseClientPutInServer, e);
+        }
+
+        void IPluginManager.RaiseClientSettingsChanged()
+        {
+            EventArgs e = new EventArgs();
+            this.Raise(this.m_engine.RaiseClientSettingsChanged, e);
+        }
+
+        void IPluginManager.RaiseClientConnect()
+        {
+            EventArgs e = new EventArgs();
+            this.Raise(this.m_engine.RaiseClientConnect, e);
+        }
+
+        void IPluginManager.RaiseClientCommand()
+        {
+            EventArgs e = new EventArgs();
+            this.Raise(this.m_engine.RaiseClientCommand, e);
         }
     }
 }

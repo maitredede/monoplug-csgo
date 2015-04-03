@@ -87,7 +87,7 @@ bool DotNetPlugPlugin::Load(PluginId id, ISmmAPI *ismm, char *error, size_t maxl
 	
 	//Load Native interop
 	g_Managed.Load();
-	
+
 	return true;
 }
 
@@ -117,16 +117,19 @@ void DotNetPlugPlugin::AllPluginsLoaded()
 	/* This is where we'd do stuff that relies on the mod or other plugins
 	* being initialized (for example, cvars added and events registered).
 	*/
+	//Plugin architecture ready, execute plugin server script
+	engine->ServerCommand("exec dotnetplug_server.cfg\n");
+	engine->ServerExecute();
 }
 
 bool DotNetPlugPlugin::Pause(char *error, size_t maxlen)
 {
-	return true;
+	return false;
 }
 
 bool DotNetPlugPlugin::Unpause(char *error, size_t maxlen)
 {
-	return true;
+	return false;
 }
 
 const char *DotNetPlugPlugin::GetLicense()
