@@ -1063,6 +1063,8 @@
   <ItemGroup>
     <ClInclude Include="AdminInterface.h" />
     <ClInclude Include="engine_wrappers.h" />
+    <ClInclude Include="EventListener.h" />
+    <ClInclude Include="GameEvent.h" />
     <ClInclude Include="Helpers.h" />
     <ClInclude Include="LoggingListener.h" />
     <ClInclude Include="Managed.h" />
@@ -1074,6 +1076,7 @@
     <ClInclude Include="VirtualConsole.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="EventListener.cpp" />
     <ClCompile Include="Helpers.cpp" />
     <ClCompile Include="LoggingListener.cpp" />
     <ClCompile Include="Managed.cpp" />

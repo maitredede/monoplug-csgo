@@ -5,9 +5,13 @@
 Managed::Managed()
 {
 	this->s_inited = false;
+
+	this->EVT_player_death = new EventListener(player_death);
 }
 
-Managed::~Managed(){
+Managed::~Managed()
+{
+	delete this->EVT_player_death;
 }
 
 void Managed::Log(const char* msg)

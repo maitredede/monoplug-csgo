@@ -1,8 +1,11 @@
 #ifndef _DOTNETPLUG_PLAYER_H_
 #define _DOTNETPLUG_PLAYER_H_
+#ifdef _WIN32
+#pragma once
+#endif
 
-# include <edict.h>
-# include <iplayerinfo.h>
+#include <edict.h>
+#include <iplayerinfo.h>
 
 struct player_t
 {

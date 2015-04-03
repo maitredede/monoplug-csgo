@@ -1,5 +1,8 @@
 #ifndef _DOTNETPLUG_ADMIN_INTERFACE_H_
 #define _DOTNETPLUG_ADMIN_INTERFACE_H_
+#ifdef _WIN32
+#pragma once
+#endif
 
 #define ADMININTERFACE_VERSION 1
 #define ADMININTERFACE_MAXACCESSLENGTHTEXT 20		// This is the maximum length of a "flag" access text.

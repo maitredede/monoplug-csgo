@@ -62,5 +62,6 @@ namespace DotNetPlug
         event EventHandler ClientSettingsChanged;
         event EventHandler ClientConnect;
         event EventHandler ClientCommand;
+        event EventHandler<GameEventEventArgs> GameEvent;
     }
 }

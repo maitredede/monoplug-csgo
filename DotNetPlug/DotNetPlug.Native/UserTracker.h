@@ -1,5 +1,8 @@
 #ifndef _DOTNETPLUG_USER_TRACKER_H_
 #define _DOTNETPLUG_USER_TRACKER_H_
+#ifdef _WIN32
+#pragma once
+#endif
 
 #include <edict.h>
 #include "Player.h"

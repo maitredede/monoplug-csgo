@@ -150,9 +150,17 @@ bool Managed::InitPlateform(const char* sAssemblyFile)
 	//Load mscorlib
 	bstr_t bstrMscorlibAssemblyName(L"mscorlib");
 	_AssemblyPtr spMscorlibAssembly = NULL;
-	hr = hr = spDefaultAppDomain->Load_2(bstrMscorlibAssemblyName, &spMscorlibAssembly);
+	hr = spDefaultAppDomain->Load_2(bstrMscorlibAssemblyName, &spMscorlibAssembly);
 	if (FAILED(hr)){
 		META_CONPRINTF("Failed to load the assembly mscorlib w/hr 0x%08lx\n", hr);
+		this->Cleanup();
+		return false;
+	}
+	//Load System.Core
+	bstr_t bstrSystemCoreAssemblyName(L"System.Core");
+	hr = spDefaultAppDomain->Load_2(bstrSystemCoreAssemblyName, &(this->spAssembly_SystemCore));
+	if (FAILED(hr)){
+		META_CONPRINTF("Failed to load the assembly System.Core w/hr 0x%08lx\n", hr);
 		this->Cleanup();
 		return false;
 	}
@@ -167,9 +175,6 @@ bool Managed::InitPlateform(const char* sAssemblyFile)
 		this->Cleanup();
 		return false;
 	}
-
-	// Call the static method of the class: 
-	//   public static int GetStringLength(string str);
 
 	// Create a safe array to contain the arguments of the method. The safe 
 	// array must be created with vt = VT_VARIANT because .NET reflection 
@@ -263,7 +268,7 @@ bool Managed::InitPlateform(const char* sAssemblyFile)
 	GETMETHOD(hr, spIPluginManagerType, L"RaiseCommand", &spPluginManagerRaiseCommand);
 	GETMETHOD(hr, spIPluginManagerType, L"RaiseLevelInit", &spPluginManagerLevelInit);
 	GETMETHOD(hr, spIPluginManagerType, L"RaiseServerActivate", &spPluginManagerServerActivate);
-	
+
 	GETMETHOD(hr, spIPluginManagerType, L"RaiseLevelShutdown", &spPluginManagerLevelShutdown);
 	GETMETHOD(hr, spIPluginManagerType, L"RaiseClientActive", &spPluginManagerClientActive);
 	GETMETHOD(hr, spIPluginManagerType, L"RaiseClientDisconnect", &spPluginManagerClientDisconnect);
@@ -278,10 +283,6 @@ bool Managed::InitPlateform(const char* sAssemblyFile)
 
 	////////////////////////////
 	// Callback : assign callbacks in PluginManager
-	//SETCALLBACK(hr, &Managed::Log, spPluginManagerSetCallback_Log);
-	//SETCALLBACK(hr, &Managed::ExecuteCommand, spPluginManagerSetCallback_ExecuteCommand);
-	//SETCALLBACK(hr, &Managed::RegisterCommand, spPluginManagerSetCallback_RegisterCommand);
-
 	SAFEARRAY* params = SafeArrayCreateVector(VT_VARIANT, 0, 4);
 	hr = SET_CALLBACK(params, 0, (LONGLONG)&Managed::Log);
 	hr = SET_CALLBACK(params, 1, (LONGLONG)&Managed::ExecuteCommand);
@@ -396,7 +397,7 @@ void Managed::RaiseServerActivate(int clientMax)
 	SAFEARRAY *methodArgs = SafeArrayCreateVector(VT_VARIANT, 0, 1);
 	i = 0;
 	hr = SET_INT_PARAM(methodArgs, &i, clientMax);
-	
+
 	variant_t vtOutput = NULL;
 	hr = this->spPluginManagerServerActivate->Invoke_3(this->vtPluginManager, methodArgs, &vtOutput);
 	hr = SafeArrayDestroy(methodArgs);
@@ -456,6 +457,32 @@ void Managed::RaiseClientCommand()
 
 	variant_t vtOutput = NULL;
 	hr = this->spPluginManagerClientCommand->Invoke_3(this->vtPluginManager, NULL, &vtOutput);
+}
+
+void Managed::RaiseGameEvent(GameEvent e, IGameEvent *event)
+{
+	variant_t vtExpando;
+
+	switch (e){
+	case player_death:
+		CREATE_INSTANCE(this->spAssembly_SystemCore, "System.Dynamic.ExpandoObject", &vtExpando);
+		SET_EXPANDO_STRING_FROM_EVENT_SHORT(vtExpando, event, "userid");
+		SET_EXPANDO_STRING_FROM_EVENT_SHORT(vtExpando, event, "attacker");
+		SET_EXPANDO_STRING_FROM_EVENT_SHORT(vtExpando, event, "assister");
+		SET_EXPANDO_STRING_FROM_EVENT_STRING(vtExpando, event, "weapon");
+		SET_EXPANDO_STRING_FROM_EVENT_STRING(vtExpando, event, "weapon_itemid");
+		SET_EXPANDO_STRING_FROM_EVENT_STRING(vtExpando, event, "weapon_fauxitemid");
+		SET_EXPANDO_STRING_FROM_EVENT_STRING(vtExpando, event, "weapon_originalowner_xuid");
+		SET_EXPANDO_STRING_FROM_EVENT_BOOL(vtExpando, event, "headshot");
+		SET_EXPANDO_STRING_FROM_EVENT_SHORT(vtExpando, event, "dominated");
+		SET_EXPANDO_STRING_FROM_EVENT_SHORT(vtExpando, event, "revenge");
+		SET_EXPANDO_STRING_FROM_EVENT_SHORT(vtExpando, event, "penetrated");
+		break;
+	case None:
+	default:
+		META_LOG(g_PLAPI, "Unsupported event: %s", event->GetName());
+		break;
+	}
 }
 
 #endif

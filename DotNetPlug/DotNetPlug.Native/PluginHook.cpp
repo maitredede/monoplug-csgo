@@ -44,9 +44,10 @@ void DotNetPlugPlugin::Hook_ClientActive(edict_t *pEntity, bool bLoadGame)
 {
 	gUserTracker.ClientActive(pEntity);
 
-	//player_t player;
-	//player.entity = pEntity;
-	//if (!FindPlayerByEntity(&player)) return;
+	player_t player;
+	player.entity = pEntity;
+	if (!FindPlayerByEntity(&player))
+		return;
 
 	//const char *pname = player.name;
 	//if (pname && pname[0] == 0)
@@ -140,3 +141,8 @@ void DotNetPlugPlugin::Hook_ClientCommand(edict_t *pEntity, const CCommand &args
 	g_Managed.RaiseClientCommand();
 }
 
+PLUGIN_RESULT DotNetPlugPlugin::Hook_NetworkIDValidated(const char *pszUserName, const char *pszNetworkID)
+{
+	//META_CONPRINTF("%s has been validated with Network ID %s\n", pszUserName, pszNetworkID);
+	RETURN_META_VALUE(MRES_SUPERCEDE, PLUGIN_CONTINUE);
+}

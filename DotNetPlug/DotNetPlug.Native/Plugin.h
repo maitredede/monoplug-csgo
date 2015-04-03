@@ -1,5 +1,8 @@
 #ifndef _DOTNETPLUG_PLUGIN_H_
 #define _DOTNETPLUG_PLUGIN_H_
+#ifdef _WIN32
+#pragma once
+#endif
 
 #include <ISmmPlugin.h>
 #include "Managed.h"
@@ -7,15 +10,10 @@
 #include <iplayerinfo.h>
 #include <sh_vector.h>
 #include "engine_wrappers.h"
-
-#if defined WIN32 && !defined snprintf
-#define snprintf _snprintf
-#endif
-
 #include "Helpers.h"
 #include "AdminInterface.h"
 
-class DotNetPlugPlugin : public ISmmPlugin
+class DotNetPlugPlugin : public ISmmPlugin, public IMetamodListener
 {
 public:
 	bool Load(PluginId id, ISmmAPI *ismm, char *error, size_t maxlen, bool late);
@@ -32,6 +30,8 @@ public:
 	const char *GetVersion();
 	const char *GetDate();
 	const char *GetLogTag();
+public:
+	void OnVSPListening(IServerPluginCallbacks *iface);
 public:
 	int max_players;
 	ConVar* tv_name;
@@ -50,6 +50,7 @@ public: //Hooks
 	void Hook_ClientSettingsChanged(edict_t *pEdict);
 	bool Hook_ClientConnect(edict_t *pEntity, const char *pszName, const char *pszAddress, char *reject, int maxrejectlen);
 	void Hook_ClientCommand(edict_t *pEntity, const CCommand &args);
+	PLUGIN_RESULT Hook_NetworkIDValidated(const char *pszUserName, const char *pszNetworkID);
 };
 
 extern DotNetPlugPlugin g_DotNetPlugPlugin;

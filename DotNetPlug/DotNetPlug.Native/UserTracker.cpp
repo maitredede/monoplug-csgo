@@ -1,55 +1,6 @@
 #include "UserTracker.h"
 #include "Plugin.h"
 
-//---------------------------------------------------------------------------------
-// Purpose: FindPlayerByIndex
-//---------------------------------------------------------------------------------
-bool FindPlayerByIndex(player_t *player_ptr)
-{
-
-	if (player_ptr->index < 1 || player_ptr->index > g_DotNetPlugPlugin.max_players)
-	{
-		return false;
-	}
-
-	edict_t *pEntity = PEntityOfEntIndex(player_ptr->index);
-	if (pEntity && !pEntity->IsFree())
-	{
-		IPlayerInfo *playerinfo = playerinfomanager->GetPlayerInfo(pEntity);
-		if (playerinfo && playerinfo->IsConnected())
-		{
-			if (playerinfo->IsHLTV()) return false;
-			player_ptr->player_info = playerinfo;
-			player_ptr->team = playerinfo->GetTeamIndex();
-			player_ptr->user_id = playerinfo->GetUserID();
-			Q_strcpy(player_ptr->name, playerinfo->GetName());
-			Q_strcpy(player_ptr->steam_id, playerinfo->GetNetworkIDString());
-			player_ptr->health = playerinfo->GetHealth();
-			player_ptr->is_dead = playerinfo->IsObserver() | playerinfo->IsDead();
-			player_ptr->entity = pEntity;
-
-			if (FStrEq(player_ptr->steam_id, "BOT"))
-			{
-				if (g_DotNetPlugPlugin.tv_name && strcmp(player_ptr->name, g_DotNetPlugPlugin.tv_name->GetString()) == 0)
-				{
-					return false;
-				}
-
-				Q_strcpy(player_ptr->ip_address, "");
-				player_ptr->is_bot = true;
-			}
-			else
-			{
-				player_ptr->is_bot = false;
-				GetIPAddressFromPlayer(player_ptr);
-			}
-			return true;
-		}
-	}
-
-	return false;
-}
-
 UserTracker::UserTracker()
 {
 	//hash_table = (unsigned char *) malloc(sizeof(unsigned char) * 65536);

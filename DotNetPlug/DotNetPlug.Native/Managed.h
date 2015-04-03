@@ -1,32 +1,13 @@
 #ifndef _DOTNETPLUG_MANAGED_H_
 #define _DOTNETPLUG_MANAGED_H_
+#ifdef _WIN32
+#pragma once
+#endif
 
 #include "Types.h"
 #include "Helpers.h"
 #include "ManagedCommand.h"
-
-#ifdef MANAGED_WIN32
-
-#include <windows.h>
-#include <metahost.h>
-
-#pragma comment(lib, "mscoree.lib")
-
-#import <mscorlib.tlb> raw_interfaces_only					\
-	high_property_prefixes("_get","_put","_putref")			\
-	rename("ReportEvent", "InteropServices_ReportEvent")	\
-	rename("Assert", "_Assert")
-
-// #import "DotNetPlug.Managed.tlb" raw_interfaces_only
-
-using namespace mscorlib;
-#endif
-
-#ifdef MANAGED_MONO
-#include <mono/jit/jit.h>
-#include <mono/metadata/mono-config.h>
-#include <mono/metadata/assembly.h>
-#endif
+#include "EventListener.h"
 
 class ManagedCommand;
 
@@ -74,6 +55,8 @@ private:
 	// supported by CLR 4.0. Here we demo the ICorRuntimeHost interface that 
 	// was provided in .NET v1.x, and is compatible with all .NET Frameworks. 
 	ICorRuntimeHost *pCorRuntimeHost;
+
+	_AssemblyPtr spAssembly_SystemCore;
 
 	variant_t vtPluginManager;
 	_MethodInfo* spPluginManagerTick;
@@ -134,6 +117,11 @@ private: //Private methods
 	static void ExecuteCommandMono(MonoString* pMsg, MonoString* pOutput, int* pLength);
 	static void RegisterCommandMono(MonoString* pMsg, MonoString* pDesc, int flags, int id);
 #endif
+
+public: //Events
+	EventListener* EVT_player_death;
+public:
+	void RaiseGameEvent(GameEvent e, IGameEvent *event);
 };
 
 

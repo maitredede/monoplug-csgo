@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Dynamic;
 
 namespace DotNetPlug
 {
@@ -27,5 +28,8 @@ namespace DotNetPlug
         void RaiseClientSettingsChanged();
         void RaiseClientConnect();
         void RaiseClientCommand();
+
+
+        void RaiseGameEvent(GameEvent evt, ExpandoObject param);
     }
 }

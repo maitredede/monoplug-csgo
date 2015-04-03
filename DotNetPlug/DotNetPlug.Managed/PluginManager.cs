@@ -278,7 +278,6 @@ namespace DotNetPlug
             this.Raise(this.m_engine.RaiseServerActivate, e);
         }
 
-
         void IPluginManager.RaiseLevelShutdown()
         {
             EventArgs e = new EventArgs();
@@ -319,6 +318,16 @@ namespace DotNetPlug
         {
             EventArgs e = new EventArgs();
             this.Raise(this.m_engine.RaiseClientCommand, e);
+        }
+
+        void IPluginManager.RaiseGameEvent(GameEvent evt, System.Dynamic.ExpandoObject param)
+        {
+            GameEventEventArgs e = new GameEventEventArgs()
+            {
+                Event = evt,
+                Args = param,
+            };
+            this.Raise(this.m_engine.RaiseGameEvent, e);
         }
     }
 }

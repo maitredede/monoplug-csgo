@@ -141,6 +141,7 @@ namespace DotNetPlug
             ClientSettingsChanged,
             ClientConnect,
             ClientCommand,
+            GameEvent,
         }
 
         private void RaiseEvent<T>(Events evt, T args) where T : EventArgs
@@ -249,6 +250,17 @@ namespace DotNetPlug
         internal void RaiseClientCommand(EventArgs e)
         {
             this.RaiseEvent(Events.ClientCommand, e);
+        }
+
+        public event EventHandler<GameEventEventArgs> GameEvent
+        {
+            add { this.m_events.AddHandler(Events.GameEvent, value); }
+            remove { this.m_events.RemoveHandler(Events.GameEvent, value); }
+        }
+
+        internal void RaiseGameEvent(GameEventEventArgs e)
+        {
+            this.RaiseEvent(Events.GameEvent, e);
         }
     }
 }

@@ -26,6 +26,13 @@ namespace DotNetPlug.Managed
             this.Engine.ClientDisconnect += Engine_ClientDisconnect;
             this.Engine.ClientPutInServer += Engine_ClientPutInServer;
             this.Engine.ClientSettingsChanged += Engine_ClientSettingsChanged;
+            this.Engine.GameEvent += Engine_GameEvent;
+        }
+
+        private async void Engine_GameEvent(object sender, GameEventEventArgs e)
+        {
+            string json = await Newtonsoft.Json.JsonConvert.SerializeObjectAsync(e.Args);
+            await this.Log(string.Format("GameEvent : {0}={1}", e.Event, json));
         }
 
         private async void Engine_ServerActivate(object sender, ServerActivateEventArgs e)

@@ -1,5 +1,8 @@
 #ifndef _DOTNETPLUG_VIRTUALCONSOLE_H_
 #define _DOTNETPLUG_VIRTUALCONSOLE_H_
+#ifdef _WIN32
+#pragma once
+#endif
 
 #include <eiface.h>
 #include <icvar.h>

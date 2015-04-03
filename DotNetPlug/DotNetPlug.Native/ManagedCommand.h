@@ -1,5 +1,8 @@
 #ifndef _DOTNETPLUG_MANAGED_COMMAND_H_
 #define _DOTNETPLUG_MANAGED_COMMAND_H_
+#ifdef _WIN32
+#pragma once
+#endif
 
 #include <convar.h>
 #include "Plugin.h"

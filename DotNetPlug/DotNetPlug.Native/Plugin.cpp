@@ -16,6 +16,8 @@ SH_DECL_HOOK1_void(IServerGameClients, ClientSettingsChanged, SH_NOATTRIB, 0, ed
 SH_DECL_HOOK5(IServerGameClients, ClientConnect, SH_NOATTRIB, 0, bool, edict_t *, const char*, const char *, char *, int);
 SH_DECL_HOOK2_void(IServerGameClients, ClientCommand, SH_NOATTRIB, 0, edict_t *, const CCommand &);
 
+SH_DECL_HOOK2(IServerPluginCallbacks, NetworkIDValidated, SH_NOATTRIB, 0, PLUGIN_RESULT, const char *, const char *);
+
 IServerGameDLL *server = NULL;
 IServerGameClients *gameclients = NULL;
 IVEngineServer *engine = NULL;
@@ -32,6 +34,12 @@ UserTracker gUserTracker;
 
 PLUGIN_EXPOSE(DotNetPlugPlugin, g_DotNetPlugPlugin);
 
+void DotNetPlugPlugin::OnVSPListening(IServerPluginCallbacks *iface)
+{
+	SH_ADD_HOOK_MEMFUNC(IServerPluginCallbacks, NetworkIDValidated, iface, &g_DotNetPlugPlugin, &DotNetPlugPlugin::Hook_NetworkIDValidated, false);
+	vsp_callbacks = iface;
+}
+
 bool DotNetPlugPlugin::Load(PluginId id, ISmmAPI *ismm, char *error, size_t maxlen, bool late)
 {
 	PLUGIN_SAVEVARS();
@@ -45,6 +53,12 @@ bool DotNetPlugPlugin::Load(PluginId id, ISmmAPI *ismm, char *error, size_t maxl
 	GET_V_IFACE_ANY(GetServerFactory, gameclients, IServerGameClients, INTERFACEVERSION_SERVERGAMECLIENTS);
 	GET_V_IFACE_ANY(GetServerFactory, playerinfomanager, IPlayerInfoManager, INTERFACEVERSION_PLAYERINFOMANAGER);
 	gpGlobals = g_SMAPI->GetCGlobals();
+
+	if ((vsp_callbacks = ismm->GetVSPInfo(NULL)) == NULL)
+	{
+		ismm->EnableVSPListener();
+		ismm->AddListener(this, this);
+	}
 
 	//Gather init data
 	char mm_path[MAX_PATH];
@@ -87,6 +101,8 @@ bool DotNetPlugPlugin::Load(PluginId id, ISmmAPI *ismm, char *error, size_t maxl
 	
 	//Load Native interop
 	g_Managed.Load();
+
+	gameevents->AddListener(g_Managed.EVT_player_death, "player_death", true);
 
 	return true;
 }

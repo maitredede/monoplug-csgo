@@ -96,6 +96,37 @@ HRESULT CREATE_STRING_ARRAY_ARGS(int argc, const char** argv, long paramIndex, S
 	hr = SafeArrayPutElement(*params, &i, &vtPsa);
 	return hr;
 }
+
+HRESULT CREATE_INSTANCE(_AssemblyPtr spAssembly, const char* className, VARIANT* vtInstance)
+{
+	bstr_t bstrClassName(className);
+	HRESULT hr = spAssembly->CreateInstance(bstrClassName, vtInstance);
+	if (FAILED(hr))
+	{
+		META_LOG(g_PLAPI, "Can't create instance of %s\n", className);
+		vtInstance = NULL;
+	}
+	return hr;
+}
+
+HRESULT SET_EXPANDO_STRING_FROM_EVENT_SHORT(variant_t vtExpando, IGameEvent *event, const char* name)
+{
+	int value = event->GetInt(name);
+	
+}
+
+HRESULT SET_EXPANDO_STRING_FROM_EVENT_STRING(variant_t vtExpando, IGameEvent *event, const char* name)
+{
+	int value = event->GetInt(name);
+
+}
+
+HRESULT SET_EXPANDO_STRING_FROM_EVENT_BOOL(variant_t vtExpando, IGameEvent *event, const char* name)
+{
+	int value = event->GetInt(name);
+
+}
+
 #endif //MANAGED_WIN32
 
 bool FindPlayerByEntity(player_t* player_ptr)
@@ -176,4 +207,49 @@ void GetIPAddressFromPlayer(player_t *player)
 	}
 
 	return;
+}
+
+bool FindPlayerByIndex(player_t *player_ptr)
+{
+	if (player_ptr->index < 1 || player_ptr->index > g_DotNetPlugPlugin.max_players)
+	{
+		return false;
+	}
+
+	edict_t *pEntity = PEntityOfEntIndex(player_ptr->index);
+	if (pEntity && !pEntity->IsFree())
+	{
+		IPlayerInfo *playerinfo = playerinfomanager->GetPlayerInfo(pEntity);
+		if (playerinfo && playerinfo->IsConnected())
+		{
+			if (playerinfo->IsHLTV()) return false;
+			player_ptr->player_info = playerinfo;
+			player_ptr->team = playerinfo->GetTeamIndex();
+			player_ptr->user_id = playerinfo->GetUserID();
+			Q_strcpy(player_ptr->name, playerinfo->GetName());
+			Q_strcpy(player_ptr->steam_id, playerinfo->GetNetworkIDString());
+			player_ptr->health = playerinfo->GetHealth();
+			player_ptr->is_dead = playerinfo->IsObserver() | playerinfo->IsDead();
+			player_ptr->entity = pEntity;
+
+			if (FStrEq(player_ptr->steam_id, "BOT"))
+			{
+				if (g_DotNetPlugPlugin.tv_name && strcmp(player_ptr->name, g_DotNetPlugPlugin.tv_name->GetString()) == 0)
+				{
+					return false;
+				}
+
+				Q_strcpy(player_ptr->ip_address, "");
+				player_ptr->is_bot = true;
+			}
+			else
+			{
+				player_ptr->is_bot = false;
+				GetIPAddressFromPlayer(player_ptr);
+			}
+			return true;
+		}
+	}
+
+	return false;
 }

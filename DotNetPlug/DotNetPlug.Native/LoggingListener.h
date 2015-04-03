@@ -1,5 +1,8 @@
 #ifndef _DOTNETPLUG_LOGGING_LISTENER_H_
 #define _DOTNETPLUG_LOGGING_LISTENER_H_
+#ifdef _WIN32
+#pragma once
+#endif
 
 #include <logging.h>
 
