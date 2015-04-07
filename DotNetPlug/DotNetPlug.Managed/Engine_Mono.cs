@@ -38,5 +38,10 @@ namespace DotNetPlug
         {
             PluginManagerMono.UnregisterCommand(id);
         }
+
+        protected override void ShowMOTDInternal(int playerId, byte[] titleUTF8, byte[] msgUTF8, MOTDType type, byte[] cmdUTF8)
+        {
+            PluginManagerMono.ShowMOTD(playerId, titleUTF8, msgUTF8, (int)type, cmdUTF8);
+        }
     }
 }

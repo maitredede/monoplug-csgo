@@ -79,5 +79,10 @@ namespace DotNetPlug
         {
             this.m_cb_UnregisterCommand(id);
         }
+
+        protected override void ShowMOTDInternal(int playerId, byte[] titleUTF8, byte[] msgUTF8, MOTDType type, byte[] cmdUTF8)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

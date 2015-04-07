@@ -23,5 +23,8 @@ namespace DotNetPlug
 
         [MethodImplAttribute(MethodImplOptions.InternalCall)]
         public static extern void UnregisterCommand(int id);
+
+        [MethodImplAttribute(MethodImplOptions.InternalCall)]
+        public static extern void ShowMOTD(int playerId, byte[] titleUTF8, byte[] msgUTF8, int motdType, byte[] cmdUTF8);
     }
 }

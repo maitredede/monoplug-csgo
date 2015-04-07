@@ -56,32 +56,45 @@ private:
 	// was provided in .NET v1.x, and is compatible with all .NET Frameworks. 
 	ICorRuntimeHost *pCorRuntimeHost;
 
-	_AssemblyPtr spAssembly_SystemCore;
+	IUnknownPtr spAppDomainThunk = NULL;
+	_AppDomainPtr spDefaultAppDomain = NULL;
+
+	_AssemblyPtr m_Assembly_Mscorlib;
+	_TypePtr m_Type_System_Reflection_Assembly;
 
 	variant_t vtPluginManager;
-	_MethodInfo* spPluginManagerTick;
-	_MethodInfo* spPluginManagerLoad;
-	_MethodInfo* spPluginManagerUnload;
-	_MethodInfo* spPluginManagerLoadAssembly;
-	_MethodInfo* spPluginManagerRaiseCommand;
+	_MethodInfoPtr spPluginManagerTick;
+	_MethodInfoPtr spPluginManagerLoad;
+	_MethodInfoPtr spPluginManagerUnload;
+	_MethodInfoPtr spPluginManagerLoadAssembly;
+	_MethodInfoPtr spPluginManagerRaiseCommand;
 
-	_MethodInfo* spPluginManagerInitWin32Engine;
+	_MethodInfoPtr spPluginManagerInitWin32Engine;
 
-	_MethodInfo* spPluginManagerLevelInit;
-	_MethodInfo* spPluginManagerServerActivate;
+	_MethodInfoPtr spPluginManagerLevelInit;
+	_MethodInfoPtr spPluginManagerServerActivate;
 
-	_MethodInfo* spPluginManagerLevelShutdown;
-	_MethodInfo* spPluginManagerClientActive;
-	_MethodInfo* spPluginManagerClientDisconnect;
-	_MethodInfo* spPluginManagerClientPutInServer;
-	_MethodInfo* spPluginManagerClientSettingsChanged;
-	_MethodInfo* spPluginManagerClientConnect;
-	_MethodInfo* spPluginManagerClientCommand;
+	_MethodInfoPtr spPluginManagerLevelShutdown;
+	_MethodInfoPtr spPluginManagerClientActive;
+	_MethodInfoPtr spPluginManagerClientDisconnect;
+	_MethodInfoPtr spPluginManagerClientPutInServer;
+	_MethodInfoPtr spPluginManagerClientSettingsChanged;
+	_MethodInfoPtr spPluginManagerClientConnect;
+	_MethodInfoPtr spPluginManagerClientCommand;
 
-	LPWSTR pszVersion;
-	LPWSTR pszAssemblyName;
-	LPWSTR pszClassName;
-	LPWSTR pszIfaceName;
+	_AssemblyPtr m_Assembly_DotNetPlug_Managed;
+	_TypePtr m_Type_DotNetPlug_PluginManager;
+	_PropertyInfoPtr m_Property_DotNetPlug_PluginManager_Instance;
+	_MethodInfoPtr m_Method_DotNetPlug_PluginManager_Instance_Get;
+	_TypePtr m_Type_DotNetPlug_IPluginManager;
+	_TypePtr m_Type_DotNetPlug_TypeHelper;
+public:
+	_MethodInfoPtr m_Method_DotNetPlug_TypeHelper_ExpandoNew;
+	_MethodInfoPtr m_Method_DotNetPlug_TypeHelper_ExpandoAdd;
+private:
+	//_AssemblyPtr m_Assembly_System_Core;
+	//_TypePtr m_Type_System_Dynamic_ExpandoObject;
+	//_MethodInfoPtr m_Method_ExpandoObject_Add;
 #endif
 #ifdef MANAGED_MONO
 private: //Private members

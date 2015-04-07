@@ -59,6 +59,7 @@
     <Compile Include="LevelInitEventArgs.cs" />
     <Compile Include="LogDelegate.cs" />
     <Compile Include="ManagedCommand.cs" />
+    <Compile Include="MOTDType.cs" />
     <Compile Include="PluginBase.cs" />
     <Compile Include="PluginManager.cs" />
     <Compile Include="PluginManagerMono.cs" />
@@ -66,6 +67,7 @@
     <Compile Include="RegisterCommandDelegate.cs" />
     <Compile Include="Engine_Win32.cs" />
     <Compile Include="ServerActivateEventArgs.cs" />
+    <Compile Include="TypeHelper.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>

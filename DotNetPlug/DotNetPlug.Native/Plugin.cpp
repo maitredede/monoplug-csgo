@@ -40,6 +40,15 @@ void DotNetPlugPlugin::OnVSPListening(IServerPluginCallbacks *iface)
 	vsp_callbacks = iface;
 }
 
+void DotPlugVersionCallback(IConVar *var, const char *pOldString, float flOldFloat)
+{
+	if (!FStrEq(pOldString, g_DotNetPlugPlugin.GetVersion()))
+	{
+		g_DotNetPlugPlugin.m_varVersion->SetValue(g_DotNetPlugPlugin.GetVersion());
+	}
+}
+
+
 bool DotNetPlugPlugin::Load(PluginId id, ISmmAPI *ismm, char *error, size_t maxlen, bool late)
 {
 	PLUGIN_SAVEVARS();
@@ -104,11 +113,16 @@ bool DotNetPlugPlugin::Load(PluginId id, ISmmAPI *ismm, char *error, size_t maxl
 
 	gameevents->AddListener(g_Managed.EVT_player_death, "player_death", true);
 
+	this->m_varVersion = new ConVar("dotplug_version", this->GetVersion(), FCVAR_REPLICATED | FCVAR_NOTIFY, "Plugin version of DotPlug engine", &DotPlugVersionCallback);
+	META_REGCVAR(this->m_varVersion);
+
 	return true;
 }
 
 bool DotNetPlugPlugin::Unload(char *error, size_t maxlen)
 {
+	META_UNREGCVAR(this->m_varVersion);
+
 	gUserTracker.Unload();
 	g_Managed.Unload();
 

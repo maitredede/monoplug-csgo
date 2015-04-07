@@ -151,7 +151,7 @@ namespace DotNetPlug
                 d.Invoke(this, args);
         }
 
-        public event EventHandler<LevelInitEventArgs> LevelInit
+        event EventHandler<LevelInitEventArgs> IEngine.LevelInit
         {
             add { this.m_events.AddHandler(Events.LevelInit, value); }
             remove { this.m_events.RemoveHandler(Events.LevelInit, value); }
@@ -162,7 +162,7 @@ namespace DotNetPlug
             this.RaiseEvent(Events.LevelInit, e);
         }
 
-        public event EventHandler<ServerActivateEventArgs> ServerActivate
+        event EventHandler<ServerActivateEventArgs> IEngine.ServerActivate
         {
             add { this.m_events.AddHandler(Events.ServerActivate, value); }
             remove { this.m_events.RemoveHandler(Events.ServerActivate, value); }
@@ -175,7 +175,7 @@ namespace DotNetPlug
         #endregion
 
 
-        public event EventHandler LevelShutdown
+        event EventHandler IEngine.LevelShutdown
         {
             add { this.m_events.AddHandler(Events.LevelShutdown, value); }
             remove { this.m_events.RemoveHandler(Events.LevelShutdown, value); }
@@ -186,7 +186,7 @@ namespace DotNetPlug
             this.RaiseEvent(Events.LevelShutdown, e);
         }
 
-        public event EventHandler ClientActive
+        event EventHandler IEngine.ClientActive
         {
             add { this.m_events.AddHandler(Events.ClientActive, value); }
             remove { this.m_events.RemoveHandler(Events.ClientActive, value); }
@@ -197,7 +197,7 @@ namespace DotNetPlug
             this.RaiseEvent(Events.ClientActive, e);
         }
 
-        public event EventHandler ClientDisconnect
+        event EventHandler IEngine.ClientDisconnect
         {
             add { this.m_events.AddHandler(Events.ClientDisconnect, value); }
             remove { this.m_events.RemoveHandler(Events.ClientDisconnect, value); }
@@ -208,7 +208,7 @@ namespace DotNetPlug
             this.RaiseEvent(Events.ClientDisconnect, e);
         }
 
-        public event EventHandler ClientPutInServer
+        event EventHandler IEngine.ClientPutInServer
         {
             add { this.m_events.AddHandler(Events.ClientPutInServer, value); }
             remove { this.m_events.RemoveHandler(Events.ClientPutInServer, value); }
@@ -219,7 +219,7 @@ namespace DotNetPlug
             this.RaiseEvent(Events.ClientPutInServer, e);
         }
 
-        public event EventHandler ClientSettingsChanged
+        event EventHandler IEngine.ClientSettingsChanged
         {
             add { this.m_events.AddHandler(Events.ClientSettingsChanged, value); }
             remove { this.m_events.RemoveHandler(Events.ClientSettingsChanged, value); }
@@ -230,7 +230,7 @@ namespace DotNetPlug
             this.RaiseEvent(Events.ClientSettingsChanged, e);
         }
 
-        public event EventHandler ClientConnect
+        event EventHandler IEngine.ClientConnect
         {
             add { this.m_events.AddHandler(Events.ClientConnect, value); }
             remove { this.m_events.RemoveHandler(Events.ClientConnect, value); }
@@ -241,7 +241,7 @@ namespace DotNetPlug
             this.RaiseEvent(Events.ClientConnect, e);
         }
 
-        public event EventHandler ClientCommand
+        event EventHandler IEngine.ClientCommand
         {
             add { this.m_events.AddHandler(Events.ClientCommand, value); }
             remove { this.m_events.RemoveHandler(Events.ClientCommand, value); }
@@ -252,7 +252,7 @@ namespace DotNetPlug
             this.RaiseEvent(Events.ClientCommand, e);
         }
 
-        public event EventHandler<GameEventEventArgs> GameEvent
+        event EventHandler<GameEventEventArgs> IEngine.GameEvent
         {
             add { this.m_events.AddHandler(Events.GameEvent, value); }
             remove { this.m_events.RemoveHandler(Events.GameEvent, value); }
@@ -261,6 +261,22 @@ namespace DotNetPlug
         internal void RaiseGameEvent(GameEventEventArgs e)
         {
             this.RaiseEvent(Events.GameEvent, e);
+        }
+
+        protected abstract void ShowMOTDInternal(int playerId, byte[] titleUTF8, byte[] msgUTF8, MOTDType type, byte[] cmdUTF8);
+
+        Task IEngine.ShowMOTD(IPlayer player, string title, Uri url, string cmdOnClose)
+        {
+            int id = player.Id;
+            byte[] titleUTF8 = this.m_enc.GetBytes(title);
+            byte[] urlUTF8 = this.m_enc.GetBytes(url.ToString());
+            byte[] cmdUTF8 = null;
+            if (!string.IsNullOrEmpty(cmdOnClose))
+                cmdUTF8 = this.m_enc.GetBytes(cmdOnClose);
+            return this.m_fact.StartNew(() =>
+            {
+                this.ShowMOTDInternal(id, titleUTF8, urlUTF8, MOTDType.Url, cmdUTF8);
+            });
         }
     }
 }

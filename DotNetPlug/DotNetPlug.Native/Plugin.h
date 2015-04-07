@@ -36,6 +36,7 @@ public:
 	int max_players;
 	ConVar* tv_name;
 	ConVar* hostname;
+	ConVar* m_varVersion;
 
 public: //Hooks
 	bool Hook_LevelInit(const char *pMapName, const char *pMapEntities, const char *pOldLevel, const char *pLandmarkName, bool loadGame, bool background);

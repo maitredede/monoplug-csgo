@@ -63,5 +63,7 @@ namespace DotNetPlug
         event EventHandler ClientConnect;
         event EventHandler ClientCommand;
         event EventHandler<GameEventEventArgs> GameEvent;
+
+        Task ShowMOTD(IPlayer player, string title, Uri url, string cmdOnClose);
     }
 }

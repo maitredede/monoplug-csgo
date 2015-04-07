@@ -10,6 +10,12 @@
 #pragma comment(lib, "comsuppw.lib")
 #pragma comment(lib, "kernel32.lib")
 
+#define GET_TYPE(pAssembly, sType, pType) hr = GET_TYPE_FUNC(pAssembly, sType, pType); \
+	if (FAILED(hr)) { this->Cleanup(); return false; }
+
+#define LOAD_ASSEMBLY(pAppDomain, sAssemblyName, pAssembly) hr = LOAD_ASSEMBLY_FUNC(pAppDomain, sAssemblyName, pAssembly); \
+	if (FAILED(hr)) { this->Cleanup(); return false; }
+
 void Managed::Cleanup(){
 	if (pMetaHost)
 	{
@@ -36,17 +42,16 @@ void Managed::Cleanup(){
 
 bool Managed::InitPlateform(const char* sAssemblyFile)
 {
-	this->pszVersion = L"v4.0.30319";
-	this->pszAssemblyName = L"DotNetPlug.Managed";
-	this->pszClassName = L"DotNetPlug.PluginManager";
-	this->pszIfaceName = L"DotNetPlug.IPluginManager";
+	//this->pszVersion = L"v4.0.30319";
+	//this->pszAssemblyName = L"DotNetPlug.Managed";
+	//this->pszClassName = L"DotNetPlug.PluginManager";
+	//this->pszIfaceName = L"DotNetPlug.IPluginManager";
 
 	HRESULT hr;
 
-	// The .NET assembly to load.
-	//bstr_t bstrAssemblyName(pszAssemblyName);
-	bstr_t bstrAssemblyName(sAssemblyFile);
-	_AssemblyPtr spAssembly = NULL;
+	//// The .NET assembly to load.
+	//bstr_t bstrAssemblyName(sAssemblyFile);
+	//_AssemblyPtr spAssembly = NULL;
 
 	// Load and start the .NET runtime.
 	hr = CLRCreateInstance(CLSID_CLRMetaHost, IID_PPV_ARGS(&pMetaHost));
@@ -59,6 +64,7 @@ bool Managed::InitPlateform(const char* sAssemblyFile)
 
 	// Get the ICLRRuntimeInfo corresponding to a particular CLR version. It 
 	// supersedes CorBindToRuntimeEx with STARTUP_LOADER_SAFEMODE.
+	const LPWSTR pszVersion = L"v4.0.30319";
 	hr = pMetaHost->GetRuntime(pszVersion, IID_PPV_ARGS(&pRuntimeInfo));
 	if (FAILED(hr))
 	{
@@ -92,8 +98,7 @@ bool Managed::InitPlateform(const char* sAssemblyFile)
 	// interfaces supported by CLR 4.0. Here we demo the ICorRuntimeHost 
 	// interface that was provided in .NET v1.x, and is compatible with all 
 	// .NET Frameworks. 
-	hr = pRuntimeInfo->GetInterface(CLSID_CorRuntimeHost,
-		IID_PPV_ARGS(&pCorRuntimeHost));
+	hr = pRuntimeInfo->GetInterface(CLSID_CorRuntimeHost, IID_PPV_ARGS(&pCorRuntimeHost));
 	if (FAILED(hr))
 	{
 		META_CONPRINTF("ICLRRuntimeInfo::GetInterface failed w/hr 0x%08lx\n", hr);
@@ -127,9 +132,6 @@ bool Managed::InitPlateform(const char* sAssemblyFile)
 	//       BindingFlags.InvokeMethod | BindingFlags.Instance | 
 	//       BindingFlags.Public, null, obj, new object[] { });
 
-	IUnknownPtr spAppDomainThunk = NULL;
-	_AppDomainPtr spDefaultAppDomain = NULL;
-
 	// Get a pointer to the default AppDomain in the CLR.
 	hr = pCorRuntimeHost->GetDefaultDomain(&spAppDomainThunk);
 	if (FAILED(hr))
@@ -148,33 +150,9 @@ bool Managed::InitPlateform(const char* sAssemblyFile)
 	}
 
 	//Load mscorlib
-	bstr_t bstrMscorlibAssemblyName(L"mscorlib");
-	_AssemblyPtr spMscorlibAssembly = NULL;
-	hr = spDefaultAppDomain->Load_2(bstrMscorlibAssemblyName, &spMscorlibAssembly);
-	if (FAILED(hr)){
-		META_CONPRINTF("Failed to load the assembly mscorlib w/hr 0x%08lx\n", hr);
-		this->Cleanup();
-		return false;
-	}
-	//Load System.Core
-	bstr_t bstrSystemCoreAssemblyName(L"System.Core");
-	hr = spDefaultAppDomain->Load_2(bstrSystemCoreAssemblyName, &(this->spAssembly_SystemCore));
-	if (FAILED(hr)){
-		META_CONPRINTF("Failed to load the assembly System.Core w/hr 0x%08lx\n", hr);
-		this->Cleanup();
-		return false;
-	}
-
+	LOAD_ASSEMBLY(this->spDefaultAppDomain, "mscorlib", &this->m_Assembly_Mscorlib);
 	// Get the Type of System.Reflection.Assembly.
-	bstr_t bstrAssemblyClassName(L"System.Reflection.Assembly");
-	_TypePtr spAssemblyType = NULL;
-	hr = spMscorlibAssembly->GetType_2(bstrAssemblyClassName, &spAssemblyType);
-	if (FAILED(hr))
-	{
-		META_CONPRINTF("Failed to get the Type interface System.Reflection.Assembly w/hr 0x%08lx\n", hr);
-		this->Cleanup();
-		return false;
-	}
+	GET_TYPE(this->m_Assembly_Mscorlib, "System.Reflection.Assembly", &this->m_Type_System_Reflection_Assembly);
 
 	// Create a safe array to contain the arguments of the method. The safe 
 	// array must be created with vt = VT_VARIANT because .NET reflection 
@@ -196,8 +174,7 @@ bool Managed::InitPlateform(const char* sAssemblyFile)
 	bstr_t bstrLoadFromMethodName(L"LoadFrom");
 	variant_t vtLoadFromMethodTarget = NULL;
 	variant_t vtLoadFromMethodOutput = NULL;
-
-	hr = spAssemblyType->InvokeMember_3(bstrLoadFromMethodName, static_cast<BindingFlags>(
+	hr = this->m_Type_System_Reflection_Assembly->InvokeMember_3(bstrLoadFromMethodName, static_cast<BindingFlags>(
 		BindingFlags_InvokeMethod | BindingFlags_Static | BindingFlags_Public),
 		NULL, vtLoadFromMethodTarget, psaAssemblyLoadMethodArgs, &vtLoadFromMethodOutput);
 	SafeArrayDestroy(psaAssemblyLoadMethodArgs);
@@ -208,23 +185,22 @@ bool Managed::InitPlateform(const char* sAssemblyFile)
 		return false;
 	}
 
-	_AssemblyPtr assembly = (_AssemblyPtr)vtLoadFromMethodOutput;
+	this->m_Assembly_DotNetPlug_Managed = (_AssemblyPtr)vtLoadFromMethodOutput;
 
 	META_CONPRINTF("Assembly file loaded : %s\n", sAssemblyFile);
 
-	_Type* spPluginManagerType = NULL;
-	bstr_t bstrPluginManagerClassName(this->pszClassName);
-	hr = assembly->GetType_2(bstrPluginManagerClassName, &spPluginManagerType);
-	if (FAILED(hr))
-	{
-		META_CONPRINTF("Failed to get PluginManager type w/hr 0x%08lx\n", hr);
-		this->Cleanup();
-		return false;
-	}
+	GET_TYPE(this->m_Assembly_DotNetPlug_Managed, "DotNetPlug.PluginManager", &this->m_Type_DotNetPlug_PluginManager);
+	GET_TYPE(this->m_Assembly_DotNetPlug_Managed, "DotNetPlug.IPluginManager", &this->m_Type_DotNetPlug_IPluginManager);
+	GET_TYPE(this->m_Assembly_DotNetPlug_Managed, "DotNetPlug.TypeHelper", &this->m_Type_DotNetPlug_TypeHelper);
 
-	_PropertyInfo* spPluginManagerInstanceProperty = NULL;
+	//Load System.Core
+	//LOAD_ASSEMBLY(this->spDefaultAppDomain, "System.Core", &this->m_Assembly_System_Core);
+	//GET_TYPE(this->m_Assembly_System_Core, "System.Dynamic.ExpandoObject", &this->m_Type_System_Dynamic_ExpandoObject);
+	hr = this->m_Type_DotNetPlug_TypeHelper->GetMethod_2(bstr_t("ExpandoAdd"), (BindingFlags)(BindingFlags_Public | BindingFlags_Static), &this->m_Method_DotNetPlug_TypeHelper_ExpandoAdd);
+	hr = this->m_Type_DotNetPlug_TypeHelper->GetMethod_2(bstr_t("ExpandoNew"), (BindingFlags)(BindingFlags_Public | BindingFlags_Static), &this->m_Method_DotNetPlug_TypeHelper_ExpandoNew);
+	
 	bstr_t spPropName(L"Instance");
-	hr = spPluginManagerType->GetProperty(spPropName, (BindingFlags)(BindingFlags_NonPublic | BindingFlags_Static), &spPluginManagerInstanceProperty);
+	hr = this->m_Type_DotNetPlug_PluginManager->GetProperty(spPropName, (BindingFlags)(BindingFlags_NonPublic | BindingFlags_Static), &this->m_Property_DotNetPlug_PluginManager_Instance);
 	if (FAILED(hr))
 	{
 		META_CONPRINTF("Failed to get PluginManager Instance PropertyInfo w/hr 0x%08lx\n", hr);
@@ -232,8 +208,7 @@ bool Managed::InitPlateform(const char* sAssemblyFile)
 		return false;
 	}
 
-	_MethodInfo* spPluginManagerInstancePropertyGet = NULL;
-	hr = spPluginManagerInstanceProperty->GetGetMethod(true, &spPluginManagerInstancePropertyGet);
+	hr = this->m_Property_DotNetPlug_PluginManager_Instance->GetGetMethod(true, &this->m_Method_DotNetPlug_PluginManager_Instance_Get);
 	if (FAILED(hr))
 	{
 		META_CONPRINTF("Failed to get PluginManager Instance Property GetMethod w/hr 0x%08lx\n", hr);
@@ -241,7 +216,7 @@ bool Managed::InitPlateform(const char* sAssemblyFile)
 		return false;
 	}
 
-	hr = spPluginManagerInstancePropertyGet->Invoke_3((variant_t)NULL, NULL, &vtPluginManager);
+	hr = this->m_Method_DotNetPlug_PluginManager_Instance_Get->Invoke_3((variant_t)NULL, NULL, &vtPluginManager);
 	if (FAILED(hr))
 	{
 		META_CONPRINTF("Failed to get PluginManager Instance Property value w/hr 0x%08lx\n", hr);
@@ -249,37 +224,27 @@ bool Managed::InitPlateform(const char* sAssemblyFile)
 		return false;
 	}
 
-	_Type* spIPluginManagerType = NULL;
-	bstr_t bstrIPluginManagerClassName(this->pszIfaceName);
-	hr = assembly->GetType_2(bstrIPluginManagerClassName, &spIPluginManagerType);
-	if (FAILED(hr))
-	{
-		META_CONPRINTF("Failed to get IPluginManager type w/hr 0x%08lx\n", hr);
-		this->Cleanup();
-		return false;
-	}
-
 	////////////////////////////
 	// PluginManager Methods
-	GETMETHOD(hr, spIPluginManagerType, L"Tick", &spPluginManagerTick);
-	GETMETHOD(hr, spIPluginManagerType, L"Load", &spPluginManagerLoad);
-	GETMETHOD(hr, spIPluginManagerType, L"Unload", &spPluginManagerUnload);
-	GETMETHOD(hr, spIPluginManagerType, L"LoadAssembly", &spPluginManagerLoadAssembly);
-	GETMETHOD(hr, spIPluginManagerType, L"RaiseCommand", &spPluginManagerRaiseCommand);
-	GETMETHOD(hr, spIPluginManagerType, L"RaiseLevelInit", &spPluginManagerLevelInit);
-	GETMETHOD(hr, spIPluginManagerType, L"RaiseServerActivate", &spPluginManagerServerActivate);
+	GETMETHOD(hr, this->m_Type_DotNetPlug_IPluginManager, L"Tick", &spPluginManagerTick);
+	GETMETHOD(hr, this->m_Type_DotNetPlug_IPluginManager, L"Load", &spPluginManagerLoad);
+	GETMETHOD(hr, this->m_Type_DotNetPlug_IPluginManager, L"Unload", &spPluginManagerUnload);
+	GETMETHOD(hr, this->m_Type_DotNetPlug_IPluginManager, L"LoadAssembly", &spPluginManagerLoadAssembly);
+	GETMETHOD(hr, this->m_Type_DotNetPlug_IPluginManager, L"RaiseCommand", &spPluginManagerRaiseCommand);
+	GETMETHOD(hr, this->m_Type_DotNetPlug_IPluginManager, L"RaiseLevelInit", &spPluginManagerLevelInit);
+	GETMETHOD(hr, this->m_Type_DotNetPlug_IPluginManager, L"RaiseServerActivate", &spPluginManagerServerActivate);
 
-	GETMETHOD(hr, spIPluginManagerType, L"RaiseLevelShutdown", &spPluginManagerLevelShutdown);
-	GETMETHOD(hr, spIPluginManagerType, L"RaiseClientActive", &spPluginManagerClientActive);
-	GETMETHOD(hr, spIPluginManagerType, L"RaiseClientDisconnect", &spPluginManagerClientDisconnect);
-	GETMETHOD(hr, spIPluginManagerType, L"RaiseClientPutInServer", &spPluginManagerClientPutInServer);
-	GETMETHOD(hr, spIPluginManagerType, L"RaiseClientSettingsChanged", &spPluginManagerClientSettingsChanged);
-	GETMETHOD(hr, spIPluginManagerType, L"RaiseClientConnect", &spPluginManagerClientConnect);
-	GETMETHOD(hr, spIPluginManagerType, L"RaiseClientCommand", &spPluginManagerClientCommand);
+	GETMETHOD(hr, this->m_Type_DotNetPlug_IPluginManager, L"RaiseLevelShutdown", &spPluginManagerLevelShutdown);
+	GETMETHOD(hr, this->m_Type_DotNetPlug_IPluginManager, L"RaiseClientActive", &spPluginManagerClientActive);
+	GETMETHOD(hr, this->m_Type_DotNetPlug_IPluginManager, L"RaiseClientDisconnect", &spPluginManagerClientDisconnect);
+	GETMETHOD(hr, this->m_Type_DotNetPlug_IPluginManager, L"RaiseClientPutInServer", &spPluginManagerClientPutInServer);
+	GETMETHOD(hr, this->m_Type_DotNetPlug_IPluginManager, L"RaiseClientSettingsChanged", &spPluginManagerClientSettingsChanged);
+	GETMETHOD(hr, this->m_Type_DotNetPlug_IPluginManager, L"RaiseClientConnect", &spPluginManagerClientConnect);
+	GETMETHOD(hr, this->m_Type_DotNetPlug_IPluginManager, L"RaiseClientCommand", &spPluginManagerClientCommand);
 
 	////////////////////////////
 	// Callbacks from managed to native : FunctionPointers
-	GETMETHOD_F(hr, spPluginManagerType, L"InitWin32Engine", &spPluginManagerInitWin32Engine, (BindingFlags)(BindingFlags_Instance | BindingFlags_NonPublic));
+	GETMETHOD_F(hr, this->m_Type_DotNetPlug_PluginManager, L"InitWin32Engine", &spPluginManagerInitWin32Engine, (BindingFlags)(BindingFlags_Instance | BindingFlags_NonPublic));
 
 	////////////////////////////
 	// Callback : assign callbacks in PluginManager
@@ -462,21 +427,23 @@ void Managed::RaiseClientCommand()
 void Managed::RaiseGameEvent(GameEvent e, IGameEvent *event)
 {
 	variant_t vtExpando;
+	HRESULT hr;
 
 	switch (e){
 	case player_death:
-		CREATE_INSTANCE(this->spAssembly_SystemCore, "System.Dynamic.ExpandoObject", &vtExpando);
-		SET_EXPANDO_STRING_FROM_EVENT_SHORT(vtExpando, event, "userid");
-		SET_EXPANDO_STRING_FROM_EVENT_SHORT(vtExpando, event, "attacker");
-		SET_EXPANDO_STRING_FROM_EVENT_SHORT(vtExpando, event, "assister");
-		SET_EXPANDO_STRING_FROM_EVENT_STRING(vtExpando, event, "weapon");
-		SET_EXPANDO_STRING_FROM_EVENT_STRING(vtExpando, event, "weapon_itemid");
-		SET_EXPANDO_STRING_FROM_EVENT_STRING(vtExpando, event, "weapon_fauxitemid");
-		SET_EXPANDO_STRING_FROM_EVENT_STRING(vtExpando, event, "weapon_originalowner_xuid");
-		SET_EXPANDO_STRING_FROM_EVENT_BOOL(vtExpando, event, "headshot");
-		SET_EXPANDO_STRING_FROM_EVENT_SHORT(vtExpando, event, "dominated");
-		SET_EXPANDO_STRING_FROM_EVENT_SHORT(vtExpando, event, "revenge");
-		SET_EXPANDO_STRING_FROM_EVENT_SHORT(vtExpando, event, "penetrated");
+		hr = this->m_Method_DotNetPlug_TypeHelper_ExpandoNew->Invoke_3(NULL, NULL, &vtExpando);
+		//CREATE_INSTANCE(this->m_Assembly_System_Core, "System.Dynamic.ExpandoObject", &vtExpando);
+		hr = SET_EXPANDO_STRING_FROM_EVENT_SHORT(vtExpando, event, "userid");
+		hr = SET_EXPANDO_STRING_FROM_EVENT_SHORT(vtExpando, event, "attacker");
+		hr = SET_EXPANDO_STRING_FROM_EVENT_SHORT(vtExpando, event, "assister");
+		hr = SET_EXPANDO_STRING_FROM_EVENT_STRING(vtExpando, event, "weapon");
+		hr = SET_EXPANDO_STRING_FROM_EVENT_STRING(vtExpando, event, "weapon_itemid");
+		hr = SET_EXPANDO_STRING_FROM_EVENT_STRING(vtExpando, event, "weapon_fauxitemid");
+		hr = SET_EXPANDO_STRING_FROM_EVENT_STRING(vtExpando, event, "weapon_originalowner_xuid");
+		hr = SET_EXPANDO_STRING_FROM_EVENT_BOOL(vtExpando, event, "headshot");
+		hr = SET_EXPANDO_STRING_FROM_EVENT_SHORT(vtExpando, event, "dominated");
+		hr = SET_EXPANDO_STRING_FROM_EVENT_SHORT(vtExpando, event, "revenge");
+		hr = SET_EXPANDO_STRING_FROM_EVENT_SHORT(vtExpando, event, "penetrated");
 		break;
 	case None:
 	default:

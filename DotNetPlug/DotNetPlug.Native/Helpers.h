@@ -54,10 +54,12 @@ HRESULT SET_BOOL_PARAM(SAFEARRAY* psa, LONG* i, bool bVal);
 HRESULT SET_INT_PARAM(SAFEARRAY* psa, LONG* i, int iVal);
 HRESULT CREATE_INSTANCE(_AssemblyPtr spAssembly, const char* className, VARIANT* vtInstance);
 
-HRESULT SET_EXPANDO_STRING_FROM_EVENT_SHORT(variant_t vtExpando, const IGameEvent *evt, const char* name);
-HRESULT SET_EXPANDO_STRING_FROM_EVENT_STRING(variant_t vtExpando, const IGameEvent *evt, const char* name);
-HRESULT SET_EXPANDO_STRING_FROM_EVENT_BOOL(variant_t vtExpando, const IGameEvent *evt, const char* name);
+HRESULT SET_EXPANDO_STRING_FROM_EVENT_SHORT(variant_t vtExpando, IGameEvent *evt, const char* name);
+HRESULT SET_EXPANDO_STRING_FROM_EVENT_STRING(variant_t vtExpando, IGameEvent *evt, const char* name);
+HRESULT SET_EXPANDO_STRING_FROM_EVENT_BOOL(variant_t vtExpando, IGameEvent *evt, const char* name);
 
+HRESULT GET_TYPE_FUNC(_AssemblyPtr pAssembly, const char* sType, _Type** pType);
+HRESULT LOAD_ASSEMBLY_FUNC(_AppDomainPtr pAppDomain, const char* sAssemblyName, _Assembly** pAssembly);
 #endif //MANAGED_WIN32
 
 #ifdef MANAGED_MONO

@@ -26,7 +26,7 @@ HRESULT CREATE_STRING_ARRAY(int argc, const char** argv, VARIANT* vtPsa)
 		/*hr = SET_STRING_PARAM(vtPsa->parray, &i, argv[i]);
 		if (FAILED(hr))
 		{
-			break;
+		break;
 		}*/
 		VARIANT item;
 		VariantInit(&item);
@@ -112,19 +112,85 @@ HRESULT CREATE_INSTANCE(_AssemblyPtr spAssembly, const char* className, VARIANT*
 HRESULT SET_EXPANDO_STRING_FROM_EVENT_SHORT(variant_t vtExpando, IGameEvent *event, const char* name)
 {
 	int value = event->GetInt(name);
-	
+
+	HRESULT hr;
+	long i = 0;
+
+	SAFEARRAY* args = SafeArrayCreateVector(VT_VARIANT, 0, 3);
+	hr = SafeArrayPutElement(args, &i, vtExpando);
+	i = 1;
+	hr = SET_STRING_PARAM(args, &i, name);
+	i = 2;
+	hr = SET_INT_PARAM(args, &i, value);
+
+	hr = g_Managed.m_Method_DotNetPlug_TypeHelper_ExpandoAdd->Invoke_3(vtExpando, args, NULL);
+
+	hr = SafeArrayDestroy(args);
+
+	return hr;
 }
 
 HRESULT SET_EXPANDO_STRING_FROM_EVENT_STRING(variant_t vtExpando, IGameEvent *event, const char* name)
 {
-	int value = event->GetInt(name);
+	const char* value = event->GetString(name);
 
+	HRESULT hr;
+	long i = 0;
+
+	SAFEARRAY* args = SafeArrayCreateVector(VT_VARIANT, 0, 3);
+	hr = SafeArrayPutElement(args, &i, vtExpando);
+	i = 1;
+	hr = SET_STRING_PARAM(args, &i, name);
+	i = 2;
+	hr = SET_STRING_PARAM(args, &i, value);
+
+	hr = g_Managed.m_Method_DotNetPlug_TypeHelper_ExpandoAdd->Invoke_3(vtExpando, args, NULL);
+
+	hr = SafeArrayDestroy(args);
+
+	return hr;
 }
 
 HRESULT SET_EXPANDO_STRING_FROM_EVENT_BOOL(variant_t vtExpando, IGameEvent *event, const char* name)
 {
-	int value = event->GetInt(name);
+	bool value = event->GetBool(name);
 
+	HRESULT hr;
+	long i = 0;
+
+	SAFEARRAY* args = SafeArrayCreateVector(VT_VARIANT, 0, 3);
+	hr = SafeArrayPutElement(args, &i, vtExpando);
+	i = 1;
+	hr = SET_STRING_PARAM(args, &i, name);
+	i = 2;
+	hr = SET_BOOL_PARAM(args, &i, value);
+
+	hr = g_Managed.m_Method_DotNetPlug_TypeHelper_ExpandoAdd->Invoke_3(vtExpando, args, NULL);
+
+	hr = SafeArrayDestroy(args);
+
+	return hr;
+}
+
+HRESULT GET_TYPE_FUNC(_AssemblyPtr pAssembly, const char* sType, _Type** pType)
+{
+	bstr_t bstrType(sType);
+	HRESULT hr = pAssembly->GetType_2(bstrType, pType);
+	if (FAILED(hr))
+	{
+		META_CONPRINTF("Failed to get type %s type w/hr 0x%08lx\n", sType, hr);
+	}
+	return hr;
+}
+
+HRESULT LOAD_ASSEMBLY_FUNC(_AppDomainPtr pAppDomain, const char* sAssemblyName, _Assembly** pAssembly)
+{
+	bstr_t bstrMscorlibAssemblyName(sAssemblyName);
+	HRESULT hr = pAppDomain->Load_2(bstrMscorlibAssemblyName, pAssembly);
+	if (FAILED(hr)){
+		META_CONPRINTF("Failed to load the assembly %s w/hr 0x%08lx\n", sAssemblyName, hr);
+	}
+	return hr;
 }
 
 #endif //MANAGED_WIN32
