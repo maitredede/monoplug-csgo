@@ -8,6 +8,7 @@
 #include "Helpers.h"
 #include "ManagedCommand.h"
 #include "EventListener.h"
+#include "GameEvent.h"
 
 class ManagedCommand;
 
@@ -87,14 +88,15 @@ private:
 	_PropertyInfoPtr m_Property_DotNetPlug_PluginManager_Instance;
 	_MethodInfoPtr m_Method_DotNetPlug_PluginManager_Instance_Get;
 	_TypePtr m_Type_DotNetPlug_IPluginManager;
-	_TypePtr m_Type_DotNetPlug_TypeHelper;
+	//_TypePtr m_Type_DotNetPlug_TypeHelper;
 public:
-	_MethodInfoPtr m_Method_DotNetPlug_TypeHelper_ExpandoNew;
-	_MethodInfoPtr m_Method_DotNetPlug_TypeHelper_ExpandoAdd;
+	//_MethodInfoPtr m_Method_DotNetPlug_TypeHelper_ExpandoNew;
+	//_MethodInfoPtr m_Method_DotNetPlug_TypeHelper_ExpandoAdd;
 private:
 	//_AssemblyPtr m_Assembly_System_Core;
 	//_TypePtr m_Type_System_Dynamic_ExpandoObject;
 	//_MethodInfoPtr m_Method_ExpandoObject_Add;
+	_MethodInfoPtr m_Method_DotNetPlug_IPluginManager_RaiseGameEvent;
 #endif
 #ifdef MANAGED_MONO
 private: //Private members
@@ -137,6 +139,33 @@ public:
 	void RaiseGameEvent(GameEvent e, IGameEvent *event);
 };
 
+#define NATIVE_EVENT_ARGS_MAX 16
+
+[uuid(21602F40-CC62-11d4-AA2B-00A0CC39CFE0)]
+typedef struct {
+	BSTR name;
+	int type;
+	int intVal;
+	float floatVal;
+	bool boolVal;
+	BSTR strVal;
+	void SetString(const char* name, const char* value){
+		this->name = bstr_t(name);
+		this->strVal = bstr_t(value);
+	};
+	void SetShort(const char* name, int value){
+		this->name = bstr_t(name);
+		this->intVal = value;
+	}
+} NativeEventArgs;
+
+[uuid(21602F40-CC62-11d4-AA2B-00A0CC39CFE1)]
+typedef struct
+{
+	GameEvent Event;
+	int argsCount;
+	NativeEventArgs args[NATIVE_EVENT_ARGS_MAX];
+} NativeEventData;
 
 extern Managed g_Managed;
 

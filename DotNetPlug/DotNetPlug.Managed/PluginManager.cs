@@ -320,12 +320,12 @@ namespace DotNetPlug
             this.Raise(this.m_engine.RaiseClientCommand, e);
         }
 
-        void IPluginManager.RaiseGameEvent(GameEvent evt, System.Dynamic.ExpandoObject param)
+        void IPluginManager.RaiseGameEvent(NativeEventData evtData)
         {
             GameEventEventArgs e = new GameEventEventArgs()
             {
-                Event = evt,
-                Args = param,
+                Event = evtData.Event,
+                Args = evtData.Args,
             };
             this.Raise(this.m_engine.RaiseGameEvent, e);
         }

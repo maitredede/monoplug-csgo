@@ -191,14 +191,15 @@ bool Managed::InitPlateform(const char* sAssemblyFile)
 
 	GET_TYPE(this->m_Assembly_DotNetPlug_Managed, "DotNetPlug.PluginManager", &this->m_Type_DotNetPlug_PluginManager);
 	GET_TYPE(this->m_Assembly_DotNetPlug_Managed, "DotNetPlug.IPluginManager", &this->m_Type_DotNetPlug_IPluginManager);
-	GET_TYPE(this->m_Assembly_DotNetPlug_Managed, "DotNetPlug.TypeHelper", &this->m_Type_DotNetPlug_TypeHelper);
+	GETMETHOD(hr, this->m_Type_DotNetPlug_IPluginManager, "RaiseGameEvent", &this->m_Method_DotNetPlug_IPluginManager_RaiseGameEvent);
+	//GET_TYPE(this->m_Assembly_DotNetPlug_Managed, "DotNetPlug.TypeHelper", &this->m_Type_DotNetPlug_TypeHelper);
 
 	//Load System.Core
 	//LOAD_ASSEMBLY(this->spDefaultAppDomain, "System.Core", &this->m_Assembly_System_Core);
 	//GET_TYPE(this->m_Assembly_System_Core, "System.Dynamic.ExpandoObject", &this->m_Type_System_Dynamic_ExpandoObject);
-	hr = this->m_Type_DotNetPlug_TypeHelper->GetMethod_2(bstr_t("ExpandoAdd"), (BindingFlags)(BindingFlags_Public | BindingFlags_Static), &this->m_Method_DotNetPlug_TypeHelper_ExpandoAdd);
-	hr = this->m_Type_DotNetPlug_TypeHelper->GetMethod_2(bstr_t("ExpandoNew"), (BindingFlags)(BindingFlags_Public | BindingFlags_Static), &this->m_Method_DotNetPlug_TypeHelper_ExpandoNew);
-	
+	//hr = this->m_Type_DotNetPlug_TypeHelper->GetMethod_2(bstr_t("ExpandoAdd"), (BindingFlags)(BindingFlags_Public | BindingFlags_Static), &this->m_Method_DotNetPlug_TypeHelper_ExpandoAdd);
+	//hr = this->m_Type_DotNetPlug_TypeHelper->GetMethod_2(bstr_t("ExpandoNew"), (BindingFlags)(BindingFlags_Public | BindingFlags_Static), &this->m_Method_DotNetPlug_TypeHelper_ExpandoNew);
+
 	bstr_t spPropName(L"Instance");
 	hr = this->m_Type_DotNetPlug_PluginManager->GetProperty(spPropName, (BindingFlags)(BindingFlags_NonPublic | BindingFlags_Static), &this->m_Property_DotNetPlug_PluginManager_Instance);
 	if (FAILED(hr))
@@ -426,25 +427,47 @@ void Managed::RaiseClientCommand()
 
 void Managed::RaiseGameEvent(GameEvent e, IGameEvent *event)
 {
-	variant_t vtExpando;
+	variant_t vtNull = NULL;
+	//variant_t vtExpando = NULL;
 	HRESULT hr;
+
+	long i = 0;
+
+	NativeEventData nativeEvent;
+	ZeroMemory(&nativeEvent, sizeof(NativeEventArgs));
+	nativeEvent.Event = e;
+	nativeEvent.argsCount = 0;
 
 	switch (e){
 	case player_death:
-		hr = this->m_Method_DotNetPlug_TypeHelper_ExpandoNew->Invoke_3(NULL, NULL, &vtExpando);
-		//CREATE_INSTANCE(this->m_Assembly_System_Core, "System.Dynamic.ExpandoObject", &vtExpando);
-		hr = SET_EXPANDO_STRING_FROM_EVENT_SHORT(vtExpando, event, "userid");
-		hr = SET_EXPANDO_STRING_FROM_EVENT_SHORT(vtExpando, event, "attacker");
-		hr = SET_EXPANDO_STRING_FROM_EVENT_SHORT(vtExpando, event, "assister");
-		hr = SET_EXPANDO_STRING_FROM_EVENT_STRING(vtExpando, event, "weapon");
-		hr = SET_EXPANDO_STRING_FROM_EVENT_STRING(vtExpando, event, "weapon_itemid");
-		hr = SET_EXPANDO_STRING_FROM_EVENT_STRING(vtExpando, event, "weapon_fauxitemid");
-		hr = SET_EXPANDO_STRING_FROM_EVENT_STRING(vtExpando, event, "weapon_originalowner_xuid");
-		hr = SET_EXPANDO_STRING_FROM_EVENT_BOOL(vtExpando, event, "headshot");
-		hr = SET_EXPANDO_STRING_FROM_EVENT_SHORT(vtExpando, event, "dominated");
-		hr = SET_EXPANDO_STRING_FROM_EVENT_SHORT(vtExpando, event, "revenge");
-		hr = SET_EXPANDO_STRING_FROM_EVENT_SHORT(vtExpando, event, "penetrated");
-		break;
+	{
+		nativeEvent.args[nativeEvent.argsCount++].SetShort("userid", event->GetInt("userid"));
+		nativeEvent.args[nativeEvent.argsCount++].SetString("weapon", event->GetString("weapon"));
+		//hr = this->m_Method_DotNetPlug_TypeHelper_ExpandoNew->Invoke_3(vtNull, NULL, &vtExpando);
+		////CREATE_INSTANCE(this->m_Assembly_System_Core, "System.Dynamic.ExpandoObject", &vtExpando);
+		////hr = this->m_Type_DotNetPlug_TypeHelper->InvokeMember_3(bstr_t("ExpandoNew"), (BindingFlags)(BindingFlags_Public | BindingFlags_Static), NULL, 
+		//hr = SET_EXPANDO_STRING_FROM_EVENT_SHORT(vtExpando, event, "userid");
+		//hr = SET_EXPANDO_STRING_FROM_EVENT_SHORT(vtExpando, event, "attacker");
+		//hr = SET_EXPANDO_STRING_FROM_EVENT_SHORT(vtExpando, event, "assister");
+		//hr = SET_EXPANDO_STRING_FROM_EVENT_STRING(vtExpando, event, "weapon");
+		//hr = SET_EXPANDO_STRING_FROM_EVENT_STRING(vtExpando, event, "weapon_itemid");
+		//hr = SET_EXPANDO_STRING_FROM_EVENT_STRING(vtExpando, event, "weapon_fauxitemid");
+		//hr = SET_EXPANDO_STRING_FROM_EVENT_STRING(vtExpando, event, "weapon_originalowner_xuid");
+		//hr = SET_EXPANDO_STRING_FROM_EVENT_BOOL(vtExpando, event, "headshot");
+		//hr = SET_EXPANDO_STRING_FROM_EVENT_SHORT(vtExpando, event, "dominated");
+		//hr = SET_EXPANDO_STRING_FROM_EVENT_SHORT(vtExpando, event, "revenge");
+		//hr = SET_EXPANDO_STRING_FROM_EVENT_SHORT(vtExpando, event, "penetrated");
+		SAFEARRAY* args = SafeArrayCreateVector(VT_VARIANT, 0, 1);
+		variant_t arg0;
+		VariantInit(&arg0);
+		arg0.vt = VT_PTR;
+		arg0.byref = &nativeEvent;
+		hr = SafeArrayPutElement(args, &i, arg0);
+		hr = this->m_Method_DotNetPlug_IPluginManager_RaiseGameEvent->Invoke_3(this->vtPluginManager, args, &vtNull);
+		hr = SafeArrayDestroy(args);
+		hr = VariantClear(&arg0);
+	}
+	break;
 	case None:
 	default:
 		META_LOG(g_PLAPI, "Unsupported event: %s", event->GetName());

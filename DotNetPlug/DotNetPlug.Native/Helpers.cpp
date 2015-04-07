@@ -108,69 +108,71 @@ HRESULT CREATE_INSTANCE(_AssemblyPtr spAssembly, const char* className, VARIANT*
 	}
 	return hr;
 }
-
-HRESULT SET_EXPANDO_STRING_FROM_EVENT_SHORT(variant_t vtExpando, IGameEvent *event, const char* name)
-{
-	int value = event->GetInt(name);
-
-	HRESULT hr;
-	long i = 0;
-
-	SAFEARRAY* args = SafeArrayCreateVector(VT_VARIANT, 0, 3);
-	hr = SafeArrayPutElement(args, &i, vtExpando);
-	i = 1;
-	hr = SET_STRING_PARAM(args, &i, name);
-	i = 2;
-	hr = SET_INT_PARAM(args, &i, value);
-
-	hr = g_Managed.m_Method_DotNetPlug_TypeHelper_ExpandoAdd->Invoke_3(vtExpando, args, NULL);
-
-	hr = SafeArrayDestroy(args);
-
-	return hr;
-}
-
-HRESULT SET_EXPANDO_STRING_FROM_EVENT_STRING(variant_t vtExpando, IGameEvent *event, const char* name)
-{
-	const char* value = event->GetString(name);
-
-	HRESULT hr;
-	long i = 0;
-
-	SAFEARRAY* args = SafeArrayCreateVector(VT_VARIANT, 0, 3);
-	hr = SafeArrayPutElement(args, &i, vtExpando);
-	i = 1;
-	hr = SET_STRING_PARAM(args, &i, name);
-	i = 2;
-	hr = SET_STRING_PARAM(args, &i, value);
-
-	hr = g_Managed.m_Method_DotNetPlug_TypeHelper_ExpandoAdd->Invoke_3(vtExpando, args, NULL);
-
-	hr = SafeArrayDestroy(args);
-
-	return hr;
-}
-
-HRESULT SET_EXPANDO_STRING_FROM_EVENT_BOOL(variant_t vtExpando, IGameEvent *event, const char* name)
-{
-	bool value = event->GetBool(name);
-
-	HRESULT hr;
-	long i = 0;
-
-	SAFEARRAY* args = SafeArrayCreateVector(VT_VARIANT, 0, 3);
-	hr = SafeArrayPutElement(args, &i, vtExpando);
-	i = 1;
-	hr = SET_STRING_PARAM(args, &i, name);
-	i = 2;
-	hr = SET_BOOL_PARAM(args, &i, value);
-
-	hr = g_Managed.m_Method_DotNetPlug_TypeHelper_ExpandoAdd->Invoke_3(vtExpando, args, NULL);
-
-	hr = SafeArrayDestroy(args);
-
-	return hr;
-}
+//
+//HRESULT SET_EXPANDO_STRING_FROM_EVENT_SHORT(variant_t vtExpando, IGameEvent *event, const char* name)
+//{
+//	int value = event->GetInt(name);
+//
+//	HRESULT hr;
+//	long i = 0;
+//
+//	//SAFEARRAY* args = SafeArrayCreateVector(VT_VARIANT, 0, 3);
+//	//SAFEARRAY* args = SafeArrayCreateVector(VT_UNKNOWN, 0, 3);
+//	//SAFEARRAY* args = SafeArrayCreateVector(VT_EMPTY, 0, 3);
+//	hr = SafeArrayPutElement(args, &i, vtExpando);
+//	i = 1;
+//	hr = SET_STRING_PARAM(args, &i, name);
+//	i = 2;
+//	hr = SET_INT_PARAM(args, &i, value);
+//
+//	hr = g_Managed.m_Method_DotNetPlug_TypeHelper_ExpandoAdd->Invoke_3(vtExpando, args, NULL);
+//
+//	hr = SafeArrayDestroy(args);
+//
+//	return hr;
+//}
+//
+//HRESULT SET_EXPANDO_STRING_FROM_EVENT_STRING(variant_t vtExpando, IGameEvent *event, const char* name)
+//{
+//	const char* value = event->GetString(name);
+//
+//	HRESULT hr;
+//	long i = 0;
+//
+//	SAFEARRAY* args = SafeArrayCreateVector(VT_VARIANT, 0, 3);
+//	hr = SafeArrayPutElement(args, &i, vtExpando);
+//	i = 1;
+//	hr = SET_STRING_PARAM(args, &i, name);
+//	i = 2;
+//	hr = SET_STRING_PARAM(args, &i, value);
+//
+//	hr = g_Managed.m_Method_DotNetPlug_TypeHelper_ExpandoAdd->Invoke_3(vtExpando, args, NULL);
+//
+//	hr = SafeArrayDestroy(args);
+//
+//	return hr;
+//}
+//
+//HRESULT SET_EXPANDO_STRING_FROM_EVENT_BOOL(variant_t vtExpando, IGameEvent *event, const char* name)
+//{
+//	bool value = event->GetBool(name);
+//
+//	HRESULT hr;
+//	long i = 0;
+//
+//	SAFEARRAY* args = SafeArrayCreateVector(VT_VARIANT, 0, 3);
+//	hr = SafeArrayPutElement(args, &i, vtExpando);
+//	i = 1;
+//	hr = SET_STRING_PARAM(args, &i, name);
+//	i = 2;
+//	hr = SET_BOOL_PARAM(args, &i, value);
+//
+//	hr = g_Managed.m_Method_DotNetPlug_TypeHelper_ExpandoAdd->Invoke_3(vtExpando, args, NULL);
+//
+//	hr = SafeArrayDestroy(args);
+//
+//	return hr;
+//}
 
 HRESULT GET_TYPE_FUNC(_AssemblyPtr pAssembly, const char* sType, _Type** pType)
 {

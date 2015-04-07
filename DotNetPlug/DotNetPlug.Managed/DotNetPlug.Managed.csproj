@@ -45,6 +45,7 @@
     <Compile Include="CorePlugin.cs" />
     <Compile Include="EngineWrapperBase.cs" />
     <Compile Include="Engine_Mono.cs" />
+    <Compile Include="EventArgBuilder.cs" />
     <Compile Include="ExecuteCommandDelegate.cs" />
     <Compile Include="Extensions.cs" />
     <Compile Include="FCVar.cs" />
@@ -60,6 +61,7 @@
     <Compile Include="LogDelegate.cs" />
     <Compile Include="ManagedCommand.cs" />
     <Compile Include="MOTDType.cs" />
+    <Compile Include="NativeEventData.cs" />
     <Compile Include="PluginBase.cs" />
     <Compile Include="PluginManager.cs" />
     <Compile Include="PluginManagerMono.cs" />
