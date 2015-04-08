@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Reflection;
@@ -60,7 +61,16 @@ namespace DotNetPlug
                 AssemblyName name = new AssemblyName(args.Name);
                 if (name.Name == this.m_thisAssembly.GetName().Name)
                     return this.m_thisAssembly;
-                this.m_engine.Log("AppDomain.AssemblyResolve : ", args.Name);
+
+                string callerPath = Path.GetDirectoryName(args.RequestingAssembly.Location);
+
+                string searchedPath = Path.Combine(callerPath, name.Name + ".dll");
+                if (File.Exists(searchedPath))
+                {
+                    return Assembly.LoadFile(searchedPath);
+                }
+
+                this.m_engine.Log("AppDomain.AssemblyResolve : {0}", args.Name);
             }
             return null;
         }
@@ -320,64 +330,24 @@ namespace DotNetPlug
             this.Raise(this.m_engine.RaiseClientCommand, e);
         }
 
-        void IPluginManager.RaiseGameEvent(Int64 evtDataPtr)
+        void IPluginManager.RaiseGameEvent(Int64 evtDataPtr, int evtArgsCount, Int64 evtArgsPtr)
         {
             //NativeEventData evtData = new NativeEventData();
             //Marshal.PtrToStructure(new IntPtr(evtDataPtr), evtData);
             NativeEventData evtData = (NativeEventData)Marshal.PtrToStructure(new IntPtr(evtDataPtr), typeof(NativeEventData));
-            //NativeEventArgs[] args = new NativeEventArgs[evtData.ArgsCount];
-            //int size = Marshal.SizeOf(typeof(NativeEventArgs));
-            //for (int i = 0; i < evtData.ArgsCount; i++)
-            //{
-            //    IntPtr argPtr = evtData.Args + i * size;
-            //    args[i] = (NativeEventArgs)Marshal.PtrToStructure(argPtr, typeof(NativeEventArgs));
-            //}
+            NativeEventArgs[] args = new NativeEventArgs[evtArgsCount];
+            int size = Marshal.SizeOf(typeof(NativeEventArgs));
+            for (int i = 0; i < evtArgsCount; i++)
+            {
+                IntPtr argPtr = new IntPtr(evtArgsPtr + i * size);
+                args[i] = (NativeEventArgs)Marshal.PtrToStructure(argPtr, typeof(NativeEventArgs));
+            }
             GameEventEventArgs e = new GameEventEventArgs()
             {
                 Event = evtData.Event,
-                //Args = evtData.Args,
+                Args = args,
             };
             this.Raise(this.m_engine.RaiseGameEvent, e);
         }
     }
-    [StructLayout(LayoutKind.Sequential)]
-    public sealed class NativeEventArgs
-    {
-        public int type;
-        ////[MarshalAs(UnmanagedType.LPStr, SizeConst = NativeEventData.NATIVE_EVENT_NAME_LENGTH)]
-        //[MarshalAs(UnmanagedType.BStr)]
-        //public string Name;
-        //public NativeEventArgType Type;
-        //public Int16 intVal;
-        //public Single floatVal;
-        //public bool boolVal;
-        //[MarshalAs(UnmanagedType.BStr)]
-        //public string strVal;
-    }
-
-    public enum NativeEventArgType : short
-    {
-        Int = 0,
-        String = 1,
-        Bool = 2,
-        Long = 3,
-    }
-    [StructLayout(LayoutKind.Sequential)]
-    public sealed class NativeEventData
-    {
-        internal const int NATIVE_EVENT_ARGS_MAX = 16;
-        internal const int NATIVE_EVENT_NAME_LENGTH = 255;
-        internal const int NATIVE_EVENT_VALUE_LENGTH = 255;
-
-        public GameEvent Event;
-        public int ArgsCount;
-        //[MarshalAs(UnmanagedType.BStr)]
-        //public string EventName;
-        [MarshalAs(UnmanagedType.LPArray, SizeConst = NATIVE_EVENT_ARGS_MAX, ArraySubType = UnmanagedType.Struct)]
-        public NativeEventArgs[] Args;
-        //public IntPtr Args;
-        //[MarshalAs(UnmanagedType.LPArray)]
-        //public IntPtr Args;
-    }
-
 }

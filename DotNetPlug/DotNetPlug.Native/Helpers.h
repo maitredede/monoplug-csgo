@@ -47,6 +47,7 @@ using namespace mscorlib;
 #define GETMETHOD(hr, tType, lpwstrName, ppOut) GETMETHOD_F(hr, tType, lpwstrName, ppOut, (BindingFlags)(BindingFlags_Instance | BindingFlags_Public))
 
 HRESULT SET_CALLBACK(SAFEARRAY* params, long idx, LONGLONG funcPtr);
+HRESULT SET_INT(SAFEARRAY* params, long idx, int intVal);
 HRESULT CREATE_STRING_ARRAY(int argc, const char** argv, VARIANT* vtPsa);
 HRESULT CREATE_STRING_ARRAY_ARGS(int argc, const char** argv, long paramIndex, SAFEARRAY** params);
 HRESULT SET_STRING_PARAM(SAFEARRAY* psa, LONG* i, const char* pStr);

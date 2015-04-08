@@ -7,5 +7,10 @@ using System.Threading.Tasks;
 
 namespace DotNetPlug
 {
-    
+    [StructLayout(LayoutKind.Sequential)]
+    public sealed class NativeEventData
+    {
+        public GameEvent Event;
+        public int ArgsCount;
+    }
 }

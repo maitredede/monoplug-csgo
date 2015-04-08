@@ -134,8 +134,7 @@ private: //Private methods
 #endif
 
 public: //Events
-	EventListener* EVT_player_death;
-	EventListener* EVT_round_start;
+	EventListener** EVT_Listeners;
 public:
 	void RaiseGameEvent(GameEvent e, IGameEvent *event);
 };
@@ -153,13 +152,13 @@ public:
 //};
 //
 typedef struct {
-	//char name[NATIVE_EVENT_NAME_LENGTH];
+	BSTR name;
 	int type;
-	//int intVal;
-	//float floatVal;
-	//bool boolVal;
-	//UINT64 longval;
-	//char strVal[NATIVE_EVENT_VALUE_LENGTH];
+	int intVal;
+	BSTR strVal;
+	bool boolVal;
+	UINT64 longval;
+	float floatVal;
 } NativeEventArgs;
 
 //[uuid(21602F40 - CC62 - 11d4 - AA2B - 00A0CC39CFE1)]
@@ -167,43 +166,60 @@ typedef struct
 {
 	GameEvent Event;
 	int argsCount;
-	//BSTR eventName;
-	NativeEventArgs args[NATIVE_EVENT_ARGS_MAX];
 } NativeEventData;
 
-inline void ADD_SHORT(NativeEventData* nativeEvent, IGameEvent *event, const char* paramName)
+inline void ADD_SHORT(NativeEventData* nativeEvent, NativeEventArgs* args, IGameEvent *event, const char* paramName)
 {
 	int i = nativeEvent->argsCount;
-	//nativeEvent->args[i].type = 0;
-	//nativeEvent->args[i].name = bstr_t(paramName);
-	//nativeEvent->args[i].intVal = event->GetInt(paramName);
+	args[i].type = 0;
+	args[i].name = bstr_t(paramName).copy();
+	args[i].intVal = event->GetInt(paramName);
 	nativeEvent->argsCount++;
 }
 
-inline void ADD_BOOL(NativeEventData* nativeEvent, IGameEvent *event, const char* paramName)
+inline void ADD_BYTE(NativeEventData* nativeEvent, NativeEventArgs* args, IGameEvent *event, const char* paramName)
+{
+	ADD_SHORT(nativeEvent, args, event, paramName);
+	/*int i = nativeEvent->argsCount;
+	args[i].type = 0;
+	args[i].name = bstr_t(paramName).copy();
+	args[i].intVal = event->GetInt(paramName);
+	nativeEvent->argsCount++;*/
+}
+
+inline void ADD_STRING(NativeEventData* nativeEvent, NativeEventArgs* args, IGameEvent *event, const char* paramName)
 {
 	int i = nativeEvent->argsCount;
-	//nativeEvent->args[i].type = 1;
-	//nativeEvent->args[i].name = bstr_t(paramName);
-	//nativeEvent->args[i].boolVal = event->GetBool(paramName);
+	args[i].type = 1;
+	args[i].name = bstr_t(paramName).copy();
+	args[i].strVal = bstr_t(event->GetString(paramName));
 	nativeEvent->argsCount++;
 }
 
-inline void ADD_LONG(NativeEventData* nativeEvent, IGameEvent *event, const char* paramName)
+inline void ADD_BOOL(NativeEventData* nativeEvent, NativeEventArgs* args, IGameEvent *event, const char* paramName)
 {
 	int i = nativeEvent->argsCount;
-	//nativeEvent->args[i].type = 3;
-	//nativeEvent->args[i].name = bstr_t(paramName);
-	//nativeEvent->args[i].intVal = event->GetInt(paramName);
+	args[i].type = 2;
+	args[i].name = bstr_t(paramName).copy();
+	args[i].boolVal = event->GetBool(paramName);
 	nativeEvent->argsCount++;
 }
 
-inline void ADD_STRING(NativeEventData* nativeEvent, IGameEvent *event, const char* paramName)
+inline void ADD_LONG(NativeEventData* nativeEvent, NativeEventArgs* args, IGameEvent *event, const char* paramName)
 {
 	int i = nativeEvent->argsCount;
-	//nativeEvent->args[i].type = 1;
-	//nativeEvent->args[i].name = bstr_t(paramName);
-	//nativeEvent->args[i].strVal = bstr_t(event->GetString(paramName));
+	args[i].type = 3;
+	args[i].name = bstr_t(paramName).copy();
+	args[i].longval = event->GetUint64(paramName);
+	nativeEvent->argsCount++;
+}
+
+inline void ADD_FLOAT(NativeEventData* nativeEvent, NativeEventArgs* args, IGameEvent *event, const char* paramName)
+{
+	int i = nativeEvent->argsCount;
+	args[i].type = 4;
+	args[i].name = bstr_t(paramName).copy();
+	args[i].floatVal = event->GetFloat(paramName);
 	nativeEvent->argsCount++;
 }
 

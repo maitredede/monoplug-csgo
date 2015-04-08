@@ -14,6 +14,6 @@ namespace DotNetPlug
         }
 
         public GameEvent Event { get; internal set; }
-        public dynamic Args { get; internal set; }
+        public NativeEventArgs[] Args { get; internal set; }
     }
 }

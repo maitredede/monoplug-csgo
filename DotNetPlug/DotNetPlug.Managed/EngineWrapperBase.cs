@@ -130,21 +130,18 @@ namespace DotNetPlug
 
         #region Events
         private readonly System.ComponentModel.EventHandlerList m_events = new System.ComponentModel.EventHandlerList();
-        private enum Events
-        {
-            LevelInit,
-            ServerActivate,
-            LevelShutdown,
-            ClientActive,
-            ClientDisconnect,
-            ClientPutInServer,
-            ClientSettingsChanged,
-            ClientConnect,
-            ClientCommand,
-            GameEvent,
-        }
+        private static readonly object EventLevelInit = new object();
+        private static readonly object EventServerActivate = new object();
+        private static readonly object EventLevelShutdown = new object();
+        private static readonly object EventClientActive = new object();
+        private static readonly object EventClientDisconnect = new object();
+        private static readonly object EventClientPutInServer = new object();
+        private static readonly object EventClientSettingsChanged = new object();
+        private static readonly object EventClientConnect = new object();
+        private static readonly object EventClientCommand = new object();
+        private static readonly object EventGameEvent = new object();
 
-        private void RaiseEvent<T>(Events evt, T args) where T : EventArgs
+        private void RaiseEvent<T>(object evt, T args) where T : EventArgs
         {
             EventHandler<T> d = (EventHandler<T>)this.m_events[evt];
             if (d != null)
@@ -153,114 +150,114 @@ namespace DotNetPlug
 
         event EventHandler<LevelInitEventArgs> IEngine.LevelInit
         {
-            add { this.m_events.AddHandler(Events.LevelInit, value); }
-            remove { this.m_events.RemoveHandler(Events.LevelInit, value); }
+            add { this.m_events.AddHandler(EventLevelInit, value); }
+            remove { this.m_events.RemoveHandler(EventLevelInit, value); }
         }
 
         internal void RaiseLevelInit(LevelInitEventArgs e)
         {
-            this.RaiseEvent(Events.LevelInit, e);
+            this.RaiseEvent(EventLevelInit, e);
         }
 
         event EventHandler<ServerActivateEventArgs> IEngine.ServerActivate
         {
-            add { this.m_events.AddHandler(Events.ServerActivate, value); }
-            remove { this.m_events.RemoveHandler(Events.ServerActivate, value); }
+            add { this.m_events.AddHandler(EventServerActivate, value); }
+            remove { this.m_events.RemoveHandler(EventServerActivate, value); }
         }
 
         internal void RaiseServerActivate(ServerActivateEventArgs e)
         {
-            this.RaiseEvent(Events.ServerActivate, e);
+            this.RaiseEvent(EventServerActivate, e);
         }
         #endregion
 
 
         event EventHandler IEngine.LevelShutdown
         {
-            add { this.m_events.AddHandler(Events.LevelShutdown, value); }
-            remove { this.m_events.RemoveHandler(Events.LevelShutdown, value); }
+            add { this.m_events.AddHandler(EventLevelShutdown, value); }
+            remove { this.m_events.RemoveHandler(EventLevelShutdown, value); }
         }
 
         internal void RaiseLevelShutdown(EventArgs e)
         {
-            this.RaiseEvent(Events.LevelShutdown, e);
+            this.RaiseEvent(EventLevelShutdown, e);
         }
 
         event EventHandler IEngine.ClientActive
         {
-            add { this.m_events.AddHandler(Events.ClientActive, value); }
-            remove { this.m_events.RemoveHandler(Events.ClientActive, value); }
+            add { this.m_events.AddHandler(EventClientActive, value); }
+            remove { this.m_events.RemoveHandler(EventClientActive, value); }
         }
 
         internal void RaiseClientActive(EventArgs e)
         {
-            this.RaiseEvent(Events.ClientActive, e);
+            this.RaiseEvent(EventClientActive, e);
         }
 
         event EventHandler IEngine.ClientDisconnect
         {
-            add { this.m_events.AddHandler(Events.ClientDisconnect, value); }
-            remove { this.m_events.RemoveHandler(Events.ClientDisconnect, value); }
+            add { this.m_events.AddHandler(EventClientDisconnect, value); }
+            remove { this.m_events.RemoveHandler(EventClientDisconnect, value); }
         }
 
         internal void RaiseClientDisconnect(EventArgs e)
         {
-            this.RaiseEvent(Events.ClientDisconnect, e);
+            this.RaiseEvent(EventClientDisconnect, e);
         }
 
         event EventHandler IEngine.ClientPutInServer
         {
-            add { this.m_events.AddHandler(Events.ClientPutInServer, value); }
-            remove { this.m_events.RemoveHandler(Events.ClientPutInServer, value); }
+            add { this.m_events.AddHandler(EventClientPutInServer, value); }
+            remove { this.m_events.RemoveHandler(EventClientPutInServer, value); }
         }
 
         internal void RaiseClientPutInServer(EventArgs e)
         {
-            this.RaiseEvent(Events.ClientPutInServer, e);
+            this.RaiseEvent(EventClientPutInServer, e);
         }
 
         event EventHandler IEngine.ClientSettingsChanged
         {
-            add { this.m_events.AddHandler(Events.ClientSettingsChanged, value); }
-            remove { this.m_events.RemoveHandler(Events.ClientSettingsChanged, value); }
+            add { this.m_events.AddHandler(EventClientSettingsChanged, value); }
+            remove { this.m_events.RemoveHandler(EventClientSettingsChanged, value); }
         }
 
         internal void RaiseClientSettingsChanged(EventArgs e)
         {
-            this.RaiseEvent(Events.ClientSettingsChanged, e);
+            this.RaiseEvent(EventClientSettingsChanged, e);
         }
 
         event EventHandler IEngine.ClientConnect
         {
-            add { this.m_events.AddHandler(Events.ClientConnect, value); }
-            remove { this.m_events.RemoveHandler(Events.ClientConnect, value); }
+            add { this.m_events.AddHandler(EventClientConnect, value); }
+            remove { this.m_events.RemoveHandler(EventClientConnect, value); }
         }
 
         internal void RaiseClientConnect(EventArgs e)
         {
-            this.RaiseEvent(Events.ClientConnect, e);
+            this.RaiseEvent(EventClientConnect, e);
         }
 
         event EventHandler IEngine.ClientCommand
         {
-            add { this.m_events.AddHandler(Events.ClientCommand, value); }
-            remove { this.m_events.RemoveHandler(Events.ClientCommand, value); }
+            add { this.m_events.AddHandler(EventClientCommand, value); }
+            remove { this.m_events.RemoveHandler(EventClientCommand, value); }
         }
 
         internal void RaiseClientCommand(EventArgs e)
         {
-            this.RaiseEvent(Events.ClientCommand, e);
+            this.RaiseEvent(EventClientCommand, e);
         }
 
         event EventHandler<GameEventEventArgs> IEngine.GameEvent
         {
-            add { this.m_events.AddHandler(Events.GameEvent, value); }
-            remove { this.m_events.RemoveHandler(Events.GameEvent, value); }
+            add { this.m_events.AddHandler(EventGameEvent, value); }
+            remove { this.m_events.RemoveHandler(EventGameEvent, value); }
         }
 
         internal void RaiseGameEvent(GameEventEventArgs e)
         {
-            this.RaiseEvent(Events.GameEvent, e);
+            this.RaiseEvent(EventGameEvent, e);
         }
 
         protected abstract void ShowMOTDInternal(int playerId, byte[] titleUTF8, byte[] msgUTF8, MOTDType type, byte[] cmdUTF8);

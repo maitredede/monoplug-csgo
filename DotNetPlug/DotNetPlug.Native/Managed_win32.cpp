@@ -435,35 +435,42 @@ void Managed::RaiseGameEvent(GameEvent e, IGameEvent *event)
 
 	NativeEventData* nativeEvent = (NativeEventData*)CoTaskMemAlloc(sizeof(NativeEventData));
 	ZeroMemory(nativeEvent, sizeof(NativeEventData));
+	NativeEventArgs* nativeArgs = (NativeEventArgs*)CoTaskMemAlloc(sizeof(NativeEventArgs) * NATIVE_EVENT_ARGS_MAX);
+	ZeroMemory(nativeArgs, sizeof(NativeEventArgs) * NATIVE_EVENT_ARGS_MAX);
+	//nativeEvent->args = nativeArgs;
+
 	nativeEvent->Event = e;
 	nativeEvent->argsCount = 0;
 	//nativeEvent->eventName = bstr_t(event->GetName());
 
 	switch (e){
 	case player_death:
-		ADD_SHORT(nativeEvent, event, "userid");
-		ADD_STRING(nativeEvent, event, "weapon");
-		//nativeEvent->args[nativeEvent->argsCount++].SetShort("userid", event->GetInt("userid"));
-		//nativeEvent->args[nativeEvent->argsCount++].SetString("weapon", event->GetString("weapon"));
-		//hr = this->m_Method_DotNetPlug_TypeHelper_ExpandoNew->Invoke_3(vtNull, NULL, &vtExpando);
-		////CREATE_INSTANCE(this->m_Assembly_System_Core, "System.Dynamic.ExpandoObject", &vtExpando);
-		////hr = this->m_Type_DotNetPlug_TypeHelper->InvokeMember_3(bstr_t("ExpandoNew"), (BindingFlags)(BindingFlags_Public | BindingFlags_Static), NULL, 
-		//hr = SET_EXPANDO_STRING_FROM_EVENT_SHORT(vtExpando, event, "userid");
-		//hr = SET_EXPANDO_STRING_FROM_EVENT_SHORT(vtExpando, event, "attacker");
-		//hr = SET_EXPANDO_STRING_FROM_EVENT_SHORT(vtExpando, event, "assister");
-		//hr = SET_EXPANDO_STRING_FROM_EVENT_STRING(vtExpando, event, "weapon");
-		//hr = SET_EXPANDO_STRING_FROM_EVENT_STRING(vtExpando, event, "weapon_itemid");
-		//hr = SET_EXPANDO_STRING_FROM_EVENT_STRING(vtExpando, event, "weapon_fauxitemid");
-		//hr = SET_EXPANDO_STRING_FROM_EVENT_STRING(vtExpando, event, "weapon_originalowner_xuid");
-		//hr = SET_EXPANDO_STRING_FROM_EVENT_BOOL(vtExpando, event, "headshot");
-		//hr = SET_EXPANDO_STRING_FROM_EVENT_SHORT(vtExpando, event, "dominated");
-		//hr = SET_EXPANDO_STRING_FROM_EVENT_SHORT(vtExpando, event, "revenge");
-		//hr = SET_EXPANDO_STRING_FROM_EVENT_SHORT(vtExpando, event, "penetrated");
+		ADD_SHORT(nativeEvent, nativeArgs, event, "userid");
+		ADD_SHORT(nativeEvent, nativeArgs, event, "attacker");
+		ADD_SHORT(nativeEvent, nativeArgs, event, "assister");
+		ADD_STRING(nativeEvent, nativeArgs, event, "weapon");
+		ADD_STRING(nativeEvent, nativeArgs, event, "weapon_itemid");
+		ADD_STRING(nativeEvent, nativeArgs, event, "weapon_fauxitemid");
+		ADD_STRING(nativeEvent, nativeArgs, event, "weapon_originalowner_xuid");
+		ADD_BOOL(nativeEvent, nativeArgs, event, "headshot");
+		ADD_SHORT(nativeEvent, nativeArgs, event, "dominated");
+		ADD_SHORT(nativeEvent, nativeArgs, event, "revenge");
+		ADD_SHORT(nativeEvent, nativeArgs, event, "penetrated");
+		break;
+	case player_hurt:
+		ADD_SHORT(nativeEvent, nativeArgs, event, "userid");
+		ADD_SHORT(nativeEvent, nativeArgs, event, "attacker");
+		ADD_BYTE(nativeEvent, nativeArgs, event, "health");
+		ADD_BYTE(nativeEvent, nativeArgs, event, "armor");
+		ADD_STRING(nativeEvent, nativeArgs, event, "weapon");
+		ADD_SHORT(nativeEvent, nativeArgs, event, "dmg_health");
+		ADD_BYTE(nativeEvent, nativeArgs, event, "dmg_armor");
+		ADD_BYTE(nativeEvent, nativeArgs, event, "hitgroup");
 		break;
 	case round_start:
-		ADD_LONG(nativeEvent, event, "timelimit");
-		ADD_LONG(nativeEvent, event, "fraglimit");
-		ADD_STRING(nativeEvent, event, "objective");
+		ADD_LONG(nativeEvent, nativeArgs, event, "timelimit");
+		ADD_LONG(nativeEvent, nativeArgs, event, "fraglimit");
+		ADD_STRING(nativeEvent, nativeArgs, event, "objective");
 		break;
 	case None:
 	default:
@@ -474,11 +481,14 @@ void Managed::RaiseGameEvent(GameEvent e, IGameEvent *event)
 
 	if (raise)
 	{
-		SAFEARRAY* args = SafeArrayCreateVector(VT_VARIANT, 0, 1);
+		SAFEARRAY* args = SafeArrayCreateVector(VT_VARIANT, 0, 3);
 		hr = SET_CALLBACK(args, 0, (LONGLONG)nativeEvent);
+		hr = SET_INT(args, 1, nativeEvent->argsCount);
+		hr = SET_CALLBACK(args, 2, (LONGLONG)nativeArgs);
 		hr = this->m_Method_DotNetPlug_IPluginManager_RaiseGameEvent->Invoke_3(this->vtPluginManager, args, &vtNull);
 		hr = SafeArrayDestroy(args);
 	}
+	CoTaskMemFree(nativeArgs);
 	CoTaskMemFree(nativeEvent);
 }
 

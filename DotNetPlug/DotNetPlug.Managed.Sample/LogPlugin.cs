@@ -31,8 +31,13 @@ namespace DotNetPlug.Managed
 
         private async void Engine_GameEvent(object sender, GameEventEventArgs e)
         {
-            string json = await Newtonsoft.Json.JsonConvert.SerializeObjectAsync(e.Args);
-            await this.Log(string.Format("GameEvent : {0}={1}", e.Event, json));
+            Newtonsoft.Json.JsonSerializerSettings settings = new Newtonsoft.Json.JsonSerializerSettings();
+            settings.Converters.Add(new NativeEventJsonConverter());
+            string json = Newtonsoft.Json.JsonConvert.SerializeObject(e.Args, Newtonsoft.Json.Formatting.None, settings);
+            NativeEventArgs[] e2 = Newtonsoft.Json.JsonConvert.DeserializeObject<NativeEventArgs[]>(json, settings);
+            string line = string.Format("GameEvent : {0}={1}", e.Event, json);
+            await this.Log(line);
+            Console.WriteLine(line);
         }
 
         private async void Engine_ServerActivate(object sender, ServerActivateEventArgs e)

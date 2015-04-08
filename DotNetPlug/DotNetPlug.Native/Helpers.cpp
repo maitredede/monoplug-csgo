@@ -13,6 +13,16 @@ HRESULT SET_CALLBACK(SAFEARRAY* params, long idx, LONGLONG funcPtr)
 	return hr;
 };
 
+HRESULT SET_INT(SAFEARRAY* params, long idx, int intVal)
+{
+	HRESULT hr;
+	variant_t params0;
+	params0.intVal = intVal;
+	params0.vt = VT_I2;
+	hr = SafeArrayPutElement(params, &idx, &params0);
+	return hr;
+};
+
 HRESULT CREATE_STRING_ARRAY(int argc, const char** argv, VARIANT* vtPsa)
 {
 	long i;

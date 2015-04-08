@@ -6,13 +6,27 @@ Managed::Managed()
 {
 	this->s_inited = false;
 
-	this->EVT_player_death = new EventListener(player_death);
-	this->EVT_round_start = new EventListener(round_start);
+	this->EVT_Listeners = new EventListener*[GameEvent::MAX];
+	for (int i = None; i < MAX; i++){
+		if (strlen(g_CSGO_EventNames[i])){
+			this->EVT_Listeners[i] = new EventListener(static_cast<GameEvent>(i));
+		}
+		else{
+			this->EVT_Listeners[i] = NULL;
+		}
+	}
+	/*this->EVT_player_death = new EventListener(player_death);
+	this->EVT_round_start = new EventListener(round_start);*/
 }
 
 Managed::~Managed()
 {
-	delete this->EVT_player_death;
+	for (int i = None; i < MAX; i++){
+		if (this->EVT_Listeners[i]){
+			delete this->EVT_Listeners[i];
+		}
+	}
+	delete[] this->EVT_Listeners;
 }
 
 void Managed::Log(const char* msg)
