@@ -320,14 +320,64 @@ namespace DotNetPlug
             this.Raise(this.m_engine.RaiseClientCommand, e);
         }
 
-        void IPluginManager.RaiseGameEvent(NativeEventData evtData)
+        void IPluginManager.RaiseGameEvent(Int64 evtDataPtr)
         {
+            //NativeEventData evtData = new NativeEventData();
+            //Marshal.PtrToStructure(new IntPtr(evtDataPtr), evtData);
+            NativeEventData evtData = (NativeEventData)Marshal.PtrToStructure(new IntPtr(evtDataPtr), typeof(NativeEventData));
+            //NativeEventArgs[] args = new NativeEventArgs[evtData.ArgsCount];
+            //int size = Marshal.SizeOf(typeof(NativeEventArgs));
+            //for (int i = 0; i < evtData.ArgsCount; i++)
+            //{
+            //    IntPtr argPtr = evtData.Args + i * size;
+            //    args[i] = (NativeEventArgs)Marshal.PtrToStructure(argPtr, typeof(NativeEventArgs));
+            //}
             GameEventEventArgs e = new GameEventEventArgs()
             {
                 Event = evtData.Event,
-                Args = evtData.Args,
+                //Args = evtData.Args,
             };
             this.Raise(this.m_engine.RaiseGameEvent, e);
         }
     }
+    [StructLayout(LayoutKind.Sequential)]
+    public sealed class NativeEventArgs
+    {
+        public int type;
+        ////[MarshalAs(UnmanagedType.LPStr, SizeConst = NativeEventData.NATIVE_EVENT_NAME_LENGTH)]
+        //[MarshalAs(UnmanagedType.BStr)]
+        //public string Name;
+        //public NativeEventArgType Type;
+        //public Int16 intVal;
+        //public Single floatVal;
+        //public bool boolVal;
+        //[MarshalAs(UnmanagedType.BStr)]
+        //public string strVal;
+    }
+
+    public enum NativeEventArgType : short
+    {
+        Int = 0,
+        String = 1,
+        Bool = 2,
+        Long = 3,
+    }
+    [StructLayout(LayoutKind.Sequential)]
+    public sealed class NativeEventData
+    {
+        internal const int NATIVE_EVENT_ARGS_MAX = 16;
+        internal const int NATIVE_EVENT_NAME_LENGTH = 255;
+        internal const int NATIVE_EVENT_VALUE_LENGTH = 255;
+
+        public GameEvent Event;
+        public int ArgsCount;
+        //[MarshalAs(UnmanagedType.BStr)]
+        //public string EventName;
+        [MarshalAs(UnmanagedType.LPArray, SizeConst = NATIVE_EVENT_ARGS_MAX, ArraySubType = UnmanagedType.Struct)]
+        public NativeEventArgs[] Args;
+        //public IntPtr Args;
+        //[MarshalAs(UnmanagedType.LPArray)]
+        //public IntPtr Args;
+    }
+
 }

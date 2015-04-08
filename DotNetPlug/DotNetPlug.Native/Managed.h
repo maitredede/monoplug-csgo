@@ -135,37 +135,79 @@ private: //Private methods
 
 public: //Events
 	EventListener* EVT_player_death;
+	EventListener* EVT_round_start;
 public:
 	void RaiseGameEvent(GameEvent e, IGameEvent *event);
 };
 
+#define NATIVE_EVENT_NAME_LENGTH 255
+#define NATIVE_EVENT_VALUE_LENGTH 255
 #define NATIVE_EVENT_ARGS_MAX 16
 
-[uuid(21602F40-CC62-11d4-AA2B-00A0CC39CFE0)]
+#ifdef MANAGED_WIN32
+
+//[uuid(21602F40-CC62-11d4-AA2B-00A0CC39CFE0)]
+//class INativeEventArgs :public IUnknown
+//{
+//
+//};
+//
 typedef struct {
-	BSTR name;
+	//char name[NATIVE_EVENT_NAME_LENGTH];
 	int type;
-	int intVal;
-	float floatVal;
-	bool boolVal;
-	BSTR strVal;
-	void SetString(const char* name, const char* value){
-		this->name = bstr_t(name);
-		this->strVal = bstr_t(value);
-	};
-	void SetShort(const char* name, int value){
-		this->name = bstr_t(name);
-		this->intVal = value;
-	}
+	//int intVal;
+	//float floatVal;
+	//bool boolVal;
+	//UINT64 longval;
+	//char strVal[NATIVE_EVENT_VALUE_LENGTH];
 } NativeEventArgs;
 
-[uuid(21602F40-CC62-11d4-AA2B-00A0CC39CFE1)]
+//[uuid(21602F40 - CC62 - 11d4 - AA2B - 00A0CC39CFE1)]
 typedef struct
 {
 	GameEvent Event;
 	int argsCount;
+	//BSTR eventName;
 	NativeEventArgs args[NATIVE_EVENT_ARGS_MAX];
 } NativeEventData;
+
+inline void ADD_SHORT(NativeEventData* nativeEvent, IGameEvent *event, const char* paramName)
+{
+	int i = nativeEvent->argsCount;
+	//nativeEvent->args[i].type = 0;
+	//nativeEvent->args[i].name = bstr_t(paramName);
+	//nativeEvent->args[i].intVal = event->GetInt(paramName);
+	nativeEvent->argsCount++;
+}
+
+inline void ADD_BOOL(NativeEventData* nativeEvent, IGameEvent *event, const char* paramName)
+{
+	int i = nativeEvent->argsCount;
+	//nativeEvent->args[i].type = 1;
+	//nativeEvent->args[i].name = bstr_t(paramName);
+	//nativeEvent->args[i].boolVal = event->GetBool(paramName);
+	nativeEvent->argsCount++;
+}
+
+inline void ADD_LONG(NativeEventData* nativeEvent, IGameEvent *event, const char* paramName)
+{
+	int i = nativeEvent->argsCount;
+	//nativeEvent->args[i].type = 3;
+	//nativeEvent->args[i].name = bstr_t(paramName);
+	//nativeEvent->args[i].intVal = event->GetInt(paramName);
+	nativeEvent->argsCount++;
+}
+
+inline void ADD_STRING(NativeEventData* nativeEvent, IGameEvent *event, const char* paramName)
+{
+	int i = nativeEvent->argsCount;
+	//nativeEvent->args[i].type = 1;
+	//nativeEvent->args[i].name = bstr_t(paramName);
+	//nativeEvent->args[i].strVal = bstr_t(event->GetString(paramName));
+	nativeEvent->argsCount++;
+}
+
+#endif
 
 extern Managed g_Managed;
 

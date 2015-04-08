@@ -30,6 +30,6 @@ namespace DotNetPlug
         void RaiseClientCommand();
 
 
-        void RaiseGameEvent(NativeEventData evtData);
+        void RaiseGameEvent(Int64 evtDataPtr);
     }
 }

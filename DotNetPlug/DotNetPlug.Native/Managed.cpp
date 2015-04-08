@@ -7,6 +7,7 @@ Managed::Managed()
 	this->s_inited = false;
 
 	this->EVT_player_death = new EventListener(player_death);
+	this->EVT_round_start = new EventListener(round_start);
 }
 
 Managed::~Managed()

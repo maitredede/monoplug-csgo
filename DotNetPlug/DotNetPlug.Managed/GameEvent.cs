@@ -10,6 +10,9 @@ namespace DotNetPlug
     {
         None = 0,
 
-        player_death,
+        player_death = 1,
+
+
+        round_start = 53,
     }
 }

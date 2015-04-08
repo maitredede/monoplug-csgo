@@ -427,22 +427,24 @@ void Managed::RaiseClientCommand()
 
 void Managed::RaiseGameEvent(GameEvent e, IGameEvent *event)
 {
-	variant_t vtNull = NULL;
-	//variant_t vtExpando = NULL;
+	variant_t vtNull;
 	HRESULT hr;
 
 	long i = 0;
+	bool raise = true;
 
-	NativeEventData nativeEvent;
-	ZeroMemory(&nativeEvent, sizeof(NativeEventArgs));
-	nativeEvent.Event = e;
-	nativeEvent.argsCount = 0;
+	NativeEventData* nativeEvent = (NativeEventData*)CoTaskMemAlloc(sizeof(NativeEventData));
+	ZeroMemory(nativeEvent, sizeof(NativeEventData));
+	nativeEvent->Event = e;
+	nativeEvent->argsCount = 0;
+	//nativeEvent->eventName = bstr_t(event->GetName());
 
 	switch (e){
 	case player_death:
-	{
-		nativeEvent.args[nativeEvent.argsCount++].SetShort("userid", event->GetInt("userid"));
-		nativeEvent.args[nativeEvent.argsCount++].SetString("weapon", event->GetString("weapon"));
+		ADD_SHORT(nativeEvent, event, "userid");
+		ADD_STRING(nativeEvent, event, "weapon");
+		//nativeEvent->args[nativeEvent->argsCount++].SetShort("userid", event->GetInt("userid"));
+		//nativeEvent->args[nativeEvent->argsCount++].SetString("weapon", event->GetString("weapon"));
 		//hr = this->m_Method_DotNetPlug_TypeHelper_ExpandoNew->Invoke_3(vtNull, NULL, &vtExpando);
 		////CREATE_INSTANCE(this->m_Assembly_System_Core, "System.Dynamic.ExpandoObject", &vtExpando);
 		////hr = this->m_Type_DotNetPlug_TypeHelper->InvokeMember_3(bstr_t("ExpandoNew"), (BindingFlags)(BindingFlags_Public | BindingFlags_Static), NULL, 
@@ -457,22 +459,27 @@ void Managed::RaiseGameEvent(GameEvent e, IGameEvent *event)
 		//hr = SET_EXPANDO_STRING_FROM_EVENT_SHORT(vtExpando, event, "dominated");
 		//hr = SET_EXPANDO_STRING_FROM_EVENT_SHORT(vtExpando, event, "revenge");
 		//hr = SET_EXPANDO_STRING_FROM_EVENT_SHORT(vtExpando, event, "penetrated");
-		SAFEARRAY* args = SafeArrayCreateVector(VT_VARIANT, 0, 1);
-		variant_t arg0;
-		VariantInit(&arg0);
-		arg0.vt = VT_PTR;
-		arg0.byref = &nativeEvent;
-		hr = SafeArrayPutElement(args, &i, arg0);
-		hr = this->m_Method_DotNetPlug_IPluginManager_RaiseGameEvent->Invoke_3(this->vtPluginManager, args, &vtNull);
-		hr = SafeArrayDestroy(args);
-		hr = VariantClear(&arg0);
-	}
-	break;
+		break;
+	case round_start:
+		ADD_LONG(nativeEvent, event, "timelimit");
+		ADD_LONG(nativeEvent, event, "fraglimit");
+		ADD_STRING(nativeEvent, event, "objective");
+		break;
 	case None:
 	default:
 		META_LOG(g_PLAPI, "Unsupported event: %s", event->GetName());
+		raise = raise;
 		break;
 	}
+
+	if (raise)
+	{
+		SAFEARRAY* args = SafeArrayCreateVector(VT_VARIANT, 0, 1);
+		hr = SET_CALLBACK(args, 0, (LONGLONG)nativeEvent);
+		hr = this->m_Method_DotNetPlug_IPluginManager_RaiseGameEvent->Invoke_3(this->vtPluginManager, args, &vtNull);
+		hr = SafeArrayDestroy(args);
+	}
+	CoTaskMemFree(nativeEvent);
 }
 
 #endif

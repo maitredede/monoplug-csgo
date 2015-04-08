@@ -112,6 +112,7 @@ bool DotNetPlugPlugin::Load(PluginId id, ISmmAPI *ismm, char *error, size_t maxl
 	g_Managed.Load();
 
 	gameevents->AddListener(g_Managed.EVT_player_death, "player_death", true);
+	gameevents->AddListener(g_Managed.EVT_round_start, "round_start", true);
 
 	this->m_varVersion = new ConVar("dotplug_version", this->GetVersion(), FCVAR_REPLICATED | FCVAR_NOTIFY, "Plugin version of DotPlug engine", &DotPlugVersionCallback);
 	META_REGCVAR(this->m_varVersion);
