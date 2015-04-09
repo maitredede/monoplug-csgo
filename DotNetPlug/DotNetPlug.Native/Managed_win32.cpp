@@ -497,11 +497,6 @@ void Managed::RaiseGameEvent(GameEvent e, IGameEvent *event)
 		ADD_SHORT(nativeEvent, nativeArgs, event, "userid");
 		break;
 
-	case round_start:
-		ADD_LONG(nativeEvent, nativeArgs, event, "timelimit");
-		ADD_LONG(nativeEvent, nativeArgs, event, "fraglimit");
-		ADD_STRING(nativeEvent, nativeArgs, event, "objective");
-		break;
 	case announce_phase_end:
 		break;
 	case cs_intermission:
@@ -510,7 +505,381 @@ void Managed::RaiseGameEvent(GameEvent e, IGameEvent *event)
 		ADD_SHORT(nativeEvent, nativeArgs, event, "userid");
 		ADD_BOOL(nativeEvent, nativeArgs, event, "haskit");
 		break;
-
+	case bomb_abortdefuse:
+		ADD_SHORT(nativeEvent, nativeArgs, event, "userid");
+		break;
+	case hostage_follows:
+	case hostage_hurt:
+	case hostage_killed:
+		ADD_SHORT(nativeEvent, nativeArgs, event, "userid");
+		ADD_SHORT(nativeEvent, nativeArgs, event, "hostage");
+		break;
+	case hostage_rescued:
+		ADD_SHORT(nativeEvent, nativeArgs, event, "userid");
+		ADD_SHORT(nativeEvent, nativeArgs, event, "hostage");
+		ADD_SHORT(nativeEvent, nativeArgs, event, "site");
+		break;
+	case hostage_stops_following:
+		ADD_SHORT(nativeEvent, nativeArgs, event, "userid");
+		ADD_SHORT(nativeEvent, nativeArgs, event, "hostage");
+		break;
+	case hostage_rescued_all:
+		break;
+	case hostage_call_for_help:
+		ADD_SHORT(nativeEvent, nativeArgs, event, "hostage");
+		break;
+	case vip_escaped:
+		ADD_SHORT(nativeEvent, nativeArgs, event, "userid");
+		break;
+	case vip_killed:
+		ADD_SHORT(nativeEvent, nativeArgs, event, "userid");
+		ADD_SHORT(nativeEvent, nativeArgs, event, "attacker");
+		break;
+	case player_radio:
+		ADD_SHORT(nativeEvent, nativeArgs, event, "userid");
+		ADD_SHORT(nativeEvent, nativeArgs, event, "slot");
+		break;
+	case bomb_beep:
+		ADD_LONG(nativeEvent, nativeArgs, event, "entindex");
+		break;
+	case weapon_fire:
+		ADD_SHORT(nativeEvent, nativeArgs, event, "userid");
+		ADD_STRING(nativeEvent, nativeArgs, event, "weapon");
+		ADD_BOOL(nativeEvent, nativeArgs, event, "silenced");
+		break;
+	case weapon_fire_on_empty:
+		ADD_SHORT(nativeEvent, nativeArgs, event, "userid");
+		ADD_STRING(nativeEvent, nativeArgs, event, "weapon");
+		break;
+	case weapon_outofammo:
+	case weapon_reload:
+	case weapon_zoom:
+	case silencer_detach:
+	case inspect_weapon:
+	case weapon_zoom_rifle:
+		ADD_SHORT(nativeEvent, nativeArgs, event, "userid");
+		break;
+	case player_spawned:
+		ADD_SHORT(nativeEvent, nativeArgs, event, "userid");
+		ADD_BOOL(nativeEvent, nativeArgs, event, "inrestart");
+		break;
+	case item_pickup:
+		ADD_SHORT(nativeEvent, nativeArgs, event, "userid");
+		ADD_STRING(nativeEvent, nativeArgs, event, "item");
+		ADD_BOOL(nativeEvent, nativeArgs, event, "silent");
+		break;
+	case ammo_pickup:
+		ADD_SHORT(nativeEvent, nativeArgs, event, "userid");
+		ADD_STRING(nativeEvent, nativeArgs, event, "item");
+		ADD_LONG(nativeEvent, nativeArgs, event, "index");
+		break;
+	case item_equip:
+		ADD_SHORT(nativeEvent, nativeArgs, event, "userid");
+		ADD_STRING(nativeEvent, nativeArgs, event, "item");
+		ADD_BOOL(nativeEvent, nativeArgs, event, "canzoom");
+		ADD_BOOL(nativeEvent, nativeArgs, event, "hassilencer");
+		ADD_BOOL(nativeEvent, nativeArgs, event, "issilenced");
+		ADD_BOOL(nativeEvent, nativeArgs, event, "hastracers");
+		ADD_SHORT(nativeEvent, nativeArgs, event, "weptype");
+		ADD_BOOL(nativeEvent, nativeArgs, event, "ispainted");
+		break;
+	case enter_buyzone:
+	case exit_buyzone:
+		ADD_SHORT(nativeEvent, nativeArgs, event, "userid");
+		ADD_BOOL(nativeEvent, nativeArgs, event, "canbuy");
+		break;
+	case buytime_ended:
+		break;
+	case enter_bombzone:
+	case exit_bombzone:
+		ADD_SHORT(nativeEvent, nativeArgs, event, "userid");
+		ADD_BOOL(nativeEvent, nativeArgs, event, "hasbomb");
+		ADD_BOOL(nativeEvent, nativeArgs, event, "isplanted");
+		break;
+	case enter_rescue_zone:
+	case exit_rescue_zone:
+	case silencer_off:
+	case silencer_on:
+	case buymenu_open:
+	case buymenu_close:
+		ADD_SHORT(nativeEvent, nativeArgs, event, "userid");
+		break;
+	case round_prestart:
+	case round_poststart:
+		break;
+	case round_start:
+		ADD_LONG(nativeEvent, nativeArgs, event, "timelimit");
+		ADD_LONG(nativeEvent, nativeArgs, event, "fraglimit");
+		ADD_STRING(nativeEvent, nativeArgs, event, "objective");
+		break;
+	case round_end:
+		ADD_BYTE(nativeEvent, nativeArgs, event, "winner");
+		ADD_BYTE(nativeEvent, nativeArgs, event, "reason");
+		ADD_STRING(nativeEvent, nativeArgs, event, "message");
+		break;
+	case grenade_bounce:
+		ADD_SHORT(nativeEvent, nativeArgs, event, "userid");
+		break;
+	case hegrenade_detonate:
+	case flashbang_detonate:
+	case smokegrenade_detonate:
+	case smokegrenade_expired:
+	case molotov_detonate:
+	case decoy_detonate:
+	case decoy_started:
+		ADD_SHORT(nativeEvent, nativeArgs, event, "userid");
+		ADD_SHORT(nativeEvent, nativeArgs, event, "entityid");
+		ADD_FLOAT(nativeEvent, nativeArgs, event, "x");
+		ADD_FLOAT(nativeEvent, nativeArgs, event, "y");
+		ADD_FLOAT(nativeEvent, nativeArgs, event, "z");
+		break;
+	case inferno_startburn:
+	case inferno_expire:
+	case inferno_extinguish:
+		ADD_SHORT(nativeEvent, nativeArgs, event, "entityid");
+		ADD_FLOAT(nativeEvent, nativeArgs, event, "x");
+		ADD_FLOAT(nativeEvent, nativeArgs, event, "y");
+		ADD_FLOAT(nativeEvent, nativeArgs, event, "z");
+		break;
+	case decoy_firing:
+		ADD_SHORT(nativeEvent, nativeArgs, event, "userid");
+		ADD_SHORT(nativeEvent, nativeArgs, event, "entityid");
+		ADD_FLOAT(nativeEvent, nativeArgs, event, "x");
+		ADD_FLOAT(nativeEvent, nativeArgs, event, "y");
+		ADD_FLOAT(nativeEvent, nativeArgs, event, "z");
+		break;
+	case bullet_impact:
+		ADD_SHORT(nativeEvent, nativeArgs, event, "userid");
+		ADD_FLOAT(nativeEvent, nativeArgs, event, "x");
+		ADD_FLOAT(nativeEvent, nativeArgs, event, "y");
+		ADD_FLOAT(nativeEvent, nativeArgs, event, "z");
+		break;
+	case player_footstep:
+	case player_jump:
+	case player_blind:
+		ADD_SHORT(nativeEvent, nativeArgs, event, "userid");
+		break;
+	case player_falldamage:
+		ADD_SHORT(nativeEvent, nativeArgs, event, "userid");
+		ADD_FLOAT(nativeEvent, nativeArgs, event, "damage");
+		break;
+	case door_moving:
+		ADD_LONG(nativeEvent, nativeArgs, event, "entindex");
+		ADD_SHORT(nativeEvent, nativeArgs, event, "userid");
+		break;
+	case round_freeze_end:
+	case mb_input_lock_success:
+	case mb_input_lock_cancel:
+		break;
+	case nav_blocked:
+		ADD_LONG(nativeEvent, nativeArgs, event, "area");
+		ADD_BOOL(nativeEvent, nativeArgs, event, "blocked");
+		break;
+	case nav_generate:
+		break;
+	case player_stats_updated:
+		ADD_BOOL(nativeEvent, nativeArgs, event, "forceupload");
+		break;
+	case achievement_info_loaded:
+		break;
+	case spec_target_updated:
+	case spec_mode_updated:
+		ADD_SHORT(nativeEvent, nativeArgs, event, "userid");
+		break;
+	case hltv_changed_mode:
+		ADD_LONG(nativeEvent, nativeArgs, event, "oldmode");
+		ADD_LONG(nativeEvent, nativeArgs, event, "newmode");
+		ADD_LONG(nativeEvent, nativeArgs, event, "obs_target");
+		break;
+	case cs_game_disconnected:
+		break;
+	case cs_win_panel_round:
+		ADD_BOOL(nativeEvent, nativeArgs, event, "show_timer_defend");
+		ADD_BOOL(nativeEvent, nativeArgs, event, "show_timer_attack");
+		ADD_SHORT(nativeEvent, nativeArgs, event, "timer_time");
+		ADD_BYTE(nativeEvent, nativeArgs, event, "final_event");
+		ADD_STRING(nativeEvent, nativeArgs, event, "funfact_token");
+		ADD_SHORT(nativeEvent, nativeArgs, event, "funfact_player");
+		ADD_LONG(nativeEvent, nativeArgs, event, "funfact_data1");
+		ADD_LONG(nativeEvent, nativeArgs, event, "funfact_data2");
+		ADD_LONG(nativeEvent, nativeArgs, event, "funfact_data3");
+		break;
+	case cs_win_panel_match:
+	case cs_match_end_restart:
+	case cs_pre_restart:
+		break;
+	case show_freezepanel:
+		ADD_SHORT(nativeEvent, nativeArgs, event, "victim");
+		ADD_SHORT(nativeEvent, nativeArgs, event, "killer");
+		ADD_SHORT(nativeEvent, nativeArgs, event, "hits_taken");
+		ADD_SHORT(nativeEvent, nativeArgs, event, "damage_taken");
+		ADD_SHORT(nativeEvent, nativeArgs, event, "hits_given");
+		ADD_SHORT(nativeEvent, nativeArgs, event, "damage_given");
+		break;
+	case hide_freezepanel:
+	case freezecam_started:
+		break;
+	case player_avenged_teammate:
+		ADD_SHORT(nativeEvent, nativeArgs, event, "avenger_id");
+		ADD_SHORT(nativeEvent, nativeArgs, event, "avenged_player_id");
+		break;
+	case achievement_earned:
+		ADD_BYTE(nativeEvent, nativeArgs, event, "player");
+		ADD_SHORT(nativeEvent, nativeArgs, event, "achievement");
+		break;
+	case achievement_earned_local:
+		ADD_SHORT(nativeEvent, nativeArgs, event, "achievement");
+		ADD_SHORT(nativeEvent, nativeArgs, event, "splitscreenplayer");
+		break;
+	case item_found:
+		ADD_BYTE(nativeEvent, nativeArgs, event, "player");
+		ADD_BYTE(nativeEvent, nativeArgs, event, "quality");
+		ADD_BYTE(nativeEvent, nativeArgs, event, "method");
+		ADD_LONG(nativeEvent, nativeArgs, event, "itemdef");
+		ADD_LONG(nativeEvent, nativeArgs, event, "itemid");
+		break;
+	case item_gifted:
+		ADD_BYTE(nativeEvent, nativeArgs, event, "player");
+		ADD_LONG(nativeEvent, nativeArgs, event, "itemdef");
+		ADD_BYTE(nativeEvent, nativeArgs, event, "numgifts");
+		ADD_BYTE(nativeEvent, nativeArgs, event, "giftidx");
+		ADD_LONG(nativeEvent, nativeArgs, event, "accountid");
+		break;
+	case repost_xbox_achievements:
+		ADD_SHORT(nativeEvent, nativeArgs, event, "splitscreenplayer");
+		break;
+	case match_end_conditions:
+		ADD_LONG(nativeEvent, nativeArgs, event, "frags");
+		ADD_LONG(nativeEvent, nativeArgs, event, "max_rounds");
+		ADD_LONG(nativeEvent, nativeArgs, event, "win_rounds");
+		ADD_LONG(nativeEvent, nativeArgs, event, "time");
+		break;
+	case round_mvp:
+		ADD_SHORT(nativeEvent, nativeArgs, event, "userid");
+		ADD_SHORT(nativeEvent, nativeArgs, event, "reason");
+		break;
+	case player_decal:
+		ADD_SHORT(nativeEvent, nativeArgs, event, "userid");
+		break;
+	case teamplay_round_start:
+		ADD_BOOL(nativeEvent, nativeArgs, event, "full_reset");
+		break;
+	case client_disconnect:
+		break;
+	case gg_player_levelup:
+	case ggtr_player_levelup:
+	case ggprogressive_player_levelup:
+		ADD_SHORT(nativeEvent, nativeArgs, event, "userid");
+		ADD_SHORT(nativeEvent, nativeArgs, event, "weaponrank");
+		ADD_STRING(nativeEvent, nativeArgs, event, "weaponname");
+		break;
+	case gg_killed_enemy:
+		ADD_SHORT(nativeEvent, nativeArgs, event, "victimid");
+		ADD_SHORT(nativeEvent, nativeArgs, event, "attackerid");
+		ADD_SHORT(nativeEvent, nativeArgs, event, "dominated");
+		ADD_SHORT(nativeEvent, nativeArgs, event, "revenge");
+		ADD_BOOL(nativeEvent, nativeArgs, event, "bonus");
+		break;
+	case gg_final_weapon_achieved:
+	case gg_bonus_grenade_achieved:
+		ADD_SHORT(nativeEvent, nativeArgs, event, "playerid");
+		break;
+	case switch_team:
+		ADD_SHORT(nativeEvent, nativeArgs, event, "numPlayers");
+		ADD_SHORT(nativeEvent, nativeArgs, event, "numSpectators");
+		ADD_SHORT(nativeEvent, nativeArgs, event, "avg_rank");
+		ADD_SHORT(nativeEvent, nativeArgs, event, "numTSlotsFree");
+		ADD_SHORT(nativeEvent, nativeArgs, event, "numCTSlotsFree");
+		break;
+	case gg_leader:
+		ADD_SHORT(nativeEvent, nativeArgs, event, "playerid");
+		break;
+	case gg_player_impending_upgrade:
+		ADD_SHORT(nativeEvent, nativeArgs, event, "userid");
+		break;
+	case write_profile_data:
+		break;
+	case trial_time_expired:
+		ADD_SHORT(nativeEvent, nativeArgs, event, "slot");
+		break;
+	case update_matchmaking_stats:
+		break;
+	case player_reset_vote:
+		ADD_SHORT(nativeEvent, nativeArgs, event, "userid");
+		ADD_SHORT(nativeEvent, nativeArgs, event, "vote");
+		break;
+	case enable_restart_voting:
+		ADD_BOOL(nativeEvent, nativeArgs, event, "enable");
+		break;
+	case sfuievent:
+		ADD_STRING(nativeEvent, nativeArgs, event, "action");
+		ADD_STRING(nativeEvent, nativeArgs, event, "data");
+		ADD_BYTE(nativeEvent, nativeArgs, event, "slot");
+		break;
+	case start_vote:
+		ADD_SHORT(nativeEvent, nativeArgs, event, "userid");
+		ADD_BYTE(nativeEvent, nativeArgs, event, "type");
+		ADD_SHORT(nativeEvent, nativeArgs, event, "vote_parameter");
+		break;
+	case player_given_c4:
+	case gg_reset_round_start_sounds:
+	case tr_player_flashbanged:
+	case tr_highlight_ammo:
+		ADD_SHORT(nativeEvent, nativeArgs, event, "userid");
+		break;
+	case tr_mark_complete:
+		ADD_SHORT(nativeEvent, nativeArgs, event, "complete");
+		break;
+	case tr_mark_best_time:
+		ADD_LONG(nativeEvent, nativeArgs, event, "time");
+		break;
+	case tr_exit_hint_trigger:
+		break;
+	case bot_takeover:
+		ADD_SHORT(nativeEvent, nativeArgs, event, "userid");
+		ADD_SHORT(nativeEvent, nativeArgs, event, "botid");
+		ADD_SHORT(nativeEvent, nativeArgs, event, "index");
+		break;
+	case tr_show_finish_msgbox:
+		ADD_SHORT(nativeEvent, nativeArgs, event, "userid");
+		break;
+	case tr_show_exit_msgbox:
+		ADD_SHORT(nativeEvent, nativeArgs, event, "userid");
+		break;
+	case reset_player_controls:
+		break;
+	case jointeam_failed:
+		ADD_SHORT(nativeEvent, nativeArgs, event, "userid");
+		ADD_BYTE(nativeEvent, nativeArgs, event, "reason");
+		break;
+	case teamchange_pending:
+		ADD_SHORT(nativeEvent, nativeArgs, event, "userid");
+		ADD_BYTE(nativeEvent, nativeArgs, event, "toteam");
+		break;
+	case material_default_complete:
+		break;
+	case cs_prev_next_spectator:
+		ADD_BOOL(nativeEvent, nativeArgs, event, "next");
+		break;
+	case cs_handle_ime_event:
+		// TODO : cs_handle_ime_event
+		raise = false;
+		break;
+	case nextlevel_changed:
+		ADD_STRING(nativeEvent, nativeArgs, event, "nextlevel");
+		break;
+	case seasoncoin_levelup:
+		ADD_SHORT(nativeEvent, nativeArgs, event, "player");
+		ADD_SHORT(nativeEvent, nativeArgs, event, "category");
+		ADD_SHORT(nativeEvent, nativeArgs, event, "rank");
+		break;
+	case tournament_reward:
+		ADD_LONG(nativeEvent, nativeArgs, event, "defindex");
+		ADD_LONG(nativeEvent, nativeArgs, event, "totalrewards");
+		ADD_LONG(nativeEvent, nativeArgs, event, "accountid");
+		break;
+	case start_halftime:
+		break;
 	case None:
 	default:
 		//META_LOG(g_PLAPI, "Unsupported event: %s", event->GetName());

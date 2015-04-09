@@ -196,7 +196,7 @@ inline void ADD_STRING(NativeEventData* nativeEvent, NativeEventArgs* args, IGam
 	int i = nativeEvent->argsCount;
 	args[i].type = 1;
 	args[i].name = bstr_t(paramName).copy();
-	args[i].strVal = bstr_t(event->GetString(paramName));
+	args[i].strVal = bstr_t(event->GetString(paramName)).copy();
 	nativeEvent->argsCount++;
 }
 
