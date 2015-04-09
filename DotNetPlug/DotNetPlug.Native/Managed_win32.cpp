@@ -513,8 +513,8 @@ void Managed::RaiseGameEvent(GameEvent e, IGameEvent *event)
 
 	case None:
 	default:
-		META_LOG(g_PLAPI, "Unsupported event: %s", event->GetName());
-		raise = raise;
+		//META_LOG(g_PLAPI, "Unsupported event: %s", event->GetName());
+		raise = false;
 		break;
 	}
 

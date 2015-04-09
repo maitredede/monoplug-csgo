@@ -16,25 +16,25 @@ namespace DotNetPlug
         public override async Task Load()
         {
             await this.Log("Load");
-            this.Engine.LevelInit += this.Engine_LevelInit;
-            this.Engine.LevelShutdown += Engine_LevelShutdown;
-            this.Engine.ServerActivate += Engine_ServerActivate;
+            //this.Engine.LevelInit += this.Engine_LevelInit;
+            //this.Engine.LevelShutdown += Engine_LevelShutdown;
+            //this.Engine.ServerActivate += Engine_ServerActivate;
 
-            this.Engine.ClientActive += Engine_ClientActive;
-            this.Engine.ClientCommand += Engine_ClientCommand;
-            this.Engine.ClientConnect += Engine_ClientConnect;
-            this.Engine.ClientDisconnect += Engine_ClientDisconnect;
-            this.Engine.ClientPutInServer += Engine_ClientPutInServer;
-            this.Engine.ClientSettingsChanged += Engine_ClientSettingsChanged;
-            this.Engine.GameEvent += Engine_GameEvent;
+            //this.Engine.ClientActive += Engine_ClientActive;
+            //this.Engine.ClientCommand += Engine_ClientCommand;
+            //this.Engine.ClientConnect += Engine_ClientConnect;
+            //this.Engine.ClientDisconnect += Engine_ClientDisconnect;
+            //this.Engine.ClientPutInServer += Engine_ClientPutInServer;
+            //this.Engine.ClientSettingsChanged += Engine_ClientSettingsChanged;
+            //this.Engine.GameEvent += Engine_GameEvent;
         }
 
         private async void Engine_GameEvent(object sender, GameEventEventArgs e)
         {
             Newtonsoft.Json.JsonSerializerSettings settings = new Newtonsoft.Json.JsonSerializerSettings();
-            settings.Converters.Add(new NativeEventJsonConverter());
-            string json = Newtonsoft.Json.JsonConvert.SerializeObject(e.Args, Newtonsoft.Json.Formatting.None, settings);
-            NativeEventArgs[] e2 = Newtonsoft.Json.JsonConvert.DeserializeObject<NativeEventArgs[]>(json, settings);
+            settings.Converters.Add(new GameEventDataFlatConverter());
+            string json = Newtonsoft.Json.JsonConvert.SerializeObject(e, Newtonsoft.Json.Formatting.None, settings);
+            GameEventEventArgs e2 = Newtonsoft.Json.JsonConvert.DeserializeObject<GameEventEventArgs>(json, settings);
             string line = string.Format("GameEvent : {0}={1}", e.Event, json);
             await this.Log(line);
             Console.WriteLine(line);

@@ -43,7 +43,9 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="NativeEventDataFlatConverter.cs" />
+    <Compile Include="Extensions.cs" />
+    <Compile Include="GameEventData.cs" />
+    <Compile Include="GameEventDataFlatConverter.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

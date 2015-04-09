@@ -62,7 +62,15 @@ namespace DotNetPlug
                 if (name.Name == this.m_thisAssembly.GetName().Name)
                     return this.m_thisAssembly;
 
-                string callerPath = Path.GetDirectoryName(args.RequestingAssembly.Location);
+                string callerPath;
+                if (args.RequestingAssembly == null)
+                {
+                    callerPath = Path.GetDirectoryName(this.GetType().Assembly.Location);
+                }
+                else
+                {
+                    callerPath = Path.GetDirectoryName(args.RequestingAssembly.Location);
+                }
 
                 string searchedPath = Path.Combine(callerPath, name.Name + ".dll");
                 if (File.Exists(searchedPath))
@@ -70,7 +78,7 @@ namespace DotNetPlug
                     return Assembly.LoadFile(searchedPath);
                 }
 
-                this.m_engine.Log("AppDomain.AssemblyResolve : {0}", args.Name);
+                this.m_engine.Log("AppDomain.AssemblyResolve failed for assembly : {0}", args.Name).Wait();
             }
             return null;
         }
@@ -342,11 +350,7 @@ namespace DotNetPlug
                 IntPtr argPtr = new IntPtr(evtArgsPtr + i * size);
                 args[i] = (NativeEventArgs)Marshal.PtrToStructure(argPtr, typeof(NativeEventArgs));
             }
-            GameEventEventArgs e = new GameEventEventArgs()
-            {
-                Event = evtData.Event,
-                Args = args.Select(a => new GameEventArgument(a)).ToArray(),
-            };
+            GameEventEventArgs e = new GameEventEventArgs(evtData.Event, args.Select(a => new GameEventArgument(a)).ToArray());
             this.Raise(this.m_engine.RaiseGameEvent, e);
         }
     }
