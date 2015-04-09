@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace DotNetPlug
 {
-    public enum NativeEventArgType : int
+    public enum ArgumentValueType : int
     {
         Int = 0,
         String = 1,

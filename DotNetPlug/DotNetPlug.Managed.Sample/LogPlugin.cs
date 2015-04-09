@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace DotNetPlug.Managed
+namespace DotNetPlug
 {
     public sealed class LogPlugin : PluginBase
     {

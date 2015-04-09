@@ -10,11 +10,11 @@ namespace DotNetPlug
 {
     [DebuggerDisplay("{Name} ({Type}) : {ToString()}")]
     [StructLayout(LayoutKind.Sequential)]
-    public sealed class NativeEventArgs
+    internal sealed class NativeEventArgs
     {
         [MarshalAs(UnmanagedType.BStr)]
         public string Name;
-        public NativeEventArgType Type;
+        public ArgumentValueType Type;
         public short IntVal;
         public string StrVal;
         public bool BoolVal;
@@ -25,15 +25,15 @@ namespace DotNetPlug
         {
             switch (this.Type)
             {
-                case NativeEventArgType.Int:
+                case ArgumentValueType.Int:
                     return this.IntVal.ToString();
-                case NativeEventArgType.String:
+                case ArgumentValueType.String:
                     return this.StrVal;
-                case NativeEventArgType.Bool:
+                case ArgumentValueType.Bool:
                     return this.BoolVal.ToString();
-                case NativeEventArgType.Long:
+                case ArgumentValueType.Long:
                     return this.LongVal.ToString();
-                case NativeEventArgType.Float:
+                case ArgumentValueType.Float:
                     return this.FloatVal.ToString();
                 default:
                     return base.ToString();

@@ -345,7 +345,7 @@ namespace DotNetPlug
             GameEventEventArgs e = new GameEventEventArgs()
             {
                 Event = evtData.Event,
-                Args = args,
+                Args = args.Select(a => new GameEventArgument(a)).ToArray(),
             };
             this.Raise(this.m_engine.RaiseGameEvent, e);
         }

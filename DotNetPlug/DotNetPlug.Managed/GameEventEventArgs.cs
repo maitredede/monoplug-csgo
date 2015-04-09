@@ -8,12 +8,13 @@ namespace DotNetPlug
 {
     public sealed class GameEventEventArgs : EventArgs
     {
-        internal GameEventEventArgs()
+        internal GameEventEventArgs(GameEvent evt, GameEventArgument[] args)
         {
-
+            this.Event = evt;
+            this.Args = args;
         }
 
-        public GameEvent Event { get; internal set; }
-        public NativeEventArgs[] Args { get; internal set; }
+        public GameEvent Event { get; private set; }
+        public GameEventArgument[] Args { get; private set; }
     }
 }

@@ -26,6 +26,10 @@ public:
 
 	void RaiseCommand(int argc, const char** argv);
 
+	void AddEventListeners(IGameEventManager2* gameevents);
+	void RemoveEventListeners(IGameEventManager2* gameevents);
+
+
 	static void Log(const char* msg);
 	static void ExecuteCommand(const char* cmd, void** output, int* length);
 	static bool RegisterCommand(const char* cmd, const char* description, int flags, int id);

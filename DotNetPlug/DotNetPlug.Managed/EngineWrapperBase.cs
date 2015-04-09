@@ -143,9 +143,13 @@ namespace DotNetPlug
 
         private void RaiseEvent<T>(object evt, T args) where T : EventArgs
         {
-            EventHandler<T> d = (EventHandler<T>)this.m_events[evt];
-            if (d != null)
-                d.Invoke(this, args);
+            Delegate d = this.m_events[evt];
+            if (d == null)
+                return;
+            if (d is EventHandler)
+                ((EventHandler)d).Invoke(this, args);
+            else
+                ((EventHandler<T>)d).Invoke(this, args);
         }
 
         event EventHandler<LevelInitEventArgs> IEngine.LevelInit

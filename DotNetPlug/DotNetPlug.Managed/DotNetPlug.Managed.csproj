@@ -51,6 +51,7 @@
     <Compile Include="FCVar.cs" />
     <Compile Include="EngineSynchronizationContext.cs" />
     <Compile Include="GameEvent.cs" />
+    <Compile Include="GameEventArgument.cs" />
     <Compile Include="GameEventEventArgs.cs" />
     <Compile Include="IEngine.cs" />
     <Compile Include="IPlayer.cs" />
@@ -62,7 +63,7 @@
     <Compile Include="ManagedCommand.cs" />
     <Compile Include="MOTDType.cs" />
     <Compile Include="NativeEventArgs.cs" />
-    <Compile Include="NativeEventArgType.cs" />
+    <Compile Include="ArgumentValueType.cs" />
     <Compile Include="NativeEventData.cs" />
     <Compile Include="PluginBase.cs" />
     <Compile Include="PluginManager.cs" />

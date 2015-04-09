@@ -108,6 +108,8 @@ bool DotNetPlugPlugin::Load(PluginId id, ISmmAPI *ismm, char *error, size_t maxl
 	this->tv_name = icvar->FindVar("tv_name");
 	gUserTracker.Load();
 	
+	g_Managed.AddEventListeners(gameevents);
+
 	//Load Native interop
 	g_Managed.Load();
 
@@ -122,6 +124,8 @@ bool DotNetPlugPlugin::Load(PluginId id, ISmmAPI *ismm, char *error, size_t maxl
 
 bool DotNetPlugPlugin::Unload(char *error, size_t maxlen)
 {
+	g_Managed.RemoveEventListeners(gameevents);
+
 	META_UNREGCVAR(this->m_varVersion);
 
 	gUserTracker.Unload();

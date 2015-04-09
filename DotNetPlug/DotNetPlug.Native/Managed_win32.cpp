@@ -467,11 +467,50 @@ void Managed::RaiseGameEvent(GameEvent e, IGameEvent *event)
 		ADD_BYTE(nativeEvent, nativeArgs, event, "dmg_armor");
 		ADD_BYTE(nativeEvent, nativeArgs, event, "hitgroup");
 		break;
+	case item_purchase:
+		ADD_SHORT(nativeEvent, nativeArgs, event, "userid");
+		ADD_SHORT(nativeEvent, nativeArgs, event, "team");
+		ADD_STRING(nativeEvent, nativeArgs, event, "weapon");
+		break;
+	case bomb_beginplant:
+	case bomb_abortplant:
+	case bomb_planted:
+	case bomb_defused:
+	case bomb_exploded:
+		ADD_SHORT(nativeEvent, nativeArgs, event, "userid");
+		ADD_SHORT(nativeEvent, nativeArgs, event, "site");
+		break;
+	case bomb_dropped:
+		ADD_SHORT(nativeEvent, nativeArgs, event, "userid");
+		ADD_LONG(nativeEvent, nativeArgs, event, "entindex");
+		break;
+
+	case bomb_pickup:
+		ADD_SHORT(nativeEvent, nativeArgs, event, "userid");
+		break;
+
+	case defuser_dropped:
+		ADD_LONG(nativeEvent, nativeArgs, event, "entityid");
+		break;
+	case defuser_pickup:
+		ADD_LONG(nativeEvent, nativeArgs, event, "entityid");
+		ADD_SHORT(nativeEvent, nativeArgs, event, "userid");
+		break;
+
 	case round_start:
 		ADD_LONG(nativeEvent, nativeArgs, event, "timelimit");
 		ADD_LONG(nativeEvent, nativeArgs, event, "fraglimit");
 		ADD_STRING(nativeEvent, nativeArgs, event, "objective");
 		break;
+	case announce_phase_end:
+		break;
+	case cs_intermission:
+		break;
+	case bomb_begindefuse:
+		ADD_SHORT(nativeEvent, nativeArgs, event, "userid");
+		ADD_BOOL(nativeEvent, nativeArgs, event, "haskit");
+		break;
+
 	case None:
 	default:
 		META_LOG(g_PLAPI, "Unsupported event: %s", event->GetName());
