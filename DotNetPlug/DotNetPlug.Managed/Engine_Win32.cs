@@ -19,6 +19,7 @@ namespace DotNetPlug
         internal ExecuteCommandDelegate m_cb_ExecuteCommand;
         internal RegisterCommandDelegate m_cb_RegisterCommand;
         internal UnregisterCommandDelegate m_cb_UnregisterCommand;
+        internal GetPlayersDelegate m_cb_GetPlayers;
 
         public override Task Log(string msg)
         {
@@ -83,6 +84,23 @@ namespace DotNetPlug
         protected override void ShowMOTDInternal(int playerId, byte[] titleUTF8, byte[] msgUTF8, MOTDType type, byte[] cmdUTF8)
         {
             throw new NotImplementedException();
+        }
+
+        public override async Task<IPlayer[]> GetPlayers()
+        {
+            IntPtr ptrData = IntPtr.Zero;
+            int nbr = 0;
+            await this.m_fact.StartNew(() =>
+            {
+                this.m_cb_GetPlayers(out ptrData, out nbr);
+            });
+            NativePlayerData[] data = new NativePlayerData[nbr];
+            for (int i = 0; i < nbr; i++)
+            {
+                IntPtr pos = ptrData + i * Marshal.SizeOf(typeof(NativePlayerData));
+                data[i] = (NativePlayerData)Marshal.PtrToStructure(pos, typeof(NativePlayerData));
+            }
+            return data;
         }
     }
 }

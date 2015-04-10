@@ -18,5 +18,6 @@ namespace DotNetPlug
         /// The identifier.
         /// </value>
         int Id { get; }
+        string Name { get; }
     }
 }

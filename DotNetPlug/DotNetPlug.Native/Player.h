@@ -6,6 +6,7 @@
 
 #include <edict.h>
 #include <iplayerinfo.h>
+#include <comutil.h>
 
 struct player_t
 {
@@ -22,5 +23,10 @@ struct player_t
 	bool	is_dead;
 	IPlayerInfo *player_info;
 };
+
+typedef struct {
+	int id;
+	bstr_t name;
+} NativePlayer;
 
 #endif //_DOTNETPLUG_PLAYER_H_

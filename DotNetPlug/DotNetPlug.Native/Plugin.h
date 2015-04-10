@@ -34,6 +34,7 @@ public:
 	void OnVSPListening(IServerPluginCallbacks *iface);
 public:
 	int max_players;
+	int edictCount;
 	ConVar* tv_name;
 	ConVar* hostname;
 	ConVar* m_varVersion;

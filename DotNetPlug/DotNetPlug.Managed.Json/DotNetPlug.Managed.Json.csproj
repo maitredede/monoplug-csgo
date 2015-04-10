@@ -46,6 +46,7 @@
     <Compile Include="Extensions.cs" />
     <Compile Include="GameEventData.cs" />
     <Compile Include="GameEventDataFlatConverter.cs" />
+    <Compile Include="PlayerData.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

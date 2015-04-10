@@ -81,6 +81,7 @@ angular.module("liveserver", ["SignalR", "ui.router", "ui.bootstrap"])
     function ($scope, Hub, $timeout) {
         $scope.error = "";
         $scope.lastEvents = [];
+        $scope.players = [];
 
         $scope.serverId = "Demo";
 
@@ -117,12 +118,18 @@ angular.module("liveserver", ["SignalR", "ui.router", "ui.bootstrap"])
         hub = new Hub("webUIHub", {
             listeners: {
                 RaiseEvent: function (serverId, e) {
-                    $scope.lastEvents.push(e);
-                    while ($scope.lastEvents.length > 50) {
-                        $scope.lastEvents.splice(0, 1);
-                    }
-                    $scope.$apply();
+                    $scope.$apply(function () {
+                        $scope.lastEvents.splice(0, 0, e);
+                        while ($scope.lastEvents.length > 50) {
+                            $scope.lastEvents.splice(49, 1);
+                        }
+                    });
                 },
+                SetPlayers: function (players) {
+                    $scope.$apply(function () {
+                        $scope.players = players;
+                    });
+                }
             },
             methods: ["hello"],
             errorHandler: function (error) {

@@ -249,11 +249,12 @@ bool Managed::InitPlateform(const char* sAssemblyFile)
 
 	////////////////////////////
 	// Callback : assign callbacks in PluginManager
-	SAFEARRAY* params = SafeArrayCreateVector(VT_VARIANT, 0, 4);
+	SAFEARRAY* params = SafeArrayCreateVector(VT_VARIANT, 0, 5);
 	hr = SET_CALLBACK(params, 0, (LONGLONG)&Managed::Log);
 	hr = SET_CALLBACK(params, 1, (LONGLONG)&Managed::ExecuteCommand);
 	hr = SET_CALLBACK(params, 2, (LONGLONG)&Managed::RegisterCommand);
 	hr = SET_CALLBACK(params, 3, (LONGLONG)&Managed::UnregisterCommand);
+	hr = SET_CALLBACK(params, 4, (LONGLONG)&Managed::GetPlayers);
 
 	variant_t vtEmptyCallback;
 	hr = this->spPluginManagerInitWin32Engine->Invoke_3(this->vtPluginManager, params, &vtEmptyCallback);

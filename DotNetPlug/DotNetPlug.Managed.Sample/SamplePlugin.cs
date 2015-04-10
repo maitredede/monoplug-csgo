@@ -18,8 +18,8 @@ namespace DotNetPlug
             this.m_timer = new Timer(this.ClockTick, null, TimeSpan.FromSeconds(1), TimeSpan.FromSeconds(5));
 
             //Add a sample command for managed code
-            int cmd = await this.Engine.RegisterCommand("managed_status", "Managed status", FCVar.ServerCanExecute, this.Managed_Status);
-            this.m_commands.Add(cmd);
+            this.m_commands.Add(await this.Engine.RegisterCommand("managed_status", "Managed status", FCVar.ServerCanExecute, this.Managed_Status););
+            this.m_commands.Add(await this.Engine.RegisterCommand("test_getplayers", "Test GetPlayers", FCVar.ServerCanExecute, this.TestPlayers));
         }
 
         public override async Task Unload()
@@ -50,6 +50,12 @@ namespace DotNetPlug
         {
             string result = await this.Engine.ExecuteCommand("status");
             await this.Engine.Log(result);
+        }
+
+        private async void TestPlayers(string[] param)
+        {
+            IPlayer[] players = await this.Engine.GetPlayers();
+            await this.Engine.Log("Got {0} players", players.Length);
         }
     }
 }

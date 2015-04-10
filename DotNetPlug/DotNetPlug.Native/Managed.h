@@ -34,6 +34,7 @@ public:
 	static void ExecuteCommand(const char* cmd, void** output, int* length);
 	static bool RegisterCommand(const char* cmd, const char* description, int flags, int id);
 	static void UnregisterCommand(int id);
+	static void GetPlayers(void** ptrData, int* nbr);
 
 	void RaiseLevelInit(const char *pMapName, const char *pMapEntities, const char *pOldLevel, const char *pLandmarkName, bool loadGame, bool background);
 	void RaiseServerActivate(int clientMax);

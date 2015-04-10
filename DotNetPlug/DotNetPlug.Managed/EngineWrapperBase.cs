@@ -61,6 +61,7 @@ namespace DotNetPlug
             Console.WriteLine("GetServerInfo not implemented");
             return Task.FromResult<IServerInfo>(null);
         }
+
         public virtual Task<IPlayer[]> GetPlayers()
         {
             Console.WriteLine("GetPlayers not implemented");

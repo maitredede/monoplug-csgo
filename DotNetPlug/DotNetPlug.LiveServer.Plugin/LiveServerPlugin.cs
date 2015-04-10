@@ -14,9 +14,24 @@ namespace DotNetPlug.LiveServer
             Tools.ConfigureSignalrSerializer();
         }
 
+        private readonly GameEvent[] m_eventsToIgnore;
         private HubConnection m_hubConnection;
         private IHubProxy m_PluginHubProxy;
         private IPluginHubServer m_PluginHub;
+
+        public LiveServerPlugin()
+        {
+            this.m_eventsToIgnore = new GameEvent[]{
+                //Noisy
+                GameEvent.player_footstep,
+                GameEvent.bullet_impact,
+              
+                //Not used in this case
+                GameEvent.achievement_earned,
+                GameEvent.achievement_earned_local,
+                GameEvent.achievement_info_loaded,
+            };
+        }
 
         public override async Task Load()
         {
@@ -39,10 +54,13 @@ namespace DotNetPlug.LiveServer
             {
                 await this.Engine.Log("LiveServer : server id/key error");
             }
+            IPlayer[] players = await this.Engine.GetPlayers();
         }
 
         private async void Engine_GameEvent(object sender, GameEventEventArgs e)
         {
+            if (this.m_eventsToIgnore.Contains(e.Event))
+                return;
             await this.m_PluginHub.RaiseEvent(e.ToData());
         }
 

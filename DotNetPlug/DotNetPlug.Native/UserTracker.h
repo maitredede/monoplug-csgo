@@ -21,7 +21,8 @@ public:
 	{
 		return (int)hash_table[user_id];
 	}
-
+	int Count();
+	const player_t* Get(int index);
 private:
 
 	// Hash table of user ids

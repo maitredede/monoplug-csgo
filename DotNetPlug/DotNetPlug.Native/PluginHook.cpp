@@ -19,6 +19,7 @@ void DotNetPlugPlugin::Hook_ServerActivate(edict_t *pEdictList, int edictCount, 
 {
 	//META_LOG(g_PLAPI, "ServerActivate() called: edictCount = %d, clientMax = %d", edictCount, clientMax);
 	this->max_players = clientMax;
+	this->edictCount = edictCount;
 
 	g_Managed.RaiseServerActivate(clientMax);
 }

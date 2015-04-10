@@ -15,5 +15,13 @@ namespace DotNetPlug
             GameEventData data = new GameEventData(e);
             return data;
         }
+
+        public static PlayerData ToData(this IPlayer player)
+        {
+            if (player == null)
+                return null;
+            PlayerData data = new PlayerData(player);
+            return data;
+        }
     }
 }

@@ -9,8 +9,13 @@
         </div>
         <div class="panel-body">
             <p class="text-danger bg-danger">{{error}}</p>
+        </div>
+        <ul class="list-unstyled">
+            <li ng-repeat="p in players">{{p}}</li>
+        </ul>
+        <div class="panel-body">
             <ul class="list-unstyled">
-                <li ng-repeat="e in lastEvents">{{e.name}} : {{e}}</li>
+                <li ng-repeat="e in lastEvents">{{e}}</li>
             </ul>
         </div>
     </div>

@@ -133,13 +133,14 @@ namespace DotNetPlug
             this.m_corePlugin.UnloadSync();
         }
 
-        internal void InitWin32Engine(Int64 cbLog, Int64 cbExecuteCommand, Int64 cbRegisterCommand, Int64 cbUnregisterCommand)
+        internal void InitWin32Engine(Int64 cbLog, Int64 cbExecuteCommand, Int64 cbRegisterCommand, Int64 cbUnregisterCommand, Int64 cbGetPlayers)
         {
             Engine_Win32 eng = new Engine_Win32(this);
             eng.m_cb_Log = (LogDelegate)Marshal.GetDelegateForFunctionPointer(new IntPtr(cbLog), typeof(LogDelegate));
             eng.m_cb_ExecuteCommand = (ExecuteCommandDelegate)Marshal.GetDelegateForFunctionPointer(new IntPtr(cbExecuteCommand), typeof(ExecuteCommandDelegate));
             eng.m_cb_RegisterCommand = (RegisterCommandDelegate)Marshal.GetDelegateForFunctionPointer(new IntPtr(cbRegisterCommand), typeof(RegisterCommandDelegate));
             eng.m_cb_UnregisterCommand = (UnregisterCommandDelegate)Marshal.GetDelegateForFunctionPointer(new IntPtr(cbUnregisterCommand), typeof(UnregisterCommandDelegate));
+            eng.m_cb_GetPlayers = (GetPlayersDelegate)Marshal.GetDelegateForFunctionPointer(new IntPtr(cbGetPlayers), typeof(GetPlayersDelegate));
             this.m_engine = eng;
         }
 
@@ -261,7 +262,6 @@ namespace DotNetPlug
                 return;
             }
         }
-
 
         void IPluginManager.RaiseCommand(int id, int argc, string[] argv)
         {

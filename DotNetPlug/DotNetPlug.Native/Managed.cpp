@@ -1,6 +1,7 @@
 #include "Plugin.h"
 #include "Managed.h"
 #include "LoggingListener.h"
+#include "UserTracker.h"
 
 Managed::Managed()
 {
@@ -135,6 +136,25 @@ void Managed::UnregisterCommand(int id)
 	//g_SMAPI->RegisterConCommandBase(g_PLAPI, mCmd->GetNativeCommand());
 
 	//return true;
+}
+
+void Managed::GetPlayers(void** ptrData, int* nbr)
+{
+	*nbr = gUserTracker.Count();
+
+	if (*nbr == 0)
+	{
+		ptrData = nullptr;
+		return;
+	}
+	NativePlayer** data = (NativePlayer**)CoTaskMemAlloc(sizeof(NativePlayer) * *nbr);
+
+	for (int i = 0; i < *nbr; i++)
+	{
+		const player_t* p = gUserTracker.Get(i);
+		data[i]->id = p->index;
+		data[i]->name = bstr_t(p->name);
+	}
 }
 
 void Managed::RaiseCommand(int argc, const char** argv){

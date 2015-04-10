@@ -81,3 +81,29 @@ void UserTracker::ClientDisconnect(player_t	*player_ptr)
 {
 	hash_table[player_ptr->user_id] = -1;
 }
+
+int UserTracker::Count()
+{
+	int count = 0;
+	for (int i = 0; i < 65536; i++)
+	{
+		if (hash_table[i] != -1){
+			count++;
+		}
+	}
+	return count;
+}
+
+const player_t* UserTracker::Get(int index)
+{
+	player_t player;
+	player.index = index;
+	if (FindPlayerByIndex(&player))
+	{
+		return &player;
+	}
+	else
+	{
+		return NULL;
+	}
+}
