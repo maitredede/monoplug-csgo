@@ -881,6 +881,205 @@ void Managed::RaiseGameEvent(GameEvent e, IGameEvent *event)
 		break;
 	case start_halftime:
 		break;
+		//GenericSourceServer : https://wiki.alliedmods.net/Generic_Source_Server_Events
+	case server_spawn:
+		ADD_STRING(nativeEvent, nativeArgs, event, "hostname");
+		ADD_STRING(nativeEvent, nativeArgs, event, "address");
+		ADD_STRING(nativeEvent, nativeArgs, event, "ip");
+		ADD_STRING(nativeEvent, nativeArgs, event, "port");
+		ADD_STRING(nativeEvent, nativeArgs, event, "game");
+		ADD_STRING(nativeEvent, nativeArgs, event, "mapname");
+		ADD_LONG(nativeEvent, nativeArgs, event, "maxplayers");
+		ADD_STRING(nativeEvent, nativeArgs, event, "os");
+		ADD_BOOL(nativeEvent, nativeArgs, event, "dedicated");
+		ADD_BOOL(nativeEvent, nativeArgs, event, "password");
+		break;
+	case server_shutdown:
+		ADD_STRING(nativeEvent, nativeArgs, event, "reason");
+		break;
+	case server_cvar:
+		ADD_STRING(nativeEvent, nativeArgs, event, "cvarname");
+		ADD_STRING(nativeEvent, nativeArgs, event, "cvarvalue");
+		break;
+	case server_message:
+		ADD_STRING(nativeEvent, nativeArgs, event, "text");
+		break;
+	case server_addban:
+		ADD_STRING(nativeEvent, nativeArgs, event, "name");
+		ADD_STRING(nativeEvent, nativeArgs, event, "userid");
+		ADD_STRING(nativeEvent, nativeArgs, event, "networkid");
+		ADD_STRING(nativeEvent, nativeArgs, event, "ip");
+		ADD_STRING(nativeEvent, nativeArgs, event, "duration");
+		ADD_STRING(nativeEvent, nativeArgs, event, "by");
+		ADD_BOOL(nativeEvent, nativeArgs, event, "kicked");
+		break;
+	case server_removeban:
+		ADD_STRING(nativeEvent, nativeArgs, event, "networkid");
+		ADD_STRING(nativeEvent, nativeArgs, event, "ip");
+		ADD_STRING(nativeEvent, nativeArgs, event, "by");
+		break;
+	case player_connect:
+		ADD_STRING(nativeEvent, nativeArgs, event, "name");
+		ADD_BYTE(nativeEvent, nativeArgs, event, "index");
+		ADD_SHORT(nativeEvent, nativeArgs, event, "userid");
+		ADD_STRING(nativeEvent, nativeArgs, event, "networkid");
+		ADD_STRING(nativeEvent, nativeArgs, event, "address");
+		ADD_SHORT(nativeEvent, nativeArgs, event, "bot");
+		break;
+	case player_info:
+		ADD_STRING(nativeEvent, nativeArgs, event, "name");
+		ADD_BYTE(nativeEvent, nativeArgs, event, "index");
+		ADD_SHORT(nativeEvent, nativeArgs, event, "userid");
+		ADD_STRING(nativeEvent, nativeArgs, event, "networkid");
+		ADD_BOOL(nativeEvent, nativeArgs, event, "bot");
+		break;
+	case player_disconnect:
+		ADD_SHORT(nativeEvent, nativeArgs, event, "userid");
+		ADD_STRING(nativeEvent, nativeArgs, event, "reason");
+		ADD_STRING(nativeEvent, nativeArgs, event, "name");
+		ADD_STRING(nativeEvent, nativeArgs, event, "networkid");
+		ADD_SHORT(nativeEvent, nativeArgs, event, "bot");
+		break;
+	case player_activate:
+		ADD_SHORT(nativeEvent, nativeArgs, event, "userid");
+		break;
+	case player_say:
+		ADD_SHORT(nativeEvent, nativeArgs, event, "userid");
+		ADD_STRING(nativeEvent, nativeArgs, event, "text");
+		break;
+
+		//Generic source events : https://wiki.alliedmods.net/Generic_Source_Events
+	case team_info:
+		ADD_BYTE(nativeEvent, nativeArgs, event, "teamid");
+		ADD_STRING(nativeEvent, nativeArgs, event, "teamname");
+		break;
+	case team_score:
+		ADD_BYTE(nativeEvent, nativeArgs, event, "teamid");
+		ADD_SHORT(nativeEvent, nativeArgs, event, "score");
+		break;
+	case teamplay_broadcast_audio:
+		ADD_BYTE(nativeEvent, nativeArgs, event, "teamid");
+		ADD_STRING(nativeEvent, nativeArgs, event, "sound");
+		break;
+	case player_team:
+		ADD_SHORT(nativeEvent, nativeArgs, event, "userid");
+		ADD_BYTE(nativeEvent, nativeArgs, event, "team");
+		ADD_BYTE(nativeEvent, nativeArgs, event, "oldteam");
+		ADD_BOOL(nativeEvent, nativeArgs, event, "disconnect");
+		ADD_BOOL(nativeEvent, nativeArgs, event, "autoteam");
+		ADD_BOOL(nativeEvent, nativeArgs, event, "silent");
+		ADD_STRING(nativeEvent, nativeArgs, event, "name");
+		break;
+	case player_class:
+		ADD_SHORT(nativeEvent, nativeArgs, event, "userid");
+		ADD_STRING(nativeEvent, nativeArgs, event, "class");
+		break;
+		//case player_death:
+		//case player_hurt:
+	case player_chat:
+		ADD_BOOL(nativeEvent, nativeArgs, event, "teamonly");
+		ADD_SHORT(nativeEvent, nativeArgs, event, "userid");
+		ADD_STRING(nativeEvent, nativeArgs, event, "text");
+		break;
+	case player_score:
+		ADD_SHORT(nativeEvent, nativeArgs, event, "userid");
+		ADD_SHORT(nativeEvent, nativeArgs, event, "kills");
+		ADD_SHORT(nativeEvent, nativeArgs, event, "deaths");
+		ADD_SHORT(nativeEvent, nativeArgs, event, "score");
+		break;
+	case player_spawn:
+		ADD_SHORT(nativeEvent, nativeArgs, event, "userid");
+		break;
+	case player_shoot:
+		ADD_SHORT(nativeEvent, nativeArgs, event, "userid");
+		ADD_BYTE(nativeEvent, nativeArgs, event, "weapon");
+		ADD_BYTE(nativeEvent, nativeArgs, event, "mode");
+		break;
+	case player_use:
+		ADD_SHORT(nativeEvent, nativeArgs, event, "userid");
+		ADD_SHORT(nativeEvent, nativeArgs, event, "entity");
+		break;
+	case player_changename:
+		ADD_SHORT(nativeEvent, nativeArgs, event, "userid");
+		ADD_STRING(nativeEvent, nativeArgs, event, "oldname");
+		ADD_STRING(nativeEvent, nativeArgs, event, "newname");
+		break;
+	case player_hintmessage:
+		ADD_STRING(nativeEvent, nativeArgs, event, "hintmessage");
+		break;
+	case base_player_teleported:
+		ADD_SHORT(nativeEvent, nativeArgs, event, "entindex");
+		break;
+	case game_init:
+		break;
+	case game_newmap:
+		ADD_STRING(nativeEvent, nativeArgs, event, "mapname");
+		break;
+	case game_start:
+		ADD_LONG(nativeEvent, nativeArgs, event, "roundslimit");
+		ADD_LONG(nativeEvent, nativeArgs, event, "timelimit");
+		ADD_LONG(nativeEvent, nativeArgs, event, "fraglimit");
+		ADD_STRING(nativeEvent, nativeArgs, event, "objective");
+		break;
+	case game_end:
+		ADD_BYTE(nativeEvent, nativeArgs, event, "winner");
+		break;
+		//case round_start:
+		//case round_end:
+	case game_message:
+		ADD_BYTE(nativeEvent, nativeArgs, event, "target");
+		ADD_STRING(nativeEvent, nativeArgs, event, "text");
+		break; 
+	case break_breakable:
+		ADD_LONG(nativeEvent, nativeArgs, event, "entindex");
+		ADD_SHORT(nativeEvent, nativeArgs, event, "userid");
+		ADD_BYTE(nativeEvent, nativeArgs, event, "material");
+		break;
+	case break_prop:
+		ADD_LONG(nativeEvent, nativeArgs, event, "entindex");
+		ADD_SHORT(nativeEvent, nativeArgs, event, "userid");
+		break;
+	case entity_killed:
+		ADD_LONG(nativeEvent, nativeArgs, event, "entindex_killed");
+		ADD_LONG(nativeEvent, nativeArgs, event, "entindex_attacker");
+		ADD_LONG(nativeEvent, nativeArgs, event, "entindex_inflictor");
+		ADD_LONG(nativeEvent, nativeArgs, event, "damagebits");
+		break;
+	case bonus_updated:
+		ADD_SHORT(nativeEvent, nativeArgs, event, "numadvanced");
+		ADD_SHORT(nativeEvent, nativeArgs, event, "numbronze");
+		ADD_SHORT(nativeEvent, nativeArgs, event, "numsilver");
+		ADD_SHORT(nativeEvent, nativeArgs, event, "numgold");
+		break;
+	case achievement_event:
+		ADD_STRING(nativeEvent, nativeArgs, event, "achievement_name");
+		ADD_SHORT(nativeEvent, nativeArgs, event, "cur_val");
+		ADD_SHORT(nativeEvent, nativeArgs, event, "max_val");
+		break;
+	case achievement_increment:
+	case physgun_pickup:
+	case flare_ignite_npc:
+	case helicopter_grenade_punt_miss:
+	case user_data_downloaded:
+	case ragdoll_dissolved:
+		//case hltv_changed_mode:
+	case hltv_changed_target:
+	case vote_ended:
+	case vote_started:
+	case vote_changed:
+	case vote_passed:
+	case vote_failed:
+	case vote_cast:
+	case vote_options:
+	case replay_saved:
+	case entered_performance_mode:
+	case browse_replays:
+	case replay_youtube_stats:
+	case inventory_updated:
+	case cart_updated:
+	case store_pricesheet_updated:
+	case gc_connected:
+	case item_schema_initialized:
 	case None:
 	default:
 		//META_LOG(g_PLAPI, "Unsupported event: %s", event->GetName());
