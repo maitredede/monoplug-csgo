@@ -62,10 +62,10 @@ namespace DotNetPlug
             return Task.FromResult<IServerInfo>(null);
         }
 
-        public virtual Task<IPlayer[]> GetPlayers()
+        public virtual Task<PlayerData[]> GetPlayers()
         {
             Console.WriteLine("GetPlayers not implemented");
-            return Task.FromResult<IPlayer[]>(null);
+            return Task.FromResult<PlayerData[]>(null);
         }
 
         internal int RegisterCommandInternal(string command, string description, FCVar flags, CommandExecuteDelegate callback)
@@ -267,7 +267,7 @@ namespace DotNetPlug
 
         protected abstract void ShowMOTDInternal(int playerId, byte[] titleUTF8, byte[] msgUTF8, MOTDType type, byte[] cmdUTF8);
 
-        Task IEngine.ShowMOTD(IPlayer player, string title, Uri url, string cmdOnClose)
+        Task IEngine.ShowMOTD(PlayerData player, string title, Uri url, string cmdOnClose)
         {
             int id = player.Id;
             byte[] titleUTF8 = this.m_enc.GetBytes(title);

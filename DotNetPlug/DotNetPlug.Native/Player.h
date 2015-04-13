@@ -26,7 +26,14 @@ struct player_t
 
 typedef struct {
 	int id;
-	bstr_t name;
+	BSTR name;
+	int team;
+	int health;
+	BSTR ip_address;
+	BSTR steam_id;
+
+	bool	is_bot;
+	bool	is_dead;
 } NativePlayer;
 
 #endif //_DOTNETPLUG_PLAYER_H_

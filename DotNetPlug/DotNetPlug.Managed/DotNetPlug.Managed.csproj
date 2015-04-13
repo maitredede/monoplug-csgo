@@ -66,6 +66,7 @@
     <Compile Include="ArgumentValueType.cs" />
     <Compile Include="NativeEventData.cs" />
     <Compile Include="NativePlayerData.cs" />
+    <Compile Include="PlayerData.cs" />
     <Compile Include="PluginBase.cs" />
     <Compile Include="PluginManager.cs" />
     <Compile Include="PluginManagerMono.cs" />

@@ -34,7 +34,7 @@ public:
 	static void ExecuteCommand(const char* cmd, void** output, int* length);
 	static bool RegisterCommand(const char* cmd, const char* description, int flags, int id);
 	static void UnregisterCommand(int id);
-	static void GetPlayers(void** ptrData, int* nbr);
+	static void GetPlayers(NativePlayer** pOutData, int& nbr);
 
 	void RaiseLevelInit(const char *pMapName, const char *pMapEntities, const char *pOldLevel, const char *pLandmarkName, bool loadGame, bool background);
 	void RaiseServerActivate(int clientMax);
@@ -149,13 +149,6 @@ public:
 #define NATIVE_EVENT_ARGS_MAX 16
 
 #ifdef MANAGED_WIN32
-
-//[uuid(21602F40-CC62-11d4-AA2B-00A0CC39CFE0)]
-//class INativeEventArgs :public IUnknown
-//{
-//
-//};
-//
 typedef struct {
 	BSTR name;
 	int type;
@@ -166,7 +159,6 @@ typedef struct {
 	float floatVal;
 } NativeEventArgs;
 
-//[uuid(21602F40 - CC62 - 11d4 - AA2B - 00A0CC39CFE1)]
 typedef struct
 {
 	GameEvent Event;

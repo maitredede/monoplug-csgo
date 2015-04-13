@@ -77,8 +77,8 @@ angular.module("liveserver", ["SignalR", "ui.router", "ui.bootstrap"])
 //            }
 //        }
 //    }])
-.controller("demoController", ["$scope", "Hub", "$timeout",
-    function ($scope, Hub, $timeout) {
+.controller("demoController", ["$scope", "Hub", "$timeout", "GameEvent",
+    function ($scope, Hub, $timeout, GameEvent) {
         $scope.error = "";
         $scope.lastEvents = [];
         $scope.players = [];
@@ -86,48 +86,44 @@ angular.module("liveserver", ["SignalR", "ui.router", "ui.bootstrap"])
         $scope.serverId = "Demo";
 
         var hub = null;
+        $scope.hubConnectDone = function hubConnectDone() {
+            $scope.error = "connected : (status=" + hub.connection.state + ")";
+            hub.hello($scope.serverId).done(function () {
+                $scope.$apply(function () {
+                    $scope.error = "listening...";
+                })
+            });
+        };
+
+        $scope.hubConnectFail = function hubConnectFail(reason) {
+            console.log(reason);
+            $scope.error = reason;
+        };
+
         var connect = function () {
             hub.connection.start()
-                        .done(function (e) {
-                            //if (hub.connection.state === 0) {
-                            //    $scope.$apply(function () {
-                            //        $scope.error = "connected";
-                            //    });
-                            //} else {
-                            //    $scope.$apply(function () {
-                            //        $scope.error = "connection error";
-                            //    });
-                            //}
-                            $scope.$apply(function () {
-                                $scope.error = "connected : (status=" + hub.connection.state + ")";
-                                var hello = hub.hello($scope.serverId);
-                                hello.done(function () {
-                                    $scope.$apply(function () {
-                                        $scope.error = "listening...";
-                                    })
-                                });
-                            });
-                        })
-                        .fail(function (reason) {
-                            console.log(reason);
-                            $scope.$apply(function () {
-                                $scope.error = reason;
-                            });
-                        });
+                .done(function (e) {
+                    $scope.$apply(function () {
+                        $scope.hubConnectDone();
+                    });
+                })
+                .fail(function (reason) {
+                    $scope.$apply(function () {
+                        $scope.hubConnectFail(reason);
+                    });
+                });
         };
+
         hub = new Hub("webUIHub", {
             listeners: {
                 RaiseEvent: function (serverId, e) {
                     $scope.$apply(function () {
-                        $scope.lastEvents.splice(0, 0, e);
-                        while ($scope.lastEvents.length > 50) {
-                            $scope.lastEvents.splice(49, 1);
-                        }
+                        $scope.hubRaiseEvent(serverId, e);
                     });
                 },
-                SetPlayers: function (players) {
+                SetPlayers: function (serverId, players) {
                     $scope.$apply(function () {
-                        $scope.players = players;
+                        $scope.hubSetPlayers(serverId, players);
                     });
                 }
             },
@@ -142,36 +138,27 @@ angular.module("liveserver", ["SignalR", "ui.router", "ui.bootstrap"])
                 });
                 connect();
             }
-            //hubDisconnected: function () {
-            //    $scope.$apply(function () {
-            //        $scope.error = "connecting...";
-            //    });
-            //    //if (hub.connection.lastError) {
-            //    hub.connection.start()
-            //        .done(function () {
-            //            if (hub.connection.state === 0) {
-            //                $scope.$apply(function () {
-            //                    $scope.error = "connected";
-            //                });
-            //            } else {
-            //                $scope.$apply(function () {
-            //                    $scope.error = "connection error";
-            //                });
-            //            }
-            //        })
-            //        .fail(function (reason) {
-            //            console.log(reason);
-            //            $scope.$apply(function () {
-            //                $scope.error = reason;
-            //            });
-            //        });
-            //    //} else {
-            //    //    $scope.$apply(function () {
-            //    //        $scope.error = "connecting...";
-            //    //    });
-            //    //}
-            //}
-
         });
+
+        $scope.hubSetPlayers = function hubSetPlayers(serverId, players) {
+            $scope.players = players;
+        }
+
+        $scope.hubRaiseEvent = function hubRaiseEvent(serverId, e) {
+            switch (e.name) {
+                case GameEvent.player_hurt:
+                case GameEvent.weapon_fire:
+                    return;
+                    //break;
+                case GameEvent.round_start:
+                    break;
+                    break;
+            }
+            $scope.lastEvents.splice(0, 0, e);
+            while ($scope.lastEvents.length > 50) {
+                $scope.lastEvents.splice(49, 1);
+            }
+        };
+
         connect();
     }])

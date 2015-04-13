@@ -11,5 +11,6 @@ namespace DotNetPlug.LiveServer
     {
         Task<bool> Hello(string serverId, string serverKey);
         Task RaiseEvent(GameEventData args);
+        Task SetPlayers(PlayerData[] players);
     }
 }

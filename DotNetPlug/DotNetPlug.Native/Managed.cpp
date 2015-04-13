@@ -138,23 +138,35 @@ void Managed::UnregisterCommand(int id)
 	//return true;
 }
 
-void Managed::GetPlayers(void** ptrData, int* nbr)
+void Managed::GetPlayers(NativePlayer** pOutData, int& nbr)
 {
-	*nbr = gUserTracker.Count();
-
-	if (*nbr == 0)
+	nbr = gUserTracker.Count();
+	if (nbr == 0)
 	{
-		ptrData = nullptr;
+		*pOutData = NULL;
 		return;
 	}
-	NativePlayer** data = (NativePlayer**)CoTaskMemAlloc(sizeof(NativePlayer) * *nbr);
+	*pOutData = (NativePlayer*)CoTaskMemAlloc(sizeof(NativePlayer)*nbr);
+	ZeroMemory(*pOutData, sizeof(NativePlayer)*nbr);
 
-	for (int i = 0; i < *nbr; i++)
+	player_t* pData = new player_t[nbr];
+	ZeroMemory(pData, sizeof(player_t) * nbr);
+
+	gUserTracker.GetAll(pData, nbr);
+
+	for (int i = 0; i < nbr; i++)
 	{
-		const player_t* p = gUserTracker.Get(i);
-		data[i]->id = p->index;
-		data[i]->name = bstr_t(p->name);
+		(*pOutData)[i].id = pData[i].user_id;
+		(*pOutData)[i].name = bstr_t(pData[i].name).copy();
+		(*pOutData)[i].team = pData[i].team;
+		(*pOutData)[i].health = pData[i].health;
+		(*pOutData)[i].is_bot = pData[i].is_bot;
+		(*pOutData)[i].is_dead = pData[i].is_dead;
+		(*pOutData)[i].ip_address = bstr_t(pData[i].ip_address).copy();
+		(*pOutData)[i].steam_id = bstr_t(pData[i].steam_id).copy();
 	}
+
+	delete[] pData;
 }
 
 void Managed::RaiseCommand(int argc, const char** argv){

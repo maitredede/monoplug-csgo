@@ -18,7 +18,7 @@ namespace DotNetPlug
             this.m_timer = new Timer(this.ClockTick, null, TimeSpan.FromSeconds(1), TimeSpan.FromSeconds(5));
 
             //Add a sample command for managed code
-            this.m_commands.Add(await this.Engine.RegisterCommand("managed_status", "Managed status", FCVar.ServerCanExecute, this.Managed_Status););
+            this.m_commands.Add(await this.Engine.RegisterCommand("managed_status", "Managed status", FCVar.ServerCanExecute, this.Managed_Status));
             this.m_commands.Add(await this.Engine.RegisterCommand("test_getplayers", "Test GetPlayers", FCVar.ServerCanExecute, this.TestPlayers));
         }
 
@@ -54,7 +54,7 @@ namespace DotNetPlug
 
         private async void TestPlayers(string[] param)
         {
-            IPlayer[] players = await this.Engine.GetPlayers();
+            PlayerData[] players = await this.Engine.GetPlayers();
             await this.Engine.Log("Got {0} players", players.Length);
         }
     }

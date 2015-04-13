@@ -37,6 +37,7 @@ namespace DotNetPlug.LiveServer
         {
             this.m_hubConnection = new HubConnection("http://localhost:54908/", useDefaultUrl: true);
             this.m_PluginHubProxy = this.m_hubConnection.CreateHubProxy("PluginServerHub");
+            this.m_hubConnection.Error += this.hubConnection_Error;
             this.m_PluginHub = new PluginHubClient(this.m_PluginHubProxy);
 
             //this.m_hubConnection.CreateHubProxy
@@ -54,13 +55,27 @@ namespace DotNetPlug.LiveServer
             {
                 await this.Engine.Log("LiveServer : server id/key error");
             }
-            IPlayer[] players = await this.Engine.GetPlayers();
+            PlayerData[] players = await this.Engine.GetPlayers();
+            await this.m_PluginHub.SetPlayers(players);
+        }
+
+        private void hubConnection_Error(Exception obj)
+        {
+
         }
 
         private async void Engine_GameEvent(object sender, GameEventEventArgs e)
         {
             if (this.m_eventsToIgnore.Contains(e.Event))
                 return;
+            switch (e.Event)
+            {
+                case GameEvent.switch_team:
+                case GameEvent.teamchange_pending:
+                case GameEvent.player_spawned:
+                    await this.m_PluginHub.SetPlayers(await this.Engine.GetPlayers());
+                    break;
+            }
             await this.m_PluginHub.RaiseEvent(e.ToData());
         }
 

@@ -23,7 +23,12 @@ namespace DotNetPlug.LiveServer
 
         public Task RaiseEvent(GameEventData args)
         {
-            return this.m_proxy.Invoke<bool>("raiseEvent", args);
+            return this.m_proxy.Invoke<bool>("raiseEvent", new object[] { args });
+        }
+
+        public Task SetPlayers(PlayerData[] players)
+        {
+            return this.m_proxy.Invoke("setPlayers", new object[] { players });
         }
     }
 }

@@ -86,21 +86,38 @@ namespace DotNetPlug
             throw new NotImplementedException();
         }
 
-        public override async Task<IPlayer[]> GetPlayers()
+        public override async Task<PlayerData[]> GetPlayers()
         {
-            IntPtr ptrData = IntPtr.Zero;
-            int nbr = 0;
-            await this.m_fact.StartNew(() =>
+            try
             {
-                this.m_cb_GetPlayers(out ptrData, out nbr);
-            });
-            NativePlayerData[] data = new NativePlayerData[nbr];
-            for (int i = 0; i < nbr; i++)
-            {
-                IntPtr pos = ptrData + i * Marshal.SizeOf(typeof(NativePlayerData));
-                data[i] = (NativePlayerData)Marshal.PtrToStructure(pos, typeof(NativePlayerData));
+                IntPtr ptrData = IntPtr.Zero;
+                int nbr = 0;
+                await this.m_fact.StartNew(() =>
+                {
+                    this.m_cb_GetPlayers(out ptrData, out nbr);
+                });
+                NativePlayerData[] data = new NativePlayerData[nbr];
+
+                MarshalArray(ptrData, data);
+
+                Marshal.FreeCoTaskMem(ptrData);
+                return data.Select(p => new PlayerData(p)).ToArray(); ;
             }
-            return data;
+            catch (Exception ex)
+            {
+                return null;
+            }
+        }
+
+        private static void MarshalArray<T>(IntPtr ptr, T[] array)
+        {
+            Type t = typeof(T);
+            for (int i = 0; i < array.Length; i++)
+            {
+                IntPtr pos = ptr + Marshal.SizeOf(t) * i;
+                T item = (T)Marshal.PtrToStructure(pos, t);
+                array[i] = item;
+            }
         }
     }
 }

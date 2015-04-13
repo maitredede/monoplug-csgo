@@ -11,6 +11,7 @@ namespace DotNetPlug
     internal delegate bool RegisterCommandDelegate(byte[] commandUTF8, byte[] descriptionUTF8, int flags, int managedId);
     [UnmanagedFunctionPointer(System.Runtime.InteropServices.CallingConvention.Cdecl)]
     internal delegate void UnregisterCommandDelegate(int managedId);
+
     [UnmanagedFunctionPointer(System.Runtime.InteropServices.CallingConvention.Cdecl)]
-    internal delegate void GetPlayersDelegate([Out]out IntPtr ptrData, [Out]out int nbr);
+    internal delegate void GetPlayersDelegate(out IntPtr pOutData, out int nbr);
 }

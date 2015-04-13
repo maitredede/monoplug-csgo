@@ -1,6 +1,7 @@
 #include "Helpers.h"
 #include "Plugin.h"
 #include <inetchannelinfo.h>
+#include "UserTracker.h"
 
 #ifdef MANAGED_WIN32
 HRESULT SET_CALLBACK(SAFEARRAY* params, long idx, LONGLONG funcPtr)
@@ -207,46 +208,6 @@ HRESULT LOAD_ASSEMBLY_FUNC(_AppDomainPtr pAppDomain, const char* sAssemblyName, 
 
 #endif //MANAGED_WIN32
 
-bool FindPlayerByEntity(player_t* player_ptr)
-{
-	if (player_ptr->entity && !player_ptr->entity->IsFree())
-	{
-		IPlayerInfo *playerinfo = playerinfomanager->GetPlayerInfo(player_ptr->entity);
-		if (playerinfo && playerinfo->IsConnected())
-		{
-			if (playerinfo->IsHLTV()) return false;
-			player_ptr->player_info = playerinfo;
-			player_ptr->index = IndexOfEdict(player_ptr->entity);
-			player_ptr->user_id = playerinfo->GetUserID();
-			player_ptr->team = playerinfo->GetTeamIndex();
-			player_ptr->health = playerinfo->GetHealth();
-			player_ptr->is_dead = playerinfo->IsObserver() | playerinfo->IsDead();
-			Q_strcpy(player_ptr->name, playerinfo->GetName());
-			Q_strcpy(player_ptr->steam_id, playerinfo->GetNetworkIDString());
-
-			if (FStrEq(player_ptr->steam_id, "BOT"))
-			{
-				if (g_DotNetPlugPlugin.tv_name && strcmp(player_ptr->name, g_DotNetPlugPlugin.tv_name->GetString()) == 0)
-				{
-					return false;
-				}
-
-				player_ptr->is_bot = true;
-				Q_strcpy(player_ptr->ip_address, "");
-			}
-			else
-			{
-				player_ptr->is_bot = false;
-				GetIPAddressFromPlayer(player_ptr);
-			}
-
-			return true;
-		}
-	}
-
-	return false;
-}
-
 bool FStrEq(const char* str1, const char* str2)
 {
 	return(Q_stricmp(str1, str2) == 0);
@@ -330,4 +291,66 @@ bool FindPlayerByIndex(player_t *player_ptr)
 	}
 
 	return false;
+}
+
+bool FindPlayerByEntity(player_t* player_ptr)
+{
+	if (player_ptr->entity && !player_ptr->entity->IsFree())
+	{
+		IPlayerInfo *playerinfo = playerinfomanager->GetPlayerInfo(player_ptr->entity);
+		if (playerinfo && playerinfo->IsConnected())
+		{
+			if (playerinfo->IsHLTV()) return false;
+			player_ptr->player_info = playerinfo;
+			player_ptr->index = IndexOfEdict(player_ptr->entity);
+			player_ptr->user_id = playerinfo->GetUserID();
+			player_ptr->team = playerinfo->GetTeamIndex();
+			player_ptr->health = playerinfo->GetHealth();
+			player_ptr->is_dead = playerinfo->IsObserver() | playerinfo->IsDead();
+			Q_strcpy(player_ptr->name, playerinfo->GetName());
+			Q_strcpy(player_ptr->steam_id, playerinfo->GetNetworkIDString());
+
+			if (FStrEq(player_ptr->steam_id, "BOT"))
+			{
+				if (g_DotNetPlugPlugin.tv_name && strcmp(player_ptr->name, g_DotNetPlugPlugin.tv_name->GetString()) == 0)
+				{
+					return false;
+				}
+
+				player_ptr->is_bot = true;
+				Q_strcpy(player_ptr->ip_address, "");
+			}
+			else
+			{
+				player_ptr->is_bot = false;
+				GetIPAddressFromPlayer(player_ptr);
+			}
+
+			return true;
+		}
+	}
+
+	return false;
+}
+
+bool FindPlayerByUserID(player_t *player_ptr)
+{
+	int	org_user_id = player_ptr->user_id;
+	player_ptr->index = gUserTracker.GetIndex(org_user_id);
+	if (player_ptr->index == -1) return false;
+
+	if (!FindPlayerByIndex(player_ptr))
+	{
+		return false;
+	}
+
+	// Last check if returned user_id matches original
+	if (player_ptr->user_id != org_user_id)
+	{
+		// This should not happen but deal with it anyway
+		// MMsg("User ID Error in FindPlayerByUserID()\n");
+		return false;
+	}
+
+	return true;
 }

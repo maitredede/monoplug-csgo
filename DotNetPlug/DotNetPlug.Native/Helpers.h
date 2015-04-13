@@ -71,6 +71,7 @@ HRESULT LOAD_ASSEMBLY_FUNC(_AppDomainPtr pAppDomain, const char* sAssemblyName, 
 
 bool FindPlayerByEntity(player_t* player);
 bool FindPlayerByIndex(player_t *player_ptr);
+bool FindPlayerByUserID(player_t *player_ptr);
 bool FStrEq(const char* str1, const char* str2);
 void GetIPAddressFromPlayer(player_t* player);
 

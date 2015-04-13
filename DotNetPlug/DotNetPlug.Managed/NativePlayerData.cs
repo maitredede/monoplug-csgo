@@ -8,12 +8,23 @@ using System.Threading.Tasks;
 
 namespace DotNetPlug
 {
-    [DebuggerDisplay("#{Id} {Name}")]
+    [DebuggerDisplay("#{id} {name}")]
     [StructLayout(LayoutKind.Sequential)]
-    internal sealed class NativePlayerData : IPlayer
+    internal sealed class NativePlayerData
     {
-        public int Id { get; set; }
+        public int id;
         [MarshalAs(UnmanagedType.BStr)]
-        public string Name { get; set; }
+        public string name;
+        public int team;
+        public int health;
+        [MarshalAs(UnmanagedType.BStr)]
+        public string ip_address;
+        [MarshalAs(UnmanagedType.BStr)]
+        public string steam_id;
+
+        [MarshalAs(UnmanagedType.I1)]
+        public bool is_bot;
+        [MarshalAs(UnmanagedType.I1)]
+        public bool is_dead;
     }
 }

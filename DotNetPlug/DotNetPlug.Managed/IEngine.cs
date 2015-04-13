@@ -45,7 +45,7 @@ namespace DotNetPlug
         /// Gets the players.
         /// </summary>
         /// <returns></returns>
-        Task<IPlayer[]> GetPlayers();
+        Task<PlayerData[]> GetPlayers();
 
         /// <summary>
         /// Gets the server information.
@@ -64,6 +64,6 @@ namespace DotNetPlug
         event EventHandler ClientCommand;
         event EventHandler<GameEventEventArgs> GameEvent;
 
-        Task ShowMOTD(IPlayer player, string title, Uri url, string cmdOnClose);
+        Task ShowMOTD(PlayerData player, string title, Uri url, string cmdOnClose);
     }
 }

@@ -20,7 +20,7 @@ UserTracker::~UserTracker()
 //---------------------------------------------------------------------------------
 // Purpose: Plugin Loaded
 //---------------------------------------------------------------------------------
-void	UserTracker::Load(void)
+void UserTracker::Load(void)
 {
 	for (int i = 0; i < 65536; i++)
 	{
@@ -40,7 +40,7 @@ void	UserTracker::Load(void)
 //---------------------------------------------------------------------------------
 // Purpose: Plugin Unloaded
 //---------------------------------------------------------------------------------
-void	UserTracker::Unload(void)
+void UserTracker::Unload(void)
 {
 	for (int i = 0; i < 65536; i++)
 	{
@@ -51,7 +51,7 @@ void	UserTracker::Unload(void)
 //---------------------------------------------------------------------------------
 // Purpose: Level Loaded
 //---------------------------------------------------------------------------------
-void	UserTracker::LevelInit(void)
+void UserTracker::LevelInit(void)
 {
 	for (int i = 0; i < 65536; i++)
 	{
@@ -62,7 +62,7 @@ void	UserTracker::LevelInit(void)
 //---------------------------------------------------------------------------------
 // Purpose: Client Active
 //---------------------------------------------------------------------------------
-void	UserTracker::ClientActive(edict_t *pEntity)
+void UserTracker::ClientActive(edict_t *pEntity)
 {
 	if (pEntity && !pEntity->IsFree())
 	{
@@ -94,16 +94,20 @@ int UserTracker::Count()
 	return count;
 }
 
-const player_t* UserTracker::Get(int index)
+//const player_t* UserTracker::Get(int index)
+void UserTracker::GetAll(player_t* playerArray, int nbr)
 {
-	player_t player;
-	player.index = index;
-	if (FindPlayerByIndex(&player))
+	int pCount = 0;
+	for (int i = 0; i < 65536; i++)
 	{
-		return &player;
-	}
-	else
-	{
-		return NULL;
+		if (hash_table[i] != -1)
+		{
+			playerArray[pCount].index = hash_table[i];
+
+			if (FindPlayerByIndex(&(playerArray[pCount])))
+			{
+				pCount++;
+			}
+		}
 	}
 }

@@ -22,7 +22,8 @@ public:
 		return (int)hash_table[user_id];
 	}
 	int Count();
-	const player_t* Get(int index);
+	//bool Get(int index, player_t& player);
+	void GetAll(player_t* playerArray, int nbr);
 private:
 
 	// Hash table of user ids

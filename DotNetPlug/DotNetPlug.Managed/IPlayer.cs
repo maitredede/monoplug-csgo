@@ -9,15 +9,18 @@ namespace DotNetPlug
     /// <summary>
     /// Player info Interface
     /// </summary>
-    public interface IPlayer
+    internal interface IPlayer
     {
         /// <summary>
         /// Gets the player Id.
         /// </summary>
-        /// <value>
-        /// The identifier.
-        /// </value>
         int Id { get; }
         string Name { get; }
+        int Team { get; }
+        int Health { get; }
+        bool IsBot { get; }
+        bool IsDead { get; }
+        string IpAddress { get; }
+        string SteamID { get; }
     }
 }

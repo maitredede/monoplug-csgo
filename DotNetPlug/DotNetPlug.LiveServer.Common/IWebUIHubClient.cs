@@ -9,6 +9,6 @@ namespace DotNetPlug.LiveServer
     public interface IWebUIHubClient
     {
         Task RaiseEvent(string serverId, GameEventData e);
-        Task SetPlayers(PlayerData[] players);
+        Task SetPlayers(string serverId, PlayerData[] players);
     }
 }

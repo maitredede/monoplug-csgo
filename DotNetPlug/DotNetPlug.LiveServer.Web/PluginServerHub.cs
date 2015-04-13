@@ -60,5 +60,21 @@ namespace DotNetPlug.LiveServer.Web
             }
             await WebUIHub.RaiseEventInternal(serverId, args);
         }
+
+        public async Task SetPlayers(PlayerData[] players)
+        {
+            string serverId;
+            lock (m_connectedServers_Id_Connex)
+            {
+                //Check not already connected
+                if (!m_connectedServers_Connex_Id.ContainsKey(this.Context.ConnectionId))
+                {
+                    return;
+                }
+                serverId = m_connectedServers_Connex_Id[this.Context.ConnectionId];
+            }
+            await WebUIHub.SetPlayers(serverId, players);
+
+        }
     }
 }

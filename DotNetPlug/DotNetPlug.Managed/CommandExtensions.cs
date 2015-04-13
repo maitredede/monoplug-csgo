@@ -8,7 +8,7 @@ namespace DotNetPlug
 {
     public static class CommandExtensions
     {
-        public static Task<string> KickId(this IEngine engine, IPlayer player)
+        public static Task<string> KickId(this IEngine engine, PlayerData player)
         {
             return engine.ExecuteCommand(string.Format("kickid {0}", player.Id));
         }

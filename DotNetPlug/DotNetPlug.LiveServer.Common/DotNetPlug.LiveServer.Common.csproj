@@ -70,6 +70,10 @@
       <Project>{37aa8857-9ffe-4d6b-b7ab-da12a1304d1b}</Project>
       <Name>DotNetPlug.Managed.Json</Name>
     </ProjectReference>
+    <ProjectReference Include="..\DotNetPlug.Managed\DotNetPlug.Managed.csproj">
+      <Project>{52a5e962-163e-4556-b9f0-394b5f5a058b}</Project>
+      <Name>DotNetPlug.Managed</Name>
+    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
