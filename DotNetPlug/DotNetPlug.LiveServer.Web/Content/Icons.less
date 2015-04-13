@@ -1,0 +1,81 @@
+﻿.icon(@size) {
+    width: auto;
+    max-width: @size;
+    height: auto;
+    max-height: @size;
+}
+
+.icon-fixed(@size) {
+    width: @size;
+    height: @size;
+}
+
+.icon-16() {
+    .icon(16px);
+}
+
+.icon-16-fixed() {
+    .icon-fixed(16px);
+}
+
+.weapon_fire {
+    /*.icon-16-fixed();*/
+    /*background-image: url(Icon/weapon_fire.png);*/
+    /*display: inline-block;*/
+    &.firing {
+        opacity: 1;
+    }
+
+    &.not_firing {
+        opacity: 0;
+        -ms-transition: opacity 0.3s ease-in-out;
+        -moz-transition: opacity 0.3s ease-in-out;
+        -o-transition: opacity 0.3s ease-in-out;
+        -webkit-transition: opacity 0.3s ease-in-out;
+        transition: opacity 0.3s ease-in-out;
+    }
+}
+
+.buy_zone {
+
+    &.in_zone {
+        color: #00AA00;
+
+        &.can_buy {
+            .cant-buy-indicator {
+                opacity: 0;
+            }
+        }
+
+        &.cant_buy {
+        }
+    }
+
+    &.out_zone {
+        color: #DEDEDE;
+
+        .cant-buy-indicator {
+            opacity: 0;
+        }
+    }
+}
+
+.bomb {
+    opacity: 0;
+
+    &.planted {
+        opacity: 1;
+
+        &.ticking {
+            color: #FF0000;
+        }
+
+        &.not_ticking {
+            -ms-transition: color 0.5s ease-in-out;
+            -moz-transition: color 0.5s ease-in-out;
+            -o-transition: color 0.5s ease-in-out;
+            -webkit-transition: color 0.5s ease-in-out;
+            transition: color 0.5s ease-in-out;
+        }
+    }
+}

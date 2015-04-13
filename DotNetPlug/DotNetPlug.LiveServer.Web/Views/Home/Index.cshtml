@@ -3,13 +3,15 @@
 }
 
 <style type="text/css">
-    .team-t{
+    .team-t {
         background-color: #ffDDDD;
     }
-    .team-ct{
+
+    .team-ct {
         background-color: #DDDDFF;
     }
-    .team-spec{
+
+    .team-spec {
         background-color: #DDDDDD;
     }
 </style>
@@ -22,6 +24,11 @@
         <div class="panel-body">
             <p class="text-danger bg-danger">{{error}}</p>
         </div>
+        <div class="panel-body">
+            <div class="bomb" ng-class="{'planted': bomb.planted}">
+                <i class="fa fa-bomb"></i>
+            </div>
+        </div>
         <table class="table table-condensed">
             <thead>
                 <tr>
@@ -29,14 +36,26 @@
                     <th>Nick</th>
                     <th>HP</th>
                     <th>&nbsp;</th>
+                    @*<th>&nbsp;</th>*@
                 </tr>
             </thead>
             <tbody>
                 <tr ng-repeat="p in players | orderBy:'Team'" ng-class="{'team-t': p.Team == 2, 'team-ct': p.Team == 3, 'team-spec': p.Team == 1}">
                     <td>{{p.Id}}</td>
-                    <td>{{p.Name}}</td>
+                    <td>{{p.Name}} <i class="fa fa-user-secret" ng-if="p.IsBot"></i></td>
                     <td>{{p.Health}}</td>
-                    <td>{{p|json}}</td>
+                    <td>
+                        @*<div class="weapon_fire" ng-class="{'firing': p.weapon_fire, 'not_firing': !p.weapon_fire}"></div>*@
+                        <img src="~/Content/Icon/weapon_fire.png" class="weapon_fire" ng-class="{'firing': p.weapon_fire, 'not_firing': !p.weapon_fire}" />
+
+                        <span class="fa-stack fa-lg buy_zone" ng-class="{'in_zone': p.buyzone_in, 'out_zone': !p.buyzone_in, 'can_buy': p.buyzone_canbuy, 'cant_buy': !p.buyzone_canbuy}">
+                            <i class="fa fa-usd fa-stack-1x"></i>
+                            <i class="fa fa-ban fa-stack-2x text-danger cant-buy-indicator"></i>
+                        </span>
+
+                        @*<i class="fa fa-bomb"></i>*@
+                    </td>
+                    @*<td>{{p|json}}</td>*@
                 </tr>
                 <tr>
                     <td colspan="3" ng-if="!players || players.length == 0">

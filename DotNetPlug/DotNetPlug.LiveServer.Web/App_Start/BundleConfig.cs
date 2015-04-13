@@ -27,6 +27,8 @@ namespace DotNetPlug.LiveServer.Web
                 .Include("~/Content/bootstrap.min.css", new CssRewriteUrlTransform())
                 .Include("~/Content/bootstrap-theme.min.css", new CssRewriteUrlTransform())
                 .Include("~/Content/site.*", new CssRewriteUrlTransform())
+                .Include("~/Content/css/font-awesome.*", new CssRewriteUrlTransform())
+                .Include("~/Content/Icons.*", new CssRewriteUrlTransform())
                 );
             bundles.Add(styleAll);
         }

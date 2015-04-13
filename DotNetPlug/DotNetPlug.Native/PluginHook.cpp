@@ -2,17 +2,20 @@
 #include "Plugin.h"
 #include <iplayerinfo.h>
 #include "UserTracker.h"
+#include "EventManager.h"
 
 bool DotNetPlugPlugin::Hook_LevelInit(const char *pMapName, const char *pMapEntities, const char *pOldLevel, const char *pLandmarkName, bool loadGame, bool background)
 {
 	gUserTracker.LevelInit();
+	//g_Managed.AddEventListeners(gameevents);
+	g_EventManager.AttachEvents();
 
 	this->hostname = icvar->FindVar("hostname");
 	this->tv_name = icvar->FindVar("tv_name");
 
 	g_Managed.RaiseLevelInit(pMapName, pMapEntities, pOldLevel, pLandmarkName, loadGame, background);
 
-	RETURN_META_VALUE_NEWPARAMS(MRES_IGNORED, true, &IServerGameDLL::LevelInit, (pMapName, pMapEntities, pOldLevel, pLandmarkName, loadGame, background));
+	RETURN_META_VALUE(MRES_IGNORED, true);
 }
 
 void DotNetPlugPlugin::Hook_ServerActivate(edict_t *pEdictList, int edictCount, int clientMax)
@@ -22,6 +25,7 @@ void DotNetPlugPlugin::Hook_ServerActivate(edict_t *pEdictList, int edictCount, 
 	this->edictCount = edictCount;
 
 	g_Managed.RaiseServerActivate(clientMax);
+	RETURN_META(MRES_IGNORED);
 }
 
 void DotNetPlugPlugin::Hook_GameFrame(bool simulating)
@@ -34,11 +38,14 @@ void DotNetPlugPlugin::Hook_GameFrame(bool simulating)
 	*/
 	if (simulating)
 		g_Managed.Tick();
+	RETURN_META(MRES_IGNORED);
 }
 
 void DotNetPlugPlugin::Hook_LevelShutdown()
 {
+	g_EventManager.DetachEvents();
 	g_Managed.RaiseLevelShutdown();
+	RETURN_META(MRES_IGNORED);
 }
 
 void DotNetPlugPlugin::Hook_ClientActive(edict_t *pEntity, bool bLoadGame)
@@ -74,6 +81,7 @@ void DotNetPlugPlugin::Hook_ClientActive(edict_t *pEntity, bool bLoadGame)
 	//	ProcessPlayActionSound(&player, MANI_ACTION_SOUND_JOINSERVER);
 	//}
 	g_Managed.RaiseClientActive();
+	RETURN_META(MRES_IGNORED);
 }
 
 void DotNetPlugPlugin::Hook_ClientDisconnect(edict_t *pEntity)
@@ -90,16 +98,19 @@ void DotNetPlugPlugin::Hook_ClientDisconnect(edict_t *pEntity)
 
 	g_Managed.RaiseClientDisconnect();
 	gUserTracker.ClientDisconnect(&player);
+	RETURN_META(MRES_IGNORED);
 }
 
 void DotNetPlugPlugin::Hook_ClientPutInServer(edict_t *pEntity, char const *playername)
 {
 	g_Managed.RaiseClientPutInServer();
+	RETURN_META(MRES_IGNORED);
 }
 
 void DotNetPlugPlugin::Hook_SetCommandClient(int index)
 {
 	//g_Managed.RaiseClientPutInServer();
+	RETURN_META(MRES_IGNORED);
 }
 
 void DotNetPlugPlugin::Hook_ClientSettingsChanged(edict_t *pEdict)
@@ -128,6 +139,7 @@ void DotNetPlugPlugin::Hook_ClientSettingsChanged(edict_t *pEdict)
 		//}
 	}
 	g_Managed.RaiseClientSettingsChanged();
+	RETURN_META(MRES_IGNORED);
 }
 
 bool DotNetPlugPlugin::Hook_ClientConnect(edict_t *pEntity, const char *pszName, const char *pszAddress, char *reject, int maxrejectlen)
@@ -140,6 +152,7 @@ bool DotNetPlugPlugin::Hook_ClientConnect(edict_t *pEntity, const char *pszName,
 void DotNetPlugPlugin::Hook_ClientCommand(edict_t *pEntity, const CCommand &args)
 {
 	g_Managed.RaiseClientCommand();
+	RETURN_META(MRES_IGNORED);
 }
 
 PLUGIN_RESULT DotNetPlugPlugin::Hook_NetworkIDValidated(const char *pszUserName, const char *pszNetworkID)

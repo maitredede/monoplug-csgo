@@ -26,8 +26,8 @@ public:
 
 	void RaiseCommand(int argc, const char** argv);
 
-	void AddEventListeners(IGameEventManager2* gameevents);
-	void RemoveEventListeners(IGameEventManager2* gameevents);
+	//void AddEventListeners(IGameEventManager2* gameevents);
+	//void RemoveEventListeners(IGameEventManager2* gameevents);
 
 
 	static void Log(const char* msg);
@@ -138,8 +138,8 @@ private: //Private methods
 	static void RegisterCommandMono(MonoString* pMsg, MonoString* pDesc, int flags, int id);
 #endif
 
-public: //Events
-	EventListener** EVT_Listeners;
+//public: //Events
+//	EventListener** EVT_Listeners;
 public:
 	void RaiseGameEvent(GameEvent e, IGameEvent *event);
 };

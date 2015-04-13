@@ -609,14 +609,14 @@ void Managed::RaiseGameEvent(GameEvent e, IGameEvent *event)
 	case round_poststart:
 		break;
 	case round_start:
-		ADD_LONG(nativeEvent, nativeArgs, event, "timelimit");
-		ADD_LONG(nativeEvent, nativeArgs, event, "fraglimit");
-		ADD_STRING(nativeEvent, nativeArgs, event, "objective");
+		//ADD_LONG(nativeEvent, nativeArgs, event, "timelimit");
+		//ADD_LONG(nativeEvent, nativeArgs, event, "fraglimit");
+		//ADD_STRING(nativeEvent, nativeArgs, event, "objective");
 		break;
 	case round_end:
-		ADD_BYTE(nativeEvent, nativeArgs, event, "winner");
-		ADD_BYTE(nativeEvent, nativeArgs, event, "reason");
-		ADD_STRING(nativeEvent, nativeArgs, event, "message");
+		//ADD_BYTE(nativeEvent, nativeArgs, event, "winner");
+		//ADD_BYTE(nativeEvent, nativeArgs, event, "reason");
+		//ADD_STRING(nativeEvent, nativeArgs, event, "message");
 		break;
 	case grenade_bounce:
 		ADD_SHORT(nativeEvent, nativeArgs, event, "userid");

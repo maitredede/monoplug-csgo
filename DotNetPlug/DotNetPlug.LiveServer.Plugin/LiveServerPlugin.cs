@@ -73,6 +73,7 @@ namespace DotNetPlug.LiveServer
                 case GameEvent.switch_team:
                 case GameEvent.teamchange_pending:
                 case GameEvent.player_spawned:
+                case GameEvent.player_team:
                     await this.m_PluginHub.SetPlayers(await this.Engine.GetPlayers());
                     break;
             }

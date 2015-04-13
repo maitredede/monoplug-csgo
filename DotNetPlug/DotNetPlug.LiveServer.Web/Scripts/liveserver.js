@@ -82,6 +82,11 @@ angular.module("liveserver", ["SignalR", "ui.router", "ui.bootstrap"])
         $scope.error = "";
         $scope.lastEvents = [];
         $scope.players = [];
+        $scope.bomb = {
+            planting: false,
+            planted: false,
+            ticking: false,
+        };
 
         $scope.serverId = "Demo";
 
@@ -143,16 +148,95 @@ angular.module("liveserver", ["SignalR", "ui.router", "ui.bootstrap"])
         $scope.hubSetPlayers = function hubSetPlayers(serverId, players) {
             $scope.players = players;
         }
+        //var stepExec = function stepExec(thisTick, nextTick) {
+        //    if (thisTick) {
+        //        thisTick();
+        //    }
+        //    if (nextTick) {
+        //        $timeout(function () { nextTick() }, 0);
+        //    }
+        //}
+        var playerStepExec = function playerStepExec(userid, thisTick, nextTick) {
+            for (var i = 0; i < $scope.players.length; i++) {
+                var p = $scope.players[i];
+                if (p.Id == userid) {
+
+                    if (thisTick) {
+                        thisTick(p);
+                    }
+                    if (nextTick) {
+                        $timeout(function () { nextTick(p) }, 0);
+                    }
+
+                    break;
+                }
+            }
+        }
 
         $scope.hubRaiseEvent = function hubRaiseEvent(serverId, e) {
             switch (e.name) {
-                case GameEvent.player_hurt:
                 case GameEvent.weapon_fire:
+                    playerStepExec(e.userid, function (p) { p.weapon_fire = true; }, function (p) { p.weapon_fire = false; })
                     return;
-                    //break;
-                case GameEvent.round_start:
+                case GameEvent.enter_buyzone:
+                    playerStepExec(e.userid, function (p) {
+                        p.buyzone_in = true;
+                        p.buyzone_canbuy = e.canbuy;
+                    });
+                    return;
+                case GameEvent.exit_buyzone:
+                    playerStepExec(e.userid, function (p) {
+                        p.buyzone_in = false;
+                        p.buyzone_canbuy = e.canbuy;
+                    });
+                    return;
+                case GameEvent.bomb_beginplant:
+                    $scope.bomb.planting = true;
                     break;
+                case GameEvent.bomb_abortplant:
+                    $scope.bomb.planting = false;
                     break;
+                case GameEvent.bomb_planted:
+                    $scope.bomb.planting = false;
+                    $scope.bomb.planted = true;
+                    break;
+                case GameEvent.bomb_defused:
+                    $scope.bomb.planting = false;
+                    $scope.bomb.planted = false;
+                    break;
+                case GameEvent.bomb_exploded:
+                    $scope.bomb.planting = false;
+                    $scope.bomb.planted = true;
+                    break;
+                case GameEvent.bomb_beep:
+                    $scope.bomb.ticking = true;
+                    $timeout(function () { $scope.bomb.ticking = false; }, 0);
+                    break;
+                    //case GameEvent.bomb_begindefuse:
+                    //case GameEvent.bomb_abortdefuse:
+
+                    //case GameEvent.enter_bombzone:
+                    //case GameEvent.exit_bombzone:
+                    //case GameEvent.bomb_dropped:
+                    //case GameEvent.bomb_pickup:
+                    //    break;
+
+                case GameEvent.player_hurt:
+                    playerStepExec(e.userid, function (p) {
+                        p.Health = e.health;
+                        p.Armor = e.armor;
+                    })
+                    return;
+
+                case GameEvent.player_jump:
+                case GameEvent.weapon_reload:
+                case GameEvent.item_pickup:
+                case GameEvent.player_avenged_teammate:
+                case GameEvent.item_equip:
+                case GameEvent.entity_killed:
+                case GameEvent.player_death:
+                    //Ignoring
+                    return;
             }
             $scope.lastEvents.splice(0, 0, e);
             while ($scope.lastEvents.length > 50) {

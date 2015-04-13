@@ -12,30 +12,30 @@ Managed::Managed()
 	this->EVT_round_start = new EventListener(round_start);*/
 }
 
-void Managed::AddEventListeners(IGameEventManager2* gameevents)
-{
-	this->EVT_Listeners = new EventListener*[GameEvent::MAX];
-	for (int i = None; i < MAX; i++){
-		if (g_CSGO_EventNames[i] && strlen(g_CSGO_EventNames[i])){
-			this->EVT_Listeners[i] = new EventListener(static_cast<GameEvent>(i));
-			gameevents->AddListener(this->EVT_Listeners[i], g_CSGO_EventNames[i], true);
-		}
-		else{
-			this->EVT_Listeners[i] = NULL;
-		}
-	}
-}
-
-void Managed::RemoveEventListeners(IGameEventManager2* gameevents)
-{
-	for (int i = None; i < MAX; i++){
-		if (this->EVT_Listeners[i]){
-			gameevents->RemoveListener(this->EVT_Listeners[i]);
-			delete this->EVT_Listeners[i];
-		}
-	}
-	delete[] this->EVT_Listeners;
-}
+//void Managed::AddEventListeners(IGameEventManager2* gameevents)
+//{
+//	/*this->EVT_Listeners = new EventListener*[GameEvent::MAX];
+//	for (int i = None; i < MAX; i++){
+//		if (g_CSGO_EventNames[i] && strlen(g_CSGO_EventNames[i])){
+//			this->EVT_Listeners[i] = new EventListener(static_cast<GameEvent>(i));
+//			gameevents->AddListener(this->EVT_Listeners[i], g_CSGO_EventNames[i], true);
+//		}
+//		else{
+//			this->EVT_Listeners[i] = NULL;
+//		}
+//	}*/
+//}
+//
+//void Managed::RemoveEventListeners(IGameEventManager2* gameevents)
+//{
+//	/*for (int i = None; i < MAX; i++){
+//		if (this->EVT_Listeners[i]){
+//			gameevents->RemoveListener(this->EVT_Listeners[i]);
+//			delete this->EVT_Listeners[i];
+//		}
+//	}
+//	delete[] this->EVT_Listeners;*/
+//}
 
 Managed::~Managed()
 {
