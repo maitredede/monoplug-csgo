@@ -3,17 +3,7 @@
 }
 
 <style type="text/css">
-    .team-t {
-        background-color: #ffDDDD;
-    }
-
-    .team-ct {
-        background-color: #DDDDFF;
-    }
-
-    .team-spec {
-        background-color: #DDDDDD;
-    }
+   
 </style>
 
 <div class="col-lg-12">
@@ -41,9 +31,9 @@
                 </tr>
             </thead>
             <tbody>
-                <tr ng-repeat="p in players | orderBy:'Team'" ng-class="{'team-t': p.Team == 2, 'team-ct': p.Team == 3, 'team-spec': p.Team == 1}">
+                <tr ng-repeat="p in players | orderBy:'Team'" class="player" ng-class="{'team-t': p.Team == 2, 'team-ct': p.Team == 3, 'team-spec': p.Team == 1}">
                     <td>{{p.Id}}</td>
-                    <td>{{p.Name}} <i class="fa fa-user-secret" ng-if="p.IsBot"></i></td>
+                    <td ng-class="{'dead': p.IsDead}">{{p.Name}} <i class="fa fa-user-secret" ng-if="p.IsBot"></i></td>
                     <td>{{p.Health}}</td>
                     <td>
                         <progressbar value="p.Health" animate="false"></progressbar>
@@ -58,6 +48,8 @@
                         </span>
 
                         <i class="fa fa-bomb bomb-zone" ng-class="{'in-zone': p.bombzone_in, 'out-zone': !p.bombzone_in}"></i>
+
+                        <i class="glyphicon glyphicon-sunglass" ng-class="{'blinded':p.blinded, 'not-blinded': !p.blinded}"></i>
                     </td>
                     <td>&nbsp;</td>
                     @*<td>{{p|json}}</td>*@

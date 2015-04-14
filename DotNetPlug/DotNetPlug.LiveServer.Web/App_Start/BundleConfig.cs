@@ -20,6 +20,7 @@ namespace DotNetPlug.LiveServer.Web
                 .Include("~/Scripts/angular-ui/ui-bootstrap.*")
 
                 .Include("~/Scripts/liveserver.*")
+                .Include("~/Scripts/konami.*")
                 );
             bundles.Add(scriptAll);
 

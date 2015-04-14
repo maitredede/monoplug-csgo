@@ -10,11 +10,11 @@ namespace DotNetPlug
 {
     internal sealed class EngineSynchronizationContext : SynchronizationContext
     {
-        private readonly ConcurrentQueue<WorkItem> m_queue;
+        private readonly ConcurrentQueue<EngineSynchronizationContextWorkItem> m_queue;
 
         public EngineSynchronizationContext()
         {
-            this.m_queue = new ConcurrentQueue<WorkItem>();
+            this.m_queue = new ConcurrentQueue<EngineSynchronizationContextWorkItem>();
         }
 
         /// <summary>
@@ -24,10 +24,7 @@ namespace DotNetPlug
         /// <param name="state">Objet passé au délégué.</param>
         public override void Post(SendOrPostCallback d, object state)
         {
-#if DEBUG
-            System.Diagnostics.Debug.WriteLine("EngineSynchronizationContext::Post");
-#endif
-            WorkItem wrk = new WorkItem(d, state, true);
+            EngineSynchronizationContextWorkItem wrk = new EngineSynchronizationContextWorkItem(d, state, true);
             this.m_queue.Enqueue(wrk);
         }
 
@@ -38,10 +35,7 @@ namespace DotNetPlug
         /// <param name="state">Objet passé au délégué.</param>
         public override void Send(SendOrPostCallback d, object state)
         {
-#if DEBUG
-            System.Diagnostics.Debug.WriteLine("EngineSynchronizationContext::Send");
-#endif
-            using (WorkItem wrk = new WorkItem(d, state, true))
+            using (EngineSynchronizationContextWorkItem wrk = new EngineSynchronizationContextWorkItem(d, state, true))
             {
                 this.m_queue.Enqueue(wrk);
                 wrk.Wait();
@@ -50,7 +44,7 @@ namespace DotNetPlug
 
         public void Tick()
         {
-            WorkItem item;
+            EngineSynchronizationContextWorkItem item;
             if (this.m_queue.TryDequeue(out item))
             {
                 try
@@ -66,47 +60,6 @@ namespace DotNetPlug
                     item.Release();
                 }
             }
-        }
-    }
-
-    internal sealed class WorkItem : IDisposable
-    {
-        private readonly SendOrPostCallback m_delegate;
-        private readonly object m_state;
-        private readonly ManualResetEventSlim m_latch;
-
-        public WorkItem(SendOrPostCallback d, object state, bool synchronous)
-        {
-            this.m_delegate = d;
-            this.m_state = state;
-            if (synchronous)
-            {
-                this.m_latch = new ManualResetEventSlim(false);
-            }
-        }
-
-        public void Execute()
-        {
-            this.m_delegate.Invoke(this.m_state);
-        }
-
-        public void Release()
-        {
-            this.m_latch.Set();
-        }
-
-        public void Wait()
-        {
-            this.m_latch.Wait();
-        }
-
-        public void Dispose()
-        {
-            if (this.m_latch != null)
-            {
-                this.m_latch.Dispose();
-            }
-            GC.SuppressFinalize(this);
         }
     }
 }

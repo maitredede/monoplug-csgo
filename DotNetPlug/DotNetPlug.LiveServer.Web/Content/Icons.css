@@ -53,4 +53,27 @@
   -webkit-transition: color 0.5s ease-in-out;
   transition: color 0.5s ease-in-out;
 }
+.player .dead {
+  text-decoration: line-through;
+}
+.player .blinded {
+  opacity: 1;
+}
+.player .not-blinded {
+  opacity: 0;
+  -ms-transition: opacity 1s linear;
+  -moz-transition: opacity 1s linear;
+  -o-transition: opacity 1s linear;
+  -webkit-transition: opacity 1s linear;
+  transition: opacity 1s linear;
+}
+.player.team-t {
+  background-color: #ffDDDD;
+}
+.player.team-ct {
+  background-color: #DDDDFF;
+}
+.player.team-spec {
+  background-color: #DDDDDD;
+}
 /*# sourceMappingURL=Icons.css.map */

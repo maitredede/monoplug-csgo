@@ -23,10 +23,13 @@ void EventManager::AddHandler(GameEvent e)
 	int i = (int)e;
 	if (g_CSGO_EventNames[i] && strlen(g_CSGO_EventNames[i]))
 	{
-		gameevents->AddListener(this, g_CSGO_EventNames[i], true);
+		if (!gameevents->AddListener(this, g_CSGO_EventNames[i], true))
+		{
+			DebugMsg("Can't handle event");
+		}
 	}
 	else{
-		DebugMsg("Can't handle event");
+		DebugMsg("Unknown event");
 	}
 }
 

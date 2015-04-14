@@ -18,7 +18,7 @@
     .icon-fixed(16px);
 }
 
-.transition(@property, @time, @anim: ease-in-out){
+.transition(@property, @time, @anim: ease-in-out) {
     -ms-transition: @property @time @anim;
     -moz-transition: @property @time @anim;
     -o-transition: @property @time @anim;
@@ -92,5 +92,32 @@
         &.not-ticking {
             .transition(color, 0.5s, ease-in-out);
         }
+    }
+}
+
+.player {
+    .dead {
+        text-decoration: line-through;
+    }
+
+    .blinded {
+        opacity: 1;
+    }
+
+    .not-blinded {
+        opacity: 0;
+        .transition(opacity, 1s, linear);
+    }
+
+    &.team-t {
+        background-color: #ffDDDD;
+    }
+
+    &.team-ct {
+        background-color: #DDDDFF;
+    }
+
+    &.team-spec {
+        background-color: #DDDDDD;
     }
 }

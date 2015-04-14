@@ -1,82 +1,6 @@
 ﻿"use strict";
 
 angular.module("liveserver", ["SignalR", "ui.router", "ui.bootstrap"])
-//.factory("WebUIHub", ["$rootScope", "Hub", "$timeout",
-//    function ($rootScope, Hub, $timeout) {
-
-//        //declaring the hub connection
-//        var hub = new Hub('webUI', {
-
-//            ////client side methods
-//            listeners: {
-//                "RaiseEvent": function (serverId, e) {
-//                    debugger;
-//                }
-//                //    'lockEmployee': function (id) {
-//                //        var employee = find(id);
-//                //        employee.Locked = true;
-//                //        $rootScope.$apply();
-//                //    },
-//                //    'unlockEmployee': function (id) {
-//                //        var employee = find(id);
-//                //        employee.Locked = false;
-//                //        $rootScope.$apply();
-//                //    }
-//            },
-
-//            //server side methods
-//            methods: ['hello'],
-
-//            ////query params sent on initial connection
-//            //queryParams: {
-//            //    'token': 'exampletoken'
-//            //},
-
-//            //handle connection error
-//            errorHandler: function (error) {
-//                console.error(error);
-//            },
-
-//            //specify a non default root
-//            //rootPath: '/api
-
-//            hubDisconnected: function () {
-//                if (hub.connection.lastError) {
-//                    hub.connection.start()
-//                        .done(function () {
-//                            if (hub.connection.state === 0) {
-//                                $timeout(function () {
-//                                    //your code here 
-//                                }, 2000);
-//                            } else {
-//                                //your code here
-//                            }
-//                        })
-//                        .fail(function (reason) {
-//                            console.log(reason);
-//                        });
-//                }
-//            }
-//        });
-
-//        //var edit = function (employee) {
-//        //    hub.lock(employee.Id); //Calling a server method
-//        //};
-//        //var done = function (employee) {
-//        //    hub.unlock(employee.Id); //Calling a server method
-//        //}
-
-//        //return {
-//        //    editEmployee: edit,
-//        //    doneWithEmployee: done
-//        //};
-//        return {
-//            hello: function (serverId) {
-//                var helloResult = hub.hello(serverId);
-//                return helloResult;
-//            }
-//        }
-//    }])
 .controller("demoController", ["$scope", "Hub", "$timeout", "GameEvent",
     function ($scope, Hub, $timeout, GameEvent) {
         $scope.error = "";
@@ -192,6 +116,20 @@ angular.module("liveserver", ["SignalR", "ui.router", "ui.bootstrap"])
                         p.buyzone_canbuy = e.canbuy;
                     });
                     return;
+                case GameEvent.enter_bombzone:
+                    playerStepExec(e.userid, function (p) {
+                        p.bombzone_in = true;
+                        p.bombzone_hasbomb = e.hasbomb;
+                    });
+                    return;
+                case GameEvent.exit_bombzone:
+                    playerStepExec(e.userid, function (p) {
+                        p.bombzone_in = false;
+                        p.bombzone_hasbomb = e.hasbomb;
+                    });
+                    return;
+
+
                 case GameEvent.bomb_beginplant:
                     $scope.bomb.planting = true;
                     break;
@@ -219,18 +157,6 @@ angular.module("liveserver", ["SignalR", "ui.router", "ui.bootstrap"])
                     //case GameEvent.bomb_begindefuse:
                     //case GameEvent.bomb_abortdefuse:
 
-                case GameEvent.enter_bombzone:
-                    playerStepExec(e.userid, function (p) {
-                        p.bombzone_in = true;
-                        p.bombzone_hasbomb = e.hasbomb;
-                    });
-                    return;
-                case GameEvent.exit_bombzone:
-                    playerStepExec(e.userid, function (p) {
-                        p.bombzone_in = false;
-                        p.bombzone_hasbomb = e.hasbomb;
-                    });
-                    return;
                     //case GameEvent.bomb_dropped:
                     //case GameEvent.bomb_pickup:
                     //    break;
@@ -241,6 +167,9 @@ angular.module("liveserver", ["SignalR", "ui.router", "ui.bootstrap"])
                         p.Armor = e.armor;
                     })
                     return;
+                case GameEvent.player_blind:
+                    playerStepExec(e.userid, function (p) { p.blinded = true; }, function (p) { p.blinded = false; })
+                    break;
 
                 case GameEvent.player_jump:
                 case GameEvent.weapon_reload:

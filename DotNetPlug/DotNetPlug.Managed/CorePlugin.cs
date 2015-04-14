@@ -26,6 +26,7 @@ namespace DotNetPlug
         {
             this.m_loadAssembly = this.m_manager.EngineWrapper.RegisterCommandInternal("load_assembly", "Load assembly plugin", FCVar.ServerCanExecute, PluginManager.Instance.LoadAssembly);
             this.m_loadType = this.m_manager.EngineWrapper.RegisterCommandInternal("load_type", "Load type plugin", FCVar.ServerCanExecute, PluginManager.Instance.LoadType);
+            this.Engine.ExecuteCommand("log on");
         }
 
         public override Task Unload()

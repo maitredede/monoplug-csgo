@@ -44,15 +44,11 @@ namespace DotNetPlug
         /// <summary>
         /// Gets the configuration.
         /// </summary>
-        protected internal Configuration GetConfig()
+        public Configuration GetConfig()
         {
             if (this.m_config == null)
             {
                 this.m_config = ConfigurationManager.OpenExeConfiguration(this.GetType().Assembly.Location);
-
-#if DEBUG
-                this.Engine.Log("Config file is : {0}, exists={1}", this.m_config.FilePath, File.Exists(this.m_config.FilePath)).Wait();
-#endif
             }
             return this.m_config;
         }
@@ -60,7 +56,7 @@ namespace DotNetPlug
         /// <summary>
         /// Reloads the configuration.
         /// </summary>
-        protected internal void ReloadConfig()
+        public void ReloadConfig()
         {
             this.m_config = null;
             this.GetConfig();
