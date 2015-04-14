@@ -55,7 +55,11 @@ void DotNetPlugPlugin::Hook_ClientActive(edict_t *pEntity, bool bLoadGame)
 	player_t player;
 	player.entity = pEntity;
 	if (!FindPlayerByEntity(&player))
-		return;
+	{
+		//return;
+		RETURN_META(MRES_IGNORED);
+	}
+
 
 	//const char *pname = player.name;
 	//if (pname && pname[0] == 0)
@@ -87,13 +91,12 @@ void DotNetPlugPlugin::Hook_ClientActive(edict_t *pEntity, bool bLoadGame)
 void DotNetPlugPlugin::Hook_ClientDisconnect(edict_t *pEntity)
 {
 	player_t player;
-
 	player.entity = pEntity;
-
 	if (!FindPlayerByEntity(&player))
 	{
 		//gpManiReservedSlot->ClientDisconnect(NULL); // must be human and still connecting!
-		return;
+		//return;
+		RETURN_META(MRES_IGNORED);
 	}
 
 	g_Managed.RaiseClientDisconnect();
@@ -115,29 +118,29 @@ void DotNetPlugPlugin::Hook_SetCommandClient(int index)
 
 void DotNetPlugPlugin::Hook_ClientSettingsChanged(edict_t *pEdict)
 {
-	if (playerinfomanager)
-	{
-		int	player_index = IndexOfEdict(pEdict);
-		//if (user_name[player_index - 1].in_use)
-		//{
-		//	const char * name = engine->GetClientConVarValue(player_index, "name");
-		//	if (strcmp(user_name[player_index - 1].name, name) != 0)
-		//	{
-		//		player_t player;
-		//		player.index = player_index;
-		//		if (FindPlayerByIndex(&player))
-		//		{
-		//			if (!player.is_bot)
-		//			{
-		//				// Handle name change
-		//				PlayerJoinedInitSettings(&player);
-		//				ProcessChangeName(&player, name, user_name[player_index - 1].name);
-		//				Q_strcpy(user_name[player_index - 1].name, name);
-		//			}
-		//		}
-		//	}
-		//}
-	}
+	//if (playerinfomanager)
+	//{
+	//	int	player_index = IndexOfEdict(pEdict);
+	//	//if (user_name[player_index - 1].in_use)
+	//	//{
+	//	//	const char * name = engine->GetClientConVarValue(player_index, "name");
+	//	//	if (strcmp(user_name[player_index - 1].name, name) != 0)
+	//	//	{
+	//	//		player_t player;
+	//	//		player.index = player_index;
+	//	//		if (FindPlayerByIndex(&player))
+	//	//		{
+	//	//			if (!player.is_bot)
+	//	//			{
+	//	//				// Handle name change
+	//	//				PlayerJoinedInitSettings(&player);
+	//	//				ProcessChangeName(&player, name, user_name[player_index - 1].name);
+	//	//				Q_strcpy(user_name[player_index - 1].name, name);
+	//	//			}
+	//	//		}
+	//	//	}
+	//	//}
+	//}
 	g_Managed.RaiseClientSettingsChanged();
 	RETURN_META(MRES_IGNORED);
 }

@@ -17,24 +17,25 @@
 </style>
 
 <div class="col-lg-12">
-    <div class="panel panel-default" ng-app="liveserver" ng-controller="demoController">
+    <div class="panel panel-default ng-cloak" ng-app="liveserver" ng-controller="demoController">
         <div class="panel-heading">
-            <h2 class="panel-title">Server: Demo <small>({{lastEvents.length}} events)</small></h2>
+            <h2 class="panel-title">@Resources.Server : Demo <small>({{lastEvents.length}} events)</small></h2>
         </div>
         <div class="panel-body">
             <p class="text-danger bg-danger">{{error}}</p>
         </div>
         <div class="panel-body">
-            <div class="bomb" ng-class="{'planted': bomb.planted}">
+            <div class="bomb" ng-class="{'planted': bomb.planted, 'ticking': bomb.ticking, 'not-ticking': !bomb.ticking, 'exploded': bomb.exploded, 'defused': bomb.defused}">
                 <i class="fa fa-bomb"></i>
             </div>
         </div>
         <table class="table table-condensed">
             <thead>
                 <tr>
-                    <th>Id</th>
-                    <th>Nick</th>
-                    <th>HP</th>
+                    <th>@Resources.Id</th>
+                    <th>@Resources.Nick</th>
+                    <th colspan="2">HP</th>
+                    <th>&nbsp;</th>
                     <th>&nbsp;</th>
                     @*<th>&nbsp;</th>*@
                 </tr>
@@ -45,21 +46,25 @@
                     <td>{{p.Name}} <i class="fa fa-user-secret" ng-if="p.IsBot"></i></td>
                     <td>{{p.Health}}</td>
                     <td>
-                        @*<div class="weapon_fire" ng-class="{'firing': p.weapon_fire, 'not_firing': !p.weapon_fire}"></div>*@
-                        <img src="~/Content/Icon/weapon_fire.png" class="weapon_fire" ng-class="{'firing': p.weapon_fire, 'not_firing': !p.weapon_fire}" />
+                        <progressbar value="p.Health" animate="false"></progressbar>
+                    </td>
+                    <td>
+                        @*<div class="weapon-fire" ng-class="{'firing': p.weapon-fire, 'not-firing': !p.weapon-fire}"></div>*@
+                        <img src="@Href("~/Content/Icon/weapon_fire.png")" class="weapon-fire" ng-class="{'firing': p.weapon_fire, 'not-firing': !p.weapon_fire}" />
 
-                        <span class="fa-stack fa-lg buy_zone" ng-class="{'in_zone': p.buyzone_in, 'out_zone': !p.buyzone_in, 'can_buy': p.buyzone_canbuy, 'cant_buy': !p.buyzone_canbuy}">
+                        <span class="fa-stack fa-lg buy-zone" ng-class="{'in-zone': p.buyzone_in, 'out-zone': !p.buyzone_in, 'can-buy': p.buyzone_canbuy, 'cant-buy': !p.buyzone_canbuy}">
                             <i class="fa fa-usd fa-stack-1x"></i>
                             <i class="fa fa-ban fa-stack-2x text-danger cant-buy-indicator"></i>
                         </span>
 
-                        @*<i class="fa fa-bomb"></i>*@
+                        <i class="fa fa-bomb bomb-zone" ng-class="{'in-zone': p.bombzone_in, 'out-zone': !p.bombzone_in}"></i>
                     </td>
+                    <td>&nbsp;</td>
                     @*<td>{{p|json}}</td>*@
                 </tr>
                 <tr>
                     <td colspan="3" ng-if="!players || players.length == 0">
-                        <p class="help-block">No players</p>
+                        <p class="help-block">@Resources.NoPlayers</p>
                     </td>
                 </tr>
             </tbody>
@@ -69,6 +74,15 @@
                 <li ng-repeat="e in lastEvents">{{e}}</li>
             </ul>
         </div>
+
+
+
+
+        <script type="text/ng-template" id="template/progressbar/progressbar.html">
+            <div class="progress">
+                <div class="progress-bar" ng-class="type && 'progress-bar-' + type" role="progressbar" aria-valuenow="{{value}}" aria-valuemin="0" aria-valuemax="{{max}}" ng-style="{width: (percent < 100 ? percent : 100) + '%'}" aria-valuetext="{{percent | number:0}}%" ng-transclude></div>
+            </div>
+        </script>
     </div>
 </div>
 

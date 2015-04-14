@@ -86,6 +86,8 @@ angular.module("liveserver", ["SignalR", "ui.router", "ui.bootstrap"])
             planting: false,
             planted: false,
             ticking: false,
+            exploded: false,
+            defused: false,
         };
 
         $scope.serverId = "Demo";
@@ -212,11 +214,23 @@ angular.module("liveserver", ["SignalR", "ui.router", "ui.bootstrap"])
                     $scope.bomb.ticking = true;
                     $timeout(function () { $scope.bomb.ticking = false; }, 0);
                     break;
+                    //case GameEvent.entity_killed:
+                    //case GameEvent.player_death:
                     //case GameEvent.bomb_begindefuse:
                     //case GameEvent.bomb_abortdefuse:
 
-                    //case GameEvent.enter_bombzone:
-                    //case GameEvent.exit_bombzone:
+                case GameEvent.enter_bombzone:
+                    playerStepExec(e.userid, function (p) {
+                        p.bombzone_in = true;
+                        p.bombzone_hasbomb = e.hasbomb;
+                    });
+                    return;
+                case GameEvent.exit_bombzone:
+                    playerStepExec(e.userid, function (p) {
+                        p.bombzone_in = false;
+                        p.bombzone_hasbomb = e.hasbomb;
+                    });
+                    return;
                     //case GameEvent.bomb_dropped:
                     //case GameEvent.bomb_pickup:
                     //    break;
@@ -233,8 +247,6 @@ angular.module("liveserver", ["SignalR", "ui.router", "ui.bootstrap"])
                 case GameEvent.item_pickup:
                 case GameEvent.player_avenged_teammate:
                 case GameEvent.item_equip:
-                case GameEvent.entity_killed:
-                case GameEvent.player_death:
                     //Ignoring
                     return;
             }

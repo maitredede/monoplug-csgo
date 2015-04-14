@@ -24,11 +24,12 @@ namespace DotNetPlug.LiveServer.Web
             bundles.Add(scriptAll);
 
             StyleBundle styleAll = (StyleBundle)(new StyleBundle("~/Content/all.css")
+                .Include("~/Scripts/angular-csp.css", new CssRewriteUrlTransform())
                 .Include("~/Content/bootstrap.min.css", new CssRewriteUrlTransform())
                 .Include("~/Content/bootstrap-theme.min.css", new CssRewriteUrlTransform())
+                .Include("~/Content/css/font-awesome.min.css", new CssRewriteUrlTransform())
                 .Include("~/Content/site.*", new CssRewriteUrlTransform())
-                .Include("~/Content/css/font-awesome.*", new CssRewriteUrlTransform())
-                .Include("~/Content/Icons.*", new CssRewriteUrlTransform())
+                .Include("~/Content/Icons.css", new CssRewriteUrlTransform())
                 );
             bundles.Add(styleAll);
         }

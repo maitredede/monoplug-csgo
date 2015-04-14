@@ -25,15 +25,18 @@ void EventManager::AddHandler(GameEvent e)
 	{
 		gameevents->AddListener(this, g_CSGO_EventNames[i], true);
 	}
+	else{
+		DebugMsg("Can't handle event");
+	}
 }
 
 void EventManager::AttachEvents()
 {
 	/*for (int i = None; i < MAX; i++){
 		if (g_CSGO_EventNames[i] && strlen(g_CSGO_EventNames[i])){
-			gameevents->AddListener(this, g_CSGO_EventNames[i], true);
+		gameevents->AddListener(this, g_CSGO_EventNames[i], true);
 		}
-	}*/
+		}*/
 	this->AddHandler(player_hurt);
 	this->AddHandler(player_team);
 	this->AddHandler(player_death);
@@ -51,7 +54,7 @@ void EventManager::AttachEvents()
 	this->AddHandler(hostage_rescued);
 	this->AddHandler(hostage_follows);
 	this->AddHandler(hostage_killed);
-	this->AddHandler(round_start);
+	//this->AddHandler(round_start);
 	this->AddHandler(round_end);
 	this->AddHandler(round_freeze_end);
 	this->AddHandler(vip_escaped);
@@ -61,6 +64,27 @@ void EventManager::AttachEvents()
 	this->AddHandler(exit_buyzone);
 	this->AddHandler(enter_bombzone);
 	this->AddHandler(exit_bombzone);
+
+	this->AddHandler(game_init);
+	this->AddHandler(game_end);
+	this->AddHandler(game_message);
+	this->AddHandler(game_newmap);
+	this->AddHandler(game_start);
+
+	this->AddHandler(player_spawned);
+	this->AddHandler(switch_team);
+	this->AddHandler(player_team);
+	this->AddHandler(player_connect);
+	this->AddHandler(player_changename);
+	this->AddHandler(player_chat);
+	this->AddHandler(player_given_c4);
+	this->AddHandler(player_disconnect);
+	this->AddHandler(buytime_ended);
+
+	gameevents->AddListener(this, "round_officially_ended", true);
+	gameevents->AddListener(this, "round_start", true);
+	gameevents->AddListener(this, "round_end", true);
+	gameevents->AddListener(this, "teamplay_round_start", true);
 }
 
 void EventManager::DetachEvents()
@@ -90,6 +114,6 @@ void EventManager::FireGameEvent(IGameEvent *event)
 	}
 	else
 	{
-
+		DebugMsg("Event not found");
 	}
 }

@@ -18,45 +18,64 @@
     .icon-fixed(16px);
 }
 
-.weapon_fire {
+.transition(@property, @time, @anim: ease-in-out){
+    -ms-transition: @property @time @anim;
+    -moz-transition: @property @time @anim;
+    -o-transition: @property @time @anim;
+    -webkit-transition: @property @time @anim;
+    transition: @property @time @anim;
+}
+
+.fade-opacity(@time, @opacity: 0) {
+    opacity: @opacity;
+    .transition(opacity, @time, ease-in-out);
+}
+
+
+.weapon-fire {
     /*.icon-16-fixed();*/
-    /*background-image: url(Icon/weapon_fire.png);*/
+    /*background-image: url(Icon/weapon-fire.png);*/
     /*display: inline-block;*/
     &.firing {
         opacity: 1;
     }
 
-    &.not_firing {
-        opacity: 0;
-        -ms-transition: opacity 0.3s ease-in-out;
-        -moz-transition: opacity 0.3s ease-in-out;
-        -o-transition: opacity 0.3s ease-in-out;
-        -webkit-transition: opacity 0.3s ease-in-out;
-        transition: opacity 0.3s ease-in-out;
+    &.not-firing {
+        .fade-opacity(.3s);
     }
 }
 
-.buy_zone {
+.buy-zone {
 
-    &.in_zone {
+    &.in-zone {
         color: #00AA00;
 
-        &.can_buy {
+        &.can-buy {
             .cant-buy-indicator {
                 opacity: 0;
             }
         }
 
-        &.cant_buy {
+        &.cant-buy {
         }
     }
 
-    &.out_zone {
+    &.out-zone {
         color: #DEDEDE;
 
         .cant-buy-indicator {
             opacity: 0;
         }
+    }
+}
+
+.bomb-zone {
+    &.in-zone {
+        opacity: .5;
+    }
+
+    &.out-zone {
+        .fade-opacity(.2s);
     }
 }
 
@@ -70,12 +89,8 @@
             color: #FF0000;
         }
 
-        &.not_ticking {
-            -ms-transition: color 0.5s ease-in-out;
-            -moz-transition: color 0.5s ease-in-out;
-            -o-transition: color 0.5s ease-in-out;
-            -webkit-transition: color 0.5s ease-in-out;
-            transition: color 0.5s ease-in-out;
+        &.not-ticking {
+            .transition(color, 0.5s, ease-in-out);
         }
     }
 }

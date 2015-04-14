@@ -1032,6 +1032,10 @@
       <Project>{af99ddfc-d7df-4c6d-93b1-5cf08a133803}</Project>
       <Name>DotNetPlug.LiveServer.Plugin</Name>
     </ProjectReference>
+    <ProjectReference Include="..\DotNetPlug.LiveServer.Resources\DotNetPlug.LiveServer.Resources.csproj">
+      <Project>{109f6cd2-9443-4c06-88ef-de5a5c73b95a}</Project>
+      <Name>DotNetPlug.LiveServer.Resources</Name>
+    </ProjectReference>
     <ProjectReference Include="..\DotNetPlug.Managed.Json\DotNetPlug.Managed.Json.csproj">
       <Project>{37aa8857-9ffe-4d6b-b7ab-da12a1304d1b}</Project>
       <Name>DotNetPlug.Managed.Json</Name>

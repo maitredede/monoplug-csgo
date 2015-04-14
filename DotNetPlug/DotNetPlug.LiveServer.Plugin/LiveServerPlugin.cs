@@ -35,7 +35,11 @@ namespace DotNetPlug.LiveServer
 
         public override async Task Load()
         {
-            this.m_hubConnection = new HubConnection("http://localhost:54908/", useDefaultUrl: true);
+            string hostUrl = this.GetAppSettings("LiveServer:HostUrl");
+            string serverId = this.GetAppSettings("LiveServer:ServerId");
+            string serverKey = this.GetAppSettings("LiveServer:ServerKey");
+
+            this.m_hubConnection = new HubConnection(hostUrl, useDefaultUrl: true);
             this.m_PluginHubProxy = this.m_hubConnection.CreateHubProxy("PluginServerHub");
             this.m_hubConnection.Error += this.hubConnection_Error;
             this.m_PluginHub = new PluginHubClient(this.m_PluginHubProxy);
@@ -46,7 +50,7 @@ namespace DotNetPlug.LiveServer
             //await hubConnection.Start(); throw new NotImplementedException();
             await this.m_hubConnection.Start();
 
-            if (await this.m_PluginHub.Hello("Demo", "DemoKey"))
+            if (await this.m_PluginHub.Hello(serverId, serverKey))
             {
                 this.Engine.GameEvent += this.Engine_GameEvent;
                 await this.Engine.Log("LiveServer : Ready :)");
@@ -72,8 +76,12 @@ namespace DotNetPlug.LiveServer
             {
                 case GameEvent.switch_team:
                 case GameEvent.teamchange_pending:
+                case GameEvent.player_spawn:
                 case GameEvent.player_spawned:
                 case GameEvent.player_team:
+                case GameEvent.player_death:
+                case GameEvent.player_disconnect:
+                case GameEvent.player_connect:
                     await this.m_PluginHub.SetPlayers(await this.Engine.GetPlayers());
                     break;
             }

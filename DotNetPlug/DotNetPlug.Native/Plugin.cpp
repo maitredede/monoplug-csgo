@@ -98,13 +98,13 @@ bool DotNetPlugPlugin::Load(PluginId id, ISmmAPI *ismm, char *error, size_t maxl
 	SH_ADD_HOOK_MEMFUNC(IServerGameDLL, GameFrame, server, this, &DotNetPlugPlugin::Hook_GameFrame, true);
 	SH_ADD_HOOK_MEMFUNC(IServerGameDLL, LevelShutdown, server, this, &DotNetPlugPlugin::Hook_LevelShutdown, false);
 
-	//SH_ADD_HOOK_MEMFUNC(IServerGameClients, ClientActive, gameclients, this, &DotNetPlugPlugin::Hook_ClientActive, false);
-	//SH_ADD_HOOK_MEMFUNC(IServerGameClients, ClientDisconnect, gameclients, this, &DotNetPlugPlugin::Hook_ClientDisconnect, false);
-	//SH_ADD_HOOK_MEMFUNC(IServerGameClients, ClientPutInServer, gameclients, this, &DotNetPlugPlugin::Hook_ClientPutInServer, true);
-	//SH_ADD_HOOK_MEMFUNC(IServerGameClients, SetCommandClient, gameclients, this, &DotNetPlugPlugin::Hook_SetCommandClient, true);
-	//SH_ADD_HOOK_MEMFUNC(IServerGameClients, ClientSettingsChanged, gameclients, this, &DotNetPlugPlugin::Hook_ClientSettingsChanged, true);
-	//SH_ADD_HOOK_MEMFUNC(IServerGameClients, ClientConnect, gameclients, this, &DotNetPlugPlugin::Hook_ClientConnect, false);
-	//SH_ADD_HOOK_MEMFUNC(IServerGameClients, ClientCommand, gameclients, this, &DotNetPlugPlugin::Hook_ClientCommand, false);
+	SH_ADD_HOOK_MEMFUNC(IServerGameClients, ClientActive, gameclients, this, &DotNetPlugPlugin::Hook_ClientActive, false);
+	SH_ADD_HOOK_MEMFUNC(IServerGameClients, ClientDisconnect, gameclients, this, &DotNetPlugPlugin::Hook_ClientDisconnect, false);
+	SH_ADD_HOOK_MEMFUNC(IServerGameClients, ClientPutInServer, gameclients, this, &DotNetPlugPlugin::Hook_ClientPutInServer, true);
+	SH_ADD_HOOK_MEMFUNC(IServerGameClients, SetCommandClient, gameclients, this, &DotNetPlugPlugin::Hook_SetCommandClient, true);
+	SH_ADD_HOOK_MEMFUNC(IServerGameClients, ClientSettingsChanged, gameclients, this, &DotNetPlugPlugin::Hook_ClientSettingsChanged, true);
+	SH_ADD_HOOK_MEMFUNC(IServerGameClients, ClientConnect, gameclients, this, &DotNetPlugPlugin::Hook_ClientConnect, false);
+	SH_ADD_HOOK_MEMFUNC(IServerGameClients, ClientCommand, gameclients, this, &DotNetPlugPlugin::Hook_ClientCommand, false);
 
 	this->tv_name = icvar->FindVar("tv_name");
 	gUserTracker.Load();
@@ -137,13 +137,13 @@ bool DotNetPlugPlugin::Unload(char *error, size_t maxlen)
 	SH_REMOVE_HOOK_MEMFUNC(IServerGameDLL, GameFrame, server, this, &DotNetPlugPlugin::Hook_GameFrame, true);
 	SH_REMOVE_HOOK_MEMFUNC(IServerGameDLL, LevelShutdown, server, this, &DotNetPlugPlugin::Hook_LevelShutdown, false);
 
-	//SH_REMOVE_HOOK_MEMFUNC(IServerGameClients, ClientActive, gameclients, this, &DotNetPlugPlugin::Hook_ClientActive, false);
-	//SH_REMOVE_HOOK_MEMFUNC(IServerGameClients, ClientDisconnect, gameclients, this, &DotNetPlugPlugin::Hook_ClientDisconnect, false);
-	//SH_REMOVE_HOOK_MEMFUNC(IServerGameClients, ClientPutInServer, gameclients, this, &DotNetPlugPlugin::Hook_ClientPutInServer, true);
-	//SH_REMOVE_HOOK_MEMFUNC(IServerGameClients, SetCommandClient, gameclients, this, &DotNetPlugPlugin::Hook_SetCommandClient, true);
-	//SH_REMOVE_HOOK_MEMFUNC(IServerGameClients, ClientSettingsChanged, gameclients, this, &DotNetPlugPlugin::Hook_ClientSettingsChanged, true);
-	//SH_REMOVE_HOOK_MEMFUNC(IServerGameClients, ClientConnect, gameclients, this, &DotNetPlugPlugin::Hook_ClientConnect, false);
-	//SH_REMOVE_HOOK_MEMFUNC(IServerGameClients, ClientCommand, gameclients, this, &DotNetPlugPlugin::Hook_ClientCommand, false);
+	SH_REMOVE_HOOK_MEMFUNC(IServerGameClients, ClientActive, gameclients, this, &DotNetPlugPlugin::Hook_ClientActive, false);
+	SH_REMOVE_HOOK_MEMFUNC(IServerGameClients, ClientDisconnect, gameclients, this, &DotNetPlugPlugin::Hook_ClientDisconnect, false);
+	SH_REMOVE_HOOK_MEMFUNC(IServerGameClients, ClientPutInServer, gameclients, this, &DotNetPlugPlugin::Hook_ClientPutInServer, true);
+	SH_REMOVE_HOOK_MEMFUNC(IServerGameClients, SetCommandClient, gameclients, this, &DotNetPlugPlugin::Hook_SetCommandClient, true);
+	SH_REMOVE_HOOK_MEMFUNC(IServerGameClients, ClientSettingsChanged, gameclients, this, &DotNetPlugPlugin::Hook_ClientSettingsChanged, true);
+	SH_REMOVE_HOOK_MEMFUNC(IServerGameClients, ClientConnect, gameclients, this, &DotNetPlugPlugin::Hook_ClientConnect, false);
+	SH_REMOVE_HOOK_MEMFUNC(IServerGameClients, ClientCommand, gameclients, this, &DotNetPlugPlugin::Hook_ClientCommand, false);
 
 	return true;
 }

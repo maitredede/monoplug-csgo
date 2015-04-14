@@ -1,12 +1,12 @@
-﻿.weapon_fire {
+﻿.weapon-fire {
   /*.icon-16-fixed();*/
-  /*background-image: url(Icon/weapon_fire.png);*/
+  /*background-image: url(Icon/weapon-fire.png);*/
   /*display: inline-block;*/
 }
-.weapon_fire.firing {
+.weapon-fire.firing {
   opacity: 1;
 }
-.weapon_fire.not_firing {
+.weapon-fire.not-firing {
   opacity: 0;
   -ms-transition: opacity 0.3s ease-in-out;
   -moz-transition: opacity 0.3s ease-in-out;
@@ -14,17 +14,28 @@
   -webkit-transition: opacity 0.3s ease-in-out;
   transition: opacity 0.3s ease-in-out;
 }
-.buy_zone.in_zone {
+.buy-zone.in-zone {
   color: #00AA00;
 }
-.buy_zone.in_zone.can_buy .cant-buy-indicator {
+.buy-zone.in-zone.can-buy .cant-buy-indicator {
   opacity: 0;
 }
-.buy_zone.out_zone {
+.buy-zone.out-zone {
   color: #DEDEDE;
 }
-.buy_zone.out_zone .cant-buy-indicator {
+.buy-zone.out-zone .cant-buy-indicator {
   opacity: 0;
+}
+.bomb-zone.in-zone {
+  opacity: .5;
+}
+.bomb-zone.out-zone {
+  opacity: 0;
+  -ms-transition: opacity 0.2s ease-in-out;
+  -moz-transition: opacity 0.2s ease-in-out;
+  -o-transition: opacity 0.2s ease-in-out;
+  -webkit-transition: opacity 0.2s ease-in-out;
+  transition: opacity 0.2s ease-in-out;
 }
 .bomb {
   opacity: 0;
@@ -35,7 +46,7 @@
 .bomb.planted.ticking {
   color: #FF0000;
 }
-.bomb.planted.not_ticking {
+.bomb.planted.not-ticking {
   -ms-transition: color 0.5s ease-in-out;
   -moz-transition: color 0.5s ease-in-out;
   -o-transition: color 0.5s ease-in-out;
