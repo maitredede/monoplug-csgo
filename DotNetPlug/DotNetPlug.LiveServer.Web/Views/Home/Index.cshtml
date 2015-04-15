@@ -2,73 +2,107 @@
     this.ViewBag.Title = "Index";
 }
 
-<style type="text/css">
-   
-</style>
+@*@section scripts{
+        <script type="text/javascript">
+            "use strict";
+            angular.module("liveserver").constant("lsConfig", {
+                // serverId: @Html.Json(System.Web.Configuration.WebConfigurationManager.AppSettings["LiveServer:ServerId"]),
+                serverId: "Demo",
+            });
+        </script>
+    }*@
 
 <div class="col-lg-12">
-    <div class="panel panel-default ng-cloak" ng-app="liveserver" ng-controller="demoController">
+    <div class="panel panel-default ng-cloak" ng-app="liveserver" ng-controller="demoController" ng-strict-di>
         <div class="panel-heading">
             <h2 class="panel-title">@Resources.Server : Demo <small>({{lastEvents.length}} events)</small></h2>
         </div>
         <div class="panel-body">
             <p class="text-danger bg-danger">{{error}}</p>
         </div>
-        <div class="panel-body">
+        <div class="panel-body server">
             <div class="bomb" ng-class="{'planted': bomb.planted, 'ticking': bomb.ticking, 'not-ticking': !bomb.ticking, 'exploded': bomb.exploded, 'defused': bomb.defused}">
                 <i class="fa fa-bomb"></i>
             </div>
         </div>
-        <table class="table table-condensed">
-            <thead>
-                <tr>
-                    <th>@Resources.Id</th>
-                    <th>@Resources.Nick</th>
-                    <th colspan="2">HP</th>
-                    <th>&nbsp;</th>
-                    <th>&nbsp;</th>
-                    @*<th>&nbsp;</th>*@
-                </tr>
-            </thead>
-            <tbody>
-                <tr ng-repeat="p in players | orderBy:'Team'" class="player" ng-class="{'team-t': p.Team == 2, 'team-ct': p.Team == 3, 'team-spec': p.Team == 1}">
-                    <td>{{p.Id}}</td>
-                    <td ng-class="{'dead': p.IsDead}">{{p.Name}} <i class="fa fa-user-secret" ng-if="p.IsBot"></i></td>
-                    <td>{{p.Health}}</td>
-                    <td>
-                        <progressbar value="p.Health" animate="false"></progressbar>
-                    </td>
-                    <td>
-                        @*<div class="weapon-fire" ng-class="{'firing': p.weapon-fire, 'not-firing': !p.weapon-fire}"></div>*@
-                        <img src="@Href("~/Content/Icon/weapon_fire.png")" class="weapon-fire" ng-class="{'firing': p.weapon_fire, 'not-firing': !p.weapon_fire}" />
+        <div class="panel-body">
+            <div class="col-lg-9">
+                <div class="panel panel-default">
+                    <div class="panel-heading">
+                        <h3 class="panel-title">## Playing</h3>
+                    </div>
+                    <table class="table table-condensed">
+                        @*<thead>
+                                <tr>
+                                    <th>@Resources.Id</th>
+                                    <th>@Resources.Nick</th>
+                                    <th colspan="2">HP</th>
+                                    <th>&nbsp;</th>
+                                    <th>&nbsp;</th>
+                                </tr>
+                            </thead>*@
+                        <tbody>
+                            <tr ng-repeat="p in players | orderBy:'Team'" class="player" ng-class="{'team-t': p.Team == 2, 'team-ct': p.Team == 3, 'team-spec': p.Team == 1}">
+                                <td>{{p.Id}}</td>
+                                <td ng-class="{'dead': p.IsDead}">{{p.Name}} <i class="fa fa-user-secret" ng-if="p.IsBot"></i></td>
+                                <td>{{p.Health}}</td>
+                                <td>
+                                    <progressbar value="p.Health" animate="false"></progressbar>
+                                </td>
+                                <td>
+                                    @*<div class="weapon-fire" ng-class="{'firing': p.weapon-fire, 'not-firing': !p.weapon-fire}"></div>*@
 
-                        <span class="fa-stack fa-lg buy-zone" ng-class="{'in-zone': p.buyzone_in, 'out-zone': !p.buyzone_in, 'can-buy': p.buyzone_canbuy, 'cant-buy': !p.buyzone_canbuy}">
-                            <i class="fa fa-usd fa-stack-1x"></i>
-                            <i class="fa fa-ban fa-stack-2x text-danger cant-buy-indicator"></i>
-                        </span>
+                                    <span class="weapon-fire" ng-class="{'firing': p.weapon_fire, 'not-firing': !p.weapon_fire}">
+                                        <img src="@Href("~/Content/Icon/weapon_fire.png")" alt="" />
+                                    </span>
 
-                        <i class="fa fa-bomb bomb-zone" ng-class="{'in-zone': p.bombzone_in, 'out-zone': !p.bombzone_in}"></i>
+                                    <span class="buy-zone" ng-class="{'in-zone': p.buyzone_in, 'out-zone': !p.buyzone_in, 'can-buy': p.buyzone_canbuy, 'cant-buy': !p.buyzone_canbuy}">
+                                        <span class="fa-stack fa-lg">
+                                            <i class="fa fa-usd fa-stack-1x"></i>
+                                            @*<i class="fa fa-ban fa-stack-2x text-danger cant-buy-indicator"></i>*@
+                                            <i class="fa fa-ban fa-stack-1x text-danger cant-buy-indicator"></i>
+                                        </span>
+                                    </span>
 
-                        <i class="glyphicon glyphicon-sunglass" ng-class="{'blinded':p.blinded, 'not-blinded': !p.blinded}"></i>
-                    </td>
-                    <td>&nbsp;</td>
-                    @*<td>{{p|json}}</td>*@
-                </tr>
-                <tr>
-                    <td colspan="3" ng-if="!players || players.length == 0">
-                        <p class="help-block">@Resources.NoPlayers</p>
-                    </td>
-                </tr>
-            </tbody>
-        </table>
+                                    <span class="bomb" ng-class="{'has-bomb': p.hasbomb, 'not-has-bomb': !p.hasbomb}">
+                                        <img src="@Href("~/Content/Icon/c4.png")" alt="" />
+                                    </span>
+
+                                    <span class="bomb-zone" ng-class="{'in-zone': p.bombzone_in, 'out-zone': !p.bombzone_in}">
+                                        <i class="fa fa-bomb"></i>
+                                    </span>
+
+                                    <span ng-class="{'blinded':p.blinded, 'not-blinded': !p.blinded}">
+                                        <i class="glyphicon glyphicon-sunglass"></i>
+                                    </span>
+                                </td>
+                                <td>&nbsp;</td>
+                            </tr>
+                            <tr>
+                                <td colspan="5" ng-if="!players || players.length == 0">
+                                    <p class="help-block">@Resources.NoPlayers</p>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <div class="col-lg-3">
+                <div class="panel panel-default">
+                    <div class="panel-heading">
+                        <h3 class="panel-title">## Specs</h3>
+                    </div>
+                    <ul class="list-unstyled">
+                        <li ng-repeat="p in players">{{p.Name}}</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
         <div class="panel-body">
             <ul class="list-unstyled">
                 <li ng-repeat="e in lastEvents">{{e}}</li>
             </ul>
         </div>
-
-
-
 
         <script type="text/ng-template" id="template/progressbar/progressbar.html">
             <div class="progress">

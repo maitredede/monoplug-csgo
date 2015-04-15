@@ -33,9 +33,6 @@
 
 
 .weapon-fire {
-    /*.icon-16-fixed();*/
-    /*background-image: url(Icon/weapon-fire.png);*/
-    /*display: inline-block;*/
     &.firing {
         opacity: 1;
     }
@@ -79,18 +76,29 @@
     }
 }
 
-.bomb {
-    opacity: 0;
+.server {
+    .bomb {
+        opacity: 0;
 
-    &.planted {
-        opacity: 1;
+        &.planted {
+            opacity: 1;
 
-        &.ticking {
+            &.ticking {
+                color: #FF0000;
+            }
+
+            &.not-ticking {
+                color: #000000;
+                .transition(color, 0.5s, ease-in-out);
+            }
+        }
+
+        &.exploded {
             color: #FF0000;
         }
 
-        &.not-ticking {
-            .transition(color, 0.5s, ease-in-out);
+        &.defused {
+            color: #00FF00;
         }
     }
 }
@@ -119,5 +127,16 @@
 
     &.team-spec {
         background-color: #DDDDDD;
+    }
+
+    .bomb {
+        &.has-bomb {
+            opacity: 1;
+        }
+
+        &.not-has-bomb {
+            opacity: 0;
+            .transition(opacity, .2s, ease-in-out);
+        }
     }
 }

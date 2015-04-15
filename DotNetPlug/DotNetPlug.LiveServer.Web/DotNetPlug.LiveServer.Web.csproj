@@ -163,6 +163,7 @@
     <Content Include="Content\Icons.min.css">
       <DependentUpon>Icons.css</DependentUpon>
     </Content>
+    <Content Include="Content\Icon\c4.png" />
     <Content Include="Content\Icon\weapon_fire.png" />
     <Content Include="Content\site.css" />
     <Content Include="Content\site.min.css">
@@ -1004,6 +1005,7 @@
     <Compile Include="App_Start\Startup.Auth.cs" />
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Controllers\ScriptGenController.cs" />
+    <Compile Include="Extensions.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>

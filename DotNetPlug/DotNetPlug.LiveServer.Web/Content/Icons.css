@@ -1,9 +1,4 @@
-﻿.weapon-fire {
-  /*.icon-16-fixed();*/
-  /*background-image: url(Icon/weapon-fire.png);*/
-  /*display: inline-block;*/
-}
-.weapon-fire.firing {
+﻿.weapon-fire.firing {
   opacity: 1;
 }
 .weapon-fire.not-firing {
@@ -37,21 +32,28 @@
   -webkit-transition: opacity 0.2s ease-in-out;
   transition: opacity 0.2s ease-in-out;
 }
-.bomb {
+.server .bomb {
   opacity: 0;
 }
-.bomb.planted {
+.server .bomb.planted {
   opacity: 1;
 }
-.bomb.planted.ticking {
+.server .bomb.planted.ticking {
   color: #FF0000;
 }
-.bomb.planted.not-ticking {
+.server .bomb.planted.not-ticking {
+  color: #000000;
   -ms-transition: color 0.5s ease-in-out;
   -moz-transition: color 0.5s ease-in-out;
   -o-transition: color 0.5s ease-in-out;
   -webkit-transition: color 0.5s ease-in-out;
   transition: color 0.5s ease-in-out;
+}
+.server .bomb.exploded {
+  color: #FF0000;
+}
+.server .bomb.defused {
+  color: #00FF00;
 }
 .player .dead {
   text-decoration: line-through;
@@ -75,5 +77,16 @@
 }
 .player.team-spec {
   background-color: #DDDDDD;
+}
+.player .bomb.has-bomb {
+  opacity: 1;
+}
+.player .bomb.not-has-bomb {
+  opacity: 0;
+  -ms-transition: opacity 0.2s ease-in-out;
+  -moz-transition: opacity 0.2s ease-in-out;
+  -o-transition: opacity 0.2s ease-in-out;
+  -webkit-transition: opacity 0.2s ease-in-out;
+  transition: opacity 0.2s ease-in-out;
 }
 /*# sourceMappingURL=Icons.css.map */

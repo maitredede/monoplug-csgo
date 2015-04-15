@@ -1,8 +1,8 @@
 ﻿"use strict";
 
 angular.module("liveserver", ["SignalR", "ui.router", "ui.bootstrap"])
-.controller("demoController", ["$scope", "Hub", "$timeout", "GameEvent",
-    function ($scope, Hub, $timeout, GameEvent) {
+.controller("demoController", ["$scope", "Hub", "$timeout", "GameEvent", "$injector",
+    function ($scope, Hub, $timeout, GameEvent, $injector) {
         $scope.error = "";
         $scope.lastEvents = [];
         $scope.players = [];
@@ -14,7 +14,14 @@ angular.module("liveserver", ["SignalR", "ui.router", "ui.bootstrap"])
             defused: false,
         };
 
+        //Default config
         $scope.serverId = "Demo";
+        //Real config
+        if ($injector.has("lsConfig")) {
+            $injector.invoke(["lsConfig", function (lsConfig) {
+                $scope.serverId = lsConfig.serverId;
+            }]);
+        }
 
         var hub = null;
         $scope.hubConnectDone = function hubConnectDone() {
@@ -157,9 +164,16 @@ angular.module("liveserver", ["SignalR", "ui.router", "ui.bootstrap"])
                     //case GameEvent.bomb_begindefuse:
                     //case GameEvent.bomb_abortdefuse:
 
-                    //case GameEvent.bomb_dropped:
-                    //case GameEvent.bomb_pickup:
-                    //    break;
+                case GameEvent.bomb_dropped:
+                    for (var i = 0; i < $scope.players.length; i++) {
+                        var p = $scope.players[i].hasbomb = false;
+                    }
+                    break;
+                case GameEvent.bomb_pickup:
+                    playerStepExec(e.userid, function (p) {
+                        p.hasbomb = true;
+                    });
+                    break;
 
                 case GameEvent.player_hurt:
                     playerStepExec(e.userid, function (p) {
