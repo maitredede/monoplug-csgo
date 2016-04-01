@@ -1,3 +1,9 @@
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+!! OUTDATED 
+!! For historical reason I put the code here.
+!! Feel free to comment/upgrade/fork
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
 # monoplug-csgo
 DotNet plugin engine for C#
 
